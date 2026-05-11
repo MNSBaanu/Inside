@@ -1,6 +1,6 @@
-# Avorra — Interior Design Service Platform
+# Inaura — Interior Design Service Platform
 
-Avorra is a portfolio-led interior design platform where clients discover designers through their work and hire them through a structured project workflow.
+Inaura is a portfolio-led interior design platform where clients discover designers through their work and hire them through a structured project workflow.
 
 ## What It Does
 
