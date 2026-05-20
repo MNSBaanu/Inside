@@ -1,6 +1,6 @@
-# Inaura — Interior Design Service Platform
+# Inside — Interior Design Service Platform
 
-Inaura is a portfolio-led interior design platform where clients discover designers through their work and hire them through a structured project workflow.
+Inside is a portfolio-led interior design platform where clients discover designers through their work and hire them through a structured project workflow.
 
 ## What It Does
 
@@ -30,6 +30,6 @@ Inaura is a portfolio-led interior design platform where clients discover design
 | [Decorilla](https://decorilla.com) | Online interior design with 3D rendering |
 | [Fiverr](https://fiverr.com) | Freelance service marketplace |
 
-## What Makes Avorra Different
+## What Makes Inside Different
 
-Unlike Dribbble/Behance which stop at inspiration, and Havenly/Decorilla which skip community entirely, Avorra connects the discovery experience with a full service and payment workflow — purpose-built for interior design.
+Unlike Dribbble/Behance which stop at inspiration, and Havenly/Decorilla which skip community entirely, Inside connects the discovery experience with a full service and payment workflow — purpose-built for interior design.

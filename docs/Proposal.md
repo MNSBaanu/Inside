@@ -1,4 +1,4 @@
-# INTERIOR DESIGN SERVICE PLATFORM
+# INSIDE — INTERIOR DESIGN SERVICE PLATFORM
 
 **Student Name:** Baanu
 **Registration No:**
@@ -13,7 +13,7 @@
 
 The interior design industry increasingly relies on digital platforms for discovering inspiration, finding designers, and managing design-related interactions. However, most existing platforms address only specific parts of the process. Some platforms focus mainly on showcasing portfolios, while others support freelance hiring without providing a structured environment tailored to interior design activities. As a result, clients often rely on multiple disconnected platforms for browsing inspiration, communicating with designers, managing projects, and handling payments.
 
-This project proposes an Interior Design Service Platform that provides a structured environment for connecting clients with professional interior designers. The system allows clients to explore designers based on their work and preferences, directly select a designer or create a project request, and manage project interactions through a single platform. Designers are able to respond with proposals containing pricing, timelines, and scope of work, while both parties interact through messaging, design updates, and project tracking.
+This project proposes Inside, an interior design service platform that provides a structured environment for connecting clients with professional interior designers. The system allows clients to explore designers based on their work and preferences, directly select a designer or create a project request, and manage project interactions through a single platform. Designers are able to respond with proposals containing pricing, timelines, and scope of work, while both parties interact through messaging, design updates, and project tracking.
 
 The proposed platform also incorporates milestone-based payments, designer availability management, project status tracking, notifications, wishlist functionality, and a review and rating system. In addition, the system supports a dual-role mechanism that allows users to operate as both clients and designers within the same account.
 
@@ -33,7 +33,7 @@ The motivation for undertaking this project also comes from the growing demand f
 
 # Problem in Brief
 
-The main problem addressed by this project is the lack of a unified platform specifically designed for interior design service interactions. Clients currently depend on multiple discon# INTERIOR DESIGN SERVICE PLATFORM
+The main problem addressed by this project is the lack of a unified platform specifically designed for interior design service interactions. Clients currently depend on multiple discon# INSIDE — INTERIOR DESIGN SERVICE PLATFORM
 
 **Student Name:** Baanu
 **Registration No:**
@@ -48,7 +48,7 @@ The main problem addressed by this project is the lack of a unified platform spe
 
 The interior design industry increasingly relies on digital platforms for discovering inspiration, finding designers, and managing design-related interactions. However, most existing platforms address only specific parts of the process. Some platforms focus mainly on showcasing portfolios, while others support freelance hiring without providing a structured environment tailored to interior design activities. As a result, clients often rely on multiple disconnected platforms for browsing inspiration, communicating with designers, managing projects, and handling payments.
 
-This project proposes an Interior Design Service Platform that provides a structured environment for connecting clients with professional interior designers. The system allows clients to explore designers based on their work and preferences, directly select a designer or create a project request, and manage project interactions through a single platform. Designers are able to respond with proposals containing pricing, timelines, and scope of work, while both parties interact through messaging, design updates, and project tracking.
+This project proposes Inside, an interior design service platform that provides a structured environment for connecting clients with professional interior designers. The system allows clients to explore designers based on their work and preferences, directly select a designer or create a project request, and manage project interactions through a single platform. Designers are able to respond with proposals containing pricing, timelines, and scope of work, while both parties interact through messaging, design updates, and project tracking.
 
 The proposed platform also incorporates milestone-based payments, designer availability management, project status tracking, notifications, wishlist functionality, and a review and rating system. In addition, the system supports a dual-role mechanism that allows users to operate as both clients and designers within the same account.
 
@@ -78,7 +78,7 @@ The proposed system addresses these issues by providing a structured platform wh
 
 # Aim
 
-The aim of this project is to design and develop an Interior Design Service Platform that supports designer discovery, project interaction, milestone-based payments, and structured communication between clients and interior designers using modern web technologies.
+The aim of this project is to design and develop Inside, an interior design service platform that supports designer discovery, project interaction, milestone-based payments, and structured communication between clients and interior designers using modern web technologies.
 
 ---
 
@@ -98,7 +98,7 @@ The aim of this project is to design and develop an Interior Design Service Plat
 
 # Proposed Solution
 
-The proposed solution is a role-based Interior Design Service Platform that supports the complete interaction process between clients and interior designers within a single environment. The system follows a structured workflow where clients discover designers, initiate projects, manage interactions, and track project progress.
+The proposed solution is Inside, a role-based interior design service platform that supports the complete interaction process between clients and interior designers within a single environment. The system follows a structured workflow where clients discover designers, initiate projects, manage interactions, and track project progress.
 
 Clients enter the platform through a visual discovery experience where they can explore completed interior design projects shared by designers. Users are able to browse projects based on preferences such as design style, room type, and budget range. Preferred projects can be saved to a personal mood board that acts as a visual reference during project initiation.
 
@@ -150,7 +150,7 @@ Additional features include designer availability management, notifications, wis
 
 # Deliverables
 
-* Fully functional Interior Design Service Platform
+* Fully functional Inside platform
 * Client and Designer dashboards
 * Messaging and project management functionalities
 * Payment and payout integration
@@ -206,7 +206,7 @@ The proposed system addresses these issues by providing a structured platform wh
 
 # Aim
 
-The aim of this project is to design and develop an Interior Design Service Platform that supports designer discovery, project interaction, milestone-based payments, and structured communication between clients and interior designers using modern web technologies.
+The aim of this project is to design and develop Inside, an interior design service platform that supports designer discovery, project interaction, milestone-based payments, and structured communication between clients and interior designers using modern web technologies.
 
 ---
 
@@ -226,7 +226,7 @@ The aim of this project is to design and develop an Interior Design Service Plat
 
 # Proposed Solution
 
-The proposed solution is a role-based Interior Design Service Platform that supports the complete interaction process between clients and interior designers within a single environment. The system follows a structured workflow where clients discover designers, initiate projects, manage interactions, and track project progress.
+The proposed solution is Inside, a role-based interior design service platform that supports the complete interaction process between clients and interior designers within a single environment. The system follows a structured workflow where clients discover designers, initiate projects, manage interactions, and track project progress.
 
 Clients enter the platform through a visual discovery experience where they can explore completed interior design projects shared by designers. Users are able to browse projects based on preferences such as design style, room type, and budget range. Preferred projects can be saved to a personal mood board that acts as a visual reference during project initiation.
 
@@ -278,7 +278,7 @@ Additional features include designer availability management, notifications, wis
 
 # Deliverables
 
-* Fully functional Interior Design Service Platform
+* Fully functional Inside platform
 * Client and Designer dashboards
 * Messaging and project management functionalities
 * Payment and payout integration

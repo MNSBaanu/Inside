@@ -1,10 +1,10 @@
 # Topic Approval Documentation
 
 ## Project Topic
-Interior Design Service Platform
+Inside — Interior Design Service Platform
 
 ## Brief Description
-The proposed system is an Interior Design Service Platform that facilitates interaction between clients and interior designers through a structured workflow. The system enables users to discover designers, initiate design projects, and manage the progress of those projects within a single platform.
+Inside is an interior design service platform that facilitates interaction between clients and interior designers through a structured workflow. The system enables users to discover designers, initiate design projects, and manage the progress of those projects within a single platform.
 
 Clients can browse available designers based on their profiles and previous work or create a project request by specifying their design requirements, including space type, budget, and preferences. Designers can review these requests and submit proposals that include details such as scope of work, estimated timeline, and pricing. The client can then evaluate the proposals and select a suitable designer.
 
@@ -17,7 +17,7 @@ Furthermore, the system supports a dual-role feature, allowing a user to act as 
 ## Uniqueness of the Project
 Most platforms in this space fall into one of three categories. Portfolio and community platforms allow designers to showcase their work but offer no way to hire them, manage a project, or handle payments through the platform. General freelance marketplaces allow clients to post jobs and receive proposals, but the hiring decision is based on profiles and ratings rather than the quality of actual design work. Dedicated interior design services match clients with designers, but they operate as closed services where the client has no control over who they work with and no way to browse and choose based on a designer's real completed projects.
 
-This platform addresses this gap by bringing all of the following together in one place for interior design specifically: a portfolio-first discovery experience where clients browse real completed room projects filtered by style, room type, and budget; a personal mood board system where clients save specific projects and use them as a visual brief; an open marketplace where the client chooses their designer based on demonstrated work; a structured project workflow with stages that reflect how interior design projects actually progress; and a milestone-based payment system where funds are held and released per stage upon client approval.
+Inside addresses this gap by bringing all of the following together in one place for interior design specifically: a portfolio-first discovery experience where clients browse real completed room projects filtered by style, room type, and budget; a personal mood board system where clients save specific projects and use them as a visual brief; an open marketplace where the client chooses their designer based on demonstrated work; a structured project workflow with stages that reflect how interior design projects actually progress; and a milestone-based payment system where funds are held and released per stage upon client approval.
 
 The mood board system changes how a project starts. Instead of a client describing what they want in words alone, they arrive at the project request with a curated collection of real projects that already show the designer exactly what they are looking for. This reduces miscommunication and leads to better outcomes for both sides.
 
