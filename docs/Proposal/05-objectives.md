@@ -1,29 +1,39 @@
 # Objectives
 
-1. Conduct a critical review of the interior design service domain and analyse limitations of existing platforms (portfolio sites, freelance marketplaces, closed design services).
+## General objectives (academic)
 
-2. Critically study suitable technologies for a modern role-based web application, including Next.js, Express, MongoDB Atlas, AWS services, and Stripe payment integration.
+1. Conduct a critical review of the interior design service domain and existing digital platforms.
+2. Critically study technologies suitable for a modern, role-based web application deployed on the cloud.
+3. Design and develop a system that addresses the identified problem.
+4. Evaluate the proposed system against defined criteria.
+5. Prepare comprehensive final documentation.
 
-3. Gather and document functional and non-functional requirements for Inside based on the approved topic and stakeholder workflows (client, designer, dual-role user).
+## Specific objectives (Inside)
 
-4. Design system architecture, database schema, and user interface wireframes supported by appropriate diagrams (context, architecture, ER, workflow, Gantt).
+6. Implement **authentication** with a dual-role model (client and designer on one account).
 
-5. Implement secure authentication with a **dual-role account model** allowing users to act as both client and designer within one account.
+7. Implement **portfolio-first discovery** with filtering by design style, room type, and budget.
 
-6. Implement a **portfolio-first discovery mechanism** with filtering by design style, room type, and budget range.
+8. Implement **moodboards** so clients can curate visual briefs and attach them to project requests.
 
-7. Implement **moodboards** so clients can save portfolio projects and attach them as visual briefs to project requests.
+9. Implement **project requests and proposals** for open marketplace hiring and direct portfolio hire.
 
-8. Implement **project requests and proposals**, enabling designers to submit scope, timeline, and pricing for client evaluation and acceptance.
+10. Implement a **structured project workspace** with stages (Proposal → Concept → Design → Revision → Completion), messaging, and S3 file sharing.
 
-9. Implement a **structured project workspace** with stages (Proposal → Concept → Design → Revision → Completion), messaging, and file sharing for deliverables.
+11. Implement **milestone-based payments** using Stripe, released upon client approval at each stage.
 
-10. Implement **milestone-based payments** using Stripe, with funds released upon client approval at defined project stages.
+12. Implement **reviews, notifications**, and designer **availability** indicators.
 
-11. Implement **reviews and ratings**, in-app notifications, and designer availability indicators.
+13. Deploy the application on **AWS** (Amplify, ECS, S3, CloudFront, SES, Cognito, CloudWatch) with CI/CD from GitHub.
 
-12. Deploy the system to **AWS** with appropriate monitoring, storage, and CI/CD practices.
+## Traceability
 
-13. Evaluate the developed system through functional testing, user acceptance scenarios, and defined success criteria.
+| Objective | System flow (see [SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md)) |
+|-----------|---------------------------------------------------------------|
+| 7–8 | Flow 1 — Discover & moodboard |
+| 9 | Flow 2–3 — Hire via request or direct |
+| 10 | Flow 4 — Project delivery |
+| 11 | Flow 5 — Milestone payment |
+| 12 | Flow 6 — Review |
 
-14. Prepare comprehensive project documentation including technical documentation and a user manual.
+Functional detail: [supporting/functional-requirements.md](supporting/functional-requirements.md).

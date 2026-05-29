@@ -18,4 +18,4 @@ Stripe (2024) *Stripe Documentation*. Available at: https://stripe.com/docs (Acc
 
 Vercel (2024) *Next.js Documentation*. Available at: https://nextjs.org/docs (Accessed: 29 May 2026).
 
-**[Action: Add citations used in Background and Motivation — replace placeholder entries with sources you actually read.]**
+Add peer-reviewed or industry sources you cite in [02-background-and-motivation.md](02-background-and-motivation.md) before final submission.

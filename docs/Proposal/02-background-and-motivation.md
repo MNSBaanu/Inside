@@ -10,4 +10,4 @@ The motivation for this project is both practical and academic. Practically, the
 
 The author is motivated to deliver a production-quality web application using industry-standard tools (AWS, Stripe, MongoDB, React ecosystem) that demonstrates end-to-end system design suitable for a top-up dissertation project. Relevant skills include web development, API design, and database modelling, which will be extended through structured research, iterative development, and testing during the project lifecycle.
 
-**[Action: Add 2–3 citations you actually read. Replace placeholder years/authors in [20-references.md](20-references.md).]**
+Further domain comparison and platform analysis are documented in [supporting/literature-domain-review.md](supporting/literature-domain-review.md). End-to-end user and system flows are described in [SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md). Citations are listed in [11-references.md](11-references.md).

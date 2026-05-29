@@ -33,7 +33,33 @@
 
 ## Gantt Chart
 
-Present the schedule as a Gantt chart (required format option per lecturer template). Export your chart to `diagrams/07-gantt-chart.png` and embed it below.
+Present the schedule as a Gantt chart (per lecturer template). Export to `diagrams/07-gantt-chart.png` for Word/PDF submission.
+
+### Mermaid preview (export to PNG via [mermaid.live](https://mermaid.live) or use Excel)
+
+```mermaid
+gantt
+    title Inside — 13-Week Project Plan
+    dateFormat X
+    axisFormat %s
+
+    section Research
+    Research and requirements           :a1, 0, 2
+    section Design
+    System design and wireframes        :a2, 2, 1
+    Database API and AWS setup          :a3, 3, 1
+    section Development
+    Auth and dual-role                  :a4, 4, 1
+    Portfolio and discovery feed        :a5, 5, 2
+    Moodboards and requests             :a6, 7, 1
+    Proposals and project creation      :a7, 8, 1
+    Project workspace and messaging     :a8, 9, 2
+    Stripe and S3 deliverables          :a9, 10, 2
+    Reviews and notifications           :a10, 11, 1
+    section Close
+    Testing and bug fixes               :a11, 12, 1
+    Evaluation and documentation        :a12, 13, 1
+```
 
 ![Project Gantt chart — 13-week plan](diagrams/07-gantt-chart.png)
 

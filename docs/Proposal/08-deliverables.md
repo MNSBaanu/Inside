@@ -24,7 +24,8 @@
 
 ## Supporting artefacts
 
-- Architecture diagrams (in [06-proposed-solution.md](06-proposed-solution.md))
-- Gantt chart and project plan (in [10-project-plan.md](10-project-plan.md))
+- System overview and flow documentation ([SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md))
+- Architecture diagrams ([06-proposed-solution.md](06-proposed-solution.md), [diagrams/architecture-diagrams.md](diagrams/architecture-diagrams.md))
+- Gantt chart and project plan ([10-project-plan.md](10-project-plan.md))
 - Source code repository (GitHub) with README and setup instructions
 - Demonstration video (recommended, 5–10 minutes)

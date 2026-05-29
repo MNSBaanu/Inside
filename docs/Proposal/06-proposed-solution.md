@@ -113,4 +113,11 @@ flowchart TB
 | Application | REST API, auth, workflow, payments, uploads | **Node.js**, **Express** on **AWS ECS Fargate** + ALB |
 | Data | Database, files, payments, email, secrets | **MongoDB Atlas**, **S3**, **CloudFront**, **Stripe**, **SES**, **Secrets Manager**, **CloudWatch** |
 
-Additional design detail (ER diagram, use cases, API list): see [supporting/system-design.md](supporting/system-design.md).
+**Further reading**
+
+| Topic | Document |
+|-------|----------|
+| User & system flows | [SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md) |
+| Full architecture spec | [diagrams/architecture-diagrams.md](diagrams/architecture-diagrams.md) |
+| ER diagram, API, deployment | [supporting/system-design.md](supporting/system-design.md) |
+| Functional requirements | [supporting/functional-requirements.md](supporting/functional-requirements.md) |

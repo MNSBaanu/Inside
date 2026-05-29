@@ -27,3 +27,5 @@
 | Submission | Soft copy to ELMS |
 
 See [Sample/sample.md](Sample/sample.md) for full guidelines.
+
+**Related:** [SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md) · [Proposal README](README.md)

@@ -12,4 +12,6 @@ The following actions will be undertaken first to begin work on Inside:
 
 5. **Authentication and role management** — Implement registration, login, JWT/Cognito, and dual-role switching as the foundation for all other modules.
 
-6. **Iterative development** — Follow the build order in [10-project-plan.md](10-project-plan.md): portfolio → discovery → moodboards → requests/proposals → project workspace → payments → reviews.
+6. **Review system flows** — Read [SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md) to validate journeys before coding.
+
+7. **Iterative development** — Follow the build order in [10-project-plan.md](10-project-plan.md): auth → portfolio → discovery → moodboards → requests/proposals → project workspace → payments → reviews.
