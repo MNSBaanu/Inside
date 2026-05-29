@@ -1,6 +1,6 @@
-# Inside — Architecture Diagrams
+# Architecture Diagrams
 
-**Stack:** Next.js (Amplify) + **ASP.NET Core 8 Web API** (ECS Fargate) + **Amazon RDS PostgreSQL** + AWS services.
+**Stack:** Next.js + **ASP.NET Core 8 Web API** + relational database on **AWS** + **Stripe**.
 
 | Figure | Export file |
 |--------|-------------|
@@ -17,14 +17,14 @@ Export via [mermaid.live](https://mermaid.live) → PNG (white background).
 flowchart TB
     subgraph presentation ["PRESENTATION TIER"]
         Browser["Web Browser\n(Client / Designer)"]
-        NextJS["Next.js 14\nAWS Amplify"]
+        NextJS["Next.js\nAWS"]
     end
     subgraph application ["APPLICATION TIER"]
-        API["ASP.NET Core 8 Web API\nAWS ECS Fargate + ALB"]
+        API["ASP.NET Core 8 Web API\nAWS"]
     end
     subgraph data ["DATA TIER"]
-        RDS[("Amazon RDS\nPostgreSQL")]
-        S3[("AWS S3")]
+        RDS[("Relational database\nPostgreSQL on AWS")]
+        S3[("Object storage")]
         Stripe["Stripe API"]
     end
     Browser -->|"HTTPS"| NextJS
@@ -37,24 +37,24 @@ flowchart TB
 ### ASCII layout
 
 ```
-[ Browser ] ──► [ Next.js / Amplify ]
+[ Browser ] ──► [ Next.js on AWS ]
                       │
                       ▼
-              [ ASP.NET Core 8 API / ECS + ALB ]
+              [ ASP.NET Core 8 Web API ]
                  │         │         │
                  ▼         ▼         ▼
-            [ RDS PG ]  [ S3 ]  [ Stripe ]
+         [ Database ]  [ Storage ]  [ Stripe ]
 ```
 
 ### Tier summary
 
 | Tier | Technology | Responsibility |
 |------|------------|----------------|
-| Presentation | Next.js 14, Amplify | UI, brief display, fit scores, stage workspace |
-| Application | ASP.NET Core 8, ECS | Brief engine, fit scoring, workflow, Stripe webhooks |
-| Data | RDS PostgreSQL | Users, projects, stages, ledger |
-| Data | S3 + CloudFront | Portfolio and deliverable media |
-| Data | Stripe | Milestone payments |
+| Presentation | Next.js | UI, discovery, dashboards, project workspace |
+| Application | ASP.NET Core 8 | Auth, workflow, payments, notifications |
+| Data | Relational DB on AWS | Users, projects, stages, payment records |
+| Data | Object storage | Portfolio images and deliverables |
+| Data | Stripe | Secure online payments |
 
 ---
 
@@ -66,83 +66,50 @@ flowchart TB
         Client["Client"]
         Designer["Designer"]
     end
-    subgraph presentation ["PRESENTATION TIER — Amplify"]
-        P1["Auth / Role Switch"]
-        P2["Discovery Feed"]
-        P3["Moodboard + Brief UI"]
-        P4["Fit Score + Request UI"]
-        P5["Designer Dashboard"]
-        P6["Stage Workspace + Ledger"]
+    subgraph presentation ["PRESENTATION TIER"]
+        P1["Auth / Dashboards"]
+        P2["Discovery"]
+        P3["Project Requests"]
+        P4["Project Workspace"]
+        P5["Payments"]
     end
-    subgraph application ["APPLICATION TIER — ECS"]
-        ALB["Application Load Balancer"]
+    subgraph application ["APPLICATION TIER"]
+        ALB["Load Balancer"]
         S1["Auth Service"]
-        S2["Portfolio Service"]
-        S3["Moodboard + Brief Service"]
-        S4["Fit Scoring Service"]
-        S5["Request / Proposal Service"]
-        S6["Project Workflow Service"]
-        S7["Payment + Ledger Service"]
-        S8["Notification Service"]
-        S9["File Upload Service"]
-        ALB --> S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8 & S9
+        S2["Profile / Portfolio Service"]
+        S3["Request / Proposal Service"]
+        S4["Project Workflow Service"]
+        S5["Payment Service"]
+        S6["Notification Service"]
+        S7["File Upload Service"]
+        ALB --> S1 & S2 & S3 & S4 & S5 & S6 & S7
     end
     subgraph data ["DATA AND EXTERNAL"]
-        D1[("RDS PostgreSQL")]
-        D2[("S3 + CloudFront")]
+        D1[("Relational database")]
+        D2[("Object storage")]
         D3["Stripe"]
-        D4["Cognito"]
-        D5["SES"]
-        D6["Secrets Manager"]
-        D7["CloudWatch"]
+        D4["Auth + Email"]
     end
     Client --> presentation
     Designer --> presentation
     presentation --> ALB
-    S1 --> D1 & D4 & D6
-    S2 --> D1 & S9
-    S3 --> D1
-    S4 --> D1
-    S5 --> D1
-    S6 --> D1 & S7 & S9
-    S7 --> D3 & D1
-    S8 --> D1 & D5
-    S9 --> D2
-    S1 & S6 & S7 -.-> D7
+    S1 & S2 & S3 & S4 & S5 & S6 --> D1
+    S5 --> D3
+    S6 --> D4
+    S7 --> D2
 ```
 
 ### Application services
 
 | Service | Responsibility |
 |---------|----------------|
-| Auth Service | Cognito integration, JWT, dual-role claims |
-| Portfolio Service | Case studies, discovery queries |
-| Moodboard + Brief Service | Boards, items, **structured brief generation** |
-| Fit Scoring Service | Moodboard ↔ portfolio **compatibility %** |
-| Request / Proposal Service | Hiring marketplace |
-| Project Workflow Service | Stage transitions, deliverable approval |
-| Payment + Ledger Service | Stripe, milestone audit trail |
-| Notification Service | In-app + SES |
-| File Upload Service | S3 presigned URLs |
-
----
-
-## Deployment view (AWS)
-
-```mermaid
-flowchart LR
-    User[Users] --> Amplify[Amplify Next.js]
-    User --> ALB[ALB]
-    Amplify --> ALB
-    ALB --> ECS[ECS Fargate\nASP.NET Core 8]
-    ECS --> RDS[(RDS PostgreSQL)]
-    ECS --> S3[S3]
-    S3 --> CF[CloudFront]
-    ECS --> Stripe[Stripe]
-    ECS --> Cognito[Cognito]
-    ECS --> SES[SES]
-    ECS --> CW[CloudWatch]
-```
+| Auth Service | Registration, login, role-based access |
+| Profile / Portfolio Service | Published work, discovery queries |
+| Request / Proposal Service | Project needs, designer responses, client selection |
+| Project Workflow Service | Staged delivery, feedback, approval of progress |
+| Payment Service | Stripe integration, payment records per project |
+| Notification Service | In-app alerts and email where required |
+| File Upload Service | Media upload for portfolios and deliverables |
 
 ---
 
@@ -152,15 +119,15 @@ flowchart LR
 sequenceDiagram
     participant C as Client
     participant API as ASP.NET Core API
-    participant DB as RDS
+    participant DB as Database
     participant ST as Stripe
 
-    C->>API: Approve stage + pay milestone
-    API->>DB: Validate stage + create ledger entry
+    C->>API: Approve progress + pay stage
+    API->>DB: Validate stage + record payment intent
     API->>ST: Create Checkout Session
     ST-->>C: Payment UI
     ST->>API: Webhook succeeded
-    API->>DB: Update ledger + advance stage
+    API->>DB: Update payment record + advance project
 ```
 
 ---
@@ -169,11 +136,11 @@ sequenceDiagram
 
 ```
 src/
-├── Inside.Api/              # Controllers, middleware
-├── Inside.Application/      # BriefService, FitScoringService
-├── Inside.Domain/           # Entities, ProjectStage enum
-└── Inside.Infrastructure/   # EF Core, S3, Stripe, Cognito
-web/                         # Next.js client
+├── Api/              # Controllers, middleware
+├── Application/      # Business services
+├── Domain/           # Entities, enums
+└── Infrastructure/   # EF Core, storage, Stripe, auth
+web/                  # Next.js client
 ```
 
 ---

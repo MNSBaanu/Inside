@@ -1,42 +1,25 @@
 # Objectives
 
-## General objectives (academic)
+- Conduct a critical review of the interior design service domain and how existing digital platforms support client–designer engagement from hiring through payment.
 
-1. Conduct a critical review of the interior design service domain and existing digital platforms.
-2. Critically study technologies suitable for a cloud-deployed, role-based application (.NET, AWS, Stripe).
-3. Design and develop a system that addresses the identified problem with demonstrable innovation.
-4. Evaluate brief quality, fit scoring usefulness, and stage-gated workflow effectiveness.
-5. Prepare comprehensive final documentation.
+- Critically study technologies suitable for a cloud-deployed web application, including **Next.js**, **ASP.NET Core 8**, **AWS**, relational data storage, and **Stripe**.
 
-## Specific objectives (Inside)
+- Design and develop a web-based interior design service platform that connects clients and interior designers through visual-led discovery, project requests, a shared project workspace, and secure payments tied to client approval.
 
-6. Implement **authentication** with dual-role accounts (AWS Cognito).
+- Evaluate the proposed system against agreed requirements and user-centred criteria through testing and structured feedback.
 
-7. Implement **portfolio-first discovery** with style, room type, and budget filters.
+- Prepare comprehensive final documentation, including technical documentation, a user guide, and the dissertation report.
 
-8. Implement **moodboards** and **structured brief generation** (FR-BRIEF).
+**Specific development objectives**
 
-9. Implement **designer–client fit scoring** (FR-FIT).
+- Implement secure registration and login with separate client and designer access to appropriate features.
 
-10. Implement **project requests and proposals**.
+- Implement browsing and search so clients can explore designers’ published completed work.
 
-11. Implement a **stage-gated project workspace** with S3 deliverables and per-stage approval.
+- Implement project requests, designer responses, and client selection to commence an active commission.
 
-12. Implement **milestone payments** and a **transparent ledger** (Stripe).
+- Implement a shared project workspace for staged delivery, feedback, messaging, and notifications.
 
-13. Implement reviews, notifications (SES), and designer availability.
+- Implement secure online payments linked to client approval of progress, integrated with **Stripe**.
 
-14. Deploy on **AWS** with CI/CD.
-
-## Traceability
-
-| Objective | Flow ([SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md)) |
-|-----------|-----------------------------------------------------|
-| 7–8 | Discovery, moodboard, brief |
-| 9 | Fit scoring |
-| 10 | Hire |
-| 11 | Stage workspace |
-| 12 | Milestone ledger |
-| 13 | Review |
-
-Functional requirements: [06-proposed-solution.md](06-proposed-solution.md). Evaluation: [10-project-plan.md](10-project-plan.md).
+- Deploy the working application on **AWS** and document the architecture and APIs.

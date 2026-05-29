@@ -1,15 +1,15 @@
 # Suggested Starting Point
 
-1. **Requirements gathering** — Confirm scope against [Topic Approval Documentation](../Approval/Topic%20Approval%20Documentation.md) and functional requirements in [06-proposed-solution.md](06-proposed-solution.md).
+1. **Requirements gathering** — Confirm scope with the supervisor against the approved topic and document functional and non-functional needs.
 
-2. **Domain research** — Platform comparison in [02-background-and-motivation.md](02-background-and-motivation.md).
+2. **Domain research** — Review how existing services handle interior design or similar creative commissions online; record findings for the critical review objective.
 
-3. **System design** — ER diagram, API outline, wireframes; architecture PNGs per [diagrams-and-charts-guide.md](diagrams-and-charts-guide.md).
+3. **System design** — Produce data and API outlines, wireframes for main screens, and export architecture diagram PNGs for the proposal and report.
 
-4. **Environment setup** — AWS (Amplify, ECS, RDS, Cognito, S3), Stripe, GitHub; scaffold `src/Inside.*` and `web/`.
+4. **Environment setup** — Create **AWS** and **Stripe** test accounts, initialise the Git repository, and scaffold the Next.js front end and ASP.NET Core API solution.
 
-5. **Auth + dual-role** — Cognito and JWT claims (foundation for all modules).
+5. **Authentication** — Implement registration and login first, as later modules depend on secure, role-aware access.
 
-6. **Review flows** — [SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md).
+6. **Iterative development** — Follow the project plan: discovery and profiles, then requests and responses, then the project workspace and payments, then testing and deployment.
 
-7. **Iterative build** — Follow [10-project-plan.md](10-project-plan.md): auth → portfolio → discovery → moodboards + brief + fit → requests → workspace → Stripe → reviews.
+7. **Early validation** — Review core user journeys with the supervisor before full integration testing.

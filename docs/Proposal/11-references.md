@@ -2,9 +2,7 @@
 
 Harvard style. Sources cited in the proposal body.
 
-Amazon Web Services (2024) *AWS Amplify Documentation*. Available at: https://docs.aws.amazon.com/amplify/ (Accessed: 29 May 2026).
-
-Amazon Web Services (2024) *Amazon RDS User Guide*. Available at: https://docs.aws.amazon.com/rds/ (Accessed: 29 May 2026).
+Amazon Web Services (2024) *AWS Documentation*. Available at: https://docs.aws.amazon.com/ (Accessed: 29 May 2026).
 
 IBM (2024) *What is three-tier architecture?* Available at: https://www.ibm.com/think/topics/three-tier-architecture (Accessed: 29 May 2026).
 
