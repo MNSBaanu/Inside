@@ -1,0 +1,13 @@
+# Background and Motivation
+
+Interior design is a highly visual, preference-driven domain. Clients frequently struggle to articulate what they want using text alone, and designers struggle to interpret vague briefs. Industry research on digital service platforms highlights that visual communication and structured workflows significantly reduce misalignment between service providers and customers (Mahoney, 2024). In the home and interior sector, platforms like Houzz have proven strong demand for inspiration-led discovery, while freelance marketplaces demonstrate that clients expect integrated messaging and payments — but rarely both optimised for design-specific workflows.
+
+Existing platforms fall into three categories, as identified in the approved topic documentation. **Portfolio and community platforms** (e.g. Behance, Dribbble) support discovery but not hiring or escrow payments. **General freelance marketplaces** (e.g. Fiverr, Upwork) support proposals and payments but not portfolio-first, style-filtered discovery for rooms and budgets. **Closed interior design services** (e.g. Havenly, Decorilla) manage the full journey but remove client choice over which designer they work with, based on open browsing of completed projects.
+
+The gap is a platform that combines: (1) portfolio-first discovery filtered by style, room type, and budget; (2) moodboards as visual briefs attached to project requests; (3) open marketplace proposals; (4) interior-design-specific project stages; and (5) milestone payments released upon client approval at each stage. Inside is designed to fill this gap.
+
+The motivation for this project is both practical and academic. Practically, the growth of remote and digital creative services requires better tools for structured collaboration. Academically, the project applies software engineering principles — role-based access control, workflow state machines, RESTful API design, cloud deployment, payment integration, and system evaluation — within a real-world problem domain aligned with the approved topic.
+
+The author is motivated to deliver a production-quality web application using industry-standard tools (AWS, Stripe, MongoDB, React ecosystem) that demonstrates end-to-end system design suitable for a top-up dissertation project. Relevant skills include web development, API design, and database modelling, which will be extended through structured research, iterative development, and testing during the project lifecycle.
+
+**[Action: Add 2–3 citations you actually read. Replace placeholder years/authors in [20-references.md](20-references.md).]**

@@ -33,3 +33,36 @@ Inside is a portfolio-led interior design platform where clients discover design
 ## What Makes Inside Different
 
 Unlike Dribbble/Behance which stop at inspiration, and Havenly/Decorilla which skip community entirely, Inside connects the discovery experience with a full service and payment workflow — purpose-built for interior design.
+
+## Documentation
+
+| Document | Location |
+|----------|----------|
+| Approved topic | [docs/Approval/Topic Approval Documentation.md](docs/Approval/Topic%20Approval%20Documentation.md) |
+| **Proposal (current)** | [docs/Proposal/README.md](docs/Proposal/README.md) — matches lecturer section order (`sample.md`) |
+| Diagram & Gantt guide | [docs/Proposal/diagrams-and-charts-guide.md](docs/Proposal/diagrams-and-charts-guide.md) |
+| Lecturer samples | [docs/Proposal/Sample/](docs/Proposal/Sample/) |
+
+## Planned Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | Next.js 14, TypeScript, Tailwind CSS → **AWS Amplify** |
+| Backend | Node.js, Express → **AWS ECS Fargate** (or Elastic Beanstalk) |
+| Database | MongoDB Atlas |
+| Storage / CDN | **AWS S3** + **CloudFront** |
+| Auth | JWT + **AWS Cognito** |
+| Email | **AWS SES** |
+| Payments | **Stripe** |
+| CI/CD | GitHub Actions → AWS |
+
+## Planned Repository Structure
+
+```
+Inside/
+├── client/          # Next.js frontend
+├── server/          # Express API
+└── docs/
+    ├── Approval/
+    └── Proposal/
+```

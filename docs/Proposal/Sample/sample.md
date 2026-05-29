@@ -5,8 +5,6 @@ height="1.5361111111111112in"}**[Esoft Metro Campus]{.smallcaps}**
 
 **[General Guidelines]{.underline}**
 
-Length: It must be of 4 pages: excluding the title page and table of
-contents.
 
 Paper: The Project Proposal should be printed on good quality A4 size
 paper
