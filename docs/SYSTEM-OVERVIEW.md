@@ -180,7 +180,7 @@ After **Completion** and final payment, client submits rating + review on design
 | Payments | **Stripe** |
 | Ops | **Secrets Manager**, **CloudWatch**, **GitHub Actions** → ECR |
 
-Details: [Proposal/07-resource-requirements.md](Proposal/07-resource-requirements.md), [Proposal/supporting/technology-justification.md](Proposal/supporting/technology-justification.md).
+Details: [Proposal/07-resource-requirements.md](Proposal/07-resource-requirements.md) (includes technology justification).
 
 ---
 
@@ -242,7 +242,7 @@ erDiagram
 | Stripe test mode | Stripe Connect payouts |
 | Stage tabs + file approval | Deliverable annotations |
 
-See [Proposal/supporting/scope-and-limitations.md](Proposal/supporting/scope-and-limitations.md).
+See scope section in [Proposal/06-proposed-solution.md](Proposal/06-proposed-solution.md).
 
 ---
 

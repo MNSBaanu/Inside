@@ -70,7 +70,7 @@ Reference the lecturer’s samples in [Sample/](Sample/) for layout style.
 5. Label arrows with data flow, e.g. `browse portfolios`, `pay milestone`, `upload deliverables`.
 6. Export as `01-context-diagram.png`.
 
-**Insert in proposal:** [supporting/system-design.md](supporting/system-design.md) (optional for dissertation).
+**Optional:** Add to [06-proposed-solution.md](../06-proposed-solution.md) or dissertation.
 
 ---
 
@@ -107,7 +107,7 @@ Reference the lecturer’s samples in [Sample/](Sample/) for layout style.
 
 **Tool:** draw.io → UML → Use Case diagram template.
 
-**Export:** `04-use-case-diagram.png` → insert in [supporting/system-design.md](supporting/system-design.md).
+**Export:** `04-use-case-diagram.png` → optional appendix in dissertation.
 
 ---
 
@@ -169,7 +169,7 @@ erDiagram
 - Milestone payment released on approval (3 payment points)
 - Review only after Completion
 
-**Export:** `06-project-workflow.png` → [supporting/system-design.md](supporting/system-design.md) (optional).
+**Export:** `06-project-workflow.png` → optional; workflow covered in [SYSTEM-OVERVIEW.md](../../SYSTEM-OVERVIEW.md).
 
 ---
 
@@ -224,7 +224,7 @@ Create 5–6 low-fidelity screens in Figma:
 5. Project workspace (stage timeline + chat + files)
 6. Milestone payment approval modal
 
-Store in `diagrams/wireframes/` and reference in [supporting/system-design.md](supporting/system-design.md).
+Store in `diagrams/wireframes/` and reference in dissertation or technical documentation.
 
 ---
 

@@ -4,56 +4,105 @@ The proposed solution is **Inside**, an interior design service platform that go
 
 ## Core functional areas (approved topic)
 
-**Portfolio-first discovery** enables clients to browse completed room case studies with filters for design style, room type, and budget band—hiring decisions based on demonstrated work, not text-only profiles.
+**Portfolio-first discovery** enables clients to browse completed room case studies with filters for design style, room type, and budget band.
 
-**Moodboards and structured briefs** let clients save portfolio projects to personal moodboards. The system **automatically generates a structured design brief** (dominant styles, room types, suggested budget band) from moodboard contents, giving designers clarity before work begins.
+**Moodboards and structured briefs** let clients save portfolio projects to moodboards. The system **automatically generates a structured design brief** (dominant styles, room types, suggested budget band) from moodboard contents.
 
-**Designer–client fit scoring** ranks designers by **visual compatibility** with the client’s moodboard (style, room type, budget overlap)—not generic star ratings alone.
+**Designer–client fit scoring** ranks designers by **visual compatibility** with the client’s moodboard (style, room type, budget overlap).
 
-**Project requests and proposals** support open hiring: clients post requirements with moodboard + auto-brief; designers submit scope, timeline, price, and milestones; clients accept the best fit.
+**Project requests and proposals** support open hiring with moodboard + auto-brief attached.
 
-**Stage-gated project workspace** organises delivery into interior-design stages—Proposal → Concept → Design → Revision → Completion—with **deliverables and approvals per stage** (primary workflow); messaging supports feedback but is secondary to stage files.
+**Stage-gated project workspace** uses stages Proposal → Concept → Design → Revision → Completion, with deliverables and approvals per stage.
 
-**Transparent milestone ledger** shows each stage’s amount, payment status, and approval timestamps. Stripe processes payments when the client approves a gated stage.
+**Transparent milestone ledger** records stage amounts, payment status, and approval timestamps via Stripe.
 
-**Dual-role accounts**, designer availability, in-app and email notifications (AWS SES), and post-completion reviews complete the platform loop.
+**Dual-role accounts**, availability, notifications (SES), and reviews complete the platform.
 
 ---
 
-## Final Year innovation (differentiation)
+## Final Year innovation
 
-| Layer | Feature | Why it is not “generic freelancing” |
-|-------|---------|-----------------------------------|
-| **A — Brief intelligence** | Auto brief from moodboard tags | Replaces vague text job posts with formalised visual intent |
-| **B — Fit score** | % match moodboard ↔ designer portfolio | Ranks by demonstrated visual fit, not reviews only |
-| **C — Stage workspace** | Tabs per stage; approve/reject deliverables | Mirrors interior design workflow, not a message thread |
-| **D — Milestone ledger** | Audit trail of stage payments | Transparent escrow-style progression |
+| Layer | Feature | Differentiation |
+|-------|---------|-----------------|
+| A — Brief intelligence | Auto brief from moodboard | Formalised visual intent vs text job posts |
+| B — Fit score | % match moodboard ↔ portfolio | Visual fit vs star ratings only |
+| C — Stage workspace | Per-stage deliverables + approval | ID workflow vs generic chat |
+| D — Milestone ledger | Payment audit trail | Transparent stage-gated pay |
 
-Comparison positioning (Houzz / Fiverr / Havenly) is documented in [supporting/literature-domain-review.md](supporting/literature-domain-review.md).
+---
+
+## Functional requirements (summary)
+
+### Authentication (FR-AUTH)
+
+Register/login (Cognito); dual-role (client/designer); dashboard switch; JWT role claims on API.
+
+### Portfolio and discovery (FR-PORT, FR-DISC)
+
+Designer publishes case studies (style, room, budget); public feed with filters.
+
+### Moodboards (FR-MOOD)
+
+Create boards; save portfolio items; attach board to request.
+
+### Structured brief — Layer A (FR-BRIEF)
+
+| ID | Requirement |
+|----|-------------|
+| FR-BRIEF-01 | Generate structured brief from moodboard |
+| FR-BRIEF-02 | Include dominant styles with proportions |
+| FR-BRIEF-03 | Include room types represented |
+| FR-BRIEF-04 | Suggest budget band |
+| FR-BRIEF-05 | Brief visible to client before posting |
+| FR-BRIEF-06 | Brief attached to request for designers |
+| FR-BRIEF-07 | MVP: rule-based tag aggregation |
+
+### Fit score — Layer B (FR-FIT)
+
+| ID | Requirement |
+|----|-------------|
+| FR-FIT-01 | Fit score 0–100% per designer for a moodboard |
+| FR-FIT-02 | Uses style, room, budget overlap |
+| FR-FIT-03 | Client views ranked designers before posting |
+| FR-FIT-04 | Algorithm documented for dissertation evaluation |
+
+### Hiring, workspace, payments (FR-HIRE, FR-PROJ, FR-PAY)
+
+Requests and proposals; accept → project; five stages with S3 deliverables; client approves stages; Stripe milestones; ledger UI; webhooks update state.
+
+### Reviews and notifications (FR-REV, FR-NOT, FR-AVAIL)
+
+Post-completion reviews; in-app + SES notifications; designer availability status.
+
+---
+
+## Scope and limitations
+
+**MVP:** Cognito auth, portfolio + discovery, moodboards + brief, fit scoring, requests/proposals, stage workspace, Stripe ledger, reviews, AWS deployment.
+
+**Phase 2:** AWS Rekognition labels, WebSocket chat, Stripe Connect payouts, deliverable annotations.
+
+**Limitations:** Stripe test mode; rule-based brief; English UI; single AWS region.
 
 ---
 
 ## Architecture approach
 
-Three-tier architecture on **AWS**:
-
 | Tier | Technology |
 |------|------------|
-| Presentation | Next.js 14, TypeScript, Tailwind CSS — **AWS Amplify** |
-| Application | **ASP.NET Core 8 Web API** — **AWS ECS Fargate** + ALB |
-| Data | **Amazon RDS (PostgreSQL)**, **S3**, **CloudFront**, **Stripe**, **Cognito**, **SES**, **Secrets Manager**, **CloudWatch** |
+| Presentation | Next.js 14 — **AWS Amplify** |
+| Application | **ASP.NET Core 8 Web API** — **ECS Fargate** + ALB |
+| Data | **RDS PostgreSQL**, S3, CloudFront, Stripe, Cognito, SES |
 
-Backend uses **Clean Architecture**: `Inside.Api` → `Inside.Application` (brief + fit scoring services) → `Inside.Domain` → `Inside.Infrastructure` (EF Core, S3, Stripe adapters).
+Clean Architecture: `Inside.Api` → `Inside.Application` (BriefService, FitScoringService) → `Inside.Domain` → `Inside.Infrastructure`.
 
-Full diagrams: **[diagrams/architecture-diagrams.md](diagrams/architecture-diagrams.md)**.
+Diagrams: [diagrams/architecture-diagrams.md](diagrams/architecture-diagrams.md). Flows: [SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md).
 
 ---
 
 ## Architecture Diagrams
 
 ### Figure 1 — Simple three-tier architecture
-
-Browser → Next.js (Amplify) → ASP.NET Core API (ECS) → RDS PostgreSQL / S3 / Stripe.
 
 ```mermaid
 flowchart TB
@@ -126,20 +175,15 @@ flowchart TB
 
 ---
 
-### Architecture summary table
+## Key API endpoints (ASP.NET Core)
 
-| Tier | Components | Technology |
-|------|------------|------------|
-| Presentation | Discovery, moodboards, brief, fit score, dashboards, stage workspace | Next.js 14, AWS Amplify |
-| Application | REST API, brief engine, fit scoring, workflow, payments | ASP.NET Core 8, ECS Fargate |
-| Data | Relational data, media, payments, identity, email | RDS PostgreSQL, S3, CloudFront, Stripe, Cognito, SES |
-
-**Further reading**
-
-| Topic | Document |
+| Group | Examples |
 |-------|----------|
-| Flows & concepts | [SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md) |
-| Architecture detail | [diagrams/architecture-diagrams.md](diagrams/architecture-diagrams.md) |
-| Technology rationale | [supporting/technology-justification.md](supporting/technology-justification.md) |
-| Functional requirements | [supporting/functional-requirements.md](supporting/functional-requirements.md) |
-| Evaluation plan | [supporting/evaluation-plan.md](supporting/evaluation-plan.md) |
+| Auth | `POST /api/v1/auth/login` |
+| Portfolios | `GET /api/v1/portfolios` |
+| Moodboards | `GET /api/v1/moodboards/{id}/brief` |
+| Fit | `GET /api/v1/moodboards/{id}/fit-scores` |
+| Requests / Proposals | `POST /api/v1/requests`, `PATCH /api/v1/proposals/{id}/accept` |
+| Projects | `POST /api/v1/projects/{id}/stages/{stage}/approve` |
+| Ledger | `GET /api/v1/projects/{id}/ledger` |
+| Payments | `POST /api/v1/payments/webhook` |

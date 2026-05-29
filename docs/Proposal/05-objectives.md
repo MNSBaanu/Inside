@@ -14,19 +14,19 @@
 
 7. Implement **portfolio-first discovery** with style, room type, and budget filters.
 
-8. Implement **moodboards** and **structured brief generation** (FR-BRIEF) from saved portfolio items.
+8. Implement **moodboards** and **structured brief generation** (FR-BRIEF).
 
-9. Implement **designer–client fit scoring** (FR-FIT) based on visual portfolio compatibility.
+9. Implement **designer–client fit scoring** (FR-FIT).
 
-10. Implement **project requests and proposals** for marketplace hiring.
+10. Implement **project requests and proposals**.
 
-11. Implement a **stage-gated project workspace** (Proposal → Concept → Design → Revision → Completion) with S3 deliverables and per-stage approval.
+11. Implement a **stage-gated project workspace** with S3 deliverables and per-stage approval.
 
-12. Implement **milestone payments** and a **transparent ledger** using Stripe webhooks.
+12. Implement **milestone payments** and a **transparent ledger** (Stripe).
 
-13. Implement reviews, notifications (in-app + SES), and designer availability.
+13. Implement reviews, notifications (SES), and designer availability.
 
-14. Deploy on **AWS** (Amplify, ECS, RDS, S3, CloudFront) with CI/CD.
+14. Deploy on **AWS** with CI/CD.
 
 ## Traceability
 
@@ -34,9 +34,9 @@
 |-----------|-----------------------------------------------------|
 | 7–8 | Discovery, moodboard, brief |
 | 9 | Fit scoring |
-| 10 | Hire (request + proposals) |
+| 10 | Hire |
 | 11 | Stage workspace |
 | 12 | Milestone ledger |
 | 13 | Review |
 
-Detail: [supporting/functional-requirements.md](supporting/functional-requirements.md) · Evaluation: [supporting/evaluation-plan.md](supporting/evaluation-plan.md).
+Functional requirements: [06-proposed-solution.md](06-proposed-solution.md). Evaluation: [10-project-plan.md](10-project-plan.md).

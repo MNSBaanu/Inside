@@ -4,29 +4,29 @@
 
 | # | Deliverable |
 |---|-------------|
-| 1 | **Inside web application** — deployed on AWS (Amplify + API) |
-| 2 | **Client dashboard** — moodboards, project requests, active projects, milestone payments, reviews |
-| 3 | **Designer dashboard** — portfolio management, proposals, project workspace, availability |
-| 4 | **Discovery experience** — public portfolio feed with filters |
-| 4b | **Structured brief** and **designer fit scoring** modules |
-| 5 | **REST API** — ASP.NET Core 8 backend with OpenAPI documentation |
-| 6 | **Payment integration** — Stripe milestone flow with webhook handling |
-| 7 | **File storage** — AWS S3 and CloudFront for portfolio and deliverable media |
+| 1 | **Inside web application** — AWS (Amplify + ECS API) |
+| 2 | **Client dashboard** — moodboards, brief, fit scores, requests, projects, ledger, reviews |
+| 3 | **Designer dashboard** — portfolio, proposals, stage workspace, availability |
+| 4 | **Discovery feed** — filters by style, room, budget |
+| 5 | **Structured brief** and **fit scoring** modules |
+| 6 | **ASP.NET Core 8 REST API** with OpenAPI documentation |
+| 7 | **Stripe milestone payments** with webhook handling |
+| 8 | **S3 + CloudFront** for portfolio and deliverable media |
 
 ## Documentation
 
 | # | Deliverable |
 |---|-------------|
-| 8 | **Project proposal** (this document set, merged PDF for ELMS) |
-| 9 | **Technical documentation** — architecture, database schema, API specification, AWS deployment runbook |
-| 10 | **User manual** — step-by-step guide for clients and designers |
-| 11 | **Final report / dissertation** — per institution requirements |
-| 12 | **Test report** — test cases and results (see [supporting/testing-strategy.md](supporting/testing-strategy.md)) |
+| 9 | **Project proposal** (sections `00`–`12`, merged PDF for ELMS) |
+| 10 | **Technical documentation** — architecture, ER, API, AWS deployment |
+| 11 | **User manual** — client and designer guides |
+| 12 | **Final report / dissertation** |
+| 13 | **Test report** — see testing approach in [10-project-plan.md](10-project-plan.md) |
 
 ## Supporting artefacts
 
-- System overview and flow documentation ([SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md))
-- Architecture diagrams ([06-proposed-solution.md](06-proposed-solution.md), [diagrams/architecture-diagrams.md](diagrams/architecture-diagrams.md))
-- Gantt chart and project plan ([10-project-plan.md](10-project-plan.md))
-- Source code repository (GitHub) with README and setup instructions
+- [SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md) — flows and concepts
+- Architecture diagrams — [06-proposed-solution.md](06-proposed-solution.md), [diagrams/architecture-diagrams.md](diagrams/architecture-diagrams.md)
+- Gantt chart — [10-project-plan.md](10-project-plan.md)
+- GitHub repository with README
 - Demonstration video (recommended, 5–10 minutes)
