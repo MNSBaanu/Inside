@@ -1,33 +1,42 @@
 # Inside — System Overview
 
-A clear guide to **what Inside is**, **who uses it**, and **how everything flows** from discovery to payment and review.
+**What Inside is**, **who uses it**, and **how data flows** from discovery through payment and review.
 
-| For | Document |
-|-----|----------|
-| Proposal submission (ELMS) | [Proposal/README.md](Proposal/README.md) — sections `00`–`12` |
-| Architecture diagrams | [Proposal/diagrams/architecture-diagrams.md](Proposal/diagrams/architecture-diagrams.md) |
+| Document | Purpose |
+|----------|---------|
+| Proposal (ELMS) | [Proposal/README.md](Proposal/README.md) |
+| Architecture | [Proposal/diagrams/architecture-diagrams.md](Proposal/diagrams/architecture-diagrams.md) |
 | Approved topic | [Approval/Topic Approval Documentation.md](Approval/Topic%20Approval%20Documentation.md) |
 
 ---
 
 ## What is Inside?
 
-**Inside** is a web platform for interior design services. Clients **discover designers through real completed projects** (not text-only profiles), build **moodboards** as visual briefs, **hire** via proposals, and **collaborate** through a staged project workspace with **milestone payments**. Designers **publish portfolios**, **respond to requests**, and **deliver work** stage by stage.
+**Inside** is a Final Year interior design platform where clients discover designers through **completed room projects**, build **moodboards**, receive an **auto-generated structured brief**, see **designer fit scores**, hire via **proposals**, collaborate in a **stage-gated workspace**, and pay through a **milestone ledger** (Stripe on AWS).
 
-**One-line summary:** Portfolio-led marketplace + project workspace + Stripe milestones — built for interior design only.
+**One-line summary:** Visual brief intelligence + fit scoring + stage-gated delivery—not a generic freelance job board.
+
+---
+
+## Final Year differentiators
+
+| Feature | Description |
+|---------|-------------|
+| **Structured brief (Layer A)** | Moodboard items → aggregated styles, rooms, budget suggestion |
+| **Fit score (Layer B)** | % compatibility between moodboard and each designer’s portfolio |
+| **Stage workspace (Layer C)** | Deliverables + approve/reject per stage; chat is secondary |
+| **Milestone ledger (Layer D)** | Transparent stage → amount → status → approval history |
 
 ---
 
 ## Who uses the system?
 
-| Actor | Description |
-|-------|-------------|
-| **Guest** | Browses public discovery feed (no login) |
-| **Client** | Saves moodboards, posts requests, hires, approves stages, pays, reviews |
-| **Designer** | Publishes portfolio, submits proposals, uploads deliverables, sets availability |
-| **Dual-role user** | Same account with both client and designer roles; switches dashboard |
-
-There is no separate “admin app” in the MVP — moderation can be done via database tools if needed.
+| Actor | Role |
+|-------|------|
+| **Guest** | Browse discovery feed (read-only) |
+| **Client** | Moodboards, brief, fit scores, requests, approvals, payments, reviews |
+| **Designer** | Portfolio, proposals, stage deliverables, availability |
+| **Dual-role user** | One account; switch client / designer dashboard |
 
 ---
 
@@ -35,292 +44,217 @@ There is no separate “admin app” in the MVP — moderation can be done via d
 
 | Term | Meaning |
 |------|---------|
-| **Portfolio project** | A case study: photos + style, room type, budget band — designer’s showcase work |
-| **Discovery feed** | Public grid of portfolio projects with filters |
-| **Moodboard** | Client’s saved collection of portfolio projects = visual brief |
-| **Project request** | Client job post: space, budget, notes, optional moodboard |
-| **Proposal** | Designer’s offer: scope, timeline, price, milestone split |
-| **Project** | Active engagement after a proposal is accepted |
+| **Portfolio project** | Room case study: images + style + room type + budget band |
+| **Moodboard** | Saved portfolio projects = visual input |
+| **Structured brief** | Auto summary derived from moodboard (styles %, rooms, budget band) |
+| **Fit score** | 0–100% match between moodboard and designer portfolio |
+| **Project request** | Client post with description + moodboard + brief |
+| **Proposal** | Designer offer: scope, timeline, price, milestones |
+| **Project** | Active job after proposal accepted |
 | **Stage** | Proposal → Concept → Design → Revision → Completion |
-| **Milestone payment** | Part of total fee; charged when client approves a stage |
-| **Deliverable** | File uploaded for a stage (images, PDFs) on S3 |
+| **Deliverable** | File for current stage (S3) |
+| **Milestone ledger** | Payment record per stage |
 
 ---
 
-## System at a glance
+## End-to-end flow
 
 ```mermaid
 flowchart LR
-    subgraph phase1 [Discover]
-        A[Browse portfolios]
-        B[Save moodboard]
-    end
-    subgraph phase2 [Hire]
-        C[Post request or direct hire]
-        D[Designer proposes]
-        E[Client accepts]
-    end
-    subgraph phase3 [Deliver]
-        F[Project workspace]
-        G[Stages + files + chat]
-        H[Approve + pay milestone]
-    end
-    subgraph phase4 [Close]
-        I[Complete project]
-        J[Leave review]
-    end
-    A --> B --> C --> D --> E --> F --> G --> H --> I --> J
+    Browse[Browse portfolios] --> Mood[Build moodboard]
+    Mood --> Brief[Auto structured brief]
+    Brief --> Fit[Designer fit scores]
+    Fit --> Request[Post request]
+    Request --> Proposals[Proposals]
+    Proposals --> Workspace[Stage workspace]
+    Workspace --> Ledger[Approve + pay milestone]
+    Ledger --> Review[Review]
 ```
 
 ---
 
-## Flow 1 — Client discovers and builds a visual brief
+## Flow 1 — Discovery and moodboard
+
+1. Client browses **discovery feed** (filter: style, room, budget).
+2. Saves projects to **moodboard**.
+3. System generates **structured brief** (rule-based tag aggregation in MVP; optional AWS Rekognition labels in stretch).
 
 ```mermaid
 sequenceDiagram
     actor Client
-    participant Web as Next.js App
-    participant API as Express API
-    participant DB as MongoDB
+    participant Web as Next.js
+    participant API as ASP.NET Core API
+    participant DB as RDS PostgreSQL
 
-    Client->>Web: Open discovery feed
-    Web->>API: GET /portfolios?style&room&budget
-    API->>DB: Query portfolio projects
-    DB-->>API: Results
-    API-->>Web: JSON list
-    Web-->>Client: Grid of projects
-
-    Client->>Web: Save to moodboard
-    Web->>API: POST /moodboards/{id}/items
-    API->>DB: Link portfolio item to board
-    DB-->>API: OK
-    API-->>Web: Updated board
+    Client->>Web: Browse / save to moodboard
+    Web->>API: GET/POST moodboards
+    API->>DB: Persist items
+    Client->>Web: Generate brief
+    Web->>API: GET /moodboards/{id}/brief
+    API->>DB: Aggregate style/room/budget tags
+    API-->>Web: Structured brief DTO
 ```
-
-**Steps:**
-
-1. Client opens **Discovery Feed**.
-2. Filters by style (e.g. Modern), room (e.g. Bedroom), budget band.
-3. Opens a **portfolio project** detail page.
-4. Clicks **Save to moodboard** (creates board or adds to existing).
-5. Repeats until moodboard reflects desired look.
 
 ---
 
-## Flow 2 — Client hires via project request (marketplace)
+## Flow 2 — Fit scoring
+
+Before posting a request, client views designers ranked by **fit score**:
+
+- Overlap on **design style** tags
+- Overlap on **room types**
+- **Budget band** alignment
 
 ```mermaid
-sequenceDiagram
-    actor Client
-    actor Designer
-    participant Web as Next.js App
-    participant API as Express API
-    participant DB as MongoDB
-
-    Client->>Web: Create project request + attach moodboard
-    Web->>API: POST /requests
-    API->>DB: Store request (status: open)
-
-    Designer->>Web: View open requests
-    Web->>API: GET /requests/open
-    API-->>Designer: List including moodboard preview
-
-    Designer->>Web: Submit proposal (scope, price, milestones)
-    Web->>API: POST /proposals
-    API->>DB: Store proposal
-    API-->>Client: Notification (in-app / email)
-
-    Client->>Web: Compare proposals → Accept one
-    Web->>API: PATCH /proposals/{id}/accept
-    API->>DB: Create Project, link client + designer
-    API-->>Web: Project workspace URL
+flowchart LR
+    Moodboard[Moodboard tags] --> Algo[Fit scoring service]
+    Portfolios[Designer portfolios] --> Algo
+    Algo --> Rank[Ranked designer list]
 ```
 
-**Steps:**
-
-1. Client creates **project request** (space type, budget, description).
-2. Attaches **moodboard** so designers see visual intent.
-3. Designers view request and submit **proposals**.
-4. Client compares proposals and **accepts one**.
-5. System creates a **Project** in stage `Proposal`.
+**MVP algorithm (example):** weighted score = 40% style overlap + 35% room overlap + 25% budget match.
 
 ---
 
-## Flow 3 — Direct hire from portfolio (shortcut)
+## Flow 3 — Hire (request + proposals)
 
-```mermaid
-flowchart TD
-    A[Client views portfolio project] --> B[Clicks Hire this designer]
-    B --> C[Pre-filled request for that designer]
-    C --> D[Designer submits proposal OR client accepts packaged offer]
-    D --> E[Project created]
-```
-
-Same end state as Flow 2 — a **Project** with both parties linked — but starts from a specific portfolio item instead of an open marketplace post.
+1. Client creates **request** (space, budget, notes) + moodboard + brief.
+2. Designers submit **proposals**.
+3. Client accepts one → **Project** created at stage `Proposal`.
 
 ---
 
-## Flow 4 — Project delivery (stages, files, chat)
+## Flow 4 — Stage-gated workspace (primary collaboration)
+
+Workspace UI is organised by **stage tabs**, not a single chat thread.
+
+| Stage | Designer | Client |
+|-------|----------|--------|
+| Concept | Upload concept boards | Approve / reject + comment |
+| Design | Upload design package | Approve / reject |
+| Revision | Upload revisions | Approve / reject |
+| Completion | Final package | Approve + final payment |
+
+- **Deliverables** uploaded per stage (S3 presigned URLs).
+- **Messaging** available for clarification but approval happens on stage panel.
+- Optional stretch: image annotation on deliverable.
 
 ```mermaid
 stateDiagram-v2
     [*] --> Proposal
-    Proposal --> Concept: Client accepts proposal
-    Concept --> Design: Client approves concept + milestone paid
-    Design --> Revision: Client approves design + milestone paid
-    Revision --> Completion: Revisions approved
-    Completion --> [*]: Final milestone paid + review
-
-    note right of Concept
-        Designer uploads deliverables each stage
-        Client messages feedback in thread
-    end note
+    Proposal --> Concept: Accepted
+    Concept --> Design: Approved_and_paid
+    Design --> Revision: Approved_and_paid
+    Revision --> Completion: Approved
+    Completion --> [*]: Final_payment_and_review
 ```
 
-| Stage | Designer | Client |
-|-------|----------|--------|
-| **Proposal** | Confirm scope | Accept to start |
-| **Concept** | Upload concept boards | Review, approve or request changes |
-| **Design** | Upload design package | Review, approve |
-| **Revision** | Upload revisions | Review, approve |
-| **Completion** | Final deliverables | Approve, pay final milestone |
+---
 
-**Workspace includes:**
+## Flow 5 — Milestone ledger and Stripe
 
-- Stage timeline (current / completed)
-- **Messages** (project-scoped chat)
-- **Deliverables** (files on S3, linked per stage)
+1. Client opens **ledger** for project: stage | amount | status | approved at.
+2. Client approves stage → API creates Stripe Checkout / Payment Intent.
+3. Webhook confirms payment → stage advances.
+
+Stripe webhooks are authoritative; ledger UI reflects database state.
 
 ---
 
-## Flow 5 — Milestone payment
+## Flow 6 — Review
 
-```mermaid
-sequenceDiagram
-    actor Client
-    participant Web as Next.js App
-    participant API as Express API
-    participant Stripe as Stripe
-    participant DB as MongoDB
-
-    Client->>Web: Approve stage + Pay milestone
-    Web->>API: POST /projects/{id}/approve
-    API->>DB: Validate stage ready
-    API->>Stripe: Create Payment Intent / Checkout Session
-    Stripe-->>Web: Redirect to checkout
-    Client->>Stripe: Pay (test card in dev)
-    Stripe->>API: Webhook payment_intent.succeeded
-    API->>DB: Mark milestone paid, advance stage
-    API-->>Web: Updated project state
-```
-
-**Rules:**
-
-- Milestones defined in accepted proposal (e.g. 30% / 40% / 30%).
-- Server only advances stage after **approval + successful payment** (where payment gate applies).
-- Stripe webhooks are the source of truth for payment status.
-
----
-
-## Flow 6 — Review (after completion)
-
-1. Project marked **Completion** and final milestone paid.
-2. Client submits **star rating + written review**.
-3. Review appears on **designer public profile**.
-4. Designer’s average rating updates.
-
----
-
-## Dual-role flow
-
-```mermaid
-flowchart TD
-    Login[User logs in] --> Check{Roles enabled?}
-    Check -->|Client only| CD[Client Dashboard]
-    Check -->|Designer only| DD[Designer Dashboard]
-    Check -->|Both| Switch[Role switcher in header]
-    Switch --> CD
-    Switch --> DD
-```
-
-- One **User** record with flags: `isClient`, `isDesigner`.
-- **Designer profile** created when user enables designer role.
-- API middleware checks role on every protected route.
-
----
-
-## Software modules (logical)
-
-| Module | Client features | Designer features |
-|--------|-----------------|-------------------|
-| **Auth** | Register, login, role switch | Same |
-| **Discovery** | Browse, filter, view detail | Public portfolio view |
-| **Moodboards** | CRUD boards, save items | — |
-| **Hiring** | Create request, accept proposal | Submit proposal |
-| **Projects** | Approve stages, pay, message | Upload deliverables, message |
-| **Payments** | Pay milestones | View payment status |
-| **Reviews** | Submit review | View on profile |
-| **Notifications** | In-app + email | In-app + email |
+After **Completion** and final payment, client submits rating + review on designer profile.
 
 ---
 
 ## Technology stack
 
-| Layer | Choice |
-|-------|--------|
+| Layer | Technology |
+|-------|------------|
 | Frontend | Next.js 14, TypeScript, Tailwind — **AWS Amplify** |
-| Backend | Express, TypeScript — **AWS ECS Fargate** + ALB |
-| Database | **MongoDB Atlas** |
+| Backend | **ASP.NET Core 8 Web API** — **ECS Fargate** + ALB |
+| Database | **Amazon RDS PostgreSQL** + **EF Core 8** |
 | Files | **S3** + **CloudFront** |
-| Auth | JWT + **AWS Cognito** |
+| Auth | **AWS Cognito** + JWT claims (client/designer roles) |
 | Email | **AWS SES** |
 | Payments | **Stripe** |
-| Secrets / logs | **Secrets Manager**, **CloudWatch** |
-| CI/CD | **GitHub Actions** |
+| Ops | **Secrets Manager**, **CloudWatch**, **GitHub Actions** → ECR |
 
-Details: [Proposal/07-resource-requirements.md](Proposal/07-resource-requirements.md) and [Proposal/diagrams/architecture-diagrams.md](Proposal/diagrams/architecture-diagrams.md).
+Details: [Proposal/07-resource-requirements.md](Proposal/07-resource-requirements.md), [Proposal/supporting/technology-justification.md](Proposal/supporting/technology-justification.md).
 
 ---
 
-## Main data relationships (simplified)
+## Repository structure (planned)
+
+```
+Inside/
+├── src/
+│   ├── Inside.Api/
+│   ├── Inside.Application/    # BriefService, FitScoringService
+│   ├── Inside.Domain/
+│   └── Inside.Infrastructure/ # EF Core, S3, Stripe
+├── web/                       # Next.js
+└── docs/
+```
+
+---
+
+## Software modules
+
+| Module | Responsibility |
+|--------|----------------|
+| Auth | Cognito, dual-role, JWT |
+| Discovery | Portfolio feed, filters |
+| Moodboard + Brief | Boards, items, brief generation |
+| Fit scoring | Rank designers for moodboard |
+| Hiring | Requests, proposals, accept |
+| Project workflow | Stages, deliverables, approvals |
+| Payments | Stripe, milestone ledger |
+| Notifications | In-app + SES |
+| Reviews | Post-completion ratings |
+
+---
+
+## Data model (simplified)
 
 ```mermaid
 erDiagram
-    User ||--o| DesignerProfile : may_have
+    User ||--o| DesignerProfile : has
     User ||--o{ Moodboard : owns
+    Moodboard ||--o| StructuredBrief : generates
     DesignerProfile ||--o{ PortfolioProject : publishes
     User ||--o{ ProjectRequest : creates
     ProjectRequest ||--o{ Proposal : receives
-    Proposal ||--|| Project : becomes
-    Project ||--o{ Message : has
+    Proposal ||--|| Project : creates
+    Project ||--o{ ProjectStage : has
     Project ||--o{ MilestonePayment : has
     Project ||--o| Review : earns
 ```
 
-Full detail: [Proposal/supporting/system-design.md](Proposal/supporting/system-design.md).
-
 ---
 
-## MVP boundary (what you build first)
+## MVP vs Phase 2
 
-**In scope:** Flows 1–6 above with HTTP messaging (refresh/polling), 3 milestones, Stripe test mode, dual-role, in-app notifications.
+| MVP | Phase 2 |
+|-----|---------|
+| Rule-based brief + fit score | ML / Rekognition labels |
+| HTTP messaging (polling) | WebSocket |
+| Stripe test mode | Stripe Connect payouts |
+| Stage tabs + file approval | Deliverable annotations |
 
-**Later (Phase 2):** Real-time WebSocket chat, Stripe Connect payouts to designers, calendar scheduling, admin panel.
-
-Detail: [Proposal/supporting/scope-and-limitations.md](Proposal/supporting/scope-and-limitations.md).
+See [Proposal/supporting/scope-and-limitations.md](Proposal/supporting/scope-and-limitations.md).
 
 ---
 
 ## Implementation order
 
-1. Auth + dual-role  
-2. Portfolio + discovery feed  
-3. Moodboards  
-4. Requests + proposals  
-5. Project workspace + stages  
-6. S3 deliverables + messaging  
-7. Stripe milestones  
-8. Reviews + notifications  
-9. Deploy AWS + documentation  
+1. Auth + dual-role (Cognito)  
+2. Portfolio + discovery  
+3. Moodboards + **brief generation**  
+4. **Fit scoring** + requests/proposals  
+5. Stage workspace + S3 deliverables  
+6. Stripe ledger  
+7. Reviews + notifications  
+8. AWS deployment + evaluation  
 
 Matches [Proposal/10-project-plan.md](Proposal/10-project-plan.md).

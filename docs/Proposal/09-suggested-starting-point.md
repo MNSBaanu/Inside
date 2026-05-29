@@ -8,7 +8,7 @@ The following actions will be undertaken first to begin work on Inside:
 
 3. **System design** — Finalise ER diagram, API outline, and wireframes; complete architecture diagrams in [diagrams/](diagrams/) per [diagrams-and-charts-guide.md](diagrams-and-charts-guide.md).
 
-4. **Environment setup** — Create AWS, MongoDB Atlas, Stripe, and GitHub accounts; scaffold `client/` (Next.js) and `server/` (Express) repositories.
+4. **Environment setup** — Create AWS (Amplify, ECS, RDS PostgreSQL, Cognito, S3), Stripe, and GitHub accounts; scaffold `src/Inside.*` (.NET solution) and `web/` (Next.js).
 
 5. **Authentication and role management** — Implement registration, login, JWT/Cognito, and dual-role switching as the foundation for all other modules.
 

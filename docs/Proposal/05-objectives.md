@@ -3,37 +3,40 @@
 ## General objectives (academic)
 
 1. Conduct a critical review of the interior design service domain and existing digital platforms.
-2. Critically study technologies suitable for a modern, role-based web application deployed on the cloud.
-3. Design and develop a system that addresses the identified problem.
-4. Evaluate the proposed system against defined criteria.
+2. Critically study technologies suitable for a cloud-deployed, role-based application (.NET, AWS, Stripe).
+3. Design and develop a system that addresses the identified problem with demonstrable innovation.
+4. Evaluate brief quality, fit scoring usefulness, and stage-gated workflow effectiveness.
 5. Prepare comprehensive final documentation.
 
 ## Specific objectives (Inside)
 
-6. Implement **authentication** with a dual-role model (client and designer on one account).
+6. Implement **authentication** with dual-role accounts (AWS Cognito).
 
-7. Implement **portfolio-first discovery** with filtering by design style, room type, and budget.
+7. Implement **portfolio-first discovery** with style, room type, and budget filters.
 
-8. Implement **moodboards** so clients can curate visual briefs and attach them to project requests.
+8. Implement **moodboards** and **structured brief generation** (FR-BRIEF) from saved portfolio items.
 
-9. Implement **project requests and proposals** for open marketplace hiring and direct portfolio hire.
+9. Implement **designer–client fit scoring** (FR-FIT) based on visual portfolio compatibility.
 
-10. Implement a **structured project workspace** with stages (Proposal → Concept → Design → Revision → Completion), messaging, and S3 file sharing.
+10. Implement **project requests and proposals** for marketplace hiring.
 
-11. Implement **milestone-based payments** using Stripe, released upon client approval at each stage.
+11. Implement a **stage-gated project workspace** (Proposal → Concept → Design → Revision → Completion) with S3 deliverables and per-stage approval.
 
-12. Implement **reviews, notifications**, and designer **availability** indicators.
+12. Implement **milestone payments** and a **transparent ledger** using Stripe webhooks.
 
-13. Deploy the application on **AWS** (Amplify, ECS, S3, CloudFront, SES, Cognito, CloudWatch) with CI/CD from GitHub.
+13. Implement reviews, notifications (in-app + SES), and designer availability.
+
+14. Deploy on **AWS** (Amplify, ECS, RDS, S3, CloudFront) with CI/CD.
 
 ## Traceability
 
-| Objective | System flow (see [SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md)) |
-|-----------|---------------------------------------------------------------|
-| 7–8 | Flow 1 — Discover & moodboard |
-| 9 | Flow 2–3 — Hire via request or direct |
-| 10 | Flow 4 — Project delivery |
-| 11 | Flow 5 — Milestone payment |
-| 12 | Flow 6 — Review |
+| Objective | Flow ([SYSTEM-OVERVIEW.md](../SYSTEM-OVERVIEW.md)) |
+|-----------|-----------------------------------------------------|
+| 7–8 | Discovery, moodboard, brief |
+| 9 | Fit scoring |
+| 10 | Hire (request + proposals) |
+| 11 | Stage workspace |
+| 12 | Milestone ledger |
+| 13 | Review |
 
-Functional detail: [supporting/functional-requirements.md](supporting/functional-requirements.md).
+Detail: [supporting/functional-requirements.md](supporting/functional-requirements.md) · Evaluation: [supporting/evaluation-plan.md](supporting/evaluation-plan.md).

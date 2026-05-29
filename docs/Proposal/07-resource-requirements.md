@@ -4,49 +4,49 @@
 
 | Item | Specification |
 |------|---------------|
-| Development laptop/PC | Minimum 8 GB RAM, 256 GB SSD recommended |
-| Internet | Stable broadband for AWS, MongoDB Atlas, and Stripe |
-| Optional | Second monitor for UI development and documentation |
+| Development laptop/PC | Minimum 16 GB RAM recommended (Visual Studio + Docker + Next.js) |
+| Internet | Stable broadband for AWS, RDS, and Stripe |
+| Optional | Second monitor for UI and API development |
 
 ## Software
 
 | Category | Tools / technologies |
 |----------|----------------------|
 | Frontend | Next.js 14, React, TypeScript, Tailwind CSS |
-| Backend | Node.js 20 LTS, Express, TypeScript |
-| Database | MongoDB Atlas, MongoDB Compass |
-| Cloud (AWS) | Amplify, ECS Fargate, S3, CloudFront, SES, Cognito, Secrets Manager, CloudWatch, IAM |
+| Backend | **.NET 8 SDK**, **ASP.NET Core 8 Web API**, C# |
+| ORM / database | **Entity Framework Core 8**, **Amazon RDS PostgreSQL**, pgAdmin or DBeaver |
+| IDE | **Visual Studio 2022** or VS Code + C# Dev Kit |
+| Cloud (AWS) | Amplify, ECS Fargate, ECR, ALB, RDS, S3, CloudFront, Cognito, SES, Secrets Manager, CloudWatch, IAM |
 | Payments | Stripe (test mode), Stripe CLI |
-| Dev tools | Visual Studio Code, Git, GitHub, GitHub Actions |
-| API testing | Postman or Insomnia |
-| Diagrams | draw.io / diagrams.net, Figma (wireframes) |
-| Container (optional) | Docker Desktop (ECS local parity) |
+| DevOps | Git, GitHub, GitHub Actions, Docker Desktop |
+| API testing | Postman or Swagger UI (built-in) |
+| Diagrams | draw.io, Figma |
 
 ## Cloud backup and recovery
 
-- **MongoDB Atlas** — automated backups on cluster
-- **Amazon S3** — versioning enabled on deliverables bucket
-- **GitHub** — source code repository as system of record
+- **Amazon RDS** — automated backups and point-in-time recovery (configure retention in AWS Console)
+- **Amazon S3** — versioning on deliverables and portfolio buckets
+- **GitHub** — source code as system of record
 
 ## Third-party services
 
 | Service | Purpose |
 |---------|---------|
-| MongoDB Atlas | Primary database (M0 free tier) |
+| Amazon RDS (PostgreSQL) | Primary relational database |
 | Stripe | Milestone payments and webhooks |
-| GitHub | Version control and CI/CD to AWS |
+| GitHub | Version control and CI/CD to ECR/ECS |
 
 ## Estimated cost
 
 | Item | Cost |
 |------|------|
-| Development tools | $0 (open source) |
-| AWS + Atlas + Stripe (development) | $0–30/month within free tiers |
-| Domain name (optional) | ~$12/year |
+| .NET SDK, VS Community, Next.js | $0 |
+| AWS + RDS + Stripe (development) | $0–40/month within free/low tiers |
+| Domain (optional) | ~$12/year |
 | **Total** | Minimal for academic project |
 
 ## Human resources
 
-- Student developer (full-stack)
+- Student developer (full-stack: C# API + Next.js)
 - Academic supervisor
-- Optional: 2–3 peers for user acceptance testing
+- Optional: 2–3 peers for user acceptance testing (brief clarity, fit score usefulness, stage workflow)

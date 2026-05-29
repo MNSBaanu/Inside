@@ -8,7 +8,8 @@
 | 2 | **Client dashboard** — moodboards, project requests, active projects, milestone payments, reviews |
 | 3 | **Designer dashboard** — portfolio management, proposals, project workspace, availability |
 | 4 | **Discovery experience** — public portfolio feed with filters |
-| 5 | **REST API** — Express backend with documented endpoints |
+| 4b | **Structured brief** and **designer fit scoring** modules |
+| 5 | **REST API** — ASP.NET Core 8 backend with OpenAPI documentation |
 | 6 | **Payment integration** — Stripe milestone flow with webhook handling |
 | 7 | **File storage** — AWS S3 and CloudFront for portfolio and deliverable media |
 

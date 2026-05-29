@@ -47,14 +47,14 @@ Reference the lecturer’s samples in [Sample/](Sample/) for layout style.
 **Include:**
 
 - **Actors:** Client, Designer, System Administrator (optional)
-- **External systems:** Stripe, AWS S3, AWS SES (email), MongoDB Atlas
+- **External systems:** Stripe, AWS S3, AWS SES, Amazon RDS PostgreSQL, Cognito
 - **Central box:** Inside Platform
 
 **Layout:**
 
 ```
         [Client] ----\
-                      ---> [ Inside Platform ] ---> [ MongoDB Atlas ]
+                      ---> [ Inside Platform ] ---> [ Amazon RDS ]
         [Designer] ---/              |
                                      +---> [ AWS S3 ]
                                      +---> [ Stripe ]

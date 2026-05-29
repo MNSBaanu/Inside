@@ -23,7 +23,8 @@
 | 4 | Database/API design, AWS baseline (Amplify, ECS, S3, Atlas) |
 | 5 | Auth, dual-role, user profiles |
 | 6–7 | Portfolio CRUD, S3 uploads, discovery feed |
-| 8 | Moodboards, project requests, proposals |
+| 7–8 | Moodboards, **structured brief** (FR-BRIEF), **fit scoring** (FR-FIT) |
+| 8 | Project requests, proposals |
 | 9–10 | Project workspace, stages, messaging, deliverables |
 | 10–11 | Stripe milestones, SES notifications, reviews |
 | 12 | Integration testing, UAT, bug fixes |
@@ -86,7 +87,8 @@ Full instructions: [diagrams-and-charts-guide.md](diagrams-and-charts-guide.md) 
 | Database & API design + AWS setup | 4 | 1 |
 | Auth + dual-role | 5 | 1 |
 | Portfolio + discovery feed | 6 | 2 |
-| Moodboards + project requests | 7 | 1 |
+| Moodboards + brief + fit score | 7 | 1 |
+| Project requests + proposals | 8 | 1 |
 | Proposals + project creation | 8 | 1 |
 | Project workspace + messaging | 9 | 2 |
 | Stripe + S3 deliverables | 10 | 2 |
