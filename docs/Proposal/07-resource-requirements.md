@@ -4,12 +4,14 @@
 
 * Development laptop or desktop computer with a minimum of 8 GB RAM (16 GB recommended)
 * Stable internet connection for cloud services and online development tools
+* Android emulator and/or physical device for mobile testing; optional iOS device or Mac for iOS builds
 
 ### Software
 
 | Category          | Software / Technology                            |
 | ----------------- | ------------------------------------------------ |
-| Frontend          | Next.js, React, TypeScript, Tailwind CSS         |
+| Web Frontend      | Next.js, React, TypeScript, Tailwind CSS         |
+| Mobile Frontend   | React Native, Expo, TypeScript                   |
 | Backend           | ASP.NET Core 8 Web API, C#                       |
 | Database          | PostgreSQL                                       |
 | Cloud Services    | AWS (Hosting, Database, Storage, Authentication) |

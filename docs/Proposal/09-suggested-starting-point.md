@@ -6,8 +6,8 @@
 
 3. **System Analysis and Design** – Design the system architecture, database structure, user interfaces, and key workflows based on the identified requirements.
 
-4. **Development Environment Setup** – Configure the development environment, version control repository, cloud services, and other tools required for implementation.
+4. **Development Environment Setup** – Configure the development environment, version control repository, cloud services, web and mobile project scaffolding, and other tools required for implementation.
 
-5. **Core System Development** – Begin implementation with authentication and user management, followed by the development of the main system functionalities.
+5. **Core System Development** – Begin implementation with authentication and user management, followed by the main system functionalities on the **shared API**, then the **Next.js web client** and **React Native mobile client**.
 
 6. **Testing and Evaluation Planning** – Define the testing approach and evaluation criteria to be used throughout the development process.

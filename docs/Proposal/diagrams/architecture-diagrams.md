@@ -1,6 +1,6 @@
 # Architecture Diagrams
 
-**Stack:** Next.js + **ASP.NET Core 8 Web API** + relational database on **AWS** + **Stripe**.
+**Stack:** Next.js + **React Native (Expo)** + **ASP.NET Core 8 Web API** + relational database on **AWS** + **Stripe**.
 
 | Figure | Export file |
 |--------|-------------|
@@ -17,7 +17,8 @@ Export via [mermaid.live](https://mermaid.live) → PNG (white background).
 flowchart TB
     subgraph presentation ["PRESENTATION TIER"]
         Browser["Web Browser\n(Client / Designer)"]
-        NextJS["Next.js\nAWS"]
+        NextJS["Next.js Web App\nAWS"]
+        Mobile["React Native Expo\niOS / Android"]
     end
     subgraph application ["APPLICATION TIER"]
         API["ASP.NET Core 8 Web API\nAWS"]
@@ -28,6 +29,7 @@ flowchart TB
         Stripe["Stripe API"]
     end
     Browser -->|"HTTPS"| NextJS
+    Mobile -->|"HTTPS REST JSON"| API
     NextJS -->|"HTTPS REST JSON"| API
     API -->|"EF Core"| RDS
     API --> S3
@@ -37,10 +39,10 @@ flowchart TB
 ### ASCII layout
 
 ```
-[ Browser ] ──► [ Next.js on AWS ]
+[ Browser ] ──► [ Next.js Web App ]
                       │
-                      ▼
-              [ ASP.NET Core 8 Web API ]
+[ Mobile App ] ───────┼──► [ ASP.NET Core 8 Web API ]
+                      │
                  │         │         │
                  ▼         ▼         ▼
          [ Database ]  [ Storage ]  [ Stripe ]
@@ -50,8 +52,9 @@ flowchart TB
 
 | Tier | Technology | Responsibility |
 |------|------------|----------------|
-| Presentation | Next.js | UI, discovery, dashboards, project workspace |
-| Application | ASP.NET Core 8 | Auth, workflow, payments, notifications |
+| Presentation | Next.js | Web UI — discovery, dashboards, detailed project workspace |
+| Presentation | React Native (Expo) | Mobile UI — notifications, messaging, progress, approvals on the go |
+| Application | ASP.NET Core 8 | Auth, workflow, payments, notifications (shared API) |
 | Data | Relational DB on AWS | Users, projects, stages, payment records |
 | Data | Object storage | Portfolio images and deliverables |
 | Data | Stripe | Secure online payments |
@@ -67,6 +70,8 @@ flowchart TB
         Designer["Designer"]
     end
     subgraph presentation ["PRESENTATION TIER"]
+        Web["Next.js Web App"]
+        Mobile["React Native Mobile App"]
         P1["Auth / Dashboards"]
         P2["Discovery"]
         P3["Project Requests"]
@@ -90,9 +95,11 @@ flowchart TB
         D3["Stripe"]
         D4["Auth + Email"]
     end
-    Client --> presentation
-    Designer --> presentation
-    presentation --> ALB
+    Client --> Web & Mobile
+    Designer --> Web & Mobile
+    Web --> P1 & P2 & P3 & P4 & P5
+    Mobile --> P1 & P3 & P4 & P5
+    P1 & P2 & P3 & P4 & P5 --> ALB
     S1 & S2 & S3 & S4 & S5 & S6 --> D1
     S5 --> D3
     S6 --> D4
@@ -118,11 +125,13 @@ flowchart TB
 ```mermaid
 sequenceDiagram
     participant C as Client
+    participant Web as Web / Mobile App
     participant API as ASP.NET Core API
     participant DB as Database
     participant ST as Stripe
 
-    C->>API: Approve progress + pay stage
+    C->>Web: Approve progress + pay stage
+    Web->>API: Submit approval + payment request
     API->>DB: Validate stage + record payment intent
     API->>ST: Create Checkout Session
     ST-->>C: Payment UI
@@ -140,7 +149,8 @@ src/
 ├── Application/      # Business services
 ├── Domain/           # Entities, enums
 └── Infrastructure/   # EF Core, storage, Stripe, auth
-web/                  # Next.js client
+web/                  # Next.js web client
+mobile/               # React Native (Expo) app
 ```
 
 ---

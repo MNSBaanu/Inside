@@ -2,10 +2,12 @@
 
 ## Working system
 
-- A **web-based interior design service platform** deployed on **AWS**, comprising a Next.js client application and an ASP.NET Core 8 REST API.
-- **Client area** — discovery, project requests, active commissions, payments, and account management.
-- **Designer area** — published work, responses to requests, active commissions, and account management.
-- **Shared project workspace** for staged delivery, feedback, messaging, and notifications.
+- A **web-based interior design service platform** deployed on **AWS**, comprising a Next.js web application and an ASP.NET Core 8 REST API.
+- A **React Native (Expo) mobile application** for **iOS and Android**, using the same API for clients and designers on the go.
+- **Web client area** — full discovery, project requests, active commissions, payments, and account management on larger screens.
+- **Mobile client area** — notifications, messaging, project updates, approvals, and core account actions from anywhere.
+- **Designer area** (web and mobile) — published work, responses to requests, active commissions, and account management.
+- **Shared project workspace** for staged delivery, feedback, messaging, and notifications across web and mobile.
 - **Secure payment integration** with **Stripe**, linked to client approval of progress.
 
 ## Documentation

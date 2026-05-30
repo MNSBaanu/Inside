@@ -10,6 +10,10 @@ Stripe (2024) *Payments Documentation*. Available at: https://stripe.com/docs/pa
 
 Vercel (2024) *Next.js Documentation*. Available at: https://nextjs.org/docs (Accessed: 29 May 2026).
 
+Expo (2024) *Expo Documentation*. Available at: https://docs.expo.dev/ (Accessed: 29 May 2026).
+
+Meta (2024) *React Native Documentation*. Available at: https://reactnative.dev/docs/getting-started (Accessed: 29 May 2026).
+
 Houzz (2024) *Houzz Platform*. Available at: https://www.houzz.com/ (Accessed: 29 May 2026).
 
 Upwork (2024) *How Freelance Marketplaces Connect Clients and Professionals*. Available at: https://www.upwork.com/ (Accessed: 29 May 2026).
