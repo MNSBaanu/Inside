@@ -16,5 +16,4 @@
 - **Final report / dissertation** including evaluation of the implemented system.
 - **Test report** — unit, integration, and user acceptance results.
 
-## Supporting artefacts
 

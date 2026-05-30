@@ -1,25 +1,25 @@
-# Objectives
+## Objectives
 
-- Conduct a critical review of the interior design service domain and how existing digital platforms support client–designer engagement from hiring through payment.
+* Conduct a critical review of the interior design service domain and identify limitations in existing digital platforms used for designer discovery, project interaction, and payment management.
 
-- Critically study technologies suitable for a cloud-deployed web application, including **Next.js**, **ASP.NET Core 8**, **AWS**, relational data storage, and **Stripe**.
+* Critically study technologies suitable for developing a modern web-based platform, including Next.js, ASP.NET Core 8, AWS cloud services, relational databases, and Stripe payment integration.
 
-- Design and develop a web-based interior design service platform that connects clients and interior designers through visual-led discovery, project requests, a shared project workspace, and secure payments tied to client approval.
+* Design and develop an Interior Design Service Platform that enables clients and designers to interact through project requests, proposal management, communication, project tracking, and secure payment handling.
 
-- Evaluate the proposed system against agreed requirements and user-centred criteria through testing and structured feedback.
+* Evaluate the proposed system against functional and non-functional requirements through testing and user feedback.
 
-- Prepare comprehensive final documentation, including technical documentation, a user guide, and the dissertation report.
+* Prepare comprehensive project documentation, including technical documentation, user documentation, and the final dissertation report.
 
-**Specific development objectives**
+### Specific Development Objectives
 
-- Implement secure registration and login with separate client and designer access to appropriate features.
+* Implement secure authentication and role-based access for clients, designers, and administrators.
 
-- Implement browsing and search so clients can explore designers’ published completed work.
+* Implement designer discovery and portfolio management functionalities to support informed hiring decisions.
 
-- Implement project requests, designer responses, and client selection to commence an active commission.
+* Implement project request and proposal management features to facilitate client–designer engagement.
 
-- Implement a shared project workspace for staged delivery, feedback, messaging, and notifications.
+* Implement communication, project tracking, feedback, and notification functionalities to support project progression.
 
-- Implement secure online payments linked to client approval of progress, integrated with **Stripe**.
+* Implement milestone-based payment and payout mechanisms using Stripe.
 
-- Deploy the working application on **AWS** and document the architecture and APIs.
+* Implement review and rating functionalities to support trust and transparency within the platform.

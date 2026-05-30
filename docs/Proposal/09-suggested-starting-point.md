@@ -1,15 +1,13 @@
-# Suggested Starting Point
+## Suggested Starting Point
 
-1. **Requirements gathering** — Confirm scope with the supervisor against the approved topic and document functional and non-functional needs.
+1. **Requirements Gathering** – Identify and document the functional and non-functional requirements of the proposed system through domain analysis and discussions with the supervisor.
 
-2. **Domain research** — Review how existing services handle interior design or similar creative commissions online; record findings for the critical review objective.
+2. **Domain and Technology Research** – Study existing interior design service platforms and investigate suitable technologies, tools, and cloud services required for system development.
 
-3. **System design** — Produce data and API outlines, wireframes for main screens, and export architecture diagram PNGs for the proposal and report.
+3. **System Analysis and Design** – Design the system architecture, database structure, user interfaces, and key workflows based on the identified requirements.
 
-4. **Environment setup** — Create **AWS** and **Stripe** test accounts, initialise the Git repository, and scaffold the Next.js front end and ASP.NET Core API solution.
+4. **Development Environment Setup** – Configure the development environment, version control repository, cloud services, and other tools required for implementation.
 
-5. **Authentication** — Implement registration and login first, as later modules depend on secure, role-aware access.
+5. **Core System Development** – Begin implementation with authentication and user management, followed by the development of the main system functionalities.
 
-6. **Iterative development** — Follow the project plan: discovery and profiles, then requests and responses, then the project workspace and payments, then testing and deployment.
-
-7. **Early validation** — Review core user journeys with the supervisor before full integration testing.
+6. **Testing and Evaluation Planning** – Define the testing approach and evaluation criteria to be used throughout the development process.
