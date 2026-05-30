@@ -14,6 +14,6 @@ Expo (2024) *Expo Documentation*. Available at: https://docs.expo.dev/ (Accessed
 
 Meta (2024) *React Native Documentation*. Available at: https://reactnative.dev/docs/getting-started (Accessed: 29 May 2026).
 
-Houzz (2024) *Houzz Platform*. Available at: https://www.houzz.com/ (Accessed: 29 May 2026).
+Decorilla (2024) *Online Interior Design Service*. Available at: https://www.decorilla.com/ (Accessed: 29 May 2026).
 
-Upwork (2024) *How Freelance Marketplaces Connect Clients and Professionals*. Available at: https://www.upwork.com/ (Accessed: 29 May 2026).
+Havenly (2024) *Online Interior Design and Home Decorating*. Available at: https://havenly.com/ (Accessed: 29 May 2026).
