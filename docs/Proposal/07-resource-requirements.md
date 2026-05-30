@@ -13,11 +13,11 @@
 | Web Frontend      | Next.js, React, TypeScript, Tailwind CSS         |
 | Mobile Frontend   | React Native, Expo, TypeScript                   |
 | Backend           | ASP.NET Core 8 Web API, C#                       |
-| Database          | PostgreSQL                                       |
-| Cloud Services    | AWS (Hosting, Database, Storage, Authentication) |
+| Database          | DynamoDB                                    |
+| Cloud Services    | AWS (Hosting, Storage, Authentication) |
 | Payment Gateway   | Stripe                                           |
 | Development Tools | Visual Studio 2022 / VS Code, Git, GitHub        |
-| Testing Tools     | Postman, Swagger, xUnit                          |
+| Testing Tools     | Postman, Swagger            |
 | Design Tools      | Figma, draw.io                                   |
 
 ### Other Requirements

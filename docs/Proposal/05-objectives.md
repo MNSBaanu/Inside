@@ -1,27 +1,31 @@
 ## Objectives
 
-* Conduct a critical review of the interior design service domain and identify limitations in existing digital platforms used for designer discovery, project interaction, and payment management.
+* Conduct a critical review of the interior design service domain and identify limitations in existing digital platforms (e.g. Havenly, Decorilla, Houzz, Fiverr, Behance) used for designer discovery, project interaction, and payment management.
 
 * Critically study technologies suitable for developing a modern web and mobile platform, including Next.js, React Native (Expo), ASP.NET Core 8, AWS cloud services, relational databases, and Stripe payment integration.
 
-* Design and develop an Interior Design Service Platform that enables clients and designers to interact through project requests, proposal management, communication, project tracking, and secure payment handling on **web and mobile**.
+* Design and develop an Interior Design Service Platform that enables clients and designers to interact through portfolio-led discovery, moodboards, structured briefs, fit scoring, project requests, proposal comparison, stage-gated collaboration, and secure milestone payments on **web and mobile**.
 
-* Evaluate the proposed system against functional and non-functional requirements through testing and user feedback.
+* Evaluate the proposed system against functional and non-functional requirements through testing and user feedback, including brief clarity, fit score usefulness, and stage-gated workflow effectiveness.
 
 * Prepare comprehensive project documentation, including technical documentation, user documentation, and the final dissertation report.
 
 ### Specific Development Objectives
 
-* Implement secure authentication and role-based access for clients, designers, and administrators.
+* Implement secure authentication with **dual-role** access (client and designer) and separate dashboards per role.
 
-* Implement designer discovery and portfolio management functionalities to support informed hiring decisions.
+* Implement **portfolio-first discovery** with filtering by design style, room type, and budget band.
 
-* Implement project request and proposal management features to facilitate client–designer engagement.
+* Implement **moodboards** and **automatic structured brief generation** from saved portfolio projects.
 
-* Implement communication, project tracking, feedback, and notification functionalities to support project progression.
+* Implement **designer–client fit scoring** with a visible breakdown of style, room, and budget alignment.
 
-* Implement milestone-based payment and payout mechanisms using Stripe.
+* Implement project requests, designer proposals, and a **proposal comparison view** for client selection.
 
-* Implement review and rating functionalities to support trust and transparency within the platform.
+* Implement a **stage-gated project workspace** (proposal, concept, design, revision, completion) with deliverable upload, **version history**, client approval per stage, messaging, and notifications.
 
-* Develop a **React Native (Expo) mobile application** for clients and designers, consuming the same ASP.NET Core API as the web client, with core flows for discovery, project updates, messaging, notifications, and payment approval.
+* Implement **milestone payments** and a **transparent payment ledger** linked to stage approval, integrated with Stripe.
+
+* Implement designer **availability**, wishlist/saved items, and post-completion **reviews and ratings**.
+
+* Develop a **React Native (Expo) mobile application** consuming the same API, focused on notifications, messaging, project status, stage approval, and payment confirmation (web remains primary for full discovery and portfolio browsing).

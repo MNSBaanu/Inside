@@ -1,13 +1,13 @@
 ## Suggested Starting Point
 
-1. **Requirements Gathering** – Identify and document the functional and non-functional requirements of the proposed system through domain analysis and discussions with the supervisor.
+1. **Requirements gathering** – Document functional and non-functional requirements against the approved topic; define MVP vs Phase 2 (pin feedback, Rekognition, Stripe Connect).
 
-2. **Domain and Technology Research** – Study existing interior design and related platforms (e.g. Havenly, Decorilla, Houzz, Fiverr, Upwork, Behance) to compare discovery, collaboration, and payment models, then investigate suitable technologies, tools, and cloud services required for system development.
+2. **Domain and technology research** – Compare Havenly, Decorilla, Houzz, Fiverr, Upwork, and Behance for discovery, collaboration, and payment gaps; record findings for the critical review objective.
 
-3. **System Analysis and Design** – Design the system architecture, database structure, user interfaces, and key workflows based on the identified requirements.
+3. **System analysis and design** – Produce ER diagram, API outline, wireframes (discovery, moodboard, workspace, mobile home), and export architecture diagram PNGs.
 
-4. **Development Environment Setup** – Configure the development environment, version control repository, cloud services, web and mobile project scaffolding, and other tools required for implementation.
+4. **Development environment setup** – AWS, Stripe test mode, GitHub repo; scaffold ASP.NET Core API, Next.js web app, and Expo mobile app.
 
-5. **Core System Development** – Begin implementation with authentication and user management, followed by the main system functionalities on the **shared API**, then the **Next.js web client** and **React Native mobile client**.
+5. **Core system development** – Shared API first: auth and dual-role, then portfolios and discovery, moodboards and brief, fit scoring, requests and proposals, stage workspace, Stripe ledger; web leads each module, mobile follows for notifications, messages, approve, and pay.
 
-6. **Testing and Evaluation Planning** – Define the testing approach and evaluation criteria to be used throughout the development process.
+6. **Testing and evaluation planning** – Define test scenarios, UAT volunteers, and survey items for brief clarity, fit score, and stage workflow before Sprint 6 integration.

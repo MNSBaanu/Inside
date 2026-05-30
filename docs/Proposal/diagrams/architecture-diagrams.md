@@ -73,21 +73,24 @@ flowchart TB
         Web["Next.js Web App"]
         Mobile["React Native Mobile App"]
         P1["Auth / Dashboards"]
-        P2["Discovery"]
-        P3["Project Requests"]
-        P4["Project Workspace"]
-        P5["Payments"]
+        P2["Discovery / Moodboards"]
+        P3["Brief / Fit Score"]
+        P4["Requests / Proposals"]
+        P5["Project Workspace"]
+        P6["Payments / Ledger"]
     end
     subgraph application ["APPLICATION TIER"]
         ALB["Load Balancer"]
         S1["Auth Service"]
-        S2["Profile / Portfolio Service"]
-        S3["Request / Proposal Service"]
-        S4["Project Workflow Service"]
-        S5["Payment Service"]
-        S6["Notification Service"]
-        S7["File Upload Service"]
-        ALB --> S1 & S2 & S3 & S4 & S5 & S6 & S7
+        S2["Portfolio Service"]
+        S3["Moodboard + Brief Service"]
+        S4["Fit Scoring Service"]
+        S5["Request / Proposal Service"]
+        S6["Project Workflow Service"]
+        S7["Payment + Ledger Service"]
+        S8["Notification Service"]
+        S9["File Upload Service"]
+        ALB --> S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8 & S9
     end
     subgraph data ["DATA AND EXTERNAL"]
         D1[("Relational database")]
@@ -97,26 +100,28 @@ flowchart TB
     end
     Client --> Web & Mobile
     Designer --> Web & Mobile
-    Web --> P1 & P2 & P3 & P4 & P5
-    Mobile --> P1 & P3 & P4 & P5
-    P1 & P2 & P3 & P4 & P5 --> ALB
-    S1 & S2 & S3 & S4 & S5 & S6 --> D1
-    S5 --> D3
-    S6 --> D4
-    S7 --> D2
+    Web --> P1 & P2 & P3 & P4 & P5 & P6
+    Mobile --> P1 & P4 & P5 & P6
+    P1 & P2 & P3 & P4 & P5 & P6 --> ALB
+    S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8 --> D1
+    S7 --> D3
+    S8 --> D4
+    S9 --> D2
 ```
 
 ### Application services
 
 | Service | Responsibility |
 |---------|----------------|
-| Auth Service | Registration, login, role-based access |
-| Profile / Portfolio Service | Published work, discovery queries |
-| Request / Proposal Service | Project needs, designer responses, client selection |
-| Project Workflow Service | Staged delivery, feedback, approval of progress |
-| Payment Service | Stripe integration, payment records per project |
-| Notification Service | In-app alerts and email where required |
-| File Upload Service | Media upload for portfolios and deliverables |
+| Auth Service | Registration, login, dual-role access |
+| Portfolio Service | Case studies, discovery filters |
+| Moodboard + Brief Service | Saved projects, structured brief generation |
+| Fit Scoring Service | Designer ranking and score breakdown |
+| Request / Proposal Service | Requests, proposals, comparison |
+| Project Workflow Service | Stages, deliverables, version history, approval |
+| Payment + Ledger Service | Stripe milestones, payment audit trail |
+| Notification Service | In-app and push/email alerts |
+| File Upload Service | Portfolio and deliverable media |
 
 ---
 
@@ -159,4 +164,5 @@ mobile/               # React Native (Expo) app
 
 - [ ] `02-simple-architecture.png` — readable at A4 width
 - [ ] `03-detailed-architecture.png` — all service boxes legible
+- [ ] `07-gantt-chart.png` — readable at A4 width
 - [ ] Technology matches [07-resource-requirements.md](../07-resource-requirements.md)
