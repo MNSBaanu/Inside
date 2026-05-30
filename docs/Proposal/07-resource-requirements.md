@@ -10,7 +10,7 @@
 
 | Category          | Software / Technology                            |
 | ----------------- | ------------------------------------------------ |
-| Web Frontend      | Next.js, React, TypeScript, Tailwind CSS         |
+| Web Frontend      | Next.js, TypeScript, Tailwind CSS                |
 | Mobile Frontend   | React Native, Expo, TypeScript                   |
 | Backend           | ASP.NET Core 8 Web API, C#                       |
 | Database          | DynamoDB                                    |
