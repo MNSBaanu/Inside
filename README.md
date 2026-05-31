@@ -11,6 +11,7 @@
 
 | Content | Location |
 |---------|----------|
+| **User flows (web + mobile)** | [docs/Flow.md](docs/Flow.md) |
 | System flows | [docs/SYSTEM-OVERVIEW.md](docs/SYSTEM-OVERVIEW.md) |
 | Platform comparison | [docs/Proposal/02-background-and-motivation.md](docs/Proposal/02-background-and-motivation.md) |
 | Functional requirements | [docs/Proposal/06-proposed-solution.md](docs/Proposal/06-proposed-solution.md) |
