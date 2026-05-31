@@ -1,16 +1,16 @@
 # Architecture Diagrams
 
 **Project:** Inside — Interior Design Service Platform  
-**Stack:** Next.js + React Native (Expo) + ASP.NET Core 8 Web API + AWS (RDS PostgreSQL, S3, Cognito) + Stripe
+**Stack:** Next.js + React Native + **Node.js / NestJS** + **PostgreSQL (Prisma)** + **Cloudinary** + **Stripe** + Cloud Hosting + GitHub
 
 Match the **lecturer sample layout** ([Sample/](../Sample/)): Figure 1 = feature hub; Figure 2 = detailed three-tier.
 
-| Figure | Style (sample equivalent) | Export file |
-|--------|---------------------------|-------------|
-| 1 — System features hub | AHC TOURS hub-and-spoke | `01-feature-overview.png` |
-| 2 — Detailed architecture | Three-tier with modules | `02-detailed-architecture.png` |
+| Figure | Style (sample equivalent) | Export file | Source |
+|--------|---------------------------|-------------|--------|
+| 1 — System features hub | AHC TOURS hub-and-spoke | `01-feature-overview.png` | [Simple AD.drawio](Simple%20AD.drawio) |
+| 2 — Detailed architecture | Three-tier with modules | `02-detailed-architecture.png` | [Detailed AD.drawio](Detailed%20AD.drawio) |
 
-**Export:** Open [01-feature-hub.drawio](01-feature-hub.drawio) / [02-detailed-architecture.drawio](02-detailed-architecture.drawio) in [draw.io](https://app.diagrams.net) → File → Export as PNG (white background, 300 DPI). Or use Mermaid blocks below via [mermaid.live](https://mermaid.live).
+**Export:** Open the `.drawio` files in [draw.io](https://app.diagrams.net) or Canva (import PNG guide) → Export PNG (white background, 300 DPI). Or use Mermaid blocks below via [mermaid.live](https://mermaid.live).
 
 ---
 
@@ -78,15 +78,15 @@ Communication to application tier: **HTTPS / REST API (JSON)**
 | Client | Technology | Key features |
 |--------|------------|--------------|
 | **Client / Designer Web App** | Next.js (TypeScript, Tailwind) | Auth & dashboards · Portfolio discovery · Moodboards & brief · Fit scores · Requests & proposals · Project workspace · Milestone ledger · Multi-role switch |
-| **Mobile App** | React Native (Expo) — iOS / Android | Push notifications · Messaging · Stage approval · Payment confirmation · Project status · Multi-role switch |
+| **Mobile App** | React Native — iOS / Android | Push notifications · Messaging · Stage approval · Payment confirmation · Project status · Multi-role switch |
 
 ### 2. APPLICATION LAYER (Business Logic)
 
-**ASP.NET Core 8 Web API** on AWS (ECS Fargate + ALB)
+**Node.js + NestJS Web API** (cloud-hosted)
 
 | Module | Colour group | Responsibility |
 |--------|--------------|----------------|
-| Auth Module | Green | Cognito, JWT, dual-role (client/designer) |
+| Auth Module | Green | JWT, Passport, dual-role (client/designer) |
 | Moodboard + Brief Module | Green | Saved projects, structured brief generation |
 | Fit Scoring Module | Green | Designer ranking, score breakdown |
 | Request / Proposal Module | Green | Requests, proposals, comparison |
@@ -96,18 +96,22 @@ Communication to application tier: **HTTPS / REST API (JSON)**
 | Portfolio Module | Orange | Case studies, discovery filters |
 | User Module | Orange | Profiles, availability, reviews |
 
-**Middleware layer** (red box, spans all requests):
+**Middleware / guards layer** (red box, spans all requests):
 
-- JWT Authentication · Role Authorization · Input Validation · Error Handling · Logging  
+- JWT Authentication · Role Authorization · Input Validation (class-validator) · Error Handling · Logging  
 - Security / performance: CORS, Helmet, Rate Limiting
+
+**Data access:** Prisma ORM → PostgreSQL
 
 ### 3. DATA LAYER (Persistence)
 
 | Component | Contents |
 |-----------|----------|
-| **Amazon RDS PostgreSQL** (centre) | users, designer_profiles, portfolio_projects, moodboards, structured_briefs, project_requests, proposals, projects, project_stages, deliverables, milestone_payments, reviews, sessions |
-| **External Services** (left, dotted line) | **Stripe** — payment gateway · **AWS SES** — email · **AWS Cognito** — authentication |
-| **File Storage — Amazon S3** (right, dotted line) | Portfolio images · Deliverable files · QR / receipt assets · System logs · Backup files |
+| **PostgreSQL** (centre, via **Prisma ORM**) | users, designer_profiles, portfolio_projects, moodboards, structured_briefs, project_requests, proposals, projects, project_stages, deliverables, milestone_payments, reviews, sessions |
+| **External Services** (left, dotted line) | **Stripe** — payment gateway · **Email API** — transactional email · **Expo Push** — mobile notifications |
+| **Cloudinary** (right, dotted line) | Portfolio images · Deliverable files · Image transforms & CDN · Uploaded assets |
+
+**DevOps:** GitHub (source control + CI) · Cloud hosting (Next.js + NestJS + PostgreSQL)
 
 ### Mermaid (export fallback)
 
@@ -116,14 +120,14 @@ flowchart TB
     subgraph userLayer ["USER LAYER (Presentation)"]
         direction LR
         Web["Client / Designer Web App<br/>(Next.js)<br/>─────────────<br/>Auth & Dashboards<br/>Portfolio Discovery<br/>Moodboards & Brief<br/>Fit Scores<br/>Requests & Proposals<br/>Project Workspace<br/>Milestone Ledger"]
-        Mobile["Mobile App<br/>(React Native Expo)<br/>─────────────<br/>Push Notifications<br/>Messaging<br/>Stage Approval<br/>Payment Confirmation<br/>Project Status"]
+        Mobile["Mobile App<br/>(React Native)<br/>─────────────<br/>Push Notifications<br/>Messaging<br/>Stage Approval<br/>Payment Confirmation<br/>Project Status"]
     end
 
     userLayer -->|"HTTPS / REST API (JSON)"| appLayer
 
     subgraph appLayer ["APPLICATION LAYER (Business Logic)"]
         direction TB
-        API["ASP.NET Core 8 Web API — AWS"]
+        API["Node.js + NestJS Web API — Cloud Hosted"]
         subgraph modules ["Functional Modules"]
             direction LR
             M1["Auth"]
@@ -136,25 +140,30 @@ flowchart TB
             M8["Portfolio"]
             M9["User"]
         end
-        MW["Middleware: JWT Auth · Role Auth · Validation · Error Handling · Logging · CORS · Rate Limiting"]
+        MW["Guards & Middleware: JWT · Roles · Validation · Error Handling · Logging · CORS · Rate Limiting"]
+        PR["Prisma ORM"]
         API --> modules
         modules --> MW
+        MW --> PR
     end
 
     appLayer --> dataLayer
 
     subgraph dataLayer ["DATA LAYER (Persistence)"]
         direction LR
-        Ext["External Services<br/>─────────────<br/>Stripe<br/>AWS SES<br/>AWS Cognito"]
-        DB[("Amazon RDS PostgreSQL<br/>─────────────<br/>users · portfolios · moodboards<br/>briefs · requests · proposals<br/>projects · stages · payments<br/>reviews · sessions")]
-        S3["Amazon S3<br/>─────────────<br/>Portfolio images<br/>Deliverables<br/>Uploaded assets<br/>System logs"]
+        Ext["External Services<br/>─────────────<br/>Stripe<br/>Email API<br/>Expo Push"]
+        DB[("PostgreSQL<br/>─────────────<br/>users · portfolios · moodboards<br/>briefs · requests · proposals<br/>projects · stages · payments<br/>reviews · sessions")]
+        CL["Cloudinary<br/>─────────────<br/>Portfolio images<br/>Deliverables<br/>Image transforms<br/>Uploaded assets"]
         Ext -.-> DB
-        DB -.-> S3
+        DB -.-> CL
     end
+
+    PR --> DB
 
     style Web fill:#dcfce7,stroke:#16a34a
     style Mobile fill:#f3e8ff,stroke:#9333ea
     style MW fill:#fecaca,stroke:#dc2626
+    style PR fill:#e0e7ff,stroke:#4338ca
     style M1 fill:#dcfce7,stroke:#16a34a
     style M2 fill:#dcfce7,stroke:#16a34a
     style M3 fill:#dcfce7,stroke:#16a34a
@@ -166,28 +175,30 @@ flowchart TB
     style M9 fill:#ffedd5,stroke:#ea580c
     style DB fill:#e9d5ff,stroke:#9333ea
     style Ext fill:#dbeafe,stroke:#2563eb
-    style S3 fill:#fef9c3,stroke:#ca8a04
+    style CL fill:#fef9c3,stroke:#ca8a04
 ```
 
 ### ASCII layout (sample-style)
 
 ```
 ┌──────────────────────── USER LAYER ────────────────────────────┐
-│  [ Client/Designer Web App — Next.js ]  [ Mobile — Expo ]      │
+│  [ Client/Designer Web App — Next.js ]  [ Mobile — React Native ]│
 └────────────────────────────┬───────────────────────────────────┘
                              │ HTTPS / REST API
 ┌──────────────────────── APPLICATION LAYER ─────────────────────┐
-│  ASP.NET Core 8 Web API                                          │
-│  [Auth][Brief][Fit][Request][Workflow][Payment][Notify]        │
-│  [Portfolio][User]                                               │
-│  [ Middleware: JWT · Roles · Validation · Logging · CORS ]     │
+│  Node.js + NestJS Web API                                          │
+│  [Auth][Brief][Fit][Request][Workflow][Payment][Notify]            │
+│  [Portfolio][User]                                                 │
+│  [ Guards: JWT · Roles · Validation · Logging · CORS ]             │
+│  [ Prisma ORM ]                                                    │
 └──────────────┬─────────────────────┬───────────────────────────┘
                │                     │
 ┌──────────────▼──────┐    ┌─────────▼─────────┐    ┌─────────────┐
-│ External Services   │    │ RDS PostgreSQL    │    │ Amazon S3   │
-│ Stripe · SES ·      │◄──►│ users, projects,  │◄──►│ images,     │
-│ Cognito             │    │ payments, …       │    │ deliverables│
+│ External Services   │    │ PostgreSQL        │    │ Cloudinary  │
+│ Stripe · Email ·    │◄──►│ users, projects,  │◄──►│ images,     │
+│ Expo Push           │    │ payments, …       │    │ deliverables│
 └─────────────────────┘    └───────────────────┘    └─────────────┘
+        GitHub (CI) · Cloud Hosting
 ```
 
 ---
@@ -198,13 +209,13 @@ flowchart TB
 sequenceDiagram
     participant C as Client
     participant App as Web / Mobile App
-    participant API as ASP.NET Core API
+    participant API as NestJS API
     participant DB as PostgreSQL
     participant ST as Stripe
 
     C->>App: Approve stage + pay milestone
     App->>API: Submit approval + payment request
-    API->>DB: Validate stage + record payment intent
+    API->>DB: Validate stage + record payment intent (Prisma)
     API->>ST: Create Checkout Session
     ST-->>C: Payment UI
     ST->>API: Webhook succeeded
@@ -213,16 +224,15 @@ sequenceDiagram
 
 ---
 
-## Solution structure (.NET)
+## Solution structure (NestJS monorepo)
 
 ```
-src/
-├── Api/              # Controllers, middleware
-├── Application/      # BriefService, FitScoringService, …
-├── Domain/           # Entities, enums
-└── Infrastructure/   # EF Core, S3, Stripe, Cognito
+api/                  # NestJS — controllers, modules, guards
+├── src/modules/      # auth, portfolio, moodboard, fit-scoring, …
+prisma/               # schema.prisma, migrations
 web/                  # Next.js web client
-mobile/               # React Native (Expo) app
+mobile/               # React Native app
+.github/              # GitHub Actions CI
 ```
 
 ---

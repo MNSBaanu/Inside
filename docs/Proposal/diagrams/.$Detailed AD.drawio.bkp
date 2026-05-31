@@ -1,0 +1,85 @@
+<mxfile host="app.diagrams.net" modified="2026-05-31T00:00:00.000Z" agent="Cursor" version="22.1.0">
+  <diagram name="Figure 2 - Detailed Architecture" id="detailed-arch">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Inside Interior Design Service Platform — Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="300" y="10" width="800" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="userLayer" value="USER LAYER (Presentation)" style="swimlane;startSize=30;fillColor=#F5F5F5;strokeColor=#666666;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="50" width="1320" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="web" value="Client / Designer Web App (Next.js)&#xa;─────────────────&#xa;Auth &amp; Dashboards&#xa;Portfolio Discovery&#xa;Moodboards &amp; Brief&#xa;Fit Scores&#xa;Requests &amp; Proposals&#xa;Project Workspace&#xa;Milestone Ledger" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;align=left;spacingLeft=10;fontSize=11;" vertex="1" parent="userLayer">
+          <mxGeometry x="30" y="45" width="280" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="mobile" value="Mobile App (React Native Expo)&#xa;─────────────────&#xa;Push Notifications&#xa;Messaging&#xa;Stage Approval&#xa;Payment Confirmation&#xa;Project Status&#xa;Multi-role Switch" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#9333EA;align=left;spacingLeft=10;fontSize=11;" vertex="1" parent="userLayer">
+          <mxGeometry x="340" y="45" width="260" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="comm" value="HTTPS / REST API (JSON)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=12;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="560" y="240" width="280" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="appLayer" value="APPLICATION LAYER (Business Logic)" style="swimlane;startSize=30;fillColor=#F5F5F5;strokeColor=#666666;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="270" width="1320" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="api" value="ASP.NET Core 8 Web API — AWS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0E7FF;strokeColor=#4338CA;fontStyle=1;fontSize=12;" vertex="1" parent="appLayer">
+          <mxGeometry x="30" y="40" width="1260" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="m1" value="Auth Module" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;fontSize=10;" vertex="1" parent="appLayer">
+          <mxGeometry x="30" y="90" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="m2" value="Moodboard + Brief" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;fontSize=10;" vertex="1" parent="appLayer">
+          <mxGeometry x="160" y="90" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="m3" value="Fit Scoring" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;fontSize=10;" vertex="1" parent="appLayer">
+          <mxGeometry x="290" y="90" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="m4" value="Request / Proposal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;fontSize=10;" vertex="1" parent="appLayer">
+          <mxGeometry x="420" y="90" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="m5" value="Project Workflow" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;fontSize=10;" vertex="1" parent="appLayer">
+          <mxGeometry x="550" y="90" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="m6" value="Payment + Ledger" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;fontSize=10;" vertex="1" parent="appLayer">
+          <mxGeometry x="680" y="90" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="m7" value="Notification" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#16A34A;fontSize=10;" vertex="1" parent="appLayer">
+          <mxGeometry x="810" y="90" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="m8" value="Portfolio Module" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEDD5;strokeColor=#EA580C;fontSize=10;" vertex="1" parent="appLayer">
+          <mxGeometry x="940" y="90" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="m9" value="User Module" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEDD5;strokeColor=#EA580C;fontSize=10;" vertex="1" parent="appLayer">
+          <mxGeometry x="1070" y="90" width="120" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="mw" value="Middleware Layer: JWT Authentication · Role Authorization · Input Validation · Error Handling · Logging · CORS · Helmet · Rate Limiting" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FECACA;strokeColor=#DC2626;fontSize=11;" vertex="1" parent="appLayer">
+          <mxGeometry x="30" y="160" width="1260" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="dataLayer" value="DATA LAYER (Persistence)" style="swimlane;startSize=30;fillColor=#F5F5F5;strokeColor=#666666;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="570" width="1320" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="ext" value="External Services&#xa;─────────────&#xa;Stripe (Payments)&#xa;AWS SES (Email)&#xa;AWS Cognito (Auth)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;align=left;spacingLeft=10;fontSize=11;" vertex="1" parent="dataLayer">
+          <mxGeometry x="30" y="45" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="db" value="Amazon RDS PostgreSQL&#xa;─────────────&#xa;users · designer_profiles · portfolio_projects&#xa;moodboards · structured_briefs · project_requests&#xa;proposals · projects · project_stages · deliverables&#xa;milestone_payments · reviews · sessions" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#E9D5FF;strokeColor=#9333EA;align=left;spacingLeft=10;fontSize=11;" vertex="1" parent="dataLayer">
+          <mxGeometry x="320" y="35" width="680" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="Amazon S3 — File Storage&#xa;─────────────&#xa;Portfolio images&#xa;Deliverable files&#xa;Uploaded assets&#xa;System logs · Backups" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF9C3;strokeColor=#CA8A04;align=left;spacingLeft=10;fontSize=11;" vertex="1" parent="dataLayer">
+          <mxGeometry x="1060" y="45" width="220" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;dashed=1;" edge="1" parent="1" source="ext" target="db">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;dashed=1;" edge="1" parent="1" source="db" target="s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;endArrow=classic;startArrow=classic;" edge="1" parent="1" source="userLayer" target="appLayer">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;endArrow=classic;startArrow=classic;" edge="1" parent="1" source="appLayer" target="dataLayer">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
