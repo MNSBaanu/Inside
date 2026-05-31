@@ -1,127 +1,194 @@
 # Architecture Diagrams
 
-**Stack:** Next.js + **React Native (Expo)** + **ASP.NET Core 8 Web API** + relational database on **AWS** + **Stripe**.
+**Project:** Inside — Interior Design Service Platform  
+**Stack:** Next.js + React Native (Expo) + ASP.NET Core 8 Web API + AWS (RDS PostgreSQL, S3, Cognito) + Stripe
 
-| Figure | Export file |
-|--------|-------------|
-| 1 — Simple three-tier | `02-simple-architecture.png` |
-| 2 — Detailed modules | `03-detailed-architecture.png` |
+Match the **lecturer sample layout** ([Sample/](../Sample/)): Figure 1 = feature hub; Figure 2 = detailed three-tier.
 
-Export via [mermaid.live](https://mermaid.live) → PNG (white background).
+| Figure | Style (sample equivalent) | Export file |
+|--------|---------------------------|-------------|
+| 1 — System features hub | AHC TOURS hub-and-spoke | `01-feature-overview.png` |
+| 2 — Detailed architecture | Three-tier with modules | `02-detailed-architecture.png` |
 
----
-
-## Figure 1 — Simple High-Level Architecture
-
-```mermaid
-flowchart TB
-    subgraph presentation ["PRESENTATION TIER"]
-        Browser["Web Browser\n(Client / Designer)"]
-        NextJS["Next.js Web App\nAWS"]
-        Mobile["React Native Expo\niOS / Android"]
-    end
-    subgraph application ["APPLICATION TIER"]
-        API["ASP.NET Core 8 Web API\nAWS"]
-    end
-    subgraph data ["DATA TIER"]
-        RDS[("Relational database\nPostgreSQL on AWS")]
-        S3[("Object storage")]
-        Stripe["Stripe API"]
-    end
-    Browser -->|"HTTPS"| NextJS
-    Mobile -->|"HTTPS REST JSON"| API
-    NextJS -->|"HTTPS REST JSON"| API
-    API -->|"EF Core"| RDS
-    API --> S3
-    API --> Stripe
-```
-
-### ASCII layout
-
-```
-[ Browser ] ──► [ Next.js Web App ]
-                      │
-[ Mobile App ] ───────┼──► [ ASP.NET Core 8 Web API ]
-                      │
-                 │         │         │
-                 ▼         ▼         ▼
-         [ Database ]  [ Storage ]  [ Stripe ]
-```
-
-### Tier summary
-
-| Tier | Technology | Responsibility |
-|------|------------|----------------|
-| Presentation | Next.js | Web UI — discovery, dashboards, detailed project workspace |
-| Presentation | React Native (Expo) | Mobile UI — notifications, messaging, progress, approvals on the go |
-| Application | ASP.NET Core 8 | Auth, workflow, payments, notifications (shared API) |
-| Data | Relational DB on AWS | Users, projects, stages, payment records |
-| Data | Object storage | Portfolio images and deliverables |
-| Data | Stripe | Secure online payments |
+**Export:** Open [01-feature-hub.drawio](01-feature-hub.drawio) / [02-detailed-architecture.drawio](02-detailed-architecture.drawio) in [draw.io](https://app.diagrams.net) → File → Export as PNG (white background, 300 DPI). Or use Mermaid blocks below via [mermaid.live](https://mermaid.live).
 
 ---
 
-## Figure 2 — Detailed High-Level Architecture
+## Figure 1 — System Features Overview (Hub-and-Spoke)
+
+Central hub: **INSIDE — Interior Design Service Platform (Web & Mobile)**  
+Eight feature nodes with coloured arrows pointing **inward** to the centre (same layout as sample).
+
+| Position | Feature node | Colour (sample match) |
+|----------|--------------|------------------------|
+| 12 o'clock | Portfolio Discovery | Blue |
+| 1:30 | Moodboards & Brief | Orange |
+| 3 o'clock | Fit Scoring | Green |
+| 4:30 | Requests & Proposals | Orange |
+| 6 o'clock | Stage Workspace | Purple |
+| 7:30 | Milestone Payments | Blue |
+| 9 o'clock | Dual-Role Dashboards | Yellow |
+| 10:30 | Notifications & Messaging | Green |
+
+### Mermaid (export fallback)
 
 ```mermaid
 flowchart TB
-    subgraph users ["USERS"]
-        Client["Client"]
-        Designer["Designer"]
-    end
-    subgraph presentation ["PRESENTATION TIER"]
-        Web["Next.js Web App"]
-        Mobile["React Native Mobile App"]
-        P1["Auth / Dashboards"]
-        P2["Discovery / Moodboards"]
-        P3["Brief / Fit Score"]
-        P4["Requests / Proposals"]
-        P5["Project Workspace"]
-        P6["Payments / Ledger"]
-    end
-    subgraph application ["APPLICATION TIER"]
-        ALB["Load Balancer"]
-        S1["Auth Service"]
-        S2["Portfolio Service"]
-        S3["Moodboard + Brief Service"]
-        S4["Fit Scoring Service"]
-        S5["Request / Proposal Service"]
-        S6["Project Workflow Service"]
-        S7["Payment + Ledger Service"]
-        S8["Notification Service"]
-        S9["File Upload Service"]
-        ALB --> S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8 & S9
-    end
-    subgraph data ["DATA AND EXTERNAL"]
-        D1[("Relational database")]
-        D2[("Object storage")]
-        D3["Stripe"]
-        D4["Auth + Email"]
-    end
-    Client --> Web & Mobile
-    Designer --> Web & Mobile
-    Web --> P1 & P2 & P3 & P4 & P5 & P6
-    Mobile --> P1 & P4 & P5 & P6
-    P1 & P2 & P3 & P4 & P5 & P6 --> ALB
-    S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8 --> D1
-    S7 --> D3
-    S8 --> D4
-    S9 --> D2
+    Hub["🏠 INSIDE<br/><b>Interior Design Service Platform</b><br/><i>(Web & Mobile)</i>"]
+
+    F1["💻 Portfolio Discovery"]
+    F2["🎨 Moodboards & Brief"]
+    F3["📊 Fit Scoring"]
+    F4["📋 Requests & Proposals"]
+    F5["✅ Stage Workspace"]
+    F6["💳 Milestone Payments"]
+    F7["👤 Dual-Role Dashboards"]
+    F8["🔔 Notifications & Messaging"]
+
+    F1 --> Hub
+    F2 --> Hub
+    F3 --> Hub
+    F4 --> Hub
+    F5 --> Hub
+    F6 --> Hub
+    F7 --> Hub
+    F8 --> Hub
+
+    style Hub fill:#2563eb,stroke:#1e40af,color:#fff
+    style F1 fill:#dbeafe,stroke:#2563eb
+    style F2 fill:#ffedd5,stroke:#ea580c
+    style F3 fill:#dcfce7,stroke:#16a34a
+    style F4 fill:#ffedd5,stroke:#ea580c
+    style F5 fill:#f3e8ff,stroke:#9333ea
+    style F6 fill:#dbeafe,stroke:#2563eb
+    style F7 fill:#fef9c3,stroke:#ca8a04
+    style F8 fill:#dcfce7,stroke:#16a34a
 ```
 
-### Application services
+---
 
-| Service | Responsibility |
-|---------|----------------|
-| Auth Service | Registration, login, dual-role access |
-| Portfolio Service | Case studies, discovery filters |
-| Moodboard + Brief Service | Saved projects, structured brief generation |
-| Fit Scoring Service | Designer ranking and score breakdown |
-| Request / Proposal Service | Requests, proposals, comparison |
-| Project Workflow Service | Stages, deliverables, version history, approval |
-| Payment + Ledger Service | Stripe milestones, payment audit trail |
-| Notification Service | In-app and push/email alerts |
-| File Upload Service | Portfolio and deliverable media |
+## Figure 2 — Detailed High-Level Architecture (Three-Tier)
+
+Title: **Inside Interior Design Service Platform — Architecture**
+
+### 1. USER LAYER (Presentation)
+
+Communication to application tier: **HTTPS / REST API (JSON)**
+
+| Client | Technology | Key features |
+|--------|------------|--------------|
+| **Client / Designer Web App** | Next.js (TypeScript, Tailwind) | Auth & dashboards · Portfolio discovery · Moodboards & brief · Fit scores · Requests & proposals · Project workspace · Milestone ledger · Multi-role switch |
+| **Mobile App** | React Native (Expo) — iOS / Android | Push notifications · Messaging · Stage approval · Payment confirmation · Project status · Multi-role switch |
+
+### 2. APPLICATION LAYER (Business Logic)
+
+**ASP.NET Core 8 Web API** on AWS (ECS Fargate + ALB)
+
+| Module | Colour group | Responsibility |
+|--------|--------------|----------------|
+| Auth Module | Green | Cognito, JWT, dual-role (client/designer) |
+| Moodboard + Brief Module | Green | Saved projects, structured brief generation |
+| Fit Scoring Module | Green | Designer ranking, score breakdown |
+| Request / Proposal Module | Green | Requests, proposals, comparison |
+| Project Workflow Module | Green | Stages, deliverables, version history, approval |
+| Payment + Ledger Module | Green | Stripe milestones, payment audit trail |
+| Notification Module | Green | In-app, push, email alerts |
+| Portfolio Module | Orange | Case studies, discovery filters |
+| User Module | Orange | Profiles, availability, reviews |
+
+**Middleware layer** (red box, spans all requests):
+
+- JWT Authentication · Role Authorization · Input Validation · Error Handling · Logging  
+- Security / performance: CORS, Helmet, Rate Limiting
+
+### 3. DATA LAYER (Persistence)
+
+| Component | Contents |
+|-----------|----------|
+| **Amazon RDS PostgreSQL** (centre) | users, designer_profiles, portfolio_projects, moodboards, structured_briefs, project_requests, proposals, projects, project_stages, deliverables, milestone_payments, reviews, sessions |
+| **External Services** (left, dotted line) | **Stripe** — payment gateway · **AWS SES** — email · **AWS Cognito** — authentication |
+| **File Storage — Amazon S3** (right, dotted line) | Portfolio images · Deliverable files · QR / receipt assets · System logs · Backup files |
+
+### Mermaid (export fallback)
+
+```mermaid
+flowchart TB
+    subgraph userLayer ["USER LAYER (Presentation)"]
+        direction LR
+        Web["Client / Designer Web App<br/>(Next.js)<br/>─────────────<br/>Auth & Dashboards<br/>Portfolio Discovery<br/>Moodboards & Brief<br/>Fit Scores<br/>Requests & Proposals<br/>Project Workspace<br/>Milestone Ledger"]
+        Mobile["Mobile App<br/>(React Native Expo)<br/>─────────────<br/>Push Notifications<br/>Messaging<br/>Stage Approval<br/>Payment Confirmation<br/>Project Status"]
+    end
+
+    userLayer -->|"HTTPS / REST API (JSON)"| appLayer
+
+    subgraph appLayer ["APPLICATION LAYER (Business Logic)"]
+        direction TB
+        API["ASP.NET Core 8 Web API — AWS"]
+        subgraph modules ["Functional Modules"]
+            direction LR
+            M1["Auth"]
+            M2["Moodboard + Brief"]
+            M3["Fit Scoring"]
+            M4["Request / Proposal"]
+            M5["Project Workflow"]
+            M6["Payment + Ledger"]
+            M7["Notification"]
+            M8["Portfolio"]
+            M9["User"]
+        end
+        MW["Middleware: JWT Auth · Role Auth · Validation · Error Handling · Logging · CORS · Rate Limiting"]
+        API --> modules
+        modules --> MW
+    end
+
+    appLayer --> dataLayer
+
+    subgraph dataLayer ["DATA LAYER (Persistence)"]
+        direction LR
+        Ext["External Services<br/>─────────────<br/>Stripe<br/>AWS SES<br/>AWS Cognito"]
+        DB[("Amazon RDS PostgreSQL<br/>─────────────<br/>users · portfolios · moodboards<br/>briefs · requests · proposals<br/>projects · stages · payments<br/>reviews · sessions")]
+        S3["Amazon S3<br/>─────────────<br/>Portfolio images<br/>Deliverables<br/>Uploaded assets<br/>System logs"]
+        Ext -.-> DB
+        DB -.-> S3
+    end
+
+    style Web fill:#dcfce7,stroke:#16a34a
+    style Mobile fill:#f3e8ff,stroke:#9333ea
+    style MW fill:#fecaca,stroke:#dc2626
+    style M1 fill:#dcfce7,stroke:#16a34a
+    style M2 fill:#dcfce7,stroke:#16a34a
+    style M3 fill:#dcfce7,stroke:#16a34a
+    style M4 fill:#dcfce7,stroke:#16a34a
+    style M5 fill:#dcfce7,stroke:#16a34a
+    style M6 fill:#dcfce7,stroke:#16a34a
+    style M7 fill:#dcfce7,stroke:#16a34a
+    style M8 fill:#ffedd5,stroke:#ea580c
+    style M9 fill:#ffedd5,stroke:#ea580c
+    style DB fill:#e9d5ff,stroke:#9333ea
+    style Ext fill:#dbeafe,stroke:#2563eb
+    style S3 fill:#fef9c3,stroke:#ca8a04
+```
+
+### ASCII layout (sample-style)
+
+```
+┌──────────────────────── USER LAYER ────────────────────────────┐
+│  [ Client/Designer Web App — Next.js ]  [ Mobile — Expo ]      │
+└────────────────────────────┬───────────────────────────────────┘
+                             │ HTTPS / REST API
+┌──────────────────────── APPLICATION LAYER ─────────────────────┐
+│  ASP.NET Core 8 Web API                                          │
+│  [Auth][Brief][Fit][Request][Workflow][Payment][Notify]        │
+│  [Portfolio][User]                                               │
+│  [ Middleware: JWT · Roles · Validation · Logging · CORS ]     │
+└──────────────┬─────────────────────┬───────────────────────────┘
+               │                     │
+┌──────────────▼──────┐    ┌─────────▼─────────┐    ┌─────────────┐
+│ External Services   │    │ RDS PostgreSQL    │    │ Amazon S3   │
+│ Stripe · SES ·      │◄──►│ users, projects,  │◄──►│ images,     │
+│ Cognito             │    │ payments, …       │    │ deliverables│
+└─────────────────────┘    └───────────────────┘    └─────────────┘
+```
 
 ---
 
@@ -130,18 +197,18 @@ flowchart TB
 ```mermaid
 sequenceDiagram
     participant C as Client
-    participant Web as Web / Mobile App
+    participant App as Web / Mobile App
     participant API as ASP.NET Core API
-    participant DB as Database
+    participant DB as PostgreSQL
     participant ST as Stripe
 
-    C->>Web: Approve progress + pay stage
-    Web->>API: Submit approval + payment request
+    C->>App: Approve stage + pay milestone
+    App->>API: Submit approval + payment request
     API->>DB: Validate stage + record payment intent
     API->>ST: Create Checkout Session
     ST-->>C: Payment UI
     ST->>API: Webhook succeeded
-    API->>DB: Update payment record + advance project
+    API->>DB: Update ledger + advance project stage
 ```
 
 ---
@@ -151,9 +218,9 @@ sequenceDiagram
 ```
 src/
 ├── Api/              # Controllers, middleware
-├── Application/      # Business services
+├── Application/      # BriefService, FitScoringService, …
 ├── Domain/           # Entities, enums
-└── Infrastructure/   # EF Core, storage, Stripe, auth
+└── Infrastructure/   # EF Core, S3, Stripe, Cognito
 web/                  # Next.js web client
 mobile/               # React Native (Expo) app
 ```
@@ -162,7 +229,7 @@ mobile/               # React Native (Expo) app
 
 ## Export checklist
 
-- [ ] `02-simple-architecture.png` — readable at A4 width
-- [ ] `03-detailed-architecture.png` — all service boxes legible
+- [ ] `01-feature-overview.png` — hub centred, 8 nodes readable at A4 width
+- [ ] `02-detailed-architecture.png` — all three tiers and module boxes legible
 - [ ] `07-gantt-chart.png` — readable at A4 width
 - [ ] Technology matches [07-resource-requirements.md](../07-resource-requirements.md)
