@@ -24,7 +24,7 @@ Eight feature nodes with coloured arrows pointing **inward** to the centre (same
 | 12 o'clock | Portfolio Discovery | Blue |
 | 1:30 | Moodboards & Brief | Orange |
 | 3 o'clock | Fit Scoring | Green |
-| 4:30 | Requests & Proposals | Orange |
+| 4:30 | Requests & Proposals (open + direct) | Orange |
 | 6 o'clock | Stage Workspace | Purple |
 | 7:30 | Milestone Payments | Blue |
 | 9 o'clock | Dual-Role Dashboards | Yellow |
@@ -39,7 +39,7 @@ flowchart TB
     F1["💻 Portfolio Discovery"]
     F2["🎨 Moodboards & Brief"]
     F3["📊 Fit Scoring"]
-    F4["📋 Requests & Proposals"]
+    F4["📋 Requests & Proposals<br/><i>open + direct</i>"]
     F5["✅ Stage Workspace"]
     F6["💳 Milestone Payments"]
     F7["👤 Dual-Role Dashboards"]
@@ -63,6 +63,29 @@ flowchart TB
     style F6 fill:#dbeafe,stroke:#2563eb
     style F7 fill:#fef9c3,stroke:#ca8a04
     style F8 fill:#dcfce7,stroke:#16a34a
+```
+
+---
+
+## Hiring flow (dual paths)
+
+| Path | Trigger | Who responds | Client action |
+|------|---------|--------------|---------------|
+| **A — Open request** | Client posts request with moodboard + brief | Multiple designers propose | Compare proposals → accept one |
+| **B — Direct contact** | Client contacts designer from profile | That designer proposes | Accept proposal |
+
+Both paths: **Request → Proposal → Accept → Stage workspace → Milestone payments**
+
+```mermaid
+flowchart TB
+    Fit[Fit scores / discovery]
+    Fit --> Open[Open request]
+    Fit --> Direct[Contact designer]
+    Direct --> DirectReq[Direct request]
+    Open --> Props[Proposals]
+    DirectReq --> Props
+    Props --> Accept[Accept proposal]
+    Accept --> Workspace[Stage workspace]
 ```
 
 ---

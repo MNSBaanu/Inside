@@ -12,7 +12,7 @@
 
 ## What is Inside?
 
-**Inside** is a Final Year interior design platform where clients discover designers through **completed room projects**, build **moodboards**, receive an **auto-generated structured brief**, see **designer fit scores**, hire via **proposals**, collaborate in a **stage-gated workspace**, and pay through a **milestone ledger** (Stripe).
+**Inside** is a Final Year interior design platform where clients discover designers through **completed room projects**, build **moodboards**, receive an **auto-generated structured brief**, see **designer fit scores**, hire via **open or direct requests and proposals**, collaborate in a **stage-gated workspace**, and pay through a **milestone ledger** (Stripe).
 
 **One-line summary:** Visual brief intelligence + fit scoring + stage-gated delivery—not a generic freelance job board.
 
@@ -48,7 +48,8 @@
 | **Moodboard** | Saved portfolio projects = visual input |
 | **Structured brief** | Auto summary derived from moodboard (styles %, rooms, budget band) |
 | **Fit score** | 0–100% match between moodboard and designer portfolio |
-| **Project request** | Client post with description + moodboard + brief |
+| **Open project request** | Client post visible to multiple designers; description + moodboard + brief |
+| **Direct project request** | Client contacts one designer and sends a targeted request with moodboard + brief |
 | **Proposal** | Designer offer: scope, timeline, price, milestones |
 | **Project** | Active job after proposal accepted |
 | **Stage** | Proposal → Concept → Design → Revision → Completion |
@@ -64,9 +65,13 @@ flowchart LR
     Browse[Browse portfolios] --> Mood[Build moodboard]
     Mood --> Brief[Auto structured brief]
     Brief --> Fit[Designer fit scores]
-    Fit --> Request[Post request]
-    Request --> Proposals[Proposals]
-    Proposals --> Workspace[Stage workspace]
+    Fit --> OpenReq[Open request]
+    Fit --> Contact[Contact designer]
+    Contact --> DirectReq[Direct request]
+    OpenReq --> Proposals[Proposals]
+    DirectReq --> Proposals
+    Proposals --> Accept[Accept proposal]
+    Accept --> Workspace[Stage workspace]
     Workspace --> Ledger[Approve + pay milestone]
     Ledger --> Review[Review]
 ```
@@ -116,11 +121,38 @@ flowchart LR
 
 ---
 
-## Flow 3 — Hire (request + proposals)
+## Flow 3 — Hire (dual paths: open or direct)
 
-1. Client creates **request** (space, budget, notes) + moodboard + brief.
-2. Designers submit **proposals**.
-3. Client accepts one → **Project** created at stage `Proposal`.
+Both paths require **request → proposal → accept** before a project starts. There is no instant gig-style booking.
+
+### Path A — Open request (multi-designer)
+
+1. Client creates an **open request** (space, budget, notes) + moodboard + brief.
+2. Multiple designers submit **proposals**.
+3. Client compares proposals and accepts one → **Project** created at stage `Proposal`.
+
+### Path B — Direct contact (single designer)
+
+1. Client views a designer profile (from discovery or fit scores) and **contacts** them via messaging.
+2. Client sends a **direct request** to that designer with moodboard + brief attached.
+3. Designer submits a **proposal**.
+4. Client accepts → **Project** created at stage `Proposal`.
+
+```mermaid
+flowchart TB
+    subgraph pathA ["Path A — Open request"]
+        A1[Post open request] --> A2[Multiple proposals]
+        A2 --> A3[Compare and accept]
+    end
+    subgraph pathB ["Path B — Direct contact"]
+        B1[Contact designer] --> B2[Send direct request]
+        B2 --> B3[Designer proposal]
+        B3 --> B4[Accept proposal]
+    end
+    A3 --> Project[Project created]
+    B4 --> Project
+    Project --> Workspace[Stage workspace]
+```
 
 ---
 

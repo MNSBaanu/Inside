@@ -20,7 +20,7 @@
 
 * Implement **designer–client fit scoring** with a visible breakdown of style, room, and budget alignment.
 
-* Implement project requests, designer proposals, and a **proposal comparison view** for client selection.
+* Implement **dual hiring paths**: **open project requests** (multiple designer proposals and comparison view) and **direct contact** (client messages a designer and sends a targeted request); work starts only after **proposal acceptance** in both cases.
 
 * Implement a **stage-gated project workspace** (proposal, concept, design, revision, completion) with deliverable upload, **version history**, client approval per stage, messaging, and notifications.
 
