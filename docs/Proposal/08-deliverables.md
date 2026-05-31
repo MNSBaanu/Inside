@@ -2,8 +2,8 @@
 
 ## Working system
 
-- A **web-based interior design service platform** on **AWS** — Next.js client and ASP.NET Core 8 REST API.
-- A **React Native (Expo) mobile application** (iOS/Android) using the same API for notifications, messaging, approvals, and payments on the go.
+- A **web-based interior design service platform** — Next.js client and NestJS REST API, cloud-hosted with PostgreSQL and Cloudinary.
+- A **React Native mobile application** (iOS/Android) using the same API for notifications, messaging, approvals, and payments on the go.
 - **Discovery and moodboards** — portfolio feed with style, room, and budget filters; saved inspirations and structured brief generation.
 - **Fit scoring module** — ranked designers with score breakdown for each moodboard.
 - **Hiring flow** — project requests, designer proposals, and client comparison/selection view.

@@ -2,7 +2,7 @@
 
 * Conduct a critical review of the interior design service domain and identify limitations in existing digital platforms (e.g. Havenly, Decorilla, Houzz, Fiverr, Behance) used for designer discovery, project interaction, and payment management.
 
-* Critically study technologies suitable for developing a modern web and mobile platform, including Next.js, React Native (Expo), ASP.NET Core 8, AWS cloud services, relational databases, and Stripe payment integration.
+* Critically study technologies suitable for developing a modern web and mobile platform, including Next.js, React Native, Node.js, NestJS, PostgreSQL, Prisma, Cloudinary, cloud hosting, GitHub, and Stripe payment integration.
 
 * Design and develop an Interior Design Service Platform that enables clients and designers to interact through portfolio-led discovery, moodboards, structured briefs, fit scoring, project requests, proposal comparison, stage-gated collaboration, and secure milestone payments on **web and mobile**.
 
@@ -28,4 +28,4 @@
 
 * Implement designer **availability**, wishlist/saved items, and post-completion **reviews and ratings**.
 
-* Develop a **React Native (Expo) mobile application** consuming the same API, focused on notifications, messaging, project status, stage approval, and payment confirmation (web remains primary for full discovery and portfolio browsing).
+* Develop a **React Native mobile application** consuming the same API, focused on notifications, messaging, project status, stage approval, and payment confirmation (web remains primary for full discovery and portfolio browsing).

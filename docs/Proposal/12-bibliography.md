@@ -4,9 +4,9 @@ Works consulted but not directly cited in the proposal body. Harvard style.
 
 Adobe (2024) *Behance*. Available at: https://www.behance.net/ (Accessed: 29 May 2026).
 
-Amazon Web Services (2024) *Amazon RDS User Guide*. Available at: https://docs.aws.amazon.com/rds/ (Accessed: 29 May 2026).
-
 Autodesk (2024) *Homestyler*. Available at: https://www.homestyler.com/ (Accessed: 29 May 2026).
+
+Cloudinary (2024) *Image and Video Upload, Storage, Optimization and CDN*. Available at: https://cloudinary.com/ (Accessed: 29 May 2026).
 
 Decorilla (2024) *Online Interior Design Service*. Available at: https://www.decorilla.com/ (Accessed: 29 May 2026).
 
@@ -18,9 +18,11 @@ Havenly (2024) *Online Interior Design and Home Decorating*. Available at: https
 
 Houzz (2024) *Houzz*. Available at: https://www.houzz.com/ (Accessed: 29 May 2026).
 
-Microsoft (2024) *Entity Framework Core Documentation*. Available at: https://learn.microsoft.com/ef/core/ (Accessed: 29 May 2026).
+NestJS (2024) *NestJS — A Progressive Node.js Framework*. Available at: https://nestjs.com/ (Accessed: 29 May 2026).
 
 OWASP Foundation (2021) *OWASP Top Ten*. Available at: https://owasp.org/www-project-top-ten/ (Accessed: 29 May 2026).
+
+Prisma (2024) *Prisma ORM*. Available at: https://www.prisma.io/ (Accessed: 29 May 2026).
 
 Stripe (2024) *Stripe Connect Documentation*. Available at: https://stripe.com/docs/connect (Accessed: 29 May 2026).
 

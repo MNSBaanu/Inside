@@ -7,7 +7,7 @@
 | Sprint | Activities | Duration |
 |--------|------------|----------|
 | Sprint 1 | Requirements gathering, domain research (Havenly, Decorilla, Houzz, etc.), technology evaluation, proposal | 2 weeks |
-| Sprint 2 | System architecture, database design, UI wireframes, AWS/Stripe setup, web and mobile scaffolding | 2 weeks |
+| Sprint 2 | System architecture, database design, UI wireframes, PostgreSQL/Cloudinary/Stripe setup, web and mobile scaffolding | 2 weeks |
 | Sprint 3 | Authentication, dual-role access, user profiles | 2 weeks |
 | Sprint 4 | Portfolio discovery, moodboards, structured brief, fit scoring; web UI + mobile app shell | 2 weeks |
 | Sprint 5 | Project requests, proposals, comparison view, messaging, notifications; mobile core flows | 2 weeks |
@@ -68,4 +68,4 @@ gantt
 
 *Figure 3: Gantt chart — 13-week project schedule*
 
-Export PNG to `diagrams/07-gantt-chart.png` via [diagrams-and-charts-guide.md](diagrams-and-charts-guide.md) or mermaid.live.
+Export PNG to `diagrams/07-gantt-chart.png` via [diagrams/architecture-diagrams.md](diagrams/architecture-diagrams.md) or mermaid.live.

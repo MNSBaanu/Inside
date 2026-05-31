@@ -12,7 +12,7 @@
 
 ## What is Inside?
 
-**Inside** is a Final Year interior design platform where clients discover designers through **completed room projects**, build **moodboards**, receive an **auto-generated structured brief**, see **designer fit scores**, hire via **proposals**, collaborate in a **stage-gated workspace**, and pay through a **milestone ledger** (Stripe on AWS).
+**Inside** is a Final Year interior design platform where clients discover designers through **completed room projects**, build **moodboards**, receive an **auto-generated structured brief**, see **designer fit scores**, hire via **proposals**, collaborate in a **stage-gated workspace**, and pay through a **milestone ledger** (Stripe).
 
 **One-line summary:** Visual brief intelligence + fit scoring + stage-gated delivery—not a generic freelance job board.
 
@@ -52,7 +52,7 @@
 | **Proposal** | Designer offer: scope, timeline, price, milestones |
 | **Project** | Active job after proposal accepted |
 | **Stage** | Proposal → Concept → Design → Revision → Completion |
-| **Deliverable** | File for current stage (S3) |
+| **Deliverable** | File for current stage (Cloudinary) |
 | **Milestone ledger** | Payment record per stage |
 
 ---
@@ -77,18 +77,18 @@ flowchart LR
 
 1. Client browses **discovery feed** (filter: style, room, budget).
 2. Saves projects to **moodboard**.
-3. System generates **structured brief** (rule-based tag aggregation in MVP; optional AWS Rekognition labels in stretch).
+3. System generates **structured brief** (rule-based tag aggregation in MVP; optional ML image labelling in Phase 2).
 
 ```mermaid
 sequenceDiagram
     actor Client
     participant Web as Next.js
-    participant API as ASP.NET Core API
-    participant DB as RDS PostgreSQL
+    participant API as NestJS API
+    participant DB as PostgreSQL
 
     Client->>Web: Browse / save to moodboard
     Web->>API: GET/POST moodboards
-    API->>DB: Persist items
+    API->>DB: Persist items (Prisma)
     Client->>Web: Generate brief
     Web->>API: GET /moodboards/{id}/brief
     API->>DB: Aggregate style/room/budget tags
@@ -135,7 +135,7 @@ Workspace UI is organised by **stage tabs**, not a single chat thread.
 | Revision | Upload revisions | Approve / reject |
 | Completion | Final package | Approve + final payment |
 
-- **Deliverables** uploaded per stage (S3 presigned URLs).
+- **Deliverables** uploaded per stage (Cloudinary).
 - **Messaging** available for clarification but approval happens on stage panel.
 - Optional stretch: image annotation on deliverable.
 
@@ -171,14 +171,15 @@ After **Completion** and final payment, client submits rating + review on design
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | Next.js 14, TypeScript, Tailwind — **AWS Amplify** |
-| Backend | **ASP.NET Core 8 Web API** — **ECS Fargate** + ALB |
-| Database | **Amazon RDS PostgreSQL** + **EF Core 8** |
-| Files | **S3** + **CloudFront** |
-| Auth | **AWS Cognito** + JWT claims (client/designer roles) |
-| Email | **AWS SES** |
-| Payments | **Stripe** |
-| Ops | **Secrets Manager**, **CloudWatch**, **GitHub Actions** → ECR |
+| Web | Next.js 14, TypeScript, Tailwind |
+| Mobile | React Native |
+| Backend | Node.js, NestJS |
+| Database | PostgreSQL + Prisma |
+| Files | Cloudinary |
+| Auth | JWT, Passport, dual-role (client/designer) |
+| Email | Email API (transactional) |
+| Payments | Stripe |
+| Ops | GitHub Actions, cloud hosting |
 
 Details: [Proposal/07-resource-requirements.md](Proposal/07-resource-requirements.md) (includes technology justification).
 
@@ -188,12 +189,10 @@ Details: [Proposal/07-resource-requirements.md](Proposal/07-resource-requirement
 
 ```
 Inside/
-├── src/
-│   ├── Inside.Api/
-│   ├── Inside.Application/    # BriefService, FitScoringService
-│   ├── Inside.Domain/
-│   └── Inside.Infrastructure/ # EF Core, S3, Stripe
+├── api/                       # NestJS — modules, guards, controllers
+│   └── prisma/                # schema.prisma, migrations
 ├── web/                       # Next.js
+├── mobile/                    # React Native
 └── docs/
 ```
 
@@ -203,14 +202,14 @@ Inside/
 
 | Module | Responsibility |
 |--------|----------------|
-| Auth | Cognito, dual-role, JWT |
+| Auth | JWT, dual-role, Passport |
 | Discovery | Portfolio feed, filters |
 | Moodboard + Brief | Boards, items, brief generation |
 | Fit scoring | Rank designers for moodboard |
 | Hiring | Requests, proposals, accept |
 | Project workflow | Stages, deliverables, approvals |
 | Payments | Stripe, milestone ledger |
-| Notifications | In-app + SES |
+| Notifications | In-app + push + email |
 | Reviews | Post-completion ratings |
 
 ---
@@ -237,7 +236,7 @@ erDiagram
 
 | MVP | Phase 2 |
 |-----|---------|
-| Rule-based brief + fit score | ML / Rekognition labels |
+| Rule-based brief + fit score | ML image labelling |
 | HTTP messaging (polling) | WebSocket |
 | Stripe test mode | Stripe Connect payouts |
 | Stage tabs + file approval | Deliverable annotations |
@@ -248,13 +247,13 @@ See scope section in [Proposal/06-proposed-solution.md](Proposal/06-proposed-sol
 
 ## Implementation order
 
-1. Auth + dual-role (Cognito)  
+1. Auth + dual-role (JWT)  
 2. Portfolio + discovery  
 3. Moodboards + **brief generation**  
 4. **Fit scoring** + requests/proposals  
-5. Stage workspace + S3 deliverables  
+5. Stage workspace + Cloudinary deliverables  
 6. Stripe ledger  
 7. Reviews + notifications  
-8. AWS deployment + evaluation  
+8. Cloud deployment + evaluation  
 
 Matches [Proposal/10-project-plan.md](Proposal/10-project-plan.md).

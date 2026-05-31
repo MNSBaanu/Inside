@@ -2,7 +2,7 @@
 
 ELMS submission — merge sections **00 → 12** in order ([Sample/sample.md](Sample/sample.md)).
 
-**Stack:** Next.js + React Native (Expo) + ASP.NET Core 8 + AWS + Stripe
+**Stack:** Next.js + React Native + NestJS + PostgreSQL + Prisma + Cloudinary + Stripe + GitHub
 
 | # | File | Section |
 |---|------|---------|

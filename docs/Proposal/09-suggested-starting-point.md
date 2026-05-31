@@ -6,7 +6,7 @@
 
 3. **System analysis and design** – Produce ER diagram, API outline, wireframes (discovery, moodboard, workspace, mobile home), and export architecture diagram PNGs.
 
-4. **Development environment setup** – AWS, Stripe test mode, GitHub repo; scaffold ASP.NET Core API, Next.js web app, and Expo mobile app.
+4. **Development environment setup** – PostgreSQL, Cloudinary, Stripe test mode, GitHub repo; scaffold NestJS API (Prisma), Next.js web app, and React Native mobile app.
 
 5. **Core system development** – Shared API first: auth and dual-role, then portfolios and discovery, moodboards and brief, fit scoring, requests and proposals, stage workspace, Stripe ledger; web leads each module, mobile follows for notifications, messages, approve, and pay.
 

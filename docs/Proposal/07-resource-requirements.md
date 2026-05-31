@@ -11,21 +11,25 @@
 | Category          | Software / Technology                            |
 | ----------------- | ------------------------------------------------ |
 | Web Frontend      | Next.js, TypeScript, Tailwind CSS                |
-| Mobile Frontend   | React Native, Expo, TypeScript                   |
-| Backend           | ASP.NET Core 8 Web API, C#                       |
-| Database          | DynamoDB                                    |
-| Cloud Services    | AWS (Hosting, Storage, Authentication) |
+| Mobile Frontend   | React Native, TypeScript                         |
+| Backend           | Node.js, NestJS, TypeScript                      |
+| Database          | PostgreSQL                                       |
+| ORM               | Prisma                                           |
+| File Storage      | Cloudinary                                       |
 | Payment Gateway   | Stripe                                           |
-| Development Tools | Visual Studio 2022 / VS Code, Git, GitHub        |
-| Testing Tools     | Postman, Swagger            |
+| Hosting           | Cloud hosting (Next.js + NestJS + PostgreSQL)    |
+| Development Tools | VS Code, Git, GitHub                             |
+| Testing Tools     | Postman, Swagger                                 |
 | Design Tools      | Figma, draw.io                                   |
 
 ### Other Requirements
 
-* AWS cloud services for hosting, storage, authentication, and database management
-* GitHub repository for source code management and backup
+* Cloud hosting for the web client, API, and PostgreSQL database
+* Cloudinary account for portfolio and deliverable media
+* GitHub repository for source code management, version control, and CI
+* Stripe test mode for milestone payment development
 * Volunteer users for system testing and evaluation
 
 ### Estimated Cost
 
-Most development tools used in the project are free and open source. AWS cloud services and Stripe test mode can be utilized within free-tier or low-cost plans during development. Additional costs may include cloud hosting charges and optional domain registration.
+Most development tools used in the project are free and open source. Cloud hosting providers, Cloudinary, and Stripe test mode can be utilized within free-tier or low-cost plans during development. Additional costs may include hosting charges and optional domain registration.
