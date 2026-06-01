@@ -6,44 +6,99 @@ COLOR_LIGHT = "#B1DDF0"
 COLOR_DARK = "#10739e"
 COLOR_TEXT_DARK = "#10739e"
 COLOR_GRID = "#d0e4ef"
+COLOR_CONTINUOUS = "#e8f4fa"
 
 # (sprint label, activity inside bar)
 SPRINTS = [
-    ("Sprint 1", "Requirements &\nproduct backlog"),
-    ("Sprint 2", "Architecture &\nproject setup"),
-    ("Sprint 3", "User accounts &\nauthentication"),
-    ("Sprint 4", "Discovery &\nsearch filters"),
-    ("Sprint 5", "Moodboards &\nfit scoring"),
-    ("Sprint 6", "Proposals &\nselection"),
-    ("Sprint 7", "Messaging &\nnotifications"),
-    ("Sprint 8", "Workspace &\nworkflow"),
-    ("Sprint 9", "Reviews &\ntrust features"),
-    ("Sprint 10", "Payments &\nmobile app"),
-    ("Sprint 11", "Testing &\ndocumentation"),
+    ("Sprint 1", "Requirements &\nProduct Backlog"),
+    ("Sprint 2", "Architecture &\nProject Setup"),
+    ("Sprint 3", "User Accounts &\nAuthentication"),
+    ("Sprint 4", "Discovery &\nSearch Filters"),
+    ("Sprint 5", "Moodboards, Briefs\n& Matching"),
+    ("Sprint 6", "Requests, Proposals\n& Selection"),
+    ("Sprint 7", "Messaging &\nNotifications"),
+    ("Sprint 8", "Workspace, Workflow\n& Timelines"),
+    ("Sprint 9", "Reviews, Verification\n& Safety"),
+    ("Sprint 10", "Payments &\nMobile App"),
+    ("Sprint 11", "Integration, Testing\n& Documentation"),
+]
+
+# (left label, bar label, first sprint index 0-based, last sprint index inclusive)
+CONTINUOUS = [
+    ("Documentation Updates", "Documentation Updates", 1, 10),
+    ("Continuous Testing", "Continuous Testing", 2, 10),
 ]
 
 BAR_WEEKS = 2
 BAR_HEIGHT = 0.78
 LABEL_X = -3.8
 
-# Sprint 1–6: full-width bar inside the 2-week slot (no overlap past week boundaries)
-WIDE_COUNT = 6
+WIDE_COUNT = 11
 WIDE_PAD_X = 0.02
 WIDE_BAR_W = BAR_WEEKS - 2 * WIDE_PAD_X
 WIDE_BAR_H = 0.9
-WIDE_FONT = 7.4
+WIDE_FONT = 7.0
 
 NARROW_PAD_X = 0.06
 NARROW_BAR_W = BAR_WEEKS - 2 * NARROW_PAD_X
 NARROW_FONT = 7.2
 
+CONT_PAD_X = 0.04
+CONT_BAR_H = 0.72
+CONT_FONT = 8.5
 
-fig, ax = plt.subplots(figsize=(17, 8.5))
+
+def add_bar(ax, bar_x, bar_w, y, bar_h, facecolor, edgecolor, linewidth=1.2, linestyle="-"):
+    bar = FancyBboxPatch(
+        (bar_x, y - bar_h / 2),
+        bar_w,
+        bar_h,
+        boxstyle="round,pad=0.008,rounding_size=0.05",
+        facecolor=facecolor,
+        edgecolor=edgecolor,
+        linewidth=linewidth,
+        linestyle=linestyle,
+    )
+    ax.add_patch(bar)
+    return bar
+
+
+def add_clipped_label(ax, text_x, y, text, bar_x, bar_w, bar_h, fontsize, color, fontweight="medium"):
+    clip_rect = Rectangle(
+        (bar_x, y - bar_h / 2),
+        bar_w,
+        bar_h,
+        transform=ax.transData,
+        visible=False,
+    )
+    ax.add_patch(clip_rect)
+    label = ax.text(
+        text_x,
+        y,
+        text,
+        ha="center",
+        va="center",
+        fontsize=fontsize,
+        color=color,
+        fontweight=fontweight,
+        linespacing=1.1,
+        zorder=4,
+    )
+    label.set_clip_path(clip_rect)
+    return label
+
+
+n_sprints = len(SPRINTS)
+n_continuous = len(CONTINUOUS)
+n_rows = n_sprints + n_continuous
+
+OUTPUT_DPI = 400
+
+fig, ax = plt.subplots(figsize=(17, 10))
 fig.patch.set_facecolor("white")
 
-n = len(SPRINTS)
 for i, (sprint_label, activity) in enumerate(SPRINTS):
-    y = n - i
+    y = n_rows - i
     start = i * BAR_WEEKS
     color = COLOR_LIGHT if i % 2 == 0 else COLOR_DARK
     text_color = COLOR_TEXT_DARK if i % 2 == 0 else "white"
@@ -59,17 +114,7 @@ for i, (sprint_label, activity) in enumerate(SPRINTS):
         bar_h = BAR_HEIGHT
         font_size = NARROW_FONT
 
-    bar = FancyBboxPatch(
-        (bar_x, y - bar_h / 2),
-        bar_w,
-        bar_h,
-        boxstyle="round,pad=0.008,rounding_size=0.05",
-        facecolor=color,
-        edgecolor=COLOR_DARK,
-        linewidth=1.2,
-    )
-    ax.add_patch(bar)
-
+    add_bar(ax, bar_x, bar_w, y, bar_h, color, COLOR_DARK)
     ax.text(
         LABEL_X,
         y,
@@ -81,32 +126,61 @@ for i, (sprint_label, activity) in enumerate(SPRINTS):
         color=COLOR_TEXT_DARK,
         clip_on=True,
     )
-
-    text_x = bar_x + bar_w / 2
-    clip_rect = Rectangle(
-        (bar_x, y - bar_h / 2),
-        bar_w,
-        bar_h,
-        transform=ax.transData,
-        visible=False,
-    )
-    ax.add_patch(clip_rect)
-    label = ax.text(
-        text_x,
+    add_clipped_label(
+        ax,
+        bar_x + bar_w / 2,
         y,
         activity,
-        ha="center",
-        va="center",
-        fontsize=font_size,
-        color=text_color,
-        fontweight="medium",
-        linespacing=1.1,
-        zorder=4,
+        bar_x,
+        bar_w,
+        bar_h,
+        font_size,
+        text_color,
     )
-    label.set_clip_path(clip_rect)
+
+for j, (left_label, bar_label, sprint_start, sprint_end) in enumerate(CONTINUOUS):
+    y = n_continuous - j
+    bar_x = sprint_start * BAR_WEEKS + CONT_PAD_X
+    bar_w = (sprint_end + 1) * BAR_WEEKS - bar_x - CONT_PAD_X
+    bar_h = CONT_BAR_H
+
+    add_bar(
+        ax,
+        bar_x,
+        bar_w,
+        y,
+        bar_h,
+        COLOR_CONTINUOUS,
+        COLOR_DARK,
+        linewidth=1.4,
+        linestyle=(0, (4, 2)),
+    )
+    ax.text(
+        LABEL_X,
+        y,
+        left_label,
+        ha="left",
+        va="center",
+        fontsize=10,
+        fontweight="bold",
+        color=COLOR_TEXT_DARK,
+        clip_on=True,
+    )
+    add_clipped_label(
+        ax,
+        bar_x + bar_w / 2,
+        y,
+        bar_label,
+        bar_x,
+        bar_w,
+        bar_h,
+        CONT_FONT,
+        COLOR_TEXT_DARK,
+        fontweight="bold",
+    )
 
 ax.set_xlim(-5, 22.5)
-ax.set_ylim(0.25, n + 0.75)
+ax.set_ylim(0.25, n_rows + 0.75)
 ax.set_xlabel("Project week", fontsize=11, color=COLOR_TEXT_DARK, fontweight="bold")
 ax.set_xticks(range(1, 23))
 ax.set_xticklabels([str(w) for w in range(1, 23)], fontsize=9)
@@ -124,7 +198,13 @@ for spine in ["top", "right", "left"]:
     ax.spines[spine].set_visible(False)
 ax.spines["bottom"].set_color(COLOR_GRID)
 
-fig.subplots_adjust(left=0.16, right=0.98, top=0.9, bottom=0.1)
+fig.subplots_adjust(left=0.18, right=0.98, top=0.9, bottom=0.1)
 
-plt.savefig("07-gantt-chart.png", dpi=220, bbox_inches="tight", facecolor="white")
-print("Saved 07-gantt-chart.png")
+plt.savefig(
+    "07-gantt-chart.png",
+    dpi=OUTPUT_DPI,
+    bbox_inches="tight",
+    facecolor="white",
+    pad_inches=0.08,
+)
+print(f"Saved 07-gantt-chart.png ({OUTPUT_DPI} dpi)")

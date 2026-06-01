@@ -18,10 +18,17 @@
 | Sprint 5 | 2 weeks | Moodboards, structured briefs, and designer matching |
 | Sprint 6 | 2 weeks | Project requests, proposals, and designer selection |
 | Sprint 7 | 2 weeks | Messaging, notifications, and project collaboration features |
-| Sprint 8 | 2 weeks | Project workspace, timelines, and workflow management |
-| Sprint 9 | 2 weeks | Reviews, ratings, verification, reporting, and blocking features |
+| Sprint 8 | 2 weeks | Project workspace, workflow management, and timelines |
+| Sprint 9 | 2 weeks | Reviews, designer verification, reporting, and safety controls |
 | Sprint 10 | 2 weeks | Payment integration, milestone payments, and mobile application features |
-| Sprint 11 | 2 weeks | Testing, evaluation, deployment, documentation, and final refinements |
+| Sprint 11 | 2 weeks | Integration, testing, evaluation, deployment, documentation, and final refinements |
+
+**Continuous activities (parallel across sprints):**
+
+| Activity | Span | Purpose |
+|----------|------|---------|
+| Documentation updates | Sprint 2 → Sprint 11 | Requirements, architecture, API docs, and test reports updated throughout development |
+| Continuous testing | Sprint 3 → Sprint 11 | Each sprint delivers a tested increment; formal integration and UAT intensify in Sprint 11 |
 
 ---
 
