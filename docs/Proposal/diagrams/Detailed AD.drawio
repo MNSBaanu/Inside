@@ -10,7 +10,7 @@
         <mxCell id="userLayer" parent="1" style="swimlane;startSize=30;fillColor=#eef7fc;strokeColor=#10739e;fontStyle=1;fontSize=13;fontColor=#10739e;" value="USER LAYER (Presentation)" vertex="1">
           <mxGeometry height="190" width="1420" x="40" y="50" as="geometry" />
         </mxCell>
-        <mxCell id="web" parent="userLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;align=center;fontSize=10;fontColor=#10739e;" value="Client / Designer Web App (Next.js)&lt;br&gt;─────────────────&lt;br&gt;Auth · Discovery · Moodboards&lt;br&gt;Brief · Fit Scores · Requests&lt;br&gt;Workspace · Messaging · Payments" vertex="1">
+        <mxCell id="web" parent="userLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;align=center;fontSize=10;fontColor=#10739e;" value="Client / Designer Web App (Next.js)&lt;br&gt;─────────────────&lt;br&gt;Auth · Discovery · Moodboards&lt;br&gt;Brief · Matching &amp; Fit · Requests&lt;br&gt;Workspace · Messaging · Payments" vertex="1">
           <mxGeometry height="140" width="280" x="280" y="40" as="geometry" />
         </mxCell>
         <mxCell id="mobile" parent="userLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;align=center;fontSize=10;fontColor=#10739e;" value="Mobile App (React Native)&lt;br&gt;─────────────────&lt;br&gt;Push Notifications&lt;br&gt;Messaging · Project Status&lt;br&gt;Stage Approval · Payments&lt;br&gt;Role Switch" vertex="1">
@@ -40,8 +40,8 @@
         <mxCell id="m4" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Moodboard + Brief" vertex="1">
           <mxGeometry height="44" width="100" x="360" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="m5" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Fit Scoring" vertex="1">
-          <mxGeometry height="44" width="100" x="470" y="88" as="geometry" />
+        <mxCell id="m5" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=8;fontColor=#10739e;" value="Matching &amp; Fit Scoring" vertex="1">
+          <mxGeometry height="44" width="118" x="462" y="88" as="geometry" />
         </mxCell>
         <mxCell id="m6" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Request / Proposal" vertex="1">
           <mxGeometry height="44" width="100" x="580" y="88" as="geometry" />

@@ -18,14 +18,14 @@ Match the **lecturer sample layout** ([Sample/](../Sample/)): Figure 1 = feature
 
 ## Figure 1 — System Features Overview (Hub-and-Spoke)
 
-Central hub: **INSIDE — Interior Design Service Platform (Web & Mobile)**  
+Central hub: **INSIDE — Interior Design Service Marketplace (Web & Mobile)**  
 Eight feature nodes with coloured arrows pointing **inward** to the centre (same layout as sample).
 
 | Position | Feature node | Colour |
 |----------|--------------|--------|
 | 12 o'clock | Portfolio Discovery | Light `#B1DDF0` / stroke `#10739e` |
 | 1:30 | Moodboards & Brief | Dark `#10739e` / white text |
-| 3 o'clock | Fit Scoring | Light |
+| 3 o'clock | Matching & Fit Scoring | Light |
 | 4:30 | Requests & Proposals | Dark |
 | 6 o'clock | Stage Workspace | Light |
 | 7:30 | Milestone Payments | Dark |
@@ -38,11 +38,11 @@ Eight feature nodes with coloured arrows pointing **inward** to the centre (same
 
 ```mermaid
 flowchart TB
-    Hub["🏠 INSIDE<br/><b>Interior Design Service Platform</b><br/><i>(Web & Mobile)</i>"]
+    Hub["🏠 INSIDE<br/><b>Interior Design Service Marketplace</b><br/><i>(Web & Mobile)</i>"]
 
     F1["💻 Portfolio Discovery"]
     F2["🎨 Moodboards & Brief"]
-    F3["📊 Fit Scoring"]
+    F3["📊 Matching & Fit Scoring"]
     F4["📋 Requests & Proposals<br/><i>open + direct</i>"]
     F5["✅ Stage Workspace"]
     F6["💳 Milestone Payments"]
@@ -116,7 +116,7 @@ Communication to application tier: **HTTPS / REST API (JSON)**
 |--------|--------------|----------------|
 | Auth Module | Green | JWT, Passport, register/login, password reset, email verification, dual-role |
 | Moodboard + Brief Module | Green | Saved projects, brief generation and edit |
-| Fit Scoring Module | Green | Designer ranking, score breakdown |
+| Matching & Fit Scoring Module | Green | Designer ranking, score breakdown |
 | Request / Proposal Module | Green | Open/direct requests, proposals, comparison |
 | Project Workflow Module | Green | Stages, deliverables, versions, feedback, approval, timeline, activity log |
 | Messaging Module | Green | WebSocket chat, project threads, read/unread |
@@ -163,7 +163,7 @@ flowchart TB
             direction LR
             M1["Auth"]
             M2["Moodboard + Brief"]
-            M3["Fit Scoring"]
+            M3["Matching & Fit Scoring"]
             M4["Request / Proposal"]
             M5["Project Workflow"]
             M6["Payment + Ledger"]
