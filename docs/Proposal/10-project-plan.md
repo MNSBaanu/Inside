@@ -23,3 +23,20 @@
 | Sprint 10 | 2 weeks | Payment integration, milestone payments, and mobile application features |
 | Sprint 11 | 2 weeks | Testing, evaluation, deployment, documentation, and final refinements |
 
+---
+
+## Scrum activities
+
+- Sprint planning
+- Daily Scrum
+- Sprint review
+- Sprint retrospective
+
+---
+
+## Gantt chart
+
+**Figure 3:** Scrum project plan — 22 weeks, 11 two-week sprints (see diagram below).
+
+![Figure 3: Scrum project Gantt chart](diagrams/07-gantt-chart.png)
+
