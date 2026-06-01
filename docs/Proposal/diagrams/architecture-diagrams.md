@@ -29,6 +29,7 @@ Eight feature nodes with coloured arrows pointing **inward** to the centre (same
 | 7:30 | Milestone Payments | Blue |
 | 9 o'clock | Dual-Role Dashboards | Yellow |
 | 10:30 | Notifications & Messaging | Green |
+| (extended) | Trust & Safety · Admin | Grey (see Figure 2) |
 
 ### Mermaid (export fallback)
 
@@ -100,7 +101,8 @@ Communication to application tier: **HTTPS / REST API (JSON)**
 
 | Client | Technology | Key features |
 |--------|------------|--------------|
-| **Client / Designer Web App** | Next.js (TypeScript, Tailwind) | Auth & dashboards · Portfolio discovery · Moodboards & brief · Fit scores · Requests & proposals · Project workspace · Milestone ledger · Multi-role switch |
+| **Client / Designer Web App** | Next.js (TypeScript, Tailwind) | Auth (incl. reset, verify) · Profiles & settings · Portfolio discovery & search · Favourites · Moodboards & brief · Fit scores · Requests & proposals · Project workspace · Messaging · Milestone ledger · Reviews · Trust (report/block) · Multi-role switch |
+| **Admin Web App** | Next.js (admin routes) | User management · Verification queue · Reports · Review & portfolio moderation · Analytics |
 | **Mobile App** | React Native — iOS / Android | Push notifications · Messaging · Stage approval · Payment confirmation · Project status · Multi-role switch |
 
 ### 2. APPLICATION LAYER (Business Logic)
@@ -109,15 +111,18 @@ Communication to application tier: **HTTPS / REST API (JSON)**
 
 | Module | Colour group | Responsibility |
 |--------|--------------|----------------|
-| Auth Module | Green | JWT, Passport, dual-role (client/designer) |
-| Moodboard + Brief Module | Green | Saved projects, structured brief generation |
+| Auth Module | Green | JWT, Passport, register/login, password reset, email verification, dual-role |
+| Moodboard + Brief Module | Green | Saved projects, brief generation and edit |
 | Fit Scoring Module | Green | Designer ranking, score breakdown |
-| Request / Proposal Module | Green | Requests, proposals, comparison |
-| Project Workflow Module | Green | Stages, deliverables, version history, approval |
+| Request / Proposal Module | Green | Open/direct requests, proposals, comparison |
+| Project Workflow Module | Green | Stages, deliverables, versions, feedback, approval, timeline, activity log |
+| Messaging Module | Green | WebSocket chat, project threads, read/unread |
 | Payment + Ledger Module | Green | Stripe milestones, payment audit trail |
 | Notification Module | Green | In-app, push, email alerts |
-| Portfolio Module | Orange | Case studies, discovery filters |
-| User Module | Orange | Profiles, availability, reviews |
+| Trust & Safety Module | Green | Verification, reports, blocks |
+| Admin Module | Green | Users, verification queue, moderation, analytics |
+| Portfolio Module | Orange | Case studies, discovery, search, filters |
+| User Module | Orange | Profiles, settings, availability, favourites, reviews |
 
 **Middleware / guards layer** (red box, spans all requests):
 
@@ -130,7 +135,7 @@ Communication to application tier: **HTTPS / REST API (JSON)**
 
 | Component | Contents |
 |-----------|----------|
-| **PostgreSQL** (centre, via **Prisma ORM**) | users, designer_profiles, portfolio_projects, moodboards, structured_briefs, project_requests, proposals, projects, project_stages, deliverables, milestone_payments, reviews, sessions |
+| **PostgreSQL** (centre, via **Prisma ORM**) | users, designer_profiles, portfolio_projects, favourites, moodboards, structured_briefs, project_requests, proposals, projects, project_stages, deliverables, messages, notifications, milestone_payments, reviews, verifications, reports, blocks, activity_logs, sessions |
 | **External Services** (left, dotted line) | **Stripe** — payment gateway · **Email API** — transactional email · **Expo Push** — mobile notifications |
 | **Cloudinary** (right, dotted line) | Portfolio images · Deliverable files · Image transforms & CDN · Uploaded assets |
 
@@ -160,8 +165,11 @@ flowchart TB
             M5["Project Workflow"]
             M6["Payment + Ledger"]
             M7["Notification"]
-            M8["Portfolio"]
-            M9["User"]
+            M8["Messaging"]
+            M9["Trust & Safety"]
+            M10["Admin"]
+            M11["Portfolio"]
+            M12["User"]
         end
         MW["Guards & Middleware: JWT · Roles · Validation · Error Handling · Logging · CORS · Rate Limiting"]
         PR["Prisma ORM"]

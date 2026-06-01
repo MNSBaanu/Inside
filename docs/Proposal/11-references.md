@@ -19,3 +19,5 @@ Meta (2024) *React Native Documentation*. Available at: https://reactnative.dev/
 Decorilla (2024) *Online Interior Design Service*. Available at: https://www.decorilla.com/ (Accessed: 29 May 2026).
 
 Havenly (2024) *Online Interior Design and Home Decorating*. Available at: https://havenly.com/ (Accessed: 29 May 2026).
+
+OWASP Foundation (2021) *OWASP Top Ten*. Available at: https://owasp.org/www-project-top-ten/ (Accessed: 29 May 2026).

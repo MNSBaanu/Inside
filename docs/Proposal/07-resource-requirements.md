@@ -11,12 +11,14 @@
 | Category          | Software / Technology                            |
 | ----------------- | ------------------------------------------------ |
 | Web Frontend      | Next.js, TypeScript, Tailwind CSS                |
-| Mobile Frontend   | React Native, TypeScript                         |
+| Mobile Frontend   | React Native, TypeScript, Expo  |
 | Backend           | Node.js, NestJS, TypeScript                      |
+| Real-time         | WebSockets (NestJS Gateway) for messaging          |
 | Database          | PostgreSQL                                       |
 | ORM               | Prisma                                           |
 | File Storage      | Cloudinary                                       |
 | Payment Gateway   | Stripe                                           |
+| Email             | Transactional email API (verification, notifications) |
 | Hosting           | Cloud hosting (Next.js + NestJS + PostgreSQL)    |
 | Development Tools | VS Code, Git, GitHub                             |
 | Testing Tools     | Postman, Swagger                                 |
@@ -28,7 +30,9 @@
 * Cloudinary account for portfolio and deliverable media
 * GitHub repository for source code management, version control, and CI
 * Stripe test mode for milestone payment development
-* Volunteer users for system testing and evaluation
+* Email service account for verification and event notifications
+* Expo push notification credentials for mobile alerts
+* Volunteer users for system testing and evaluation (client, designer, and admin scenarios)
 
 ### Estimated Cost
 
