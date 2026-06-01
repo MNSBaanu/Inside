@@ -1,19 +1,20 @@
-# Deliverables
+# Working System
 
-## Working system
+- Web-based Interior Design Service Platform
+- Mobile Application
+- NestJS REST API
+- PostgreSQL Database System
 
-- **Web application** — interior design service platform for clients, designers, and administrators (Next.js).
+ 
 
-- **Mobile application** — React Native app 
+Documentation
 
-- **REST API** — NestJS backend with authentication, business logic, messaging, and integrations.
+- Technical Documentation
+- User Manual
 
-- **Database system** — PostgreSQL data store with Prisma ORM.
+Additional Deliverables
 
-## Documentation
+- Architecture Diagrams
+- Database Design
+- Test and Evaluation Report
 
-- **Technical documentation** — architecture, data model, API specification, and deployment notes.
-
-- **User manual** — guides for clients, designers, and administrators (web and mobile).
-
-- **Final project report** — project outcomes, evaluation, and analysis.

@@ -1,23 +1,35 @@
 ## References
 
-Cloudinary (2024) *Cloudinary Documentation*. Available at: https://cloudinary.com/documentation (Accessed: 29 May 2026).
+Behance, 2026. *Behance.* [Online]   
+Available at: ++[https://www.behance.net/](https://www.behance.net/)++  
+[Accessed 10 May 2026].
 
-IBM (2024) *What is Three-Tier Architecture?* Available at: https://www.ibm.com/think/topics/three-tier-architecture (Accessed: 29 May 2026).
+Decorilla, 2026. *Decorilla.* [Online]   
+Available at: ++[https://www.decorilla.com/](https://www.decorilla.com/)++  
+[Accessed 10 May 2026].
 
-NestJS (2024) *NestJS Documentation*. Available at: https://docs.nestjs.com/ (Accessed: 29 May 2026).
+Fiverr , 2026. *Fiverr.* [Online]   
+Available at: ++[https://www.fiverr.com/](https://www.fiverr.com/)++  
+[Accessed 10 May 2026].
 
-Prisma (2024) *Prisma Documentation*. Available at: https://www.prisma.io/docs (Accessed: 29 May 2026).
+Havenly, 2026. *Havenly.* [Online]   
+Available at: ++[https://havenly.com/](https://havenly.com/)++  
+[Accessed 10 May 2026].
 
-PostgreSQL Global Development Group (2024) *PostgreSQL Documentation*. Available at: https://www.postgresql.org/docs/ (Accessed: 29 May 2026).
+Houzz, 2026. *Houzz.* [Online]   
+Available at: ++[https://www.houzz.com/](https://www.houzz.com/)++  
+[Accessed 10 May 2026].
 
-Stripe (2024) *Payments Documentation*. Available at: https://stripe.com/docs/payments (Accessed: 29 May 2026).
+Minois, N., 2025. *The Importance of Communication in Project Management.* [Online]   
+Available at: ++[https://instituteprojectmanagement.com/fr/blog/the-crucial-role-of-communication-in-project-management/](https://instituteprojectmanagement.com/fr/blog/the-crucial-role-of-communication-in-project-management/)++  
+[Accessed 20 May 2026].
 
-Vercel (2024) *Next.js Documentation*. Available at: https://nextjs.org/docs (Accessed: 29 May 2026).
+Stripe, 2026. *Stripe.* [Online]   
+Available at: ++[https://stripe.com/](https://stripe.com/)++  
+[Accessed 20 May 2026].
 
-Meta (2024) *React Native Documentation*. Available at: https://reactnative.dev/docs/getting-started (Accessed: 29 May 2026).
+Upwork, 2026. *Upwork.* [Online]   
+Available at: ++[https://www.upwork.com/](https://www.upwork.com/)++  
+[Accessed 10 May 2026].
 
-Decorilla (2024) *Online Interior Design Service*. Available at: https://www.decorilla.com/ (Accessed: 29 May 2026).
-
-Havenly (2024) *Online Interior Design and Home Decorating*. Available at: https://havenly.com/ (Accessed: 29 May 2026).
-
-OWASP Foundation (2021) *OWASP Top Ten*. Available at: https://owasp.org/www-project-top-ten/ (Accessed: 29 May 2026).
+ 
