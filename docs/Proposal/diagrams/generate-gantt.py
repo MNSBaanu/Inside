@@ -1,35 +1,44 @@
 """Generate Scrum sprint Gantt chart for Inside proposal."""
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch
+from matplotlib.patches import FancyBboxPatch, Rectangle
 
 COLOR_LIGHT = "#B1DDF0"
 COLOR_DARK = "#10739e"
 COLOR_TEXT_DARK = "#10739e"
 COLOR_GRID = "#d0e4ef"
 
-# (left label, activity text inside bar — 2 lines max)
+# (sprint label, activity inside bar)
 SPRINTS = [
-    ("Sprint 1", "Requirements, research\n& product backlog"),
-    ("Sprint 2", "Architecture, database\ndesign & setup"),
-    ("Sprint 3", "User management\n& authentication"),
-    ("Sprint 4", "Portfolio, discovery\n& search filters"),
-    ("Sprint 5", "Moodboards, briefs\n& fit scoring"),
-    ("Sprint 6", "Requests, proposals\n& selection"),
+    ("Sprint 1", "Requirements &\nproduct backlog"),
+    ("Sprint 2", "Architecture &\nproject setup"),
+    ("Sprint 3", "User accounts &\nauthentication"),
+    ("Sprint 4", "Discovery &\nsearch filters"),
+    ("Sprint 5", "Moodboards &\nfit scoring"),
+    ("Sprint 6", "Proposals &\nselection"),
     ("Sprint 7", "Messaging &\nnotifications"),
-    ("Sprint 8", "Workspace, timelines\n& workflow"),
-    ("Sprint 9", "Reviews, trust\n& verification"),
+    ("Sprint 8", "Workspace &\nworkflow"),
+    ("Sprint 9", "Reviews &\ntrust features"),
     ("Sprint 10", "Payments &\nmobile app"),
-    ("Sprint 11", "Testing, UAT\n& documentation"),
+    ("Sprint 11", "Testing &\ndocumentation"),
 ]
 
 BAR_WEEKS = 2
 BAR_HEIGHT = 0.78
-BAR_HEIGHT_WIDE = 0.86
-BAR_WEEKS_WIDE = 2.18  # wider bars for Sprint 1–6 (text fit); still 2-week timeboxes
 LABEL_X = -3.8
 
+# Sprint 1–6: full-width bar inside the 2-week slot (no overlap past week boundaries)
+WIDE_COUNT = 6
+WIDE_PAD_X = 0.02
+WIDE_BAR_W = BAR_WEEKS - 2 * WIDE_PAD_X
+WIDE_BAR_H = 0.9
+WIDE_FONT = 7.4
 
-fig, ax = plt.subplots(figsize=(16, 8.5))
+NARROW_PAD_X = 0.06
+NARROW_BAR_W = BAR_WEEKS - 2 * NARROW_PAD_X
+NARROW_FONT = 7.2
+
+
+fig, ax = plt.subplots(figsize=(17, 8.5))
 fig.patch.set_facecolor("white")
 
 n = len(SPRINTS)
@@ -39,26 +48,25 @@ for i, (sprint_label, activity) in enumerate(SPRINTS):
     color = COLOR_LIGHT if i % 2 == 0 else COLOR_DARK
     text_color = COLOR_TEXT_DARK if i % 2 == 0 else "white"
 
-    if i < 6:
-        bar_w = BAR_WEEKS_WIDE
-        bar_h = BAR_HEIGHT_WIDE
-        bar_x = start + (BAR_WEEKS - bar_w) / 2
-        font_size = 8
+    if i < WIDE_COUNT:
+        bar_x = start + WIDE_PAD_X
+        bar_w = WIDE_BAR_W
+        bar_h = WIDE_BAR_H
+        font_size = WIDE_FONT
     else:
-        bar_w = BAR_WEEKS - 0.08
+        bar_x = start + NARROW_PAD_X
+        bar_w = NARROW_BAR_W
         bar_h = BAR_HEIGHT
-        bar_x = start + 0.04
-        font_size = 7.5
+        font_size = NARROW_FONT
 
     bar = FancyBboxPatch(
         (bar_x, y - bar_h / 2),
         bar_w,
         bar_h,
-        boxstyle="round,pad=0.01,rounding_size=0.06",
+        boxstyle="round,pad=0.008,rounding_size=0.05",
         facecolor=color,
         edgecolor=COLOR_DARK,
         linewidth=1.2,
-        transform=ax.transData,
     )
     ax.add_patch(bar)
 
@@ -71,10 +79,20 @@ for i, (sprint_label, activity) in enumerate(SPRINTS):
         fontsize=11,
         fontweight="bold",
         color=COLOR_TEXT_DARK,
+        clip_on=True,
     )
 
-    ax.text(
-        start + BAR_WEEKS / 2,
+    text_x = bar_x + bar_w / 2
+    clip_rect = Rectangle(
+        (bar_x, y - bar_h / 2),
+        bar_w,
+        bar_h,
+        transform=ax.transData,
+        visible=False,
+    )
+    ax.add_patch(clip_rect)
+    label = ax.text(
+        text_x,
         y,
         activity,
         ha="center",
@@ -82,9 +100,10 @@ for i, (sprint_label, activity) in enumerate(SPRINTS):
         fontsize=font_size,
         color=text_color,
         fontweight="medium",
-        linespacing=1.12,
-        zorder=3,
+        linespacing=1.1,
+        zorder=4,
     )
+    label.set_clip_path(clip_rect)
 
 ax.set_xlim(-5, 22.5)
 ax.set_ylim(0.25, n + 0.75)

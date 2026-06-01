@@ -3,6 +3,8 @@
 **Project:** Inside — Interior Design Service Platform  
 **Stack:** Next.js + React Native + **Node.js / NestJS** + **PostgreSQL (Prisma)** + **Cloudinary** + **Stripe** + Cloud Hosting + GitHub
 
+**Brand colours (diagrams):** light `#B1DDF0` · dark `#10739e` (alternating fills; white text on dark)
+
 Match the **lecturer sample layout** ([Sample/](../Sample/)): Figure 1 = feature hub; Figure 2 = detailed three-tier.
 
 | Figure | Style (sample equivalent) | Export file | Source |
@@ -19,17 +21,18 @@ Match the **lecturer sample layout** ([Sample/](../Sample/)): Figure 1 = feature
 Central hub: **INSIDE — Interior Design Service Platform (Web & Mobile)**  
 Eight feature nodes with coloured arrows pointing **inward** to the centre (same layout as sample).
 
-| Position | Feature node | Colour (sample match) |
-|----------|--------------|------------------------|
-| 12 o'clock | Portfolio Discovery | Blue |
-| 1:30 | Moodboards & Brief | Orange |
-| 3 o'clock | Fit Scoring | Green |
-| 4:30 | Requests & Proposals (open + direct) | Orange |
-| 6 o'clock | Stage Workspace | Purple |
-| 7:30 | Milestone Payments | Blue |
-| 9 o'clock | Dual-Role Dashboards | Yellow |
-| 10:30 | Notifications & Messaging | Green |
-| (extended) | Trust & Safety · Admin | Grey (see Figure 2) |
+| Position | Feature node | Colour |
+|----------|--------------|--------|
+| 12 o'clock | Portfolio Discovery | Light `#B1DDF0` / stroke `#10739e` |
+| 1:30 | Moodboards & Brief | Dark `#10739e` / white text |
+| 3 o'clock | Fit Scoring | Light |
+| 4:30 | Requests & Proposals | Dark |
+| 6 o'clock | Stage Workspace | Light |
+| 7:30 | Milestone Payments | Dark |
+| 9 o'clock | Dual-Role Dashboards | Light |
+| 10:30 | Notifications & Messaging | Dark |
+| Centre hub | INSIDE platform | Dark `#10739e` |
+| Figure 2 | Trust & Safety · Admin · Messaging modules | See detailed architecture |
 
 ### Mermaid (export fallback)
 
@@ -55,15 +58,15 @@ flowchart TB
     F7 --> Hub
     F8 --> Hub
 
-    style Hub fill:#2563eb,stroke:#1e40af,color:#fff
-    style F1 fill:#dbeafe,stroke:#2563eb
-    style F2 fill:#ffedd5,stroke:#ea580c
-    style F3 fill:#dcfce7,stroke:#16a34a
-    style F4 fill:#ffedd5,stroke:#ea580c
-    style F5 fill:#f3e8ff,stroke:#9333ea
-    style F6 fill:#dbeafe,stroke:#2563eb
-    style F7 fill:#fef9c3,stroke:#ca8a04
-    style F8 fill:#dcfce7,stroke:#16a34a
+    style Hub fill:#10739e,stroke:#10739e,color:#fff
+    style F1 fill:#B1DDF0,stroke:#10739e,color:#10739e
+    style F2 fill:#10739e,stroke:#10739e,color:#fff
+    style F3 fill:#B1DDF0,stroke:#10739e,color:#10739e
+    style F4 fill:#10739e,stroke:#10739e,color:#fff
+    style F5 fill:#B1DDF0,stroke:#10739e,color:#10739e
+    style F6 fill:#10739e,stroke:#10739e,color:#fff
+    style F7 fill:#B1DDF0,stroke:#10739e,color:#10739e
+    style F8 fill:#10739e,stroke:#10739e,color:#fff
 ```
 
 ---
@@ -191,22 +194,26 @@ flowchart TB
 
     PR --> DB
 
-    style Web fill:#dcfce7,stroke:#16a34a
-    style Mobile fill:#f3e8ff,stroke:#9333ea
-    style MW fill:#fecaca,stroke:#dc2626
-    style PR fill:#e0e7ff,stroke:#4338ca
-    style M1 fill:#dcfce7,stroke:#16a34a
-    style M2 fill:#dcfce7,stroke:#16a34a
-    style M3 fill:#dcfce7,stroke:#16a34a
-    style M4 fill:#dcfce7,stroke:#16a34a
-    style M5 fill:#dcfce7,stroke:#16a34a
-    style M6 fill:#dcfce7,stroke:#16a34a
-    style M7 fill:#dcfce7,stroke:#16a34a
-    style M8 fill:#ffedd5,stroke:#ea580c
-    style M9 fill:#ffedd5,stroke:#ea580c
-    style DB fill:#e9d5ff,stroke:#9333ea
-    style Ext fill:#dbeafe,stroke:#2563eb
-    style CL fill:#fef9c3,stroke:#ca8a04
+    style API fill:#10739e,stroke:#10739e,color:#fff
+    style Web fill:#B1DDF0,stroke:#10739e
+    style Mobile fill:#10739e,stroke:#10739e,color:#fff
+    style MW fill:#B1DDF0,stroke:#10739e
+    style PR fill:#10739e,stroke:#10739e,color:#fff
+    style M1 fill:#B1DDF0,stroke:#10739e
+    style M2 fill:#10739e,stroke:#10739e,color:#fff
+    style M3 fill:#B1DDF0,stroke:#10739e
+    style M4 fill:#10739e,stroke:#10739e,color:#fff
+    style M5 fill:#B1DDF0,stroke:#10739e
+    style M6 fill:#10739e,stroke:#10739e,color:#fff
+    style M7 fill:#B1DDF0,stroke:#10739e
+    style M8 fill:#10739e,stroke:#10739e,color:#fff
+    style M9 fill:#B1DDF0,stroke:#10739e
+    style M10 fill:#10739e,stroke:#10739e,color:#fff
+    style M11 fill:#B1DDF0,stroke:#10739e
+    style M12 fill:#10739e,stroke:#10739e,color:#fff
+    style DB fill:#B1DDF0,stroke:#10739e
+    style Ext fill:#B1DDF0,stroke:#10739e
+    style CL fill:#10739e,stroke:#10739e,color:#fff
 ```
 
 ### ASCII layout (sample-style)
