@@ -1,13 +1,9 @@
 ## Suggested Starting Point
 
-1. **Requirements gathering** – Confirm functional scope against the approved topic and documented functional requirements; map each requirement to proposal sections (Objectives, Proposed Solution, Deliverables) and sprint tasks; define MVP vs Phase 2 (e.g. advanced analytics, Stripe Connect, optional AI/Rekognition).
+1. **Requirements and research (Sprint 1)** — Gather functional requirements, review competing platforms, complete literature review, and create the product backlog.
 
-2. **Domain and technology research** – Compare Havenly, Decorilla, Houzz, Fiverr, Upwork, and Behance for discovery, collaboration, payment, and trust gaps; record findings for the critical review objective.
+2. **Design and setup (Sprint 2)** — Define system architecture and database design, produce wireframes, configure PostgreSQL, Cloudinary, Stripe, and email services, and scaffold the NestJS API, Next.js web app, and React Native mobile app.
 
-3. **System analysis and design** – Produce ER diagram, API outline, wireframes (discovery, moodboard, workspace, messaging, admin console, mobile home), and export feature overview and detailed architecture diagram PNGs (draw.io).
+3. **Iterative development (Sprints 3–10)** — Implement features sprint by sprint: authentication, discovery, moodboards and briefs, hiring, collaboration, workspace, trust and safety, payments, and mobile features; demo a working increment at each sprint review.
 
-4. **Development environment setup** – PostgreSQL, Cloudinary, Stripe test mode, email service for verification and notifications, GitHub repo; scaffold NestJS API (Prisma), Next.js web app, and React Native mobile app.
-
-5. **Core system development** – Shared API first: auth (including reset, verify, RBAC), then portfolios and discovery (search, favourites), moodboards and brief, fit scoring, requests and proposals, messaging and notifications, stage workspace (feedback, timeline, activity log), Stripe ledger, reviews, trust and safety, admin module; web leads each module, mobile follows for notifications, messages, approve, and pay.
-
-6. **Testing and evaluation planning** – Define test scenarios covering all twelve functional areas (or agreed MVP subset), UAT volunteers, and survey items for brief clarity, fit score, and stage workflow before final integration testing.
+4. **Testing and closure (Sprint 11)** — Conduct system testing, user acceptance testing, evaluation, deployment, documentation, and final refinements before project completion.
