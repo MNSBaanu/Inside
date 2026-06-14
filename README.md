@@ -8,7 +8,7 @@
 [![Mobile](https://img.shields.io/badge/mobile-React%20Native-61DAFB?logo=react)]()
 [![Database](https://img.shields.io/badge/database-PostgreSQL-4169E1?logo=postgresql)]()
 
----
+**Done by MNSBaanu**
 
 ## Overview
 
@@ -54,9 +54,6 @@ inside/
 ├── web/                  # Next.js web application
 ├── app/                  # React Native mobile app
 ├── docs/                 # Project documentation
-│   ├── Approval/
-│   ├── Intermit/
-│   └── Proposal/
 └── README.md
 ```
 
@@ -159,31 +156,11 @@ http://localhost:3000/api/docs    # Swagger (planned)
 |------|----------|
 | [`docs/Proposal/Functions.md`](docs/Proposal/Functions.md) | Functional requirements |
 | [`docs/Proposal/diagrams/`](docs/Proposal/diagrams/) | Architecture diagrams |
-| [`docs/Proposal/`](docs/Proposal/) | Full project proposal |
-| [`docs/Approval/`](docs/Approval/) | Topic approval |
-
----
-
-## Roadmap
-
-- [x] Topic approval
-- [x] Project proposal & requirements draft
-- [ ] System design (architecture, database, UI wireframes)
-- [ ] API scaffold (`api/`)
-- [ ] Web app scaffold (`web/`)
-- [ ] Mobile app scaffold (`app/`)
-- [ ] Core features (auth, portfolios, projects, payments)
-- [ ] Testing & evaluation
-- [ ] Production deployment
-
----
-
 ## Contributing
 
-This is an academic final-year project. External contributions are not accepted at this stage. For supervisor review, refer to documentation under `docs/`.
-
----
+This is an academic final-year project. External contributions are
+not accepted at this stage. 
 
 ## License
 
-All rights reserved. Academic project — not licensed for commercial use.
+All rights reserved. Academic project
