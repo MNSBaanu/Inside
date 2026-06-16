@@ -1,8 +1,20 @@
 # Project Interim Report — Discussion & Requirements
 
+## Writing Guidelines
+
+Follow these when drafting the report:
+
+- Submit as a **PDF** file.
+- The report is a **formal document** and should be written in **formal English**.
+- Write for someone who is **technically proficient** but not necessarily familiar with this particular project.
+- Do **not** use possessive or first-person words such as *I*, *me*, *my*, *we*, etc.
+- The report should cover **everything** detailed in this document.
+- **Delete all guidance notes** from the template before submission.
+
 ## Before Submission
 
-- Remove **submission information** from the template before submission.
+- Remove **submission information** and **guidance notes** from the template before submission.
+- Export and submit the final version as **PDF**.
 
 ---
 
