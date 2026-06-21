@@ -4,123 +4,120 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="&lt;b&gt;DFD Context Diagram — Inside Interior Design Service Platform&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontColor=#10739e;" vertex="1" parent="1">
-          <mxGeometry x="200" y="10" width="700" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="process" value="0&lt;br&gt;&lt;b&gt;Inside Platform&lt;/b&gt;&lt;br&gt;Interior Design Service Marketplace" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=13;fontColor=#ffffff;fontStyle=0;" vertex="1" parent="1">
+        <mxCell id="process" value="0&lt;br&gt;Inside Platform&lt;br&gt;Interior Design Marketplace" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=1.5;" vertex="1" parent="1">
           <mxGeometry x="380" y="320" width="280" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ent-client" value="Client" style="whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontColor=#10739e;fontStyle=1;rounded=0;" vertex="1" parent="1">
+        <mxCell id="ent-client" value="Client" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fillColor=#fad7ac;strokeColor=#b46504;strokeWidth=1.5;" vertex="1" parent="1">
           <mxGeometry x="80" y="330" width="140" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="ent-designer" value="Designer" style="whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontColor=#10739e;fontStyle=1;rounded=0;" vertex="1" parent="1">
+        <mxCell id="ent-designer" value="Designer" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;" vertex="1" parent="1">
           <mxGeometry x="830" y="330" width="140" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="ent-admin" value="Admin" style="whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontColor=#10739e;fontStyle=1;rounded=0;" vertex="1" parent="1">
+        <mxCell id="ent-admin" value="Admin" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fillColor=#b0e3e6;strokeColor=#0e8088;strokeWidth=1.5;" vertex="1" parent="1">
           <mxGeometry x="830" y="530" width="140" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="ent-stripe" value="Stripe" style="whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontColor=#10739e;fontStyle=1;rounded=0;" vertex="1" parent="1">
+        <mxCell id="ent-stripe" value="Stripe" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fillColor=#fad9d5;strokeColor=#ae4132;strokeWidth=1.5;" vertex="1" parent="1">
           <mxGeometry x="830" y="130" width="140" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="ent-cloudinary" value="Cloudinary" style="whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontColor=#10739e;fontStyle=1;rounded=0;" vertex="1" parent="1">
+        <mxCell id="ent-cloudinary" value="Cloudinary" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1.5;" vertex="1" parent="1">
           <mxGeometry x="80" y="130" width="140" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="e-client-process-1" value="register/login details" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="ent-client" target="process">
+        <mxCell id="e-client-process-1" value="register/login details" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="ent-client" target="process">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-client-process-2" value="browse/search query" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="ent-client" target="process">
+        <mxCell id="e-client-process-2" value="browse/search query" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="ent-client" target="process">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-client-process-3" value="moodboard/brief data" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="ent-client" target="process">
+        <mxCell id="e-client-process-3" value="moodboard/brief data" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="ent-client" target="process">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-client-process-4" value="project request" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="ent-client" target="process">
+        <mxCell id="e-client-process-4" value="project request" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="ent-client" target="process">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-client-process-5" value="payment approval" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="ent-client" target="process">
+        <mxCell id="e-client-process-5" value="payment approval" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="ent-client" target="process">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-process-client-1" value="portfolio data" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="process" target="ent-client">
+        <mxCell id="e-process-client-1" value="portfolio data" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="process" target="ent-client">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-process-client-2" value="fit scores" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="process" target="ent-client">
+        <mxCell id="e-process-client-2" value="fit scores" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="process" target="ent-client">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-process-client-3" value="proposals" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="process" target="ent-client">
+        <mxCell id="e-process-client-3" value="proposals" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="process" target="ent-client">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-process-client-4" value="project status" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="process" target="ent-client">
+        <mxCell id="e-process-client-4" value="project status" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="process" target="ent-client">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-designer-process-1" value="portfolio upload" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="ent-designer" target="process">
+        <mxCell id="e-designer-process-1" value="portfolio upload" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="ent-designer" target="process">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-designer-process-2" value="proposal submission" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="ent-designer" target="process">
+        <mxCell id="e-designer-process-2" value="proposal submission" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="ent-designer" target="process">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-designer-process-3" value="deliverable upload" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="ent-designer" target="process">
+        <mxCell id="e-designer-process-3" value="deliverable upload" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="ent-designer" target="process">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-process-designer-1" value="request notification" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="process" target="ent-designer">
+        <mxCell id="e-process-designer-1" value="request notification" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="process" target="ent-designer">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-process-designer-2" value="approval notice" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="process" target="ent-designer">
+        <mxCell id="e-process-designer-2" value="approval notice" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="process" target="ent-designer">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-admin-process-1" value="verification/mgmt requests" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="ent-admin" target="process">
+        <mxCell id="e-admin-process-1" value="verification/mgmt requests" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="ent-admin" target="process">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-process-admin-1" value="analytics/reports" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="process" target="ent-admin">
+        <mxCell id="e-process-admin-1" value="analytics/reports" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="process" target="ent-admin">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-process-stripe-1" value="payment intent" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="process" target="ent-stripe">
+        <mxCell id="e-process-stripe-1" value="payment intent" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="process" target="ent-stripe">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-stripe-process-1" value="webhook event" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="ent-stripe" target="process">
+        <mxCell id="e-stripe-process-1" value="webhook event" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="ent-stripe" target="process">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-process-cloudinary-1" value="image upload" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="process" target="ent-cloudinary">
+        <mxCell id="e-process-cloudinary-1" value="image upload" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="process" target="ent-cloudinary">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e-cloudinary-process-1" value="CDN URL" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="ent-cloudinary" target="process">
+        <mxCell id="e-cloudinary-process-1" value="CDN URL" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;endArrow=classic;endFill=1;fontSize=10;fontFamily=Tahoma;fontStyle=1;" edge="1" parent="1" source="ent-cloudinary" target="process">
           <mxGeometry relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>

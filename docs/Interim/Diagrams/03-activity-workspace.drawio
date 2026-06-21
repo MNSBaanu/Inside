@@ -4,61 +4,58 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="&lt;b&gt;Activity Diagram — Project Stage Workspace &amp; Milestone Payments&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontColor=#10739e;" vertex="1" parent="1">
-          <mxGeometry x="250" y="10" width="700" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="swl-designer" value="Designer" style="swimlane;startSize=30;fillColor=#eef7fc;strokeColor=#10739e;fontStyle=1;fontSize=13;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="swl-designer" value="Designer" style="swimlane;startSize=32;fillColor=#f8f9fa;strokeColor=#666666;fontStyle=1;fontSize=12;fontFamily=Tahoma;align=left;verticalAlign=top;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="20" y="50" width="320" height="920" as="geometry" />
         </mxCell>
-        <mxCell id="swl-client" value="Client" style="swimlane;startSize=30;fillColor=#eef7fc;strokeColor=#10739e;fontStyle=1;fontSize=13;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="swl-client" value="Client" style="swimlane;startSize=32;fillColor=#f8f9fa;strokeColor=#666666;fontStyle=1;fontSize=12;fontFamily=Tahoma;align=left;verticalAlign=top;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="340" y="50" width="320" height="920" as="geometry" />
         </mxCell>
-        <mxCell id="swl-system" value="System + Stripe" style="swimlane;startSize=30;fillColor=#eef7fc;strokeColor=#10739e;fontStyle=1;fontSize=13;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="swl-system" value="System + Stripe" style="swimlane;startSize=32;fillColor=#f8f9fa;strokeColor=#666666;fontStyle=1;fontSize=12;fontFamily=Tahoma;align=left;verticalAlign=top;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="660" y="50" width="520" height="920" as="geometry" />
         </mxCell>
-        <mxCell id="start" value="" style="ellipse;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="start" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
           <mxGeometry x="170" y="80" width="20" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="act-stage-select" value="Select Current Stage&#xa;(Concept / Design /&#xa;Revision / Completion)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="act-stage-select" value="Select Current Stage&#xa;(Concept / Design /&#xa;Revision / Completion)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="85" y="130" width="190" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="act-upload" value="Upload Deliverable&#xa;(with version tracking)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="act-upload" value="Upload Deliverable&#xa;(with version tracking)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="85" y="230" width="190" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="act-save-file" value="Save File to Cloudinary&#xa;&amp; Record Version" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#ffffff;" vertex="1" parent="1">
+        <mxCell id="act-save-file" value="Save File to Cloudinary&#xa;&amp; Record Version" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="710" y="230" width="190" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="act-notify-client" value="Notify Client&#xa;(In-app + Push + Email)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#ffffff;" vertex="1" parent="1">
+        <mxCell id="act-notify-client" value="Notify Client&#xa;(In-app + Push + Email)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="710" y="320" width="190" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="act-review" value="Review Deliverable&#xa;View + Download" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="act-review" value="Review Deliverable&#xa;View + Download" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="390" y="320" width="190" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="decision-approve" value="Approve?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="decision-approve" value="Approve?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="410" y="420" width="150" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="act-reject" value="Reject with Feedback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="act-reject" value="Reject with Feedback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="390" y="550" width="190" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="act-revise" value="Revise &amp; Re-upload" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="act-revise" value="Revise &amp; Re-upload" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="85" y="550" width="190" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="act-process-payment" value="Process Milestone&#xa;Payment via Stripe" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#ffffff;" vertex="1" parent="1">
+        <mxCell id="act-process-payment" value="Process Milestone&#xa;Payment via Stripe" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="710" y="550" width="190" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="act-update-ledger" value="Update Payment&#xa;Ledger &amp; Advance Stage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#ffffff;" vertex="1" parent="1">
+        <mxCell id="act-update-ledger" value="Update Payment&#xa;Ledger &amp; Advance Stage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="710" y="650" width="190" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="decision-last-stage" value="Last Stage?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="decision-last-stage" value="Last Stage?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="710" y="750" width="150" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="act-complete" value="Project Complete&#xa;(Final Review)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="act-complete" value="Project Complete&#xa;(Final Review)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="710" y="870" width="190" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="act-pay-approve" value="Approve &amp; Pay&#xa;Milestone" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="act-pay-approve" value="Approve &amp; Pay&#xa;Milestone" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="390" y="550" width="190" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="end" value="" style="ellipse;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="end" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
           <mxGeometry x="795" y="900" width="20" height="20" as="geometry" />
         </mxCell>
         <mxCell id="label-yes" value="Yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
@@ -73,49 +70,49 @@
         <mxCell id="label-last-no" value="No" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
           <mxGeometry x="710" y="835" width="30" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="e-start-stage" edge="1" parent="1" source="start" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-stage-select">
+        <mxCell id="e-start-stage" edge="1" parent="1" source="start" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-stage-select">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-stage-upload" edge="1" parent="1" source="act-stage-select" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-upload">
+        <mxCell id="e-stage-upload" edge="1" parent="1" source="act-stage-select" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-upload">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-upload-save" edge="1" parent="1" source="act-upload" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-save-file">
+        <mxCell id="e-upload-save" edge="1" parent="1" source="act-upload" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-save-file">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-save-notify" edge="1" parent="1" source="act-save-file" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-notify-client">
+        <mxCell id="e-save-notify" edge="1" parent="1" source="act-save-file" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-notify-client">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-notify-review" edge="1" parent="1" source="act-notify-client" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-review">
+        <mxCell id="e-notify-review" edge="1" parent="1" source="act-notify-client" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-review">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-review-decision" edge="1" parent="1" source="act-review" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="decision-approve">
+        <mxCell id="e-review-decision" edge="1" parent="1" source="act-review" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="decision-approve">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-yes-pay" edge="1" parent="1" source="decision-approve" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-pay-approve">
+        <mxCell id="e-yes-pay" edge="1" parent="1" source="decision-approve" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-pay-approve">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-pay-process" edge="1" parent="1" source="act-pay-approve" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-process-payment">
+        <mxCell id="e-pay-process" edge="1" parent="1" source="act-pay-approve" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-process-payment">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-process-ledger" edge="1" parent="1" source="act-process-payment" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-update-ledger">
+        <mxCell id="e-process-ledger" edge="1" parent="1" source="act-process-payment" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-update-ledger">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-ledger-decision" edge="1" parent="1" source="act-update-ledger" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="decision-last-stage">
+        <mxCell id="e-ledger-decision" edge="1" parent="1" source="act-update-ledger" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="decision-last-stage">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-yes-complete" edge="1" parent="1" source="decision-last-stage" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-complete">
+        <mxCell id="e-yes-complete" edge="1" parent="1" source="decision-last-stage" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-complete">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-complete-end" edge="1" parent="1" source="act-complete" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="end">
+        <mxCell id="e-complete-end" edge="1" parent="1" source="act-complete" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="end">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-no-reject" edge="1" parent="1" source="decision-approve" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-reject">
+        <mxCell id="e-no-reject" edge="1" parent="1" source="decision-approve" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-reject">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-reject-revise" edge="1" parent="1" source="act-reject" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-revise">
+        <mxCell id="e-reject-revise" edge="1" parent="1" source="act-reject" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-revise">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-revise-upload" edge="1" parent="1" source="act-revise" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-upload">
+        <mxCell id="e-revise-upload" edge="1" parent="1" source="act-revise" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;" target="act-upload">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>

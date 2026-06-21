@@ -4,141 +4,138 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="&lt;b&gt;Sequence Diagram — Milestone Payment Flow&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontColor=#10739e;" vertex="1" parent="1">
-          <mxGeometry x="300" y="10" width="600" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="lifeline-client" value="Client" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontColor=#10739e;strokeColor=#10739e;fillColor=#b1ddf0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="lifeline-client" value="Client" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontFamily=Tahoma;fontStyle=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="60" y="70" width="100" height="750" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline-designer" value="Designer" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontColor=#10739e;strokeColor=#10739e;fillColor=#b1ddf0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="lifeline-designer" value="Designer" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontFamily=Tahoma;fontStyle=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="230" y="70" width="100" height="750" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline-webapp" value="Web / Mobile&#xa;App" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontColor=#10739e;strokeColor=#10739e;fillColor=#b1ddf0;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="lifeline-webapp" value="Web / Mobile&#xa;App" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontColor=#10739e;strokeColor=#10739e;fillColor=#b1ddf0;fontSize=11;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="420" y="70" width="100" height="750" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline-api" value="NestJS&#xa;API" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontColor=#ffffff;strokeColor=#10739e;fillColor=#10739e;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="lifeline-api" value="NestJS&#xa;API" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontFamily=Tahoma;fontStyle=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="590" y="70" width="100" height="750" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline-db" value="PostgreSQL&#xa;(Prisma)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontColor=#10739e;strokeColor=#10739e;fillColor=#b1ddf0;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="lifeline-db" value="PostgreSQL&#xa;(Prisma)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontColor=#10739e;strokeColor=#10739e;fillColor=#b1ddf0;fontSize=11;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="780" y="70" width="110" height="750" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline-stripe" value="Stripe" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontColor=#10739e;strokeColor=#10739e;fillColor=#b1ddf0;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="lifeline-stripe" value="Stripe" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;rounded=0;fontColor=#10739e;strokeColor=#10739e;fillColor=#b1ddf0;fontSize=11;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="980" y="70" width="100" height="750" as="geometry" />
         </mxCell>
-        <mxCell id="msg1" value="1. Upload deliverable&#xa;for current stage" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg1" value="1. Upload deliverable&#xa;for current stage" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="230" y="150" width="180" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="msg2" value="2. Forward to API" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg2" value="2. Forward to API" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="325" y="210" width="170" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="msg3" value="3. Save file +&#xa;create version" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg3" value="3. Save file +&#xa;create version" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="595" y="260" width="180" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="msg4" value="4. Return success" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg4" value="4. Return success" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="595" y="320" width="180" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="msg5" value="5. Push notification&#xa;&quot;Stage ready for review&quot;" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg5" value="5. Push notification&#xa;&quot;Stage ready for review&quot;" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="425" y="370" width="155" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="msg6" value="6. View deliverable" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg6" value="6. View deliverable" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="60" y="430" width="170" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="msg7" value="7. Approve stage" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg7" value="7. Approve stage" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="60" y="480" width="170" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="msg8" value="8. Submit approval" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg8" value="8. Submit approval" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="325" y="530" width="170" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="msg9" value="9. Validate stage +&#xa;create payment intent" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg9" value="9. Validate stage +&#xa;create payment intent" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="595" y="580" width="180" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="msg10" value="10. Record payment&#xa;intent (pending)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg10" value="10. Record payment&#xa;intent (pending)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="690" y="640" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="msg11" value="11. Create Checkout&#xa;Session" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg11" value="11. Create Checkout&#xa;Session" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="690" y="700" width="180" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="msg12" value="12. Payment UI" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+        <mxCell id="msg12" value="12. Payment UI" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="60" y="760" width="170" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="a1" edge="1" parent="1" source="lifeline-designer" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="lifeline-webapp">
+        <mxCell id="a1" edge="1" parent="1" source="lifeline-designer" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;" target="lifeline-webapp">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="480" y="165" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="a2" edge="1" parent="1" source="lifeline-webapp" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="lifeline-api">
+        <mxCell id="a2" edge="1" parent="1" source="lifeline-webapp" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;" target="lifeline-api">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="640" y="225" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="a3" edge="1" parent="1" source="lifeline-api" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="lifeline-db">
+        <mxCell id="a3" edge="1" parent="1" source="lifeline-api" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;" target="lifeline-db">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="835" y="275" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="a4" edge="1" parent="1" source="lifeline-db" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;dashed=1;" target="lifeline-api">
+        <mxCell id="a4" edge="1" parent="1" source="lifeline-db" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;dashed=1;" target="lifeline-api">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="640" y="335" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="a5" edge="1" parent="1" source="lifeline-api" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="lifeline-webapp">
+        <mxCell id="a5" edge="1" parent="1" source="lifeline-api" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;" target="lifeline-webapp">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="470" y="385" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="a6" edge="1" parent="1" source="lifeline-webapp" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="lifeline-client">
+        <mxCell id="a6" edge="1" parent="1" source="lifeline-webapp" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;" target="lifeline-client">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="110" y="445" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="a7" edge="1" parent="1" source="lifeline-client" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="lifeline-webapp">
+        <mxCell id="a7" edge="1" parent="1" source="lifeline-client" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;" target="lifeline-webapp">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="470" y="495" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="a8" edge="1" parent="1" source="lifeline-webapp" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="lifeline-api">
+        <mxCell id="a8" edge="1" parent="1" source="lifeline-webapp" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;" target="lifeline-api">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="640" y="545" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="a9" edge="1" parent="1" source="lifeline-api" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="lifeline-db">
+        <mxCell id="a9" edge="1" parent="1" source="lifeline-api" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;" target="lifeline-db">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="835" y="595" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="a10" edge="1" parent="1" source="lifeline-db" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;dashed=1;" target="lifeline-api">
+        <mxCell id="a10" edge="1" parent="1" source="lifeline-db" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;dashed=1;" target="lifeline-api">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="640" y="655" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="a11" edge="1" parent="1" source="lifeline-api" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="lifeline-stripe">
+        <mxCell id="a11" edge="1" parent="1" source="lifeline-api" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;" target="lifeline-stripe">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1030" y="715" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="a12" edge="1" parent="1" source="lifeline-stripe" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;dashed=1;" target="lifeline-client">
+        <mxCell id="a12" edge="1" parent="1" source="lifeline-stripe" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#B20000;strokeWidth=1.5;endArrow=classic;endFill=1;fontFamily=Tahoma;fontStyle=1;fillColor=#e51400;dashed=1;" target="lifeline-client">
           <mxGeometry x="0.5" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="110" y="775" />
