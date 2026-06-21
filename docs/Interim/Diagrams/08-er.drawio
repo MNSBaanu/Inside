@@ -1,0 +1,94 @@
+<mxfile host="Electron" agent="Cursor">
+  <diagram name="ER Diagram" id="er-diagram">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="&lt;b&gt;ER Diagram — Inside Database Schema&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="450" y="10" width="700" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-user" value="&lt;b&gt;User&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;email: String [unique]&lt;br&gt;passwordHash: String&lt;br&gt;role: Enum(client/designer/admin)&lt;br&gt;isVerified: Boolean&lt;br&gt;createdAt: DateTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#ffffff;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="230" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-portfolio" value="&lt;b&gt;Portfolio&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK designerId: UUID&lt;br&gt;title: String&lt;br&gt;images: String[]&lt;br&gt;style: String&lt;br&gt;roomType: String&lt;br&gt;budget: Decimal&lt;br&gt;createdAt: DateTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;align=left;" vertex="1" parent="1">
+          <mxGeometry x="600" y="80" width="230" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-moodboard" value="&lt;b&gt;Moodboard&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK clientId: UUID&lt;br&gt;name: String&lt;br&gt;savedItems: JSON&lt;br&gt;createdAt: DateTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;align=left;" vertex="1" parent="1">
+          <mxGeometry x="600" y="270" width="230" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-brief" value="&lt;b&gt;Brief&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK clientId: UUID&lt;br&gt;FK moodboardId: UUID&lt;br&gt;styles: JSON&lt;br&gt;rooms: String[]&lt;br&gt;budgetRange: String&lt;br&gt;description: Text" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;align=left;" vertex="1" parent="1">
+          <mxGeometry x="600" y="440" width="230" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-request" value="&lt;b&gt;ProjectRequest&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK clientId: UUID&lt;br&gt;FK briefId: UUID [nullable]&lt;br&gt;type: Enum(open/direct)&lt;br&gt;status: Enum(open/closed)&lt;br&gt;budget: Decimal&lt;br&gt;createdAt: DateTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="270" width="250" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-proposal" value="&lt;b&gt;Proposal&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK requestId: UUID&lt;br&gt;FK designerId: UUID&lt;br&gt;scope: Text&lt;br&gt;timeline: String&lt;br&gt;stageFees: JSON&lt;br&gt;status: Enum(pending/accepted/rejected)&lt;br&gt;submittedAt: DateTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=8;fontColor=#10739e;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="480" width="250" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-project" value="&lt;b&gt;Project&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK proposalId: UUID&lt;br&gt;FK clientId: UUID&lt;br&gt;FK designerId: UUID&lt;br&gt;currentStage: Int&lt;br&gt;status: Enum(active/completed/cancelled)&lt;br&gt;createdAt: DateTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#ffffff;align=left;" vertex="1" parent="1">
+          <mxGeometry x="350" y="640" width="250" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-stage" value="&lt;b&gt;ProjectStage&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK projectId: UUID&lt;br&gt;stageOrder: Int&lt;br&gt;name: Enum(concept/design/revision/completion)&lt;br&gt;status: Enum(pending/in-review/approved)&lt;br&gt;dueDate: Date" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=8;fontColor=#10739e;align=left;" vertex="1" parent="1">
+          <mxGeometry x="600" y="640" width="240" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-deliverable" value="&lt;b&gt;Deliverable&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK stageId: UUID&lt;br&gt;version: Int&lt;br&gt;fileUrl: String&lt;br&gt;feedback: Text [nullable]&lt;br&gt;uploadedAt: DateTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="680" width="240" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-payment" value="&lt;b&gt;MilestonePayment&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK projectId: UUID&lt;br&gt;FK stageId: UUID&lt;br&gt;amount: Decimal&lt;br&gt;status: Enum(pending/completed/failed)&lt;br&gt;stripeIntentId: String&lt;br&gt;paidAt: DateTime [nullable]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=8;fontColor=#10739e;align=left;" vertex="1" parent="1">
+          <mxGeometry x="350" y="840" width="250" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-message" value="&lt;b&gt;Message&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK senderId: UUID&lt;br&gt;FK receiverId: UUID&lt;br&gt;FK projectId: UUID&lt;br&gt;content: Text&lt;br&gt;isRead: Boolean&lt;br&gt;sentAt: DateTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;align=left;" vertex="1" parent="1">
+          <mxGeometry x="600" y="840" width="240" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-user-portfolio" value="1∶N" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;startArrow=classic;" edge="1" parent="1" source="ent-user" target="ent-portfolio">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-user-moodboard" value="1∶N" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;startArrow=classic;" edge="1" parent="1" source="ent-user" target="ent-moodboard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-user-request" value="1∶N" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;startArrow=classic;" edge="1" parent="1" source="ent-user" target="ent-request">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-request-proposal" value="1∶N" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;startArrow=classic;" edge="1" parent="1" source="ent-request" target="ent-proposal">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-proposal-project" value="1∶1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;" edge="1" parent="1" source="ent-proposal" target="ent-project">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-project-stage" value="1∶N" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;startArrow=classic;" edge="1" parent="1" source="ent-project" target="ent-stage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-stage-del" value="1∶N" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;startArrow=classic;" edge="1" parent="1" source="ent-stage" target="ent-deliverable">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-stage-pay" value="1∶1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;" edge="1" parent="1" source="ent-stage" target="ent-payment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-project-message" value="1∶N" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;startArrow=classic;" edge="1" parent="1" source="ent-project" target="ent-message">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-favourite" value="&lt;b&gt;Favourite&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK clientId: UUID&lt;br&gt;FK designerId: UUID&lt;br&gt;createdAt: DateTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;align=left;" vertex="1" parent="1">
+          <mxGeometry x="350" y="80" width="220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="ent-review" value="&lt;b&gt;Review&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;PK id: UUID&lt;br&gt;FK projectId: UUID&lt;br&gt;FK reviewerId: UUID&lt;br&gt;rating: Int&lt;br&gt;comment: Text&lt;br&gt;createdAt: DateTime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;align=left;" vertex="1" parent="1">
+          <mxGeometry x="350" y="480" width="220" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-project-review" value="1∶1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;" edge="1" parent="1" source="ent-project" target="ent-review">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-user-fav" value="1∶N" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;startArrow=classic;" edge="1" parent="1" source="ent-user" target="ent-favourite">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-moodboard-brief" value="1∶1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;" edge="1" parent="1" source="ent-moodboard" target="ent-brief">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-brief-request" value="1∶1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;endArrow=classic;endFill=1;" edge="1" parent="1" source="ent-brief" target="ent-request">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="&lt;b&gt;Notation:&lt;/b&gt;&lt;br&gt;PK = Primary Key&lt;br&gt;FK = Foreign Key&lt;br&gt;1∶N = One-to-Many&lt;br&gt;1∶1 = One-to-One" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=9;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="900" y="80" width="200" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

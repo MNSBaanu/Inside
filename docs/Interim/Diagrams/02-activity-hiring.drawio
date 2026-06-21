@@ -1,0 +1,133 @@
+<mxfile host="Electron" agent="Cursor">
+  <diagram name="Activity Diagram - Client Hiring Flow" id="activity-hiring">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="980" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="&lt;b&gt;Activity Diagram — Client Hiring Flow&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="200" y="10" width="700" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="swl-client" value="Client" style="swimlane;startSize=30;fillColor=#eef7fc;strokeColor=#10739e;fontStyle=1;fontSize=13;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="20" y="50" width="350" height="880" as="geometry" />
+        </mxCell>
+        <mxCell id="swl-system" value="System" style="swimlane;startSize=30;fillColor=#eef7fc;strokeColor=#10739e;fontStyle=1;fontSize=13;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="370" y="50" width="350" height="880" as="geometry" />
+        </mxCell>
+        <mxCell id="swl-designer" value="Designer" style="swimlane;startSize=30;fillColor=#eef7fc;strokeColor=#10739e;fontStyle=1;fontSize=13;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="720" y="50" width="350" height="880" as="geometry" />
+        </mxCell>
+        <mxCell id="start" value="" style="ellipse;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="165" y="80" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="act-browse" value="Browse Designer Portfolios" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="90" y="130" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-moodboard" value="Create Moodboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="90" y="210" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-brief" value="Generate Brief" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="420" y="210" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-fitscore" value="Display Fit Scores" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="420" y="290" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-viewfits" value="Review Fit Scores" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="90" y="290" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="decision-hire" value="Hiring Path?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="110" y="390" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="act-openreq" value="Post Open Request&#xa;(with moodboard + brief)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="90" y="510" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-directreq" value="Contact Designer&#xa;&amp; Send Direct Request" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="90" y="610" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-receive-open" value="Receive Open Request" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="780" y="510" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-receive-direct" value="Receive Direct Request" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="780" y="610" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-submit-proposal" value="Submit Proposal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="780" y="700" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-notify-client" value="Notify Client&#xa;&amp; Display Proposal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="420" y="700" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-compare" value="Compare Proposals&#xa;(if multiple)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="90" y="780" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-accept" value="Accept Proposal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="420" y="780" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="act-project-created" value="Project Created&#xa;(Workspace Active)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="420" y="860" width="170" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="end" value="" style="ellipse;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="485" y="890" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="label-open" value="Open Request" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="50" y="480" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="label-direct" value="Direct Contact" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="240" y="480" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="label-accept" value="accept" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="300" y="770" width="50" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="e-start-browse" edge="1" parent="1" source="start" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-browse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-browse-moodboard" edge="1" parent="1" source="act-browse" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-moodboard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-moodboard-brief" edge="1" parent="1" source="act-moodboard" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-brief">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-brief-fitscore" edge="1" parent="1" source="act-brief" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-fitscore">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-fitscore-view" edge="1" parent="1" source="act-fitscore" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-viewfits">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-view-decision" edge="1" parent="1" source="act-viewfits" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="decision-hire">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-decision-open" edge="1" parent="1" source="decision-hire" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-openreq">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-decision-direct" edge="1" parent="1" source="decision-hire" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-directreq">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-open-receive" edge="1" parent="1" source="act-openreq" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-receive-open">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-direct-receive" edge="1" parent="1" source="act-directreq" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-receive-direct">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-receive-proposal" edge="1" parent="1" source="act-receive-open" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-submit-proposal">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-receive-direct-proposal" edge="1" parent="1" source="act-receive-direct" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-submit-proposal">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-proposal-notify" edge="1" parent="1" source="act-submit-proposal" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-notify-client">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-notify-compare" edge="1" parent="1" source="act-notify-client" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-compare">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-compare-accept" edge="1" parent="1" source="act-compare" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-accept">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-accept-project" edge="1" parent="1" source="act-accept" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="act-project-created">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-project-end" edge="1" parent="1" source="act-project-created" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;" target="end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

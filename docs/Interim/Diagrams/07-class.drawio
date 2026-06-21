@@ -1,0 +1,100 @@
+<mxfile host="Electron" agent="Cursor">
+  <diagram name="Class Diagram" id="class-diagram">
+    <mxGraphModel dx="1600" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="&lt;b&gt;Class Diagram — Inside Interior Design Service Platform&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="450" y="10" width="700" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="class-user" value="&lt;b&gt;&amp;lt;&amp;lt;abstract&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;&lt;b&gt;User&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- email: String&lt;br&gt;- passwordHash: String&lt;br&gt;- role: RoleEnum&lt;br&gt;- createdAt: DateTime&lt;br&gt;- updatedAt: DateTime&lt;br&gt;─────────&lt;br&gt;+ register()&lt;br&gt;+ login()&lt;br&gt;+ updateProfile()&lt;br&gt;+ switchRole()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="240" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="class-client" value="&lt;b&gt;Client&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- savedDesigners: List&amp;lt;UUID&amp;gt;&lt;br&gt;- activeProjectIds: List&amp;lt;UUID&amp;gt;&lt;br&gt;─────────&lt;br&gt;+ createMoodboard()&lt;br&gt;+ postRequest()&lt;br&gt;+ approveStage()&lt;br&gt;+ makePayment()&lt;br&gt;+ submitReview()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="50" y="280" width="210" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="class-designer" value="&lt;b&gt;Designer&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- isVerified: Boolean&lt;br&gt;- availability: Boolean&lt;br&gt;- portfolioIds: List&amp;lt;UUID&amp;gt;&lt;br&gt;─────────&lt;br&gt;+ createPortfolio()&lt;br&gt;+ submitProposal()&lt;br&gt;+ uploadDeliverable()&lt;br&gt;+ setAvailability()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="310" y="280" width="210" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="class-portfolio" value="&lt;b&gt;Portfolio&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- designerId: UUID&lt;br&gt;- title: String&lt;br&gt;- images: String[]&lt;br&gt;- style: String&lt;br&gt;- roomType: String&lt;br&gt;- budget: Float&lt;br&gt;─────────&lt;br&gt;+ create()&lt;br&gt;+ update()&lt;br&gt;+ delete()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="580" y="80" width="210" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="class-moodboard" value="&lt;b&gt;Moodboard&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- clientId: UUID&lt;br&gt;- name: String&lt;br&gt;- savedItems: JSON&lt;br&gt;- createdAt: DateTime&lt;br&gt;─────────&lt;br&gt;+ addItem()&lt;br&gt;+ removeItem()&lt;br&gt;+ generateBrief()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="580" y="280" width="210" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="class-brief" value="&lt;b&gt;Brief&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- clientId: UUID&lt;br&gt;- styles: JSON&lt;br&gt;- rooms: String[]&lt;br&gt;- budgetRange: String&lt;br&gt;- description: Text&lt;br&gt;─────────&lt;br&gt;+ edit()&lt;br&gt;+ attachToRequest()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="840" y="280" width="200" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="class-request" value="&lt;b&gt;ProjectRequest&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- clientId: UUID&lt;br&gt;- type: RequestType&lt;br&gt;- status: RequestStatus&lt;br&gt;- budget: Float&lt;br&gt;- createdAt: DateTime&lt;br&gt;─────────&lt;br&gt;+ post()&lt;br&gt;+ close()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="40" y="480" width="210" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="class-proposal" value="&lt;b&gt;Proposal&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- requestId: UUID&lt;br&gt;- designerId: UUID&lt;br&gt;- scope: Text&lt;br&gt;- timeline: String&lt;br&gt;- stageFees: JSON&lt;br&gt;- status: ProposalStatus&lt;br&gt;─────────&lt;br&gt;+ submit()&lt;br&gt;+ accept()&lt;br&gt;+ reject()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="310" y="480" width="210" height="165" as="geometry" />
+        </mxCell>
+        <mxCell id="class-project" value="&lt;b&gt;Project&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- proposalId: UUID&lt;br&gt;- clientId: UUID&lt;br&gt;- designerId: UUID&lt;br&gt;- currentStage: Int&lt;br&gt;- status: ProjectStatus&lt;br&gt;─────────&lt;br&gt;+ create()&lt;br&gt;+ advanceStage()&lt;br&gt;+ getTimeline()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="580" y="480" width="210" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="class-stage" value="&lt;b&gt;ProjectStage&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- projectId: UUID&lt;br&gt;- stageOrder: Int&lt;br&gt;- name: StageName&lt;br&gt;- status: StageStatus&lt;br&gt;- dueDate: Date&lt;br&gt;─────────&lt;br&gt;+ uploadDeliverable()&lt;br&gt;+ approve()&lt;br&gt;+ reject()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="840" y="480" width="210" height="165" as="geometry" />
+        </mxCell>
+        <mxCell id="class-deliverable" value="&lt;b&gt;Deliverable&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- stageId: UUID&lt;br&gt;- version: Int&lt;br&gt;- fileUrl: String&lt;br&gt;- uploadedAt: DateTime&lt;br&gt;- feedback: Text&lt;br&gt;─────────&lt;br&gt;+ upload()&lt;br&gt;+ addFeedback()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="40" y="680" width="210" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="class-payment" value="&lt;b&gt;MilestonePayment&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- projectId: UUID&lt;br&gt;- stageId: UUID&lt;br&gt;- amount: Float&lt;br&gt;- status: PaymentStatus&lt;br&gt;- stripeIntentId: String&lt;br&gt;─────────&lt;br&gt;+ createIntent()&lt;br&gt;+ confirmPayment()&lt;br&gt;+ release()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="310" y="680" width="210" height="165" as="geometry" />
+        </mxCell>
+        <mxCell id="class-message" value="&lt;b&gt;Message&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- senderId: UUID&lt;br&gt;- receiverId: UUID&lt;br&gt;- projectId: UUID&lt;br&gt;- content: Text&lt;br&gt;- isRead: Boolean&lt;br&gt;- sentAt: DateTime&lt;br&gt;─────────&lt;br&gt;+ send()&lt;br&gt;+ markRead()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="580" y="680" width="210" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="class-review" value="&lt;b&gt;Review&lt;/b&gt;&lt;br&gt;─────────&lt;br&gt;- id: UUID&lt;br&gt;- projectId: UUID&lt;br&gt;- reviewerId: UUID&lt;br&gt;- rating: Int&lt;br&gt;- comment: Text&lt;br&gt;- createdAt: DateTime&lt;br&gt;─────────&lt;br&gt;+ submit()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="840" y="680" width="200" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-inherit-client" value="" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=block;endFill=1;endSize=12;" edge="1" parent="1" source="class-user" target="class-client">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-inherit-designer" value="" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=block;endFill=1;endSize=12;" edge="1" parent="1" source="class-user" target="class-designer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-client-request" value="1..*" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;startArrow=classic;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-client" target="class-request">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-request-proposal" value="1..*" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-request" target="class-proposal">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-proposal-project" value="1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-proposal" target="class-project">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-project-stage" value="1..*" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;startArrow=classic;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-project" target="class-stage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-stage-deliverable" value="1..*" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-stage" target="class-deliverable">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-stage-payment" value="1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-stage" target="class-payment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-designer-portfolio" value="1..*" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;startArrow=classic;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-designer" target="class-portfolio">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-client-moodboard" value="1..*" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;startArrow=classic;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-client" target="class-moodboard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-moodboard-brief" value="1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-moodboard" target="class-brief">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-brief-request" value="0..1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-brief" target="class-request">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-project-message" value="0..*" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;startArrow=classic;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-project" target="class-message">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-project-review" value="0..1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;endFill=1;fontSize=9;fontColor=#10739e;" edge="1" parent="1" source="class-project" target="class-review">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="&lt;b&gt;Relationships:&lt;/b&gt;&lt;br&gt;──────→ Association (with cardinality)&lt;br&gt;──────▷ Inheritance" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=9;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="80" width="260" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

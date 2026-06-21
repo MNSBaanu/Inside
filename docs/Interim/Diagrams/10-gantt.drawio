@@ -1,0 +1,142 @@
+<mxfile host="Electron" agent="Cursor">
+  <diagram name="Gantt Chart - Completed vs Remaining" id="gantt-interim">
+    <mxGraphModel dx="1400" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="&lt;b&gt;Gantt Chart — Work Completed vs Remaining (Interim Progress)&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=18;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="350" y="10" width="900" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Methodology: Agile (Scrum)  |  Duration: 22 Weeks  |  11 Sprints (2-Week Timeboxes)  |  Status: June 2026" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=11;fontColor=#10739e;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="350" y="42" width="900" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="74" width="460" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" value="&lt;b&gt;Legend:&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="910" y="78" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="lg-comp" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="910" y="100" width="20" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg-comp-text" value="Work Completed (documentation &amp; coding)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="936" y="98" width="220" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg-rem" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="100" width="20" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg-rem-text" value="Work Remaining" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="1166" y="98" width="120" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="lg-ongoing" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f4fa;strokeColor=#10739e;strokeWidth=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="910" y="116" width="20" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="lg-ongoing-text" value="Ongoing (continuous activity)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="936" y="114" width="200" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="col-activity" value="&lt;b&gt;Activity / Sprint&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;fontSize=11;fontColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="75" width="180" height="61" as="geometry" />
+        </mxCell>
+        <mxCell id="col-timeline" value="&lt;b&gt;Timeline (Weeks 1 — 22)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;fontSize=11;fontColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="75" width="640" height="61" as="geometry" />
+        </mxCell>
+        <mxCell id="row-s1" value="Sprint 1&lt;br&gt;Weeks 1-2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="146" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s1" value="Requirements &amp; Product Backlog  ✓" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;fontSize=9;fontColor=#ffffff;fontWeight=bold;" vertex="1" parent="1">
+          <mxGeometry x="250" y="148" width="126" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="row-s2" value="Sprint 2&lt;br&gt;Weeks 3-4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="198" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s2-done" value="Diagrams (done)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;fontSize=8;fontColor=#ffffff;fontWeight=bold;" vertex="1" parent="1">
+          <mxGeometry x="250" y="200" width="63" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s2-rem" value="Setup (remaining)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=8;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="313" y="200" width="63" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="row-s3" value="Sprint 3&lt;br&gt;Weeks 5-6" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="250" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s3" value="User Accounts &amp; Authentication" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="250" y="252" width="126" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="row-s4" value="Sprint 4&lt;br&gt;Weeks 7-8" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="302" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s4" value="Discovery &amp; Search Filters" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="250" y="304" width="126" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="row-s5" value="Sprint 5&lt;br&gt;Weeks 9-10" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="354" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s5" value="Moodboards, Briefs &amp; Matching" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="250" y="356" width="126" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="row-s6" value="Sprint 6&lt;br&gt;Weeks 11-12" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="406" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s6" value="Requests, Proposals &amp; Selection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="250" y="408" width="126" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="row-s7" value="Sprint 7&lt;br&gt;Weeks 13-14" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="458" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s7" value="Messaging &amp; Notifications" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="250" y="460" width="126" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="row-s8" value="Sprint 8&lt;br&gt;Weeks 15-16" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="510" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s8" value="Workspace, Workflow &amp; Timelines" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="250" y="512" width="126" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="row-s9" value="Sprint 9&lt;br&gt;Weeks 17-18" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="562" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s9" value="Reviews, Verification &amp; Safety" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="250" y="564" width="126" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="row-s10" value="Sprint 10&lt;br&gt;Weeks 19-20" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="614" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s10" value="Payments &amp; Mobile App" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="250" y="616" width="126" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="row-s11" value="Sprint 11&lt;br&gt;Weeks 21-22" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="666" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-s11" value="Integration, Testing &amp; Documentation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=9;fontColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="250" y="668" width="126" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="row-doc" value="Ongoing&lt;br&gt;Documentation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="718" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-doc-done" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;fontSize=8;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="250" y="722" width="63" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-doc-rem" value="Documentation Updates (ongoing)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f4fa;strokeColor=#10739e;fontSize=8;fontColor=#10739e;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="313" y="722" width="315" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="row-test" value="Ongoing&lt;br&gt;Testing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef7fc;strokeColor=#10739e;fontSize=9;fontColor=#10739e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="770" width="180" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="bar-test" value="Continuous Testing (ongoing)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f4fa;strokeColor=#10739e;fontSize=8;fontColor=#10739e;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="774" width="378" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="now-mark" value="▼ Now (Week 4)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#ff0000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="295" y="130" width="100" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="marker-line" value="" style="line;strokeWidth=2;strokeColor=#ff0000;fillColor=none;align=left;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="146" width="4" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="week-numbers" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#d0e4ef;strokeWidth=1;fontSize=8;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="250" y="136" width="640" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="week-labels" value="W1  W2  W3  W4  W5  W6  W7  W8  W9  W10  W11  W12  W13  W14  W15  W16  W17  W18  W19  W20  W21  W22" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=7;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="254" y="125" width="640" height="12" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
