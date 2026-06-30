@@ -150,16 +150,6 @@ http://localhost:3000/api/docs    # Swagger (planned)
 
 ---
 
-## Documentation
-
-| Path | Contents |
-|------|----------|
-| [`docs/Proposal/Functions.md`](docs/Proposal/Functions.md) | Functional requirements |
-| [`docs/Proposal/diagrams/`](docs/Proposal/diagrams/) | Architecture diagrams |
-## Contributing
-
-This is an academic final-year project. External contributions are
-not accepted at this stage. 
 
 ## License
 
