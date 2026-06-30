@@ -13,6 +13,30 @@
 
 ---
 
+## Recommended Implementation Order
+
+Build **database first**, then **API modules**, then **frontend**. Test each API module in Swagger/Postman before writing UI.
+
+```
+PostgreSQL → Prisma schema + seed → Minimal NestJS shell → Auth → User → Portfolio → … → Frontend last
+```
+
+| Step | Phase | What | Done when |
+|------|-------|------|-----------|
+| 1 | Phase 1 | Database schema + migrate + seed | All models visible in Prisma Studio |
+| 2 | Phase 0 | Minimal monorepo + NestJS shell | `GET /health` + Swagger running |
+| 3 | Phase 2 | API modules in dependency order | Postman collection passes per module |
+| 4 | Phase 3 | Next.js frontend | Only after core APIs are stable |
+| 5 | Phase 5 | Deploy, test, polish | Production demo ready |
+
+**Parallel (non-blocking):** UI wireframes via [`.stitch/DESIGN.md`](../../.stitch/DESIGN.md) for interim report — does not block backend work.
+
+**Defer:** `apps/web` scaffold, Vercel deploy, Stripe webhooks, Sentry, Husky, full CI/CD until the matching API module is built.
+
+**Schema reference:** [`docs/Interim/Diagrams/08-er.drawio`](Diagrams/08-er.drawio) · [`docs/Proposal/Sections/Functions.md`](../Proposal/Sections/Functions.md)
+
+---
+
 ## Key Decisions
 
 | Decision | Choice | Rationale |
@@ -34,10 +58,9 @@
 ## Folder Structure
 
 ```
-inside-platform/
+Inside/                          # Scaffold in existing repo root
 ├── apps/
-│   ├── api/                    # NestJS backend
-│   │   ├── prisma/             # Schema + migrations (if not extracted)
+│   ├── api/                    # NestJS backend — build first
 │   │   └── src/
 │   │       ├── main.ts
 │   │       ├── app.module.ts
@@ -58,19 +81,23 @@ inside-platform/
 │   │           ├── payment/
 │   │           ├── messaging/
 │   │           └── review/
-│   └── web/                    # Next.js frontend
+│   └── web/                    # Next.js frontend — defer until Phase 3
 │       └── src/
 │           ├── app/            # App Router pages
 │           ├── components/     # Shared UI components
 │           ├── lib/            # Utilities, API client, auth helpers
 │           └── hooks/          # Custom React hooks
 ├── packages/
-│   ├── database/               # Prisma schema + client (shared)
+│   ├── database/               # Prisma schema + client — START HERE
 │   ├── shared/                 # Shared TypeScript types, constants
 │   ├── ui/                     # Shared React components (if needed)
 │   └── eslint-config/          # Shared ESLint configuration
+├── .stitch/
+│   ├── DESIGN.md               # UI design system + Stitch prompts
+│   └── SITE.md                 # Wireframe generation order
 ├── .github/
-│   └── workflows/              # GitHub Actions CI/CD
+│   └── workflows/              # GitHub Actions CI/CD — defer to Phase 5
+├── docs/
 ├── turbo.json
 ├── pnpm-workspace.yaml
 ├── package.json
@@ -81,108 +108,40 @@ inside-platform/
 
 ---
 
-## Phase 0: Project Scaffolding (Week 1)
+## Phase 1: Data Model (Week 1) — START HERE
 
-### 0.1 — Install Required Tools
+> **First implementation task.** Complete this before NestJS modules or frontend. Only prerequisite: PostgreSQL running + `packages/database` folder (`prisma init`).
+
+### 1.0 — Install Required Tools
 
 | Tool | Version | Command |
 |------|---------|---------|
 | Node.js | ≥ 20 LTS | `node --version` to verify |
 | pnpm | Latest | `npm install -g pnpm` |
 | Git | Latest | `git --version` to verify |
-| PostgreSQL | 16 | Local install + pgAdmin |
+| PostgreSQL | 16 | Local install, Docker, or pgAdmin |
 | VS Code | Latest | Install from code.visualstudio.com |
 
-### 0.2 — Create Monorepo with Turborepo
+Create local database: `inside_dev`
+
+### 1.1 — Initialise Database Package
 
 ```bash
-pnpm dlx create-turbo@latest inside-platform
-cd inside-platform
-```
-
-### 0.3 — Scaffold Applications
-
-```bash
-# Backend API — NestJS
-cd apps
-nest new api --package-manager pnpm
-cd ..
-
-# Web frontend — Next.js
-cd apps
-pnpm create next-app@latest web --typescript --tailwind --eslint --app --src-dir
-cd ..
-
-# Remove default mobile app (not building mobile)
-rm -rf apps/mobile
-
-# Re-organise packages
-mkdir -p packages/database packages/shared packages/ui packages/eslint-config
-```
-
-### 0.4 — Configure Shared Database Package
-
-```bash
+mkdir -p packages/database
 cd packages/database
 pnpm init
 pnpm add prisma @prisma/client
 npx prisma init
 ```
 
-### 0.5 — Set Up ESLint, Prettier, Git Hooks
-
-```bash
-# Prettier config
-echo '{"semi": true, "singleQuote": true, "trailingComma": "all"}' > .prettierrc
-
-# Husky (pre-commit hooks) — optional
-pnpm add -D husky lint-staged
-npx husky init
+Set `DATABASE_URL` in `packages/database/.env`:
+```
+DATABASE_URL=postgresql://user:password@localhost:5432/inside_dev
 ```
 
-### 0.6 — Create GitHub Repository
+### 1.2 — Write Prisma Schema
 
-```bash
-git init
-git add .
-git commit -m "Initial monorepo scaffold"
-git remote add origin https://github.com/your-username/inside-platform.git
-git push -u origin main
-```
-
-### 0.7 — Deploy Staging Infrastructure
-
-| Service | What to Deploy | How |
-|---------|---------------|-----|
-| **Railway** | Empty NestJS API + PostgreSQL | Connect GitHub repo → Railway auto-deploys `apps/api` |
-| **Neon** (or Railway Postgres) | PostgreSQL database | Create via Railway dashboard |
-| **Vercel** | Next.js web app | Connect GitHub → auto-deploy `apps/web` |
-| **Cloudinary** | Media storage | Create account → get `CLOUDINARY_URL` |
-| **Stripe** | Test payment keys | Create account → get `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` |
-
-### 0.8 — Environment Variables
-
-Create `apps/api/.env`:
-```
-DATABASE_URL=postgresql://...
-JWT_SECRET=<random-64-char-string>
-JWT_EXPIRES_IN=7d
-CLOUDINARY_URL=cloudinary://...
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-SENTRY_DSN=https://...
-CORS_ORIGIN=http://localhost:3000,https://your-app.vercel.app
-```
-
-**Phase 0 Outcome:** Running monorepo with deployable NestJS API, Next.js app, cloud database, and all third-party services configured.
-
----
-
-## Phase 1: Data Model (Week 1–2)
-
-### 1.1 — Write Prisma Schema
-
-Define all models in `packages/database/schema.prisma`:
+Define **all** models upfront in `packages/database/schema.prisma` (do not add models incrementally):
 
 | Model | Key Fields | Relations |
 |-------|-----------|-----------|
@@ -204,7 +163,7 @@ Include:
 - Indexes on foreign keys and frequently queried fields
 - `@updatedAt` on relevant models
 
-### 1.2 — Run Migrations
+### 1.3 — Run Migrations
 
 ```bash
 cd packages/database
@@ -212,29 +171,117 @@ npx prisma migrate dev --name init
 npx prisma generate
 ```
 
-### 1.3 — Create Seed Script
+### 1.4 — Create Seed Script
 
 Write `packages/database/seed.ts` with:
 - 3 users (admin, client, designer)
-- 2 portfolios with sample images (use Cloudinary demo URLs)
+- 2 portfolios with sample images (use placeholder URLs initially)
 - 1 moodboard with brief
 - 1 project request + proposal
-- 1 project with stages
+- 1 project with all 5 stages
 
 Run: `npx prisma db seed`
 
-### 1.4 — Verify Schema in Railway
+### 1.5 — Verify in Prisma Studio
 
-Push migration to production:
+```bash
+npx prisma studio
+```
+
+Confirm all relations (User → Portfolio → Project → Stage → Deliverable) look correct before writing API code.
+
+### 1.6 — Push to Staging (optional, end of Week 1)
+
+When Railway/Neon is set up:
 ```bash
 npx prisma migrate deploy
 ```
 
-**Phase 1 Outcome:** Database schema in production, seed data populated, Prisma client ready.
+**Phase 1 Outcome:** Full schema migrated, seed data populated, Prisma client generated, relations verified in Prisma Studio.
 
 ---
 
-## Phase 2: Backend API — NestJS (Weeks 2–6)
+## Phase 0: Minimal API Scaffold (Week 1, after database)
+
+> Build only enough structure to connect NestJS to Prisma. **Do not scaffold `apps/web` yet.**
+
+### 0.1 — Create Monorepo with Turborepo
+
+Scaffold inside the existing `Inside/` repo root:
+
+```bash
+pnpm dlx create-turbo@latest .
+# Or manually add turbo.json + pnpm-workspace.yaml
+```
+
+### 0.2 — Scaffold NestJS API
+
+```bash
+cd apps
+nest new api --package-manager pnpm
+cd ..
+mkdir -p packages/shared packages/eslint-config
+```
+
+Wire `packages/database` Prisma client into `apps/api` (PrismaService module).
+
+### 0.3 — API Baseline Config
+
+| Task | Priority |
+|------|----------|
+| `GET /health` endpoint | Now |
+| Swagger at `/api/docs` | Now |
+| Global validation pipe, Helmet, CORS | Now |
+| `apps/api/.env.example` | Now |
+| Prettier at repo root | Now |
+| `apps/web` (Next.js) | **Defer to Phase 3** |
+| Husky / lint-staged | Defer to Phase 5 |
+| Vercel / Railway deploy | Defer to Phase 5 |
+
+### 0.4 — Environment Variables
+
+Create `apps/api/.env` (add integration keys only when that module is built):
+
+```
+DATABASE_URL=postgresql://...
+JWT_SECRET=<random-64-char-string>
+JWT_EXPIRES_IN=7d
+CORS_ORIGIN=http://localhost:3000
+PORT=3001
+```
+
+Add when needed:
+- `CLOUDINARY_URL` — Portfolio module (Week 3)
+- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` — Payment module (Week 6)
+- `SENTRY_DSN` — Phase 5
+
+### 0.5 — External Accounts (create early, wire later)
+
+| Service | When to wire |
+|---------|--------------|
+| **Cloudinary** | Portfolio image upload |
+| **Stripe** | Payment module |
+| **Railway / Neon** | End of Week 1 (optional staging DB) |
+| **Vercel** | Phase 3 (frontend) |
+
+**Phase 0 Outcome:** `pnpm --filter api start:dev` runs; health check and Swagger accessible; Prisma client connected.
+
+---
+
+## Phase 2: Backend API — NestJS (Weeks 1–6)
+
+> Test every module in **Swagger** (`http://localhost:3001/api/docs`) and a **Postman collection** before moving to the next module. No frontend required.
+
+### API Testing Conventions
+
+| Tool | Use |
+|------|-----|
+| Swagger UI | Interactive endpoint testing during development |
+| Postman | Saved collection per module; export for interim demo |
+| Prisma Studio | Verify DB state after each endpoint test |
+| Cookie jar | Postman stores httpOnly JWT cookie after login |
+
+Postman auth flow: `POST /auth/register` → `POST /auth/login` → `GET /auth/me` → protected routes.
 
 ### Development Conventions
 
@@ -244,7 +291,7 @@ npx prisma migrate deploy
 - Authentication: JWT guard applied globally, public routes marked with `@Public()` decorator
 - Pagination: consistent `?page=1&limit=20` query params
 
-### Week 2 — Auth + User Module
+### Week 1 (days 5–7) — Auth Module
 
 **Auth Module (`POST /auth`)**
 
@@ -275,7 +322,11 @@ Security:
 - Rate limiting on login (`@nestjs/throttler` — 5 attempts/15min)
 - Helmet security headers enabled
 
-### Week 3 — Portfolio + Moodboard + Brief
+**Done when:** Full auth flow passes in Swagger/Postman (register → login → `/me` → logout).
+
+### Week 2 — User + Portfolio Modules
+
+**User Module (`/users`)** — complete if not finished in Week 1.
 
 **Portfolio Module (`/portfolios`)**
 
@@ -287,6 +338,10 @@ Security:
 | `PATCH /portfolios/:id` | Update own portfolio |
 | `DELETE /portfolios/:id` | Soft delete |
 | `POST /portfolios/:id/images` | Upload multiple images to Cloudinary |
+
+**Done when:** Portfolio list/detail/create pass in Postman; export Postman collection.
+
+### Week 3 — Moodboard + Brief
 
 **Moodboard Module (`/moodboards`)**
 
@@ -409,20 +464,32 @@ Key considerations:
 
 ---
 
-## Phase 3: Web Frontend — Next.js (Weeks 6–10)
+## Phase 3: Web Frontend — Next.js (Weeks 7–10)
 
-### Week 6 — Foundation + Auth
+> **Do not start Phase 3 until these API modules pass Postman tests:**
+> - [ ] Auth + User
+> - [ ] Portfolio (list, detail, filters)
+> - [ ] Request + Proposal (at least one hiring path)
+
+Map UI tokens from [`.stitch/DESIGN.md`](../../.stitch/DESIGN.md) to `tailwind.config.ts`. Use shadcn/ui components.
+
+### Week 7 — Scaffold Web + Auth UI
+
+```bash
+cd apps
+pnpm create next-app@latest web --typescript --tailwind --eslint --app --src-dir
+```
 
 | Task | Details |
 |------|---------|
-| Set up shadcn/ui | `npx shadcn-ui@latest init` — add button, input, card, dialog, form, table, toast |
+| Set up shadcn/ui | `npx shadcn-ui@latest init` — map DESIGN.md colours to Tailwind |
 | Layout component | Navbar, sidebar (role-based), footer |
 | Auth pages | Login, Register (with role selection), password validation |
 | Auth context | Read JWT from httpOnly cookie via `/auth/me`, provide user state globally |
 | Route protection | Middleware checks for authenticated routes, redirects to login |
-| API client | Axios instance with interceptor: read cookie, handle 401 → redirect login |
+| API client | Axios/fetch with credentials; handle 401 → redirect login |
 
-### Week 7 — Dashboard + Portfolio Discovery
+### Week 8 — Dashboard + Portfolio Discovery
 
 | Task | Details |
 |------|---------|
@@ -432,7 +499,7 @@ Key considerations:
 | Portfolio detail | Carousel, designer info, contact button |
 | Search | Debounced text search + multi-select filters |
 
-### Week 8 — Moodboard Builder + Brief
+### Week 9 — Moodboard Builder + Brief
 
 | Task | Details |
 |------|---------|
@@ -441,7 +508,7 @@ Key considerations:
 | Brief form | Multi-step: styles (checkboxes), rooms (multi-select), budget range (slider), description (textarea) |
 | Brief preview | Read-only view, edit option |
 
-### Week 9 — Request + Proposal Flow
+### Week 10 — Request + Proposal Flow
 
 | Task | Details |
 |------|---------|
@@ -451,7 +518,7 @@ Key considerations:
 | Client proposal comparison | Side-by-side cards, accept/reject buttons |
 | Confirmation flow | Success toast, email notification (basic smtp) |
 
-### Week 10 — Project Workspace + Messaging
+### Week 11 — Project Workspace + Messaging
 
 | Task | Details |
 |------|---------|
@@ -467,18 +534,31 @@ Key considerations:
 
 ## Phase 4: Mobile App — Skipped
 
-Web app made responsive. If time permits, create a lightweight Expo app with only:
+Web app made responsive. Native mobile deferred per Key Decisions. Stitch mobile prompts in `.stitch/DESIGN.md` are for wireframes/report only.
 
-- Push notifications (Expo Notifications)
-- Real-time messaging (WebSocket)
-- Stage approval quick actions
-- Payment confirmations
+If time permits after Phase 5, a lightweight Expo companion app with notifications, messaging, and quick approvals.
 
 ---
 
-## Phase 5: Testing, Polish & Deployment (Weeks 11–13)
+## UI Wireframes (parallel — interim report)
 
-### Week 11 — Testing
+Generate in Google Stitch when needed for Chapter 5; does not block backend.
+
+| Priority | Screen ID | Purpose |
+|----------|-----------|---------|
+| 1 | W-C02 | Discovery feed |
+| 2 | W-C07 | Moodboard editor |
+| 3 | W-C15 | Proposal comparison |
+| 4 | W-C20 | Project workspace |
+| 5 | W-C24 | Milestone ledger |
+
+Prompts: [`.stitch/DESIGN.md` Appendix B](../../.stitch/DESIGN.md). Order: [`.stitch/SITE.md`](../../.stitch/SITE.md).
+
+---
+
+## Phase 5: Testing, Polish & Deployment (Weeks 12–13)
+
+### Week 12 — Testing
 
 | Layer | Tool | What to Test |
 |-------|------|-------------|
@@ -492,7 +572,7 @@ Critical flows to test end-to-end:
 2. Designer: register → create portfolio → browse requests → submit proposal → upload deliverable
 3. Admin: login → verify designer → view reports
 
-### Week 12 — Polish
+### Week 13 — Polish + Deploy
 
 | Task | Details |
 |------|---------|
@@ -504,16 +584,44 @@ Critical flows to test end-to-end:
 | Responsive | Test all pages at mobile, tablet, desktop widths |
 | SEO | Meta tags, Open Graph for portfolio pages |
 
-### Week 13 — Documentation + Deploy
+Deploy staging/production:
 
 | Task | Details |
 |------|---------|
-| API docs | Swagger UI at `GET /api` — verify all endpoints documented |
-| README | Project overview, tech stack, setup instructions, environment variables table |
-| Deployment guide | Step-by-step: how to deploy from scratch |
-| `docs/` | Update all project documentation in repo |
-| Final test | Deploy to production Vercel + Railway, run through all flows |
-| Demo recording | Record walkthrough of complete user journey |
+| Railway | Auto-deploy `apps/api` from `main` |
+| Vercel | Auto-deploy `apps/web` from `main` |
+| API docs | Swagger UI verified and accessible |
+| README | Live URLs, env var table, setup steps |
+| Demo recording | Full user journey walkthrough |
+
+---
+
+## Week 1 Checklist
+
+### Days 1–2: Database (first)
+- [ ] PostgreSQL running; `inside_dev` database created
+- [ ] `packages/database` initialised (`prisma init`)
+- [ ] Full `schema.prisma` written (all models + enums)
+- [ ] `prisma migrate dev --name init`
+- [ ] Seed script written and run
+- [ ] Relations verified in Prisma Studio
+
+### Days 3–4: Minimal API shell
+- [ ] Turborepo + pnpm workspaces in repo root
+- [ ] `apps/api` (NestJS) scaffolded, Prisma client wired
+- [ ] `GET /health` + Swagger at `/api/docs`
+- [ ] `apps/api/.env.example` added
+- [ ] `pnpm --filter api start:dev` runs
+
+### Days 5–7: Auth module
+- [ ] `POST /auth/register`, `login`, `logout`, `GET /auth/me`
+- [ ] JWT httpOnly cookie + global guard
+- [ ] Auth flow tested in Swagger and Postman
+
+### Week 2 goal
+- [ ] User module complete
+- [ ] Portfolio CRUD + filtered list in Postman
+- [ ] Postman collection exported
 
 ---
 
