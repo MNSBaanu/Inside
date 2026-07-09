@@ -64,6 +64,8 @@ For each similar system:
 
 Add comparison between similar systems and the proposed new system.
 
+- Under **Similar Systems**: use the comparison table above; favour **YES** for the proposed system.
+
 ---
 
 ## Chapter 3 — Proposed Solution
@@ -189,7 +191,6 @@ Include citations for design-system explanations; combine **own explanation** an
 ## Additional Notes
 
 - Complete **chapter by chapter** and take feedback before moving on.
-- Under **Similar Systems**: use the comparison table above; favour **YES** for the proposed system.
 - Under **Problem Scope**: include a dedicated image.
 - **Fact-finding**: apply each method to the system, not only name them.
 - **Current system problems**: image + text where useful.
