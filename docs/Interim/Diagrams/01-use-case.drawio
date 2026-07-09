@@ -1,239 +1,239 @@
 <mxfile host="Electron" agent="Cursor">
   <diagram name="Use Case Diagram" id="use-case">
-    <mxGraphModel dx="1600" dy="1800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="2200" math="0" shadow="0">
+    <mxGraphModel dx="1810" dy="1364" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="2200" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="boundary" value="Inside Platform" style="shape=rectangle;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=2;fontFamily=Tahoma;fontStyle=1;fontSize=26;verticalAlign=top;horizontal=1;align=center;spacingTop=10;dashed=0;" vertex="1" parent="1">
-          <mxGeometry x="280" y="30" width="720" height="2100" as="geometry" />
+        <mxCell id="boundary" parent="1" style="shape=rectangle;whiteSpace=wrap;html=1;fillColor=light-dark(#ffffff, #173d4d);strokeColor=#10739e;strokeWidth=2;fontFamily=Tahoma;fontStyle=1;fontSize=26;verticalAlign=top;horizontal=1;align=center;spacingTop=10;dashed=0;" value="Inside Platform" vertex="1">
+          <mxGeometry height="2100" width="720" x="280" y="30" as="geometry" />
         </mxCell>
-        <mxCell id="a-client" value="Client" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#F5C6A5;" vertex="1" parent="1">
-          <mxGeometry x="130" y="580" width="40" height="60" as="geometry" />
+        <mxCell id="a-client" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#b1ddf0;strokeColor=#10739e;" value="Client" vertex="1">
+          <mxGeometry height="60" width="40" x="130" y="580" as="geometry" />
         </mxCell>
-        <mxCell id="a-designer" value="Designer" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#F5C6A5;" vertex="1" parent="1">
-          <mxGeometry x="130" y="1280" width="40" height="60" as="geometry" />
+        <mxCell id="a-designer" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#b1ddf0;strokeColor=#10739e;" value="Designer" vertex="1">
+          <mxGeometry height="60" width="40" x="130" y="1280" as="geometry" />
         </mxCell>
-        <mxCell id="a-admin" value="Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#F5C6A5;" vertex="1" parent="1">
-          <mxGeometry x="130" y="1870" width="40" height="60" as="geometry" />
+        <mxCell id="a-admin" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=1.5;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#b1ddf0;strokeColor=#10739e;" value="Admin" vertex="1">
+          <mxGeometry height="60" width="40" x="130" y="1870" as="geometry" />
         </mxCell>
-        <mxCell id="uc-register" value="Register / Login" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="80" width="180" height="55" as="geometry" />
+        <mxCell id="uc-register" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Register / Login" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="80" as="geometry" />
         </mxCell>
-        <mxCell id="uc-profile" value="Manage Profile" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="160" width="180" height="55" as="geometry" />
+        <mxCell id="uc-profile" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Manage Profile" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="160" as="geometry" />
         </mxCell>
-        <mxCell id="uc-switchrole" value="Switch Role" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="240" width="180" height="55" as="geometry" />
+        <mxCell id="uc-switchrole" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Switch Role" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="240" as="geometry" />
         </mxCell>
-        <mxCell id="uc-browse" value="Browse Portfolio" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="320" width="180" height="55" as="geometry" />
+        <mxCell id="uc-browse" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Browse Portfolio" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="320" as="geometry" />
         </mxCell>
-        <mxCell id="uc-moodboard" value="Create Moodboard" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="400" width="180" height="55" as="geometry" />
+        <mxCell id="uc-moodboard" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Create Moodboard" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="400" as="geometry" />
         </mxCell>
-        <mxCell id="uc-brief" value="Generate Brief" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="480" width="180" height="55" as="geometry" />
+        <mxCell id="uc-brief" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Generate Brief" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="480" as="geometry" />
         </mxCell>
-        <mxCell id="uc-fitscore" value="View Fit Scores" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="560" width="180" height="55" as="geometry" />
+        <mxCell id="uc-fitscore" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="View Fit Scores" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="560" as="geometry" />
         </mxCell>
-        <mxCell id="uc-request" value="Post Request" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="640" width="180" height="55" as="geometry" />
+        <mxCell id="uc-request" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Post Request" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="640" as="geometry" />
         </mxCell>
-        <mxCell id="uc-compare" value="Compare Proposals" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="720" width="180" height="55" as="geometry" />
+        <mxCell id="uc-compare" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Compare Proposals" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="720" as="geometry" />
         </mxCell>
-        <mxCell id="uc-approve" value="Approve Stage" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="800" width="180" height="55" as="geometry" />
+        <mxCell id="uc-approve" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Approve Stage" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="800" as="geometry" />
         </mxCell>
-        <mxCell id="uc-payment" value="Make Payment" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="880" width="180" height="55" as="geometry" />
+        <mxCell id="uc-payment" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Make Payment" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="880" as="geometry" />
         </mxCell>
-        <mxCell id="uc-review" value="Submit Review" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="960" width="180" height="55" as="geometry" />
+        <mxCell id="uc-review" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Submit Review" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="960" as="geometry" />
         </mxCell>
-        <mxCell id="uc-workspace" value="Manage Workspace" style="ellipse;whiteSpace=wrap;html=1;fillColor=#B0B0B0;strokeColor=#4A4A4A;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="1080" width="180" height="55" as="geometry" />
+        <mxCell id="uc-workspace" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Manage Workspace" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="1080" as="geometry" />
         </mxCell>
-        <mxCell id="uc-message" value="Send Message" style="ellipse;whiteSpace=wrap;html=1;fillColor=#B0B0B0;strokeColor=#4A4A4A;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="1160" width="180" height="55" as="geometry" />
+        <mxCell id="uc-message" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Send Message" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="1160" as="geometry" />
         </mxCell>
-        <mxCell id="uc-report" value="Report User" style="ellipse;whiteSpace=wrap;html=1;fillColor=#B0B0B0;strokeColor=#4A4A4A;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="1240" width="180" height="55" as="geometry" />
+        <mxCell id="uc-report" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Report User" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="1240" as="geometry" />
         </mxCell>
-        <mxCell id="uc-portfolio" value="Manage Portfolio" style="ellipse;whiteSpace=wrap;html=1;fillColor=#B0B0B0;strokeColor=#4A4A4A;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="1360" width="180" height="55" as="geometry" />
+        <mxCell id="uc-portfolio" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Manage Portfolio" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="1360" as="geometry" />
         </mxCell>
-        <mxCell id="uc-proposal" value="Submit Proposal" style="ellipse;whiteSpace=wrap;html=1;fillColor=#B0B0B0;strokeColor=#4A4A4A;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="1440" width="180" height="55" as="geometry" />
+        <mxCell id="uc-proposal" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Submit Proposal" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="1440" as="geometry" />
         </mxCell>
-        <mxCell id="uc-upload" value="Upload Deliverable" style="ellipse;whiteSpace=wrap;html=1;fillColor=#B0B0B0;strokeColor=#4A4A4A;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="1520" width="180" height="55" as="geometry" />
+        <mxCell id="uc-upload" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Upload Deliverable" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="1520" as="geometry" />
         </mxCell>
-        <mxCell id="uc-admin-users" value="Manage Users" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F9E79F;strokeColor=#D4AC0D;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="1680" width="180" height="55" as="geometry" />
+        <mxCell id="uc-admin-users" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Manage Users" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="1680" as="geometry" />
         </mxCell>
-        <mxCell id="uc-admin-verify" value="Verify Designers" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F9E79F;strokeColor=#D4AC0D;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="1760" width="180" height="55" as="geometry" />
+        <mxCell id="uc-admin-verify" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Verify Designers" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="1760" as="geometry" />
         </mxCell>
-        <mxCell id="uc-admin-moderate" value="Moderate Content" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F9E79F;strokeColor=#D4AC0D;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="1840" width="180" height="55" as="geometry" />
+        <mxCell id="uc-admin-moderate" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="Moderate Content" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="1840" as="geometry" />
         </mxCell>
-        <mxCell id="uc-admin-analytics" value="View Analytics" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F9E79F;strokeColor=#D4AC0D;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="360" y="1920" width="180" height="55" as="geometry" />
+        <mxCell id="uc-admin-analytics" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=12;" value="View Analytics" vertex="1">
+          <mxGeometry height="55" width="180" x="360" y="1920" as="geometry" />
         </mxCell>
-        <mxCell id="uc-ext-accept-proposal" value="Accept Proposal" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="740" y="690" width="170" height="50" as="geometry" />
+        <mxCell id="uc-ext-accept-proposal" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Accept Proposal" vertex="1">
+          <mxGeometry height="50" width="170" x="740" y="690" as="geometry" />
         </mxCell>
-        <mxCell id="uc-ext-reject-proposal" value="Reject Proposal" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="740" y="755" width="170" height="50" as="geometry" />
+        <mxCell id="uc-ext-reject-proposal" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Reject Proposal" vertex="1">
+          <mxGeometry height="50" width="170" x="740" y="755" as="geometry" />
         </mxCell>
-        <mxCell id="uc-ext-release-payment" value="Release Payment" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="740" y="860" width="170" height="50" as="geometry" />
+        <mxCell id="uc-ext-release-payment" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Release Payment" vertex="1">
+          <mxGeometry height="50" width="170" x="740" y="860" as="geometry" />
         </mxCell>
-        <mxCell id="uc-ext-reject-stage" value="Reject Stage" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F4C2C2;strokeColor=#C0392B;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="740" y="795" width="170" height="50" as="geometry" />
+        <mxCell id="uc-ext-reject-stage" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Reject Stage" vertex="1">
+          <mxGeometry height="50" width="170" x="740" y="795" as="geometry" />
         </mxCell>
-        <mxCell id="uc-ext-send-notification" value="Send Notification" style="ellipse;whiteSpace=wrap;html=1;fillColor=#B0B0B0;strokeColor=#4A4A4A;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="740" y="1060" width="170" height="50" as="geometry" />
+        <mxCell id="uc-ext-send-notification" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Send Notification" vertex="1">
+          <mxGeometry height="50" width="170" x="740" y="1060" as="geometry" />
         </mxCell>
-        <mxCell id="uc-ext-attach-file" value="Attach File" style="ellipse;whiteSpace=wrap;html=1;fillColor=#B0B0B0;strokeColor=#4A4A4A;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="740" y="1140" width="170" height="50" as="geometry" />
+        <mxCell id="uc-ext-attach-file" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Attach File" vertex="1">
+          <mxGeometry height="50" width="170" x="740" y="1140" as="geometry" />
         </mxCell>
-        <mxCell id="uc-ext-view-version-history" value="View Version History" style="ellipse;whiteSpace=wrap;html=1;fillColor=#B0B0B0;strokeColor=#4A4A4A;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="740" y="1500" width="170" height="50" as="geometry" />
+        <mxCell id="uc-ext-view-version-history" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="View Version History" vertex="1">
+          <mxGeometry height="50" width="170" x="740" y="1500" as="geometry" />
         </mxCell>
-        <mxCell id="uc-ext-add-feedback" value="Add Feedback" style="ellipse;whiteSpace=wrap;html=1;fillColor=#B0B0B0;strokeColor=#4A4A4A;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="740" y="1555" width="170" height="50" as="geometry" />
+        <mxCell id="uc-ext-add-feedback" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Add Feedback" vertex="1">
+          <mxGeometry height="50" width="170" x="740" y="1555" as="geometry" />
         </mxCell>
-        <mxCell id="uc-ext-ban-user" value="Ban User" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F9E79F;strokeColor=#D4AC0D;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="740" y="1665" width="170" height="50" as="geometry" />
+        <mxCell id="uc-ext-ban-user" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Ban User" vertex="1">
+          <mxGeometry height="50" width="170" x="740" y="1665" as="geometry" />
         </mxCell>
-        <mxCell id="uc-ext-remove-content" value="Remove Content" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F9E79F;strokeColor=#D4AC0D;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="740" y="1825" width="170" height="50" as="geometry" />
+        <mxCell id="uc-ext-remove-content" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Remove Content" vertex="1">
+          <mxGeometry height="50" width="170" x="740" y="1825" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-register" edge="1" parent="1" source="a-client" target="uc-register" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-register" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-register">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-profile" edge="1" parent="1" source="a-client" target="uc-profile" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-profile" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-profile">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-switch" edge="1" parent="1" source="a-client" target="uc-switchrole" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-switch" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-switchrole">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-browse" edge="1" parent="1" source="a-client" target="uc-browse" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-browse" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-browse">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-moodboard" edge="1" parent="1" source="a-client" target="uc-moodboard" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-moodboard" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-moodboard">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-brief" edge="1" parent="1" source="a-client" target="uc-brief" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-brief" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-brief">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-fitscore" edge="1" parent="1" source="a-client" target="uc-fitscore" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-fitscore" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-fitscore">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-request" edge="1" parent="1" source="a-client" target="uc-request" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-request" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-request">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-compare" edge="1" parent="1" source="a-client" target="uc-compare" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-compare" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-compare">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-approve" edge="1" parent="1" source="a-client" target="uc-approve" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-approve" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-approve">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-payment" edge="1" parent="1" source="a-client" target="uc-payment" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-payment" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-payment">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-review" edge="1" parent="1" source="a-client" target="uc-review" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-review" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-review">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-workspace" edge="1" parent="1" source="a-client" target="uc-workspace" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-workspace" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-workspace">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-message" edge="1" parent="1" source="a-client" target="uc-message" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-message" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-message">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-c-report" edge="1" parent="1" source="a-client" target="uc-report" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-c-report" edge="1" parent="1" source="a-client" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-report">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-d-register" edge="1" parent="1" source="a-designer" target="uc-register" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-d-register" edge="1" parent="1" source="a-designer" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-register">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-d-profile" edge="1" parent="1" source="a-designer" target="uc-profile" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-d-profile" edge="1" parent="1" source="a-designer" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-profile">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-d-switch" edge="1" parent="1" source="a-designer" target="uc-switchrole" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-d-switch" edge="1" parent="1" source="a-designer" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-switchrole">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-d-portfolio" edge="1" parent="1" source="a-designer" target="uc-portfolio" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-d-portfolio" edge="1" parent="1" source="a-designer" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-portfolio">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-d-proposal" edge="1" parent="1" source="a-designer" target="uc-proposal" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-d-proposal" edge="1" parent="1" source="a-designer" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-proposal">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-d-upload" edge="1" parent="1" source="a-designer" target="uc-upload" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-d-upload" edge="1" parent="1" source="a-designer" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-upload">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-d-workspace" edge="1" parent="1" source="a-designer" target="uc-workspace" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-d-workspace" edge="1" parent="1" source="a-designer" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-workspace">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-d-message" edge="1" parent="1" source="a-designer" target="uc-message" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-d-message" edge="1" parent="1" source="a-designer" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-message">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-d-report" edge="1" parent="1" source="a-designer" target="uc-report" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-d-report" edge="1" parent="1" source="a-designer" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-report">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-a-users" edge="1" parent="1" source="a-admin" target="uc-admin-users" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-a-users" edge="1" parent="1" source="a-admin" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-admin-users">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-a-verify" edge="1" parent="1" source="a-admin" target="uc-admin-verify" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-a-verify" edge="1" parent="1" source="a-admin" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-admin-verify">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-a-moderate" edge="1" parent="1" source="a-admin" target="uc-admin-moderate" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-a-moderate" edge="1" parent="1" source="a-admin" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-admin-moderate">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-a-analytics" edge="1" parent="1" source="a-admin" target="uc-admin-analytics" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;">
+        <mxCell id="e-a-analytics" edge="1" parent="1" source="a-admin" style="endArrow=none;html=1;rounded=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-admin-analytics">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ext-compare-accept" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-ext-accept-proposal" target="uc-compare">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="ext-compare-accept" edge="1" parent="1" source="uc-ext-accept-proposal" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-compare" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="ext-compare-reject" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-ext-reject-proposal" target="uc-compare">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="ext-compare-reject" edge="1" parent="1" source="uc-ext-reject-proposal" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-compare" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="ext-approve-reject" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-ext-reject-stage" target="uc-approve">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="ext-approve-reject" edge="1" parent="1" source="uc-ext-reject-stage" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-approve" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="ext-payment-release" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-ext-release-payment" target="uc-payment">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="ext-payment-release" edge="1" parent="1" source="uc-ext-release-payment" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-payment" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="ext-workspace-notify" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-ext-send-notification" target="uc-workspace">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="ext-workspace-notify" edge="1" parent="1" source="uc-ext-send-notification" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-workspace" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="ext-message-attach" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-ext-attach-file" target="uc-message">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="ext-message-attach" edge="1" parent="1" source="uc-ext-attach-file" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-message" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="ext-upload-history" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-ext-view-version-history" target="uc-upload">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="ext-upload-history" edge="1" parent="1" source="uc-ext-view-version-history" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-upload" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="ext-upload-feedback" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-ext-add-feedback" target="uc-upload">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="ext-upload-feedback" edge="1" parent="1" source="uc-ext-add-feedback" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-upload" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="ext-users-ban" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-ext-ban-user" target="uc-admin-users">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="ext-users-ban" edge="1" parent="1" source="uc-ext-ban-user" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-admin-users" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="ext-moderate-remove" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-ext-remove-content" target="uc-admin-moderate">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="ext-moderate-remove" edge="1" parent="1" source="uc-ext-remove-content" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=bottom;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-admin-moderate" value="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="inc-brief-mood" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=middle;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-brief" target="uc-moodboard">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="inc-brief-mood" edge="1" parent="1" source="uc-brief" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=middle;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-moodboard" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="inc-pay-approve" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=middle;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-payment" target="uc-approve">
-          <mxGeometry width="160" relative="1" as="geometry" />
+        <mxCell id="inc-pay-approve" edge="1" parent="1" source="uc-payment" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=middle;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-approve" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry" />
         </mxCell>
-        <mxCell id="inc-browse-fit" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=middle;fontFamily=Tahoma;fontSize=10;strokeWidth=1;" edge="1" parent="1" source="uc-browse" target="uc-fitscore">
-          <mxGeometry width="160" relative="1" as="geometry">
+        <mxCell id="inc-browse-fit" edge="1" parent="1" source="uc-browse" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;align=center;verticalAlign=middle;fontFamily=Tahoma;fontSize=10;strokeWidth=1;fillColor=#b1ddf0;strokeColor=#10739e;" target="uc-fitscore" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
             <Array as="points">
               <mxPoint x="600" y="370" />
               <mxPoint x="600" y="565" />
