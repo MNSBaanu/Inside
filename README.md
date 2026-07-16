@@ -14,6 +14,8 @@
 
 Inside is a full-stack platform that connects **clients** and **interior designers** in one workflow. Clients browse completed room projects, build moodboards, submit structured briefs, hire designers, and approve work at each stage before funds are released. Designers publish portfolios, respond to requests, deliver concepts through a stage-gated workspace, and receive milestone payments.
 
+Implementation order and week-by-week plan: [`ImplementationPlan.md`](ImplementationPlan.md).
+
 ---
 
 ## Features
@@ -35,29 +37,35 @@ Inside is a full-stack platform that connects **clients** and **interior designe
 | Layer | Stack |
 |-------|-------|
 | Web | Next.js 14, TypeScript, Tailwind CSS |
-| Mobile | React Native, TypeScript |
+| Mobile | Expo / React Native, TypeScript |
 | API | Node.js, NestJS, Prisma |
 | Database | PostgreSQL |
 | Media | Cloudinary |
 | Payments | Stripe |
-| Tooling | Git, GitHub Actions, Postman, Swagger |
+| Tooling | pnpm, Turborepo, Git, GitHub Actions, Postman, Swagger |
 
 ---
 
 ## Project Structure
 
-Monorepo layout (planned):
+Turborepo monorepo (planned):
 
 ```
-inside/
-├── api/                  # NestJS REST API
-├── web/                  # Next.js web application
-├── app/                  # React Native mobile app
-├── docs/                 # Project documentation
+Inside/
+├── apps/
+│   ├── api/              # NestJS REST API — build first
+│   ├── web/              # Next.js web app — Phase 3
+│   └── mobile/           # Expo / React Native — Phase 4
+├── packages/
+│   ├── database/         # Prisma schema + client — start here
+│   ├── shared/           # Shared TypeScript types
+│   └── eslint-config/
+├── docs/
+├── ImplementationPlan.md
 └── README.md
 ```
 
-> `api/`, `web/`, and `app/` are not yet scaffolded. Documentation lives under `docs/`.
+> Apps and packages are not yet scaffolded. Documentation lives under `docs/`.
 
 ---
 
@@ -66,8 +74,8 @@ inside/
 | Requirement | Version |
 |-------------|---------|
 | Node.js | 18+ (20 LTS recommended) |
-| npm or pnpm | Latest stable |
-| PostgreSQL | 14+ |
+| pnpm | Latest stable |
+| PostgreSQL | 14+ (16 recommended) |
 | Git | Latest stable |
 
 **External services (development):**
@@ -83,33 +91,41 @@ inside/
 
 ```bash
 git clone <repository-url>
-cd inside
+cd Inside
 ```
 
 ### 2. Environment variables
 
 Each service will use its own `.env` file. Expected variables:
 
-**API (`api/.env`)**
+**API (`apps/api/.env`)**
 
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
 | `JWT_SECRET` | Token signing secret |
+| `CORS_ORIGIN` | Web origin (e.g. `http://localhost:3000`) |
+| `PORT` | API port (default `3001`) |
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
 | `CLOUDINARY_API_KEY` | Cloudinary API key |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret |
 | `STRIPE_SECRET_KEY` | Stripe secret key |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
 
-**Web (`web/.env.local`)**
+**Database (`packages/database/.env`)**
 
 | Variable | Description |
 |----------|-------------|
-| `NEXT_PUBLIC_API_URL` | Backend API base URL |
+| `DATABASE_URL` | Same PostgreSQL connection string |
+
+**Web (`apps/web/.env.local`)**
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_API_URL` | Backend API base URL (e.g. `http://localhost:3001`) |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key |
 
-**Mobile (`app/.env`)**
+**Mobile (`apps/mobile/.env`)**
 
 | Variable | Description |
 |----------|-------------|
@@ -117,23 +133,31 @@ Each service will use its own `.env` file. Expected variables:
 
 ### 3. Install and run
 
-> Setup commands will be added when each service is scaffolded.
+> Setup commands will be finalised when each service is scaffolded. See [`ImplementationPlan.md`](ImplementationPlan.md) Phase 1 / Phase 0.
 
 ```bash
-# API
-cd api && npm install && npm run start:dev
+pnpm install
 
-# Web
-cd web && npm install && npm run dev
+# Database (Phase 1)
+cd packages/database
+npx prisma migrate dev
+npx prisma generate
+npx prisma db seed
 
-# Mobile
-cd app && npm install && npx expo start
+# API (Phase 0+)
+pnpm --filter api start:dev
+
+# Web (Phase 3)
+pnpm --filter web dev
+
+# Mobile (Phase 4)
+cd apps/mobile && npx expo start
 ```
 
 ### 4. Database
 
 ```bash
-cd api
+cd packages/database
 npx prisma migrate dev
 npx prisma generate
 ```
@@ -142,14 +166,15 @@ npx prisma generate
 
 ## API
 
-REST API served by NestJS. Interactive docs will be available at:
+REST API served by NestJS. Interactive docs:
 
 ```
-http://localhost:3000/api/docs    # Swagger (planned)
+http://localhost:3001/api/docs
 ```
+
+Health check: `GET http://localhost:3001/health`
 
 ---
-
 
 ## License
 

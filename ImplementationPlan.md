@@ -4,10 +4,10 @@
 
 | Item | Detail |
 |------|--------|
-| **Project** | Interior Design Service Platform (web + API) |
-| **Tech Stack** | Next.js 14 (web) · NestJS (API) · PostgreSQL (database) · Prisma (ORM) · Cloudinary (media) · Stripe (payments) |
+| **Project** | Interior Design Service Platform (web + API + mobile) |
+| **Tech Stack** | Next.js 14 (web) · React Native / Expo (mobile) · NestJS (API) · PostgreSQL · Prisma · Cloudinary · Stripe |
 | **Methodology** | Agile (Scrum) — 2-week sprints |
-| **Duration** | ~13 weeks |
+| **Duration** | ~22 weeks (aligned with proposal) — Weeks 1–13 web+API core; Weeks 14–18 mobile; Weeks 19–22 polish, docs, evaluation |
 | **Team** | Solo developer |
 | **Quality Goal** | Production-grade — secure, tested, monitored, documented |
 
@@ -27,13 +27,16 @@ PostgreSQL → Prisma schema + seed → Minimal NestJS shell → Auth → User �
 | 2 | Phase 0 | Minimal monorepo + NestJS shell | `GET /health` + Swagger running |
 | 3 | Phase 2 | API modules in dependency order | Postman collection passes per module |
 | 4 | Phase 3 | Next.js frontend | Only after core APIs are stable |
-| 5 | Phase 5 | Deploy, test, polish | Production demo ready |
+| 5 | Phase 4 | React Native / Expo mobile | Push, messaging, stages, payments |
+| 6 | Phase 5 | Deploy, test, polish, docs | Production demo + evaluation ready |
 
-**Parallel (non-blocking):** UI wireframes via [`.stitch/DESIGN.md`](../../.stitch/DESIGN.md) for interim report — does not block backend work.
+**Parallel (non-blocking):** UI wireframes via [`.stitch/DESIGN.md`](.stitch/DESIGN.md) for interim report — does not block backend work.
 
-**Defer:** `apps/web` scaffold, Vercel deploy, Stripe webhooks, Sentry, Husky, full CI/CD until the matching API module is built.
+**Defer:** `apps/web` / `apps/mobile` scaffold, Vercel deploy, Stripe webhooks, Sentry, Husky, full CI/CD until the matching API module is built.
 
-**Schema reference:** [`docs/Interim/Diagrams/08-er.drawio`](Diagrams/08-er.drawio) · [`docs/Proposal/Sections/Functions.md`](../Proposal/Sections/Functions.md)
+**Schema / requirements:** [`docs/Interim/Diagrams/08-er.drawio`](docs/Interim/Diagrams/08-er.drawio) · [`docs/Proposal/Sections/Functions.md`](docs/Proposal/Sections/Functions.md)
+
+**Process diagrams:** [`11-activity-discover-brief`](docs/Interim/Diagrams/11-activity-discover-brief.drawio) · [`12-sequence-accept-proposal`](docs/Interim/Diagrams/12-sequence-accept-proposal.drawio) · [`13-sequence-stage-approval`](docs/Interim/Diagrams/13-sequence-stage-approval.drawio)
 
 ---
 
@@ -45,7 +48,7 @@ PostgreSQL → Prisma schema + seed → Minimal NestJS shell → Auth → User �
 | UI library | **shadcn/ui** (TailwindCSS) | Production standard for Next.js, full code control |
 | Auth method | **httpOnly cookie JWT** | XSS-safe, what production apps use |
 | State management | **Zustand** (or React Context) | Lightweight, sufficient for solo project |
-| Mobile app | **Skip** — make web responsive | Focus time on production-quality web app |
+| Mobile app | **Expo (React Native)** after web core | Required deliverable; ship focused MVP (push, messaging, stages, payments) |
 | API docs | **Swagger** (built into NestJS) | Automatic, always in sync |
 | Error monitoring | **Sentry** (free tier) | Catch production bugs |
 | Logging | **Pino** (structured JSON logs) | Production-grade logging |
@@ -80,13 +83,18 @@ Inside/                          # Scaffold in existing repo root
 │   │           ├── deliverable/
 │   │           ├── payment/
 │   │           ├── messaging/
-│   │           └── review/
-│   └── web/                    # Next.js frontend — defer until Phase 3
-│       └── src/
-│           ├── app/            # App Router pages
-│           ├── components/     # Shared UI components
-│           ├── lib/            # Utilities, API client, auth helpers
-│           └── hooks/          # Custom React hooks
+│   │           ├── review/
+│   │           ├── favourite/
+│   │           ├── notification/
+│   │           ├── trust/      # report, block, verification
+│   │           └── admin/
+│   ├── web/                    # Next.js frontend — defer until Phase 3
+│   │   └── src/
+│   │       ├── app/            # App Router pages
+│   │       ├── components/     # Shared UI components
+│   │       ├── lib/            # Utilities, API client, auth helpers
+│   │       └── hooks/          # Custom React hooks
+│   └── mobile/                 # Expo / React Native — Phase 4
 ├── packages/
 │   ├── database/               # Prisma schema + client — START HERE
 │   ├── shared/                 # Shared TypeScript types, constants
@@ -145,8 +153,9 @@ Define **all** models upfront in `packages/database/schema.prisma` (do not add m
 
 | Model | Key Fields | Relations |
 |-------|-----------|-----------|
-| `User` | id, email, passwordHash, role, isVerified | → Portfolio, Moodboard, Request, Project, Message, Review |
+| `User` | id, email, passwordHash, role, isVerified, activeRole | → Portfolio, Moodboard, Request, Project, Message, Review, Favourite |
 | `Portfolio` | id, title, images, style, roomType, budget | ← User (designer) |
+| `Favourite` | id, clientId, designerId | ← User (client), ← User (designer) |
 | `Moodboard` | id, name, savedItems | ← User (client), → Brief |
 | `Brief` | id, styles, rooms, budgetRange | ← Moodboard, → Request |
 | `ProjectRequest` | id, type, status, budget | ← User (client), ← Brief, → Proposal |
@@ -157,11 +166,18 @@ Define **all** models upfront in `packages/database/schema.prisma` (do not add m
 | `MilestonePayment` | id, amount, status, stripeIntentId | ← Stage, ← Project |
 | `Message` | id, content, isRead | ← Project, ← User (sender), ← User (receiver) |
 | `Review` | id, rating, comment | ← Project, ← User (reviewer) |
+| `Notification` | id, type, title, body, isRead | ← User |
+| `Verification` | id, status, evidenceUrl | ← User (designer) |
+| `Report` | id, reason, status, targetType, targetId | ← User (reporter) |
+| `Block` | id | ← User (blocker), ← User (blocked) |
+| `ActivityLog` | id, action, metadata | ← Project, ← User (optional) |
+| `Session` | id, refreshTokenHash, expiresAt | ← User |
 
 Include:
-- Enums: `Role`, `RequestType`, `RequestStatus`, `ProposalStatus`, `ProjectStatus`, `StageName`, `StageStatus`, `PaymentStatus`
+- Enums: `Role`, `RequestType`, `RequestStatus`, `ProposalStatus`, `ProjectStatus`, `StageName`, `StageStatus`, `PaymentStatus`, `VerificationStatus`, `ReportStatus`, `NotificationType`
 - Indexes on foreign keys and frequently queried fields
 - `@updatedAt` on relevant models
+- Unique constraint on `Favourite(clientId, designerId)` and `Block(blockerId, blockedId)`
 
 ### 1.3 — Run Migrations
 
@@ -174,11 +190,13 @@ npx prisma generate
 ### 1.4 — Create Seed Script
 
 Write `packages/database/seed.ts` with:
-- 3 users (admin, client, designer)
+- 3 users (admin, client, designer) — client with dual-role capability
 - 2 portfolios with sample images (use placeholder URLs initially)
+- 1 favourite (client → designer)
 - 1 moodboard with brief
 - 1 project request + proposal
 - 1 project with all 5 stages
+- Sample notification + pending verification (optional)
 
 Run: `npx prisma db seed`
 
@@ -301,6 +319,10 @@ Postman auth flow: `POST /auth/register` → `POST /auth/login` → `GET /auth/m
 | `POST /auth/login` | Authenticate → set httpOnly cookie with JWT |
 | `POST /auth/logout` | Clear cookie |
 | `GET /auth/me` | Get current user from cookie |
+| `POST /auth/verify-email` | Confirm email with token (sets `isVerified`) |
+| `POST /auth/forgot-password` | Send password-reset email |
+| `POST /auth/reset-password` | Reset password with token |
+| `PATCH /auth/switch-role` | Switch `activeRole` between CLIENT and DESIGNER (dual-role) |
 
 Key files:
 - `auth.module.ts`, `auth.controller.ts`, `auth.service.ts`
@@ -339,7 +361,15 @@ Security:
 | `DELETE /portfolios/:id` | Soft delete |
 | `POST /portfolios/:id/images` | Upload multiple images to Cloudinary |
 
-**Done when:** Portfolio list/detail/create pass in Postman; export Postman collection.
+**Favourite Module (`/favourites`)**
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /favourites/:designerId` | Save designer (client) |
+| `GET /favourites` | List saved designers |
+| `DELETE /favourites/:designerId` | Remove favourite |
+
+**Done when:** Portfolio list/detail/create pass in Postman; favourites CRUD works; export Postman collection.
 
 ### Week 3 — Moodboard + Brief
 
@@ -462,16 +492,45 @@ Key considerations:
 | `GET /designers/:id/reviews` | List designer reviews |
 | `GET /designers/:id/rating` | Average rating |
 
+**Notification Module (`/notifications`)**
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /notifications` | List in-app notifications for current user |
+| `PATCH /notifications/:id/read` | Mark one as read |
+| `PATCH /notifications/read-all` | Mark all as read |
+
+Also send email for important events (proposal received, stage submitted, payment due). Wire Expo push tokens when Phase 4 starts.
+
+**Trust Module (`/trust`)**
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /trust/reports` | Report user or project |
+| `POST /trust/blocks/:userId` | Block a user |
+| `DELETE /trust/blocks/:userId` | Unblock |
+| `POST /trust/verifications` | Designer submits verification request |
+
+**Admin Module (`/admin`)** — Week 6 stretch / early Phase 5
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /admin/users` | List/manage users |
+| `PATCH /admin/verifications/:id` | Approve/reject designer verification |
+| `GET /admin/reports` | Review reports |
+| `PATCH /admin/reports/:id` | Resolve report |
+| `GET /admin/analytics` | Basic platform metrics |
+
 ---
 
-## Phase 3: Web Frontend — Next.js (Weeks 7–10)
+## Phase 3: Web Frontend — Next.js (Weeks 7–11)
 
 > **Do not start Phase 3 until these API modules pass Postman tests:**
 > - [ ] Auth + User
 > - [ ] Portfolio (list, detail, filters)
 > - [ ] Request + Proposal (at least one hiring path)
 
-Map UI tokens from [`.stitch/DESIGN.md`](../../.stitch/DESIGN.md) to `tailwind.config.ts`. Use shadcn/ui components.
+Map UI tokens from [`.stitch/DESIGN.md`](.stitch/DESIGN.md) to `tailwind.config.ts`. Use shadcn/ui components.
 
 ### Week 7 — Scaffold Web + Auth UI
 
@@ -528,15 +587,30 @@ pnpm create next-app@latest web --typescript --tailwind --eslint --app --src-dir
 | Messaging UI | Chat bubble design, WebSocket connection, typing indicator, message list with infinite scroll |
 | Payment UI | Ledger table, pay button (Stripe Checkout redirect or embedded) |
 | Review form | Star rating (1-5), comment textarea, submit |
-| Admin basics | User list, verify designer toggle, basic dashboard |
+| Admin basics | User list, verify designer toggle, reports queue, basic analytics |
+| Favourites UI | Save designer from profile; favourites list (W-C18) |
+| Auth extras | Forgot/reset password, email-verify notice, role switcher |
 
 ---
 
-## Phase 4: Mobile App — Skipped
+## Phase 4: Mobile App — Expo / React Native (Weeks 14–18)
 
-Web app made responsive. Native mobile deferred per Key Decisions. Stitch mobile prompts in `.stitch/DESIGN.md` are for wireframes/report only.
+Required deliverable per proposal and [`Functions.md`](docs/Proposal/Sections/Functions.md) §11. Web remains fully responsive; mobile is a focused companion, not a full feature parity rewrite.
 
-If time permits after Phase 5, a lightweight Expo companion app with notifications, messaging, and quick approvals.
+```bash
+cd apps
+npx create-expo-app@latest mobile --template blank-typescript
+```
+
+| Week | Focus |
+|------|--------|
+| 14 | Scaffold Expo app, auth (login/register), API client, role switch |
+| 15 | Project list + progress; stage detail; approve/reject |
+| 16 | Messaging + push notifications (Expo Push) |
+| 17 | Milestone payment confirmation (Stripe) |
+| 18 | Polish, deep links, TestFlight / internal APK for demo |
+
+Stitch mobile prompts in [`.stitch/DESIGN.md`](.stitch/DESIGN.md) / [`.stitch/SITE.md`](.stitch/SITE.md) guide UI; generate M-* screens as needed for the interim report.
 
 ---
 
@@ -552,47 +626,43 @@ Generate in Google Stitch when needed for Chapter 5; does not block backend.
 | 4 | W-C20 | Project workspace |
 | 5 | W-C24 | Milestone ledger |
 
-Prompts: [`.stitch/DESIGN.md` Appendix B](../../.stitch/DESIGN.md). Order: [`.stitch/SITE.md`](../../.stitch/SITE.md).
+Prompts: [`.stitch/DESIGN.md` Appendix B](.stitch/DESIGN.md). Order: [`.stitch/SITE.md`](.stitch/SITE.md).
 
 ---
 
-## Phase 5: Testing, Polish & Deployment (Weeks 12–13)
+## Phase 5: Testing, Polish & Deployment (Weeks 12–13 and 19–22)
 
-### Week 12 — Testing
+### Weeks 12–13 — Core web + API testing & staging deploy
 
 | Layer | Tool | What to Test |
 |-------|------|-------------|
 | API unit | Jest | Service logic, guards, pipes |
 | API integration | Supertest | Full request-response cycles for critical flows |
 | Web unit | Vitest | Component rendering, hooks |
-| Web e2e | Playwright | 3-4 critical user journeys (register → create moodboard → post request → submit proposal → work through project → pay → review) |
+| Web e2e | Playwright | Critical journeys (register → moodboard → request → proposal → project → pay → review) |
 
 Critical flows to test end-to-end:
-1. Client: register → create moodboard → generate brief → post request → compare proposals → accept → view project → approve stage → submit review
+1. Client: register → verify email → create moodboard → generate brief → post request → compare proposals → accept → view project → approve stage → submit review
 2. Designer: register → create portfolio → browse requests → submit proposal → upload deliverable
-3. Admin: login → verify designer → view reports
-
-### Week 13 — Polish + Deploy
+3. Admin: login → verify designer → view/resolve reports
 
 | Task | Details |
 |------|---------|
-| Error states | 404, 500, network error, empty state illustrations |
-| Loading states | Skeleton loaders for every list/detail view |
+| Error / loading states | 404, 500, empty states, skeleton loaders |
 | Form validation | Password strength, required fields, file size limits |
-| Security audit | Check CORS, rate limiting, input sanitization, SQL injection (covered by Prisma), XSS (covered by React) |
-| Performance | Image optimisation (Cloudinary transforms), lazy loading, React.memo where needed |
-| Responsive | Test all pages at mobile, tablet, desktop widths |
-| SEO | Meta tags, Open Graph for portfolio pages |
+| Security audit | CORS, rate limiting, sanitization (Prisma/React baselines) |
+| Responsive | Mobile, tablet, desktop widths |
+| Staging deploy | Railway (`apps/api`) + Vercel (`apps/web`) |
 
-Deploy staging/production:
+### Weeks 19–22 — Mobile harden, docs, evaluation
 
 | Task | Details |
 |------|---------|
-| Railway | Auto-deploy `apps/api` from `main` |
-| Vercel | Auto-deploy `apps/web` from `main` |
-| API docs | Swagger UI verified and accessible |
-| README | Live URLs, env var table, setup steps |
-| Demo recording | Full user journey walkthrough |
+| Mobile e2e smoke | Auth → project → approve stage → push notification |
+| Sentry | API + web (+ mobile if time) |
+| CI/CD | GitHub Actions lint + API tests |
+| Documentation | README live URLs, user manual notes, evaluation evidence |
+| Demo recording | Full web journey + mobile companion highlights |
 
 ---
 
@@ -620,8 +690,21 @@ Deploy staging/production:
 
 ### Week 2 goal
 - [ ] User module complete
-- [ ] Portfolio CRUD + filtered list in Postman
+- [ ] Portfolio CRUD + filtered list + favourites in Postman
 - [ ] Postman collection exported
+
+---
+
+## Timeline summary (22 weeks)
+
+| Weeks | Focus |
+|-------|--------|
+| 1 | DB + NestJS shell + Auth |
+| 2–6 | Remaining API modules (through payment, messaging, trust, notifications) |
+| 7–11 | Next.js web UI |
+| 12–13 | Web/API test + staging deploy |
+| 14–18 | Expo mobile MVP |
+| 19–22 | Harden, docs, evaluation, demo |
 
 ---
 
@@ -693,5 +776,6 @@ Git branch convention:
 - [ ] Sentry reporting errors correctly
 - [ ] Railway auto-deploy set up from `main` branch
 - [ ] Vercel auto-deploy set up from `main` branch
+- [ ] Mobile Expo build demoable (push + stage approval + payment confirm)
 - [ ] Custom domain configured (optional)
 - [ ] README updated with live URLs
