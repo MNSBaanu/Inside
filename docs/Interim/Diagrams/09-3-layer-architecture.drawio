@@ -1,97 +1,100 @@
 <mxfile host="Electron" agent="Cursor">
-  <diagram name="3-Layer Architecture" id="layer-arch">
-    <mxGraphModel dx="1392" dy="1049" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+  <diagram name="Figure 2 - Detailed Architecture" id="detailed-arch">
+    <mxGraphModel dx="1810" dy="1364" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="980" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="layer-presentation" parent="1" style="swimlane;startSize=28;fillColor=#b1ddf0;strokeColor=#10739e;fontStyle=1;fontSize=12;fontFamily=Tahoma;" value="PRESENTATION LAYER (User Interface)" vertex="1">
-          <mxGeometry height="130" width="1320" x="40" y="60" as="geometry" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#10739e;" value="Inside Interior Design Service Platform — Architecture" vertex="1">
+          <mxGeometry height="30" width="900" x="300" y="10" as="geometry" />
         </mxCell>
-        <mxCell id="ui-web" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=9;fontFamily=Tahoma;fontStyle=1;" value="&lt;b&gt;Web App (Next.js)&lt;/b&gt;&lt;br&gt;─────────────&lt;br&gt;Auth · Dashboards · Portfolio Discovery&lt;br&gt;Moodboards · Brief · Fit Scores&lt;br&gt;Requests · Proposals · Workspace&lt;br&gt;Messaging · Milestone Ledger" vertex="1">
-          <mxGeometry height="80" width="320" x="100" y="30" as="geometry" />
+        <mxCell id="userLayer" parent="1" style="swimlane;startSize=30;fillColor=#eef7fc;strokeColor=#10739e;fontStyle=1;fontSize=13;fontColor=#10739e;" value="USER LAYER (Presentation)" vertex="1">
+          <mxGeometry height="190" width="1420" x="40" y="50" as="geometry" />
         </mxCell>
-        <mxCell id="ui-admin" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=9;fontFamily=Tahoma;fontStyle=1;" value="&lt;b&gt;Admin Web (Next.js)&lt;/b&gt;&lt;br&gt;─────────────&lt;br&gt;User Management · Verification&lt;br&gt;Reports · Moderation · Analytics" vertex="1">
-          <mxGeometry height="80" width="260" x="520" y="30" as="geometry" />
+        <mxCell id="web" parent="userLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;align=center;fontSize=10;fontColor=#10739e;" value="Client / Designer Web App (Next.js)&lt;br&gt;─────────────────&lt;br&gt;Auth · Discovery · Moodboards&lt;br&gt;Brief · Matching &amp; Fit · Requests&lt;br&gt;Workspace · Messaging · Payments" vertex="1">
+          <mxGeometry height="140" width="280" x="280" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="ui-mobile" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=9;fontFamily=Tahoma;fontStyle=1;" value="&lt;b&gt;Mobile App (React Native)&lt;/b&gt;&lt;br&gt;─────────────&lt;br&gt;Push Notifications · Messaging&lt;br&gt;Stage Approval · Payments · Role Switch" vertex="1">
-          <mxGeometry height="80" width="280" x="860" y="30" as="geometry" />
+        <mxCell id="mobile" parent="userLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;align=center;fontSize=10;fontColor=#10739e;" value="Mobile App (React Native)&lt;br&gt;─────────────────&lt;br&gt;Push Notifications&lt;br&gt;Messaging · Project Status&lt;br&gt;Stage Approval · Payments&lt;br&gt;Role Switch" vertex="1">
+          <mxGeometry height="140" width="240" x="590" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="comm-label" parent="1" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontFamily=Tahoma;fontStyle=1;" value="HTTPS / REST API (JSON) + WebSocket" vertex="1">
-          <mxGeometry height="20" width="340" x="480" y="200" as="geometry" />
+        <mxCell id="admin" parent="userLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;align=center;fontSize=10;fontColor=#10739e;" value="Admin Web App (Next.js)&lt;br&gt;─────────────────&lt;br&gt;Users · Verification&lt;br&gt;Reports · Moderation&lt;br&gt;Analytics" vertex="1">
+          <mxGeometry height="140" width="240" x="860" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="layer-application" parent="1" style="swimlane;startSize=28;fillColor=#b1ddf0;strokeColor=#10739e;fontStyle=1;fontSize=12;fontFamily=Tahoma;" value="APPLICATION LAYER (Business Logic)" vertex="1">
-          <mxGeometry height="320" width="1320" x="40" y="240" as="geometry" />
+        <mxCell id="comm" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=12;fontStyle=2;fontColor=#10739e;" value="HTTPS / REST API (JSON) + WebSocket" vertex="1">
+          <mxGeometry height="20" width="320" x="450" y="270" as="geometry" />
         </mxCell>
-        <mxCell id="api-box" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=12;fontFamily=Tahoma;fontStyle=1;" value="&lt;b&gt;NestJS Web API — Cloud Hosted&lt;/b&gt;" vertex="1">
-          <mxGeometry height="30" width="1240" x="80" y="30" as="geometry" />
+        <mxCell id="appLayer" parent="1" style="swimlane;startSize=30;fillColor=#eef7fc;strokeColor=#10739e;fontStyle=1;fontSize=13;fontColor=#10739e;" value="APPLICATION LAYER (Business Logic)" vertex="1">
+          <mxGeometry height="265" width="1420" x="40" y="330" as="geometry" />
         </mxCell>
-        <mxCell id="m-auth" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=9;fontFamily=Tahoma;fontStyle=1;" value="Auth" vertex="1">
-          <mxGeometry height="40" width="90" x="80" y="75" as="geometry" />
+        <mxCell id="api" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontStyle=1;fontSize=12;fontColor=#ffffff;" value="Node.js + NestJS Web API — Cloud Hosted" vertex="1">
+          <mxGeometry height="36" width="1360" x="30" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="m-user" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=9;fontFamily=Tahoma;fontStyle=1;" value="User" vertex="1">
-          <mxGeometry height="40" width="90" x="185" y="75" as="geometry" />
+        <mxCell id="m1" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Auth" vertex="1">
+          <mxGeometry height="44" width="100" x="30" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="m-portfolio" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=9;fontFamily=Tahoma;fontStyle=1;" value="Portfolio" vertex="1">
-          <mxGeometry height="40" width="90" x="290" y="75" as="geometry" />
+        <mxCell id="m2" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="User" vertex="1">
+          <mxGeometry height="44" width="100" x="140" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="m-moodboard" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=8;fontFamily=Tahoma;fontStyle=1;" value="Moodboard + Brief" vertex="1">
-          <mxGeometry height="40" width="100" x="395" y="75" as="geometry" />
+        <mxCell id="m3" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Portfolio" vertex="1">
+          <mxGeometry height="44" width="100" x="250" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="m-matching" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=8;fontFamily=Tahoma;fontStyle=1;" value="Matching &amp; Fit" vertex="1">
-          <mxGeometry height="40" width="100" x="510" y="75" as="geometry" />
+        <mxCell id="m4" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Moodboard + Brief" vertex="1">
+          <mxGeometry height="44" width="100" x="360" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="m-request" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=8;fontFamily=Tahoma;fontStyle=1;" value="Request / Proposal" vertex="1">
-          <mxGeometry height="40" width="105" x="625" y="75" as="geometry" />
+        <mxCell id="m5" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=8;fontColor=#10739e;" value="Matching &amp; Fit Scoring" vertex="1">
+          <mxGeometry height="44" width="118" x="462" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="m-workflow" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=8;fontFamily=Tahoma;fontStyle=1;" value="Project Workflow" vertex="1">
-          <mxGeometry height="40" width="100" x="745" y="75" as="geometry" />
+        <mxCell id="m6" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Request / Proposal" vertex="1">
+          <mxGeometry height="44" width="100" x="580" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="m-payment" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=8;fontFamily=Tahoma;fontStyle=1;" value="Payment + Ledger" vertex="1">
-          <mxGeometry height="40" width="100" x="860" y="75" as="geometry" />
+        <mxCell id="m7" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Project Workflow" vertex="1">
+          <mxGeometry height="44" width="100" x="690" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="m-messaging" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=9;fontFamily=Tahoma;fontStyle=1;" value="Messaging" vertex="1">
-          <mxGeometry height="40" width="95" x="975" y="75" as="geometry" />
+        <mxCell id="m8" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Messaging" vertex="1">
+          <mxGeometry height="44" width="100" x="800" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="m-notification" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=8;fontFamily=Tahoma;fontStyle=1;" value="Notification" vertex="1">
-          <mxGeometry height="40" width="95" x="1085" y="75" as="geometry" />
+        <mxCell id="m9" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Payment + Ledger" vertex="1">
+          <mxGeometry height="44" width="100" x="910" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="m-trust" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=8;fontFamily=Tahoma;fontStyle=1;" value="Trust &amp; Safety" vertex="1">
-          <mxGeometry height="40" width="95" x="1195" y="75" as="geometry" />
+        <mxCell id="m10" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Notification" vertex="1">
+          <mxGeometry height="44" width="100" x="1020" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="m-admin" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=9;fontFamily=Tahoma;fontStyle=1;" value="Admin" vertex="1">
-          <mxGeometry height="40" width="90" x="80" y="125" as="geometry" />
+        <mxCell id="m11" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Trust &amp; Safety" vertex="1">
+          <mxGeometry height="44" width="100" x="1130" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="guard-layer" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontFamily=Tahoma;fontStyle=1;" value="Guards &amp; Middleware: JWT · Role Authorization · Validation (class-validator) · Error Handling · Logging · CORS · Helmet · Rate Limiting" vertex="1">
-          <mxGeometry height="35" width="1240" x="80" y="180" as="geometry" />
+        <mxCell id="m12" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontSize=9;fontColor=#10739e;" value="Admin" vertex="1">
+          <mxGeometry height="44" width="100" x="1240" y="88" as="geometry" />
         </mxCell>
-        <mxCell id="prisma-orm" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;fontStyle=1;" value="Prisma ORM (Data Access)" vertex="1">
-          <mxGeometry height="30" width="1240" x="80" y="230" as="geometry" />
+        <mxCell id="mw" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontColor=#10739e;" value="Guards &amp; Middleware: JWT · Role Authorization · Validation · Error Handling · Logging · CORS · Helmet · Rate Limiting" vertex="1">
+          <mxGeometry height="42" width="1360" x="30" y="148" as="geometry" />
         </mxCell>
-        <mxCell id="layer-data" parent="1" style="swimlane;startSize=28;fillColor=#b1ddf0;strokeColor=#10739e;fontStyle=1;fontSize=12;fontFamily=Tahoma;" value="DATA LAYER (Persistence)" vertex="1">
-          <mxGeometry height="180" width="1320" x="40" y="620" as="geometry" />
+        <mxCell id="prisma" parent="appLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontStyle=1;fontColor=#ffffff;" value="Prisma ORM" vertex="1">
+          <mxGeometry height="34" width="1360" x="30" y="205" as="geometry" />
         </mxCell>
-        <mxCell id="db-postgres" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;─────────────&lt;br&gt;Users · Portfolios · Moodboards · Briefs&lt;br&gt;Requests · Proposals · Projects · Stages&lt;br&gt;Deliverables · Messages · Payments · Reviews" vertex="1">
-          <mxGeometry height="130" width="500" x="80" y="30" as="geometry" />
+        <mxCell id="dataLayer" parent="1" style="swimlane;startSize=30;fillColor=#eef7fc;strokeColor=#10739e;fontStyle=1;fontSize=13;fontColor=#10739e;" value="DATA LAYER (Persistence)" vertex="1">
+          <mxGeometry height="210" width="1420" x="40" y="660" as="geometry" />
         </mxCell>
-        <mxCell id="ext-services" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontFamily=Tahoma;fontStyle=1;align=left;" value="&lt;b&gt;External Services&lt;/b&gt;&lt;br&gt;─────────────&lt;br&gt;Stripe — Payment Gateway&lt;br&gt;Email API — Transactional Email&lt;br&gt;Expo Push — Mobile Notifications" vertex="1">
-          <mxGeometry height="120" width="300" x="660" y="30" as="geometry" />
+        <mxCell id="ext" parent="dataLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;align=left;spacingLeft=10;fontSize=10;fontColor=#10739e;" value="External Services&lt;br&gt;─────────────&lt;br&gt;Stripe (Payments)&lt;br&gt;Email API&lt;br&gt;Expo Push" vertex="1">
+          <mxGeometry height="130" width="220" x="30" y="50" as="geometry" />
         </mxCell>
-        <mxCell id="cloudinary" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontFamily=Tahoma;fontStyle=1;align=left;" value="&lt;b&gt;Cloudinary — File Storage&lt;/b&gt;&lt;br&gt;─────────────&lt;br&gt;Portfolio Images (CDN)&lt;br&gt;Deliverable Files&lt;br&gt;Image Transforms" vertex="1">
-          <mxGeometry height="120" width="270" x="1040" y="30" as="geometry" />
+        <mxCell id="db" parent="dataLayer" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;align=center;fontSize=10;fontColor=#10739e;" value="PostgreSQL (Prisma ORM)&lt;br&gt;─────────────&lt;br&gt;users · portfolios · moodboards · briefs&lt;br&gt;requests · proposals · projects · stages&lt;br&gt;deliverables · messages · payments · reviews" vertex="1">
+          <mxGeometry height="150" width="720" x="340" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="devops" parent="1" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=center;verticalAlign=middle;fontSize=11;fontStyle=2;fontFamily=Tahoma;fontStyle=1;" value="DevOps: GitHub (Source Control + CI) · Cloud Hosting (Vercel / Railway)" vertex="1">
-          <mxGeometry height="20" width="600" x="400" y="815" as="geometry" />
+        <mxCell id="s3" parent="dataLayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;align=left;spacingLeft=10;fontSize=10;fontColor=#10739e;" value="Cloudinary — File Storage&lt;br&gt;─────────────&lt;br&gt;Portfolio images&lt;br&gt;Deliverable files&lt;br&gt;CDN &amp; transforms" vertex="1">
+          <mxGeometry height="130" width="220" x="1150" y="50" as="geometry" />
         </mxCell>
-        <mxCell id="e-pres-app" edge="1" parent="1" source="layer-presentation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;startArrow=classic;fontSize=9;fontFamily=Tahoma;fontStyle=1;fillColor=#b1ddf0;" target="layer-application">
+        <mxCell id="devops" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=11;fontStyle=2;fontColor=#10739e;" value="DevOps: GitHub (source control + CI) · Cloud Hosting (Next.js + NestJS + PostgreSQL)" vertex="1">
+          <mxGeometry height="20" width="900" x="300" y="890" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="ext" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;dashed=1;" target="db">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-app-data" edge="1" parent="1" source="layer-application" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;startArrow=classic;fontSize=9;fontFamily=Tahoma;fontStyle=1;fillColor=#b1ddf0;" target="layer-data">
+        <mxCell id="e2" edge="1" parent="1" source="db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;dashed=1;" target="s3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-ext-db" edge="1" parent="1" source="ext-services" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;dashed=1;fillColor=#b1ddf0;" target="db-postgres">
+        <mxCell id="e3" edge="1" parent="1" source="userLayer" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;startArrow=classic;" target="appLayer">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-cl-db" edge="1" parent="1" source="cloudinary" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;dashed=1;fillColor=#b1ddf0;" target="db-postgres">
+        <mxCell id="e4" edge="1" parent="1" source="appLayer" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=2;endArrow=classic;startArrow=classic;" target="dataLayer">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
