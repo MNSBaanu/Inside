@@ -1,0 +1,6 @@
+# draw.io autosave / backup files
+*.drawio.bkp
+.$*.drawio.bkp
+
+# Microsoft Office lock / temp files
+~$*
