@@ -1,0 +1,166 @@
+<mxfile host="Electron" agent="Cursor">
+  <diagram name="Activity Diagram - Discover Moodboard Brief" id="activity-discover-brief">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="swl-client" parent="1" style="swimlane;startSize=32;fillColor=#b1ddf0;strokeColor=#10739e;fontStyle=1;fontSize=12;fontFamily=Tahoma;align=left;verticalAlign=top;spacingLeft=10;" value="Client" vertex="1">
+          <mxGeometry height="1000" width="380" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="swl-system" parent="1" style="swimlane;startSize=32;fillColor=#b1ddf0;strokeColor=#10739e;fontStyle=1;fontSize=12;fontFamily=Tahoma;align=left;verticalAlign=top;spacingLeft=10;" value="System" vertex="1">
+          <mxGeometry height="1000" width="380" x="400" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="swl-designer" parent="1" style="swimlane;startSize=32;fillColor=#b1ddf0;strokeColor=#10739e;fontStyle=1;fontSize=12;fontFamily=Tahoma;align=left;verticalAlign=top;spacingLeft=10;" value="Designer (portfolio data)" vertex="1">
+          <mxGeometry height="1000" width="340" x="780" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="start" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#b1ddf0;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="200" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="act-open-discover" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Open Discovery Feed" vertex="1">
+          <mxGeometry height="50" width="180" x="120" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="act-load-portfolios" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Load Portfolio Projects&#xa;(style, room, budget)" vertex="1">
+          <mxGeometry height="50" width="180" x="500" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="act-publish-data" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Published Room&#xa;Case Studies" vertex="1">
+          <mxGeometry height="50" width="180" x="860" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="act-filter" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Apply Filters&#xa;(style / room / budget)" vertex="1">
+          <mxGeometry height="50" width="180" x="120" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="act-filter-results" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Return Filtered Results" vertex="1">
+          <mxGeometry height="50" width="180" x="500" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="act-view-detail" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="View Portfolio Detail&#xa;(images, tags, designer)" vertex="1">
+          <mxGeometry height="50" width="180" x="120" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="decision-save" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Save to&#xa;Moodboard?" vertex="1">
+          <mxGeometry height="80" width="140" x="140" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="act-save-item" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Save Inspiration&#xa;to Moodboard" vertex="1">
+          <mxGeometry height="50" width="180" x="120" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="act-store-item" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Store Moodboard Item" vertex="1">
+          <mxGeometry height="50" width="180" x="500" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="decision-enough" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Enough&#xa;items?" vertex="1">
+          <mxGeometry height="80" width="140" x="140" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="act-review-board" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Review Moodboard" vertex="1">
+          <mxGeometry height="50" width="180" x="120" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="act-request-brief" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Request Brief&#xa;Generation" vertex="1">
+          <mxGeometry height="50" width="180" x="120" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="act-generate-brief" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;" value="Generate Structured Brief&#xa;(styles %, rooms, budget)" vertex="1">
+          <mxGeometry height="50" width="180" x="500" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="act-edit-brief" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Edit / Confirm Brief" vertex="1">
+          <mxGeometry height="50" width="180" x="120" y="890" as="geometry" />
+        </mxCell>
+        <mxCell id="act-calc-fit" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;" value="Calculate Fit Scores&#xa;(style × budget × room)" vertex="1">
+          <mxGeometry height="50" width="180" x="500" y="890" as="geometry" />
+        </mxCell>
+        <mxCell id="act-match-portfolios" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Match Against&#xa;Designer Portfolios" vertex="1">
+          <mxGeometry height="50" width="180" x="860" y="890" as="geometry" />
+        </mxCell>
+        <mxCell id="act-view-fit" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="View Ranked Designers&#xa;+ Fit Breakdown" vertex="1">
+          <mxGeometry height="50" width="180" x="120" y="970" as="geometry" />
+        </mxCell>
+        <mxCell id="end" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#b1ddf0;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="200" y="1040" as="geometry" />
+        </mxCell>
+        <mxCell id="label-yes-save" parent="1" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=center;fontSize=9;" value="Yes" vertex="1">
+          <mxGeometry height="20" width="30" x="160" y="475" as="geometry" />
+        </mxCell>
+        <mxCell id="label-no-save" parent="1" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=center;fontSize=9;" value="No (browse more)" vertex="1">
+          <mxGeometry height="20" width="90" x="40" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="label-yes-enough" parent="1" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=center;fontSize=9;" value="Yes" vertex="1">
+          <mxGeometry height="20" width="30" x="160" y="675" as="geometry" />
+        </mxCell>
+        <mxCell id="label-no-enough" parent="1" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=center;fontSize=9;" value="No" vertex="1">
+          <mxGeometry height="20" width="30" x="90" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="start" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-open-discover">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="act-open-discover" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-load-portfolios">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="act-load-portfolios" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-publish-data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="act-publish-data" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="act-filter">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="950" y="245" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="act-filter" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-filter-results">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="act-filter-results" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-view-detail">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="act-view-detail" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="decision-save">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="decision-save" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-save-item">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8b" edge="1" parent="1" source="decision-save" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="act-filter">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="50" y="430" />
+              <mxPoint x="50" y="245" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="act-save-item" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-store-item">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="act-store-item" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="decision-enough">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="decision-enough" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-review-board">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11b" edge="1" parent="1" source="decision-enough" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="act-filter">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="70" y="630" />
+              <mxPoint x="70" y="245" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="act-review-board" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-request-brief">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="act-request-brief" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-generate-brief">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="act-generate-brief" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-edit-brief">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="act-edit-brief" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-calc-fit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="act-calc-fit" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-match-portfolios">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" edge="1" parent="1" source="act-match-portfolios" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="act-view-fit">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="950" y="995" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e18" edge="1" parent="1" source="act-view-fit" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;endArrow=classic;endFill=1;fillColor=#b1ddf0;" target="end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
