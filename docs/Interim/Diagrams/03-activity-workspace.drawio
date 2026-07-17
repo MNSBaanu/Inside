@@ -16,10 +16,10 @@
         <mxCell id="start" parent="1" style="ellipse;html=1;shape=startState;fillColor=#000000;strokeColor=#000000;" value="" vertex="1">
           <mxGeometry height="20" width="20" x="170" y="80" as="geometry" />
         </mxCell>
-        <mxCell id="act-stage-select" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;" value="Select Current Stage&#xa;(Concept / Design /&#xa;Revision / Completion)" vertex="1">
+        <mxCell id="act-stage-select" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;" value="Select Project Stage&#xa;(Concept / Design /&#xa;Revision / Completion)" vertex="1">
           <mxGeometry height="60" width="190" x="85" y="130" as="geometry" />
         </mxCell>
-        <mxCell id="act-upload" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Upload Deliverable&#xa;(with version tracking)" vertex="1">
+        <mxCell id="act-upload" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Upload Deliverable" vertex="1">
           <mxGeometry height="60" width="190" x="85" y="230" as="geometry" />
         </mxCell>
         <mxCell id="act-save-file" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=11;" value="Save File to Cloudinary&#xa;&amp; Record Version" vertex="1">
