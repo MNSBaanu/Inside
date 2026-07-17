@@ -1,110 +1,137 @@
 <mxfile host="Electron" agent="Cursor">
   <diagram name="DFD Level 1 Diagram" id="dfd-level1">
-    <mxGraphModel dx="1810" dy="1364" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+    <mxGraphModel dx="1810" dy="1364" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=#10739e;fillColor=#b1ddf0;fontFamily=Tahoma;fontStyle=1;fontSize=20;" value="Level 1 DFD for Inside Platform" vertex="1">
-          <mxGeometry height="40" width="400" x="400" y="20" as="geometry" />
+          <mxGeometry height="40" width="400" x="450" y="20" as="geometry" />
         </mxCell>
         <mxCell id="ent-client" parent="1" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="Client" vertex="1">
-          <mxGeometry height="50" width="120" x="50" y="250" as="geometry" />
+          <mxGeometry height="50" width="120" x="40" y="250" as="geometry" />
         </mxCell>
         <mxCell id="ent-designer" parent="1" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="Designer" vertex="1">
-          <mxGeometry height="50" width="120" x="50" y="500" as="geometry" />
+          <mxGeometry height="50" width="120" x="40" y="500" as="geometry" />
         </mxCell>
         <mxCell id="ent-admin" parent="1" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="Admin" vertex="1">
-          <mxGeometry height="50" width="120" x="50" y="850" as="geometry" />
+          <mxGeometry height="50" width="120" x="40" y="900" as="geometry" />
         </mxCell>
         <mxCell id="ent-stripe" parent="1" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="Stripe" vertex="1">
-          <mxGeometry height="40" width="120" x="600" y="770" as="geometry" />
+          <mxGeometry height="40" width="120" x="300" y="800" as="geometry" />
         </mxCell>
         <mxCell id="ent-cloudinary" parent="1" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="Cloudinary" vertex="1">
-          <mxGeometry height="40" width="120" x="600" y="650" as="geometry" />
+          <mxGeometry height="40" width="120" x="850" y="280" as="geometry" />
         </mxCell>
-        <mxCell id="p1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="1.0&#xa;User Management&#xa;&amp; Auth" vertex="1">
-          <mxGeometry height="80" width="140" x="300" y="80" as="geometry" />
+        <mxCell id="p1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fontSize=10;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="1.0&#xa;User Management&#xa;&amp; Authentication" vertex="1">
+          <mxGeometry height="80" width="150" x="280" y="70" as="geometry" />
         </mxCell>
         <mxCell id="p2" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="2.0&#xa;Portfolio &amp;&#xa;Discovery" vertex="1">
-          <mxGeometry height="80" width="140" x="300" y="200" as="geometry" />
+          <mxGeometry height="80" width="150" x="280" y="190" as="geometry" />
         </mxCell>
         <mxCell id="p3" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="3.0&#xa;Moodboard &amp;&#xa;Brief" vertex="1">
-          <mxGeometry height="80" width="140" x="300" y="320" as="geometry" />
+          <mxGeometry height="80" width="150" x="280" y="310" as="geometry" />
         </mxCell>
         <mxCell id="p4" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="4.0&#xa;Request &amp;&#xa;Proposal" vertex="1">
-          <mxGeometry height="80" width="140" x="300" y="440" as="geometry" />
+          <mxGeometry height="80" width="150" x="280" y="430" as="geometry" />
         </mxCell>
         <mxCell id="p5" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="5.0&#xa;Project&#xa;Workspace" vertex="1">
-          <mxGeometry height="80" width="140" x="300" y="560" as="geometry" />
+          <mxGeometry height="80" width="150" x="280" y="550" as="geometry" />
         </mxCell>
         <mxCell id="p6" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="6.0&#xa;Payment&#xa;Processing" vertex="1">
-          <mxGeometry height="80" width="140" x="300" y="680" as="geometry" />
+          <mxGeometry height="80" width="150" x="280" y="670" as="geometry" />
         </mxCell>
         <mxCell id="p7" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="7.0&#xa;Messaging &amp;&#xa;Notifications" vertex="1">
-          <mxGeometry height="80" width="140" x="600" y="440" as="geometry" />
+          <mxGeometry height="80" width="150" x="580" y="430" as="geometry" />
         </mxCell>
-        <mxCell id="p8" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fontSize=11;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="8.0&#xa;Trust, Safety&#xa;&amp; Admin" vertex="1">
-          <mxGeometry height="80" width="140" x="300" y="830" as="geometry" />
+        <mxCell id="p8" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fontSize=10;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="8.0&#xa;Trust, Safety &amp;&#xa;Administration" vertex="1">
+          <mxGeometry height="80" width="150" x="280" y="880" as="geometry" />
         </mxCell>
-        <mxCell id="ds-users" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontFamily=Tahoma;fontStyle=1;" value="D1  Users" vertex="1">
-          <mxGeometry height="40" width="120" x="600" y="100" as="geometry" />
+        <mxCell id="ds-users" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D1  Users" vertex="1">
+          <mxGeometry height="40" width="140" x="580" y="90" as="geometry" />
         </mxCell>
-        <mxCell id="ds-portfolios" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontFamily=Tahoma;fontStyle=1;" value="D2  Portfolios" vertex="1">
-          <mxGeometry height="40" width="120" x="600" y="220" as="geometry" />
+        <mxCell id="ds-portfolios" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D2  Portfolios" vertex="1">
+          <mxGeometry height="40" width="140" x="580" y="210" as="geometry" />
         </mxCell>
-        <mxCell id="ds-moodboards" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontFamily=Tahoma;fontStyle=1;" value="D3  Moodboards" vertex="1">
-          <mxGeometry height="40" width="120" x="600" y="340" as="geometry" />
+        <mxCell id="ds-moodboards" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D3  Moodboards" vertex="1">
+          <mxGeometry height="40" width="140" x="580" y="330" as="geometry" />
         </mxCell>
-        <mxCell id="ds-requests" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontFamily=Tahoma;fontStyle=1;" value="D4  Requests" vertex="1">
-          <mxGeometry height="40" width="120" x="600" y="530" as="geometry" />
+        <mxCell id="ds-requests" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D4  Requests" vertex="1">
+          <mxGeometry height="40" width="140" x="850" y="420" as="geometry" />
         </mxCell>
-        <mxCell id="ds-proposals" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontFamily=Tahoma;fontStyle=1;" value="D5  Proposals" vertex="1">
-          <mxGeometry height="40" width="120" x="600" y="590" as="geometry" />
+        <mxCell id="ds-proposals" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D5  Proposals" vertex="1">
+          <mxGeometry height="40" width="140" x="850" y="480" as="geometry" />
         </mxCell>
-        <mxCell id="ds-payments" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontFamily=Tahoma;fontStyle=1;" value="D6  Payments" vertex="1">
-          <mxGeometry height="40" width="120" x="600" y="700" as="geometry" />
+        <mxCell id="ds-workspace" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontFamily=Tahoma;fontStyle=1;" value="D9  Project Workspace" vertex="1">
+          <mxGeometry height="40" width="160" x="580" y="570" as="geometry" />
         </mxCell>
-        <mxCell id="ds-messages" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontFamily=Tahoma;fontStyle=1;" value="D7  Messages" vertex="1">
-          <mxGeometry height="40" width="120" x="850" y="460" as="geometry" />
+        <mxCell id="ds-payments" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D6  Payments" vertex="1">
+          <mxGeometry height="40" width="140" x="580" y="690" as="geometry" />
         </mxCell>
-        <mxCell id="ds-reviews" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=12;fontFamily=Tahoma;fontStyle=1;" value="D8  Reviews" vertex="1">
-          <mxGeometry height="40" width="120" x="600" y="850" as="geometry" />
+        <mxCell id="ds-messages" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D7  Messages" vertex="1">
+          <mxGeometry height="40" width="140" x="850" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="ds-reviews" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D8  Reviews" vertex="1">
+          <mxGeometry height="40" width="140" x="580" y="860" as="geometry" />
+        </mxCell>
+        <mxCell id="ds-reports" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D10  Reports" vertex="1">
+          <mxGeometry height="40" width="140" x="580" y="940" as="geometry" />
         </mxCell>
         <mxCell id="e1" edge="1" parent="1" source="ent-client" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p1" value="Credentials,&#xa;Profile Data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1b" edge="1" parent="1" source="p1" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-client" value="Auth Status">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e3" edge="1" parent="1" source="ent-client" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p2" value="Search Query">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="e3b" edge="1" parent="1" source="p2" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-client" value="Recommended Designers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="e4" edge="1" parent="1" source="ent-client" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p3" value="Moodboard Data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4b" edge="1" parent="1" source="p3" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-client" value="Structured Brief">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e5" edge="1" parent="1" source="ent-client" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p4" value="Project Request">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e6" edge="1" parent="1" source="ent-client" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p5" value="Stage Approval">
+        <mxCell id="e5b" edge="1" parent="1" source="p4" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-client" value="Proposal Details">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e7" edge="1" parent="1" source="ent-designer" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p2" value="Portfolio Upload">
+        <mxCell id="e6" edge="1" parent="1" source="ent-client" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p5" value="Approval Decision">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e8" edge="1" parent="1" source="ent-designer" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p4" value="Proposal">
+        <mxCell id="e6b" edge="1" parent="1" source="p5" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-client" value="Deliverable Details">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e9" edge="1" parent="1" source="ent-designer" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p5" value="Deliverable">
+        <mxCell id="e7" edge="1" parent="1" source="ent-designer" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p2" value="Portfolio Data">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e10" edge="1" parent="1" source="ent-admin" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p8" value="Verification">
+        <mxCell id="e8" edge="1" parent="1" source="ent-designer" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p4" value="Proposal Data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8b" edge="1" parent="1" source="p4" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-designer" value="Request Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="ent-designer" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p5" value="Deliverable Data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9b" edge="1" parent="1" source="p5" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-designer" value="Stage Status">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="ent-admin" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p8" value="Verification Data">
           <mxGeometry relative="1" x="0.2" y="10" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e11" edge="1" parent="1" source="p8" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-admin" value="Reports">
+        <mxCell id="e11" edge="1" parent="1" source="p8" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-admin" value="Report Data">
           <mxGeometry relative="1" x="-0.2" y="-10" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e12" edge="1" parent="1" source="p2" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p3" value="Moodboard ID">
+        <mxCell id="e12" edge="1" parent="1" source="p2" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p3" value="Portfolio Selection">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e13" edge="1" parent="1" source="p3" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p4" value="Brief Details">
@@ -113,55 +140,132 @@
         <mxCell id="e14" edge="1" parent="1" source="p4" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p5" value="Accepted Proposal">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e15" edge="1" parent="1" source="p5" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p6" value="Release Trigger">
+        <mxCell id="e15" edge="1" parent="1" source="p5" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p6" value="Milestone Payment Data">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e16" edge="1" parent="1" source="p4" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p7" value="Notification Trigger">
+        <mxCell id="e16" edge="1" parent="1" source="p4" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p7" value="Notification Data">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16b" edge="1" parent="1" source="p5" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p7" value="Notification Data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16c" edge="1" parent="1" source="p7" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-client" value="Notifications">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="470" />
+              <mxPoint x="200" y="275" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e16d" edge="1" parent="1" source="p7" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-designer" value="Notifications">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="470" />
+              <mxPoint x="200" y="525" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="e17" edge="1" parent="1" source="p6" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-stripe" value="Payment Intent">
           <mxGeometry relative="1" x="0.2" y="-10" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e18" edge="1" parent="1" source="ent-stripe" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p6" value="Webhook">
+        <mxCell id="e18" edge="1" parent="1" source="ent-stripe" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p6" value="Webhook Event">
           <mxGeometry relative="1" x="-0.2" y="10" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e19" edge="1" parent="1" source="p5" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-cloudinary" value="File Payload">
-          <mxGeometry relative="1" x="0.2" y="-10" as="geometry">
-            <mxPoint as="offset" />
+        <mxCell id="e19" edge="1" parent="1" source="p5" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-cloudinary" value="Image Upload">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="750" y="590" />
+              <mxPoint x="750" y="300" />
+            </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="e20" edge="1" parent="1" source="ent-cloudinary" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p5" value="CDN URL">
-          <mxGeometry relative="1" x="-0.2" y="10" as="geometry">
-            <mxPoint as="offset" />
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="780" y="320" />
+              <mxPoint x="780" y="610" />
+            </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e21" edge="1" parent="1" source="p1" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-users" value="User Record">
+        <mxCell id="e19b" edge="1" parent="1" source="p2" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-cloudinary" value="Image Upload">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e22" edge="1" parent="1" source="p2" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-portfolios" value="Portfolio Record">
+        <mxCell id="e20b" edge="1" parent="1" source="ent-cloudinary" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p2" value="CDN URL">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e23" edge="1" parent="1" source="p3" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-moodboards" value="Moodboard Record">
+        <mxCell id="e21" edge="1" parent="1" source="p1" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-users" value="User Details">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e24" edge="1" parent="1" source="p4" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-requests" value="Request Record">
+        <mxCell id="e21b" edge="1" parent="1" source="ds-users" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p1" value="User Details">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e25" edge="1" parent="1" source="p4" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-proposals" value="Proposal Record">
+        <mxCell id="e22" edge="1" parent="1" source="p2" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-portfolios" value="Portfolio Details">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e26" edge="1" parent="1" source="p5" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-payments" value="Stage Record">
+        <mxCell id="e22b" edge="1" parent="1" source="ds-portfolios" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p2" value="Portfolio Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e22c" edge="1" parent="1" source="ds-portfolios" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p4" value="Portfolio Details">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="540" y="230" />
+              <mxPoint x="540" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e23" edge="1" parent="1" source="p3" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-moodboards" value="Moodboard Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23b" edge="1" parent="1" source="ds-moodboards" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p3" value="Moodboard Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e24" edge="1" parent="1" source="p4" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-requests" value="Request Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e25" edge="1" parent="1" source="p4" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-proposals" value="Proposal Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e26" edge="1" parent="1" source="p5" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-workspace" value="Deliverable / Stage Data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e26b" edge="1" parent="1" source="ds-workspace" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p5" value="Workspace Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e26c" edge="1" parent="1" source="p6" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-payments" value="Payment Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e26d" edge="1" parent="1" source="ds-payments" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p6" value="Payment Details">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e27" edge="1" parent="1" source="p7" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-messages" value="Message Content">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e28" edge="1" parent="1" source="p8" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-reviews" value="Review Record">
+        <mxCell id="e27b" edge="1" parent="1" source="ds-messages" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p7" value="Message Content">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e28" edge="1" parent="1" source="p8" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-reviews" value="Review Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e28b" edge="1" parent="1" source="ds-reviews" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p8" value="Review Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e29" edge="1" parent="1" source="p8" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-reports" value="Report Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e29b" edge="1" parent="1" source="ds-reports" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p8" value="Report Details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e30" edge="1" parent="1" source="p8" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-users" value="Verification Status">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="500" y="920" />
+              <mxPoint x="500" y="110" />
+            </Array>
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
