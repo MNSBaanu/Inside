@@ -1,19 +1,17 @@
 <mxfile host="Electron" agent="Cursor">
   <diagram name="Sequence Diagram - Stage Approval" id="sequence-stage-approval">
-    <mxGraphModel dx="1400" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1500" dy="1500" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="1550" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <!-- Actors (stick figures) -->
+        <!-- Participants -->
         <mxCell id="actor-designer" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#b1ddf0;strokeColor=#10739e;fontFamily=Tahoma;fontSize=11;fontStyle=1;" value="Designer" vertex="1">
           <mxGeometry x="70" y="20" width="40" height="70" as="geometry" />
         </mxCell>
         <mxCell id="actor-client" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#b1ddf0;strokeColor=#10739e;fontFamily=Tahoma;fontSize=11;fontStyle=1;" value="Client" vertex="1">
           <mxGeometry x="250" y="20" width="40" height="70" as="geometry" />
         </mxCell>
-
-        <!-- System participants -->
         <mxCell id="box-web" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;fontFamily=Tahoma;fontSize=11;fontStyle=1;" value="Web App" vertex="1">
           <mxGeometry x="420" y="30" width="100" height="50" as="geometry" />
         </mxCell>
@@ -31,42 +29,83 @@
         <mxCell id="ll-designer" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1;">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="90" y="110" as="sourcePoint" />
-            <mxPoint x="90" y="1020" as="targetPoint" />
+            <mxPoint x="90" y="1480" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="ll-client" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1;">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="270" y="110" as="sourcePoint" />
-            <mxPoint x="270" y="1020" as="targetPoint" />
+            <mxPoint x="270" y="1480" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="ll-web" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1;">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="470" y="80" as="sourcePoint" />
-            <mxPoint x="470" y="1020" as="targetPoint" />
+            <mxPoint x="470" y="1480" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="ll-api" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1;">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="670" y="80" as="sourcePoint" />
-            <mxPoint x="670" y="1020" as="targetPoint" />
+            <mxPoint x="670" y="1480" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="ll-cloud" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1;">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="870" y="80" as="sourcePoint" />
-            <mxPoint x="870" y="1020" as="targetPoint" />
+            <mxPoint x="870" y="1480" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="ll-db" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1;">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1070" y="80" as="sourcePoint" />
-            <mxPoint x="1070" y="1020" as="targetPoint" />
+            <mxPoint x="1070" y="1480" as="targetPoint" />
           </mxGeometry>
         </mxCell>
 
-        <!-- Messages 1–9 (upload + review) -->
-        <mxCell id="m1" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="1. Upload deliverable for current stage">
+        <!-- Activation bars -->
+        <mxCell id="act-web-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="465" y="145" width="10" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="act-api-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="665" y="205" width="10" height="295" as="geometry" />
+        </mxCell>
+        <mxCell id="act-cloud-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="865" y="265" width="10" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act-db-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="1065" y="385" width="10" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act-web-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="465" y="565" width="10" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="act-api-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="665" y="625" width="10" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="act-db-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="1065" y="685" width="10" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act-web-3a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="465" y="865" width="10" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act-api-3a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="665" y="925" width="10" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="act-db-3a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="1065" y="985" width="10" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act-web-3b" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="465" y="1185" width="10" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act-api-3b" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="665" y="1245" width="10" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="act-db-3b" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#10739e;strokeColor=#10739e;" value="" vertex="1">
+          <mxGeometry x="1065" y="1305" width="10" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Upload path -->
+        <mxCell id="m1" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="1. uploadDeliverable()">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="90" y="150" as="sourcePoint" />
             <mxPoint x="470" y="150" as="targetPoint" />
@@ -78,115 +117,172 @@
             <mxPoint x="670" y="210" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m3" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="3. Upload file (store URL)">
+        <mxCell id="m3" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="3. uploadFile()">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="670" y="270" as="sourcePoint" />
             <mxPoint x="870" y="270" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m4" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="4. Return file URL">
+        <mxCell id="m4" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="4. File URL">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="870" y="320" as="sourcePoint" />
             <mxPoint x="670" y="320" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m5" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="5. Create Deliverable (version++) + stage IN_REVIEW">
+        <mxCell id="m5" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="5. storeDeliverableMetadata(version++)">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="670" y="380" as="sourcePoint" />
-            <mxPoint x="1070" y="380" as="targetPoint" />
+            <mxPoint x="670" y="390" as="sourcePoint" />
+            <mxPoint x="1070" y="390" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m6" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="6. Notify: Stage ready for review">
+        <mxCell id="m6" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="6. updateStageStatus(IN_REVIEW)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="670" y="440" as="sourcePoint" />
-            <mxPoint x="270" y="440" as="targetPoint" />
+            <mxPoint x="1070" y="440" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m7" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="7. Open stage / view deliverable">
+        <mxCell id="m7" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="7. Success Response">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="270" y="500" as="sourcePoint" />
-            <mxPoint x="470" y="500" as="targetPoint" />
+            <mxPoint x="1070" y="490" as="sourcePoint" />
+            <mxPoint x="670" y="490" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m8" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="8. GET deliverables + version history">
+        <mxCell id="m8" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="8. notifyClient(stageReadyForReview)">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="470" y="560" as="sourcePoint" />
-            <mxPoint x="670" y="560" as="targetPoint" />
+            <mxPoint x="670" y="540" as="sourcePoint" />
+            <mxPoint x="270" y="540" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m9" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="9. Return files + preview URLs">
+
+        <!-- Client review -->
+        <mxCell id="m9" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="9. viewDeliverable()">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="670" y="620" as="sourcePoint" />
-            <mxPoint x="270" y="620" as="targetPoint" />
+            <mxPoint x="270" y="570" as="sourcePoint" />
+            <mxPoint x="470" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="10. GET /stages/:id/deliverables">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="470" y="630" as="sourcePoint" />
+            <mxPoint x="670" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m11" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="11. retrieveDeliverables()">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="670" y="690" as="sourcePoint" />
+            <mxPoint x="1070" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m12" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="12. Deliverable Metadata">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1070" y="740" as="sourcePoint" />
+            <mxPoint x="670" y="740" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m13" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="13. Preview URLs">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="670" y="790" as="sourcePoint" />
+            <mxPoint x="470" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m14" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="14. Deliverable Preview">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="470" y="840" as="sourcePoint" />
+            <mxPoint x="270" y="840" as="targetPoint" />
           </mxGeometry>
         </mxCell>
 
         <!-- Alt frame -->
         <mxCell id="alt-frame" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#10739e;strokeWidth=1.5;dashed=1;fontFamily=Tahoma;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;" value="alt" vertex="1">
-          <mxGeometry x="50" y="660" width="1060" height="340" as="geometry" />
+          <mxGeometry x="50" y="860" width="1060" height="600" as="geometry" />
         </mxCell>
-        <mxCell id="alt-approve" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontFamily=Tahoma;fontStyle=2;fontColor=#10739e;" value="[Approve]">
-          <mxGeometry x="60" y="665" width="80" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="alt-divider" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1;">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="50" y="830" as="sourcePoint" />
-            <mxPoint x="1110" y="830" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="alt-reject" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontFamily=Tahoma;fontStyle=2;fontColor=#10739e;" value="[Reject]">
-          <mxGeometry x="60" y="835" width="80" height="20" as="geometry" />
+        <mxCell id="alt-approved" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontFamily=Tahoma;fontStyle=2;fontColor=#10739e;" value="[Approved]" vertex="1">
+          <mxGeometry x="60" y="865" width="90" height="20" as="geometry" />
         </mxCell>
 
         <!-- Approve path -->
-        <mxCell id="m10a" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="10a. PATCH /stages/:id/approve">
+        <mxCell id="m15a" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="15a. approveStage()">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="270" y="710" as="sourcePoint" />
-            <mxPoint x="470" y="710" as="targetPoint" />
+            <mxPoint x="270" y="900" as="sourcePoint" />
+            <mxPoint x="470" y="900" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m11a" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="11a. Forward approve">
+        <mxCell id="m16a" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="16a. PATCH /stages/:id/approve">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="470" y="750" as="sourcePoint" />
-            <mxPoint x="670" y="750" as="targetPoint" />
+            <mxPoint x="470" y="960" as="sourcePoint" />
+            <mxPoint x="670" y="960" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m12a" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="12a. Stage → APPROVED; enable milestone payment">
+        <mxCell id="m17a" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="17a. updateStageStatus(APPROVED)">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="670" y="790" as="sourcePoint" />
-            <mxPoint x="1070" y="790" as="targetPoint" />
+            <mxPoint x="670" y="1020" as="sourcePoint" />
+            <mxPoint x="1070" y="1020" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m13a" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="13a. Notify designer: Stage approved">
+        <mxCell id="m18a" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="18a. enableMilestonePayment()">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="670" y="820" as="sourcePoint" />
-            <mxPoint x="90" y="820" as="targetPoint" />
+            <mxPoint x="670" y="1070" as="sourcePoint" />
+            <mxPoint x="1070" y="1070" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m19a" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="19a. Success Response">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1070" y="1110" as="sourcePoint" />
+            <mxPoint x="670" y="1110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m20a" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="20a. notifyDesigner(stageApproved)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="670" y="1150" as="sourcePoint" />
+            <mxPoint x="90" y="1150" as="targetPoint" />
           </mxGeometry>
         </mxCell>
 
+        <mxCell id="alt-divider" edge="1" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="50" y="1180" as="sourcePoint" />
+            <mxPoint x="1110" y="1180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="alt-rejected" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontFamily=Tahoma;fontStyle=2;fontColor=#10739e;" value="[Rejected]" vertex="1">
+          <mxGeometry x="60" y="1185" width="90" height="20" as="geometry" />
+        </mxCell>
+
         <!-- Reject path -->
-        <mxCell id="m10b" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="10b. PATCH /stages/:id/reject + feedback">
+        <mxCell id="m15b" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="15b. rejectStage(feedback)">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="270" y="880" as="sourcePoint" />
-            <mxPoint x="470" y="880" as="targetPoint" />
+            <mxPoint x="270" y="1220" as="sourcePoint" />
+            <mxPoint x="470" y="1220" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m11b" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="11b. Forward reject">
+        <mxCell id="m16b" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="16b. PATCH /stages/:id/reject">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="470" y="920" as="sourcePoint" />
-            <mxPoint x="670" y="920" as="targetPoint" />
+            <mxPoint x="470" y="1280" as="sourcePoint" />
+            <mxPoint x="670" y="1280" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m12b" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="12b. Stage → REJECTED; save feedback">
+        <mxCell id="m17b" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="17b. updateStageStatus(REJECTED)">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="670" y="960" as="sourcePoint" />
-            <mxPoint x="1070" y="960" as="targetPoint" />
+            <mxPoint x="670" y="1340" as="sourcePoint" />
+            <mxPoint x="1070" y="1340" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="m13b" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="13b. Notify designer: Revision requested">
+        <mxCell id="m18b" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="18b. saveRevisionFeedback()">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="670" y="1000" as="sourcePoint" />
-            <mxPoint x="90" y="1000" as="targetPoint" />
+            <mxPoint x="670" y="1390" as="sourcePoint" />
+            <mxPoint x="1070" y="1390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m19b" edge="1" parent="1" style="endArrow=open;endFill=0;dashed=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="19b. Success Response">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1070" y="1430" as="sourcePoint" />
+            <mxPoint x="670" y="1430" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m20b" edge="1" parent="1" style="endArrow=block;endFill=1;html=1;strokeColor=#10739e;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=1;labelBackgroundColor=none;verticalAlign=bottom;" value="20b. notifyDesigner(revisionRequested)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="670" y="1470" as="sourcePoint" />
+            <mxPoint x="90" y="1470" as="targetPoint" />
           </mxGeometry>
         </mxCell>
       </root>
