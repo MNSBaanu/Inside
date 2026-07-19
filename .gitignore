@@ -4,3 +4,6 @@
 # draw.io diagram backups
 *.drawio.bkp
 *.bkp
+
+# portable draw.io used only for PNG export (large binaries)
+docs/Interim/Diagrams/.tools/
