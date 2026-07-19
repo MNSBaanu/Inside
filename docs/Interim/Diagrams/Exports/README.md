@@ -32,3 +32,11 @@ If `.tools/drawio/draw.io.exe` is missing:
 1. Download the Windows zip from [draw.io Desktop releases](https://github.com/jgraph/drawio-desktop/releases) (file named like `draw.io-*-windows.zip`).
 2. Extract so that `docs/Interim/Diagrams/.tools/drawio/draw.io.exe` exists.
 3. Run `export-diagrams.ps1` again.
+
+To refresh images inside `InterimReport.docx` after re-export:
+
+```powershell
+python "docs/Interim/Diagrams/insert-diagrams-into-report.py"
+```
+
+(Restores from `InterimReport.before-diagrams.docx` if figures were already inserted, then re-embeds.)
