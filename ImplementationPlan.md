@@ -54,7 +54,52 @@ PostgreSQL → Prisma schema + seed → Minimal NestJS shell → Auth → User �
 | Logging | **Pino** (structured JSON logs) | Production-grade logging |
 | CI/CD | **GitHub Actions** | Auto-test + deploy on push |
 | Deployment | **Vercel** (web) + **Railway** (API + PostgreSQL) | Each platform optimised for its service |
-| Testing | Jest (unit) + Playwright (e2e) | Built-in with NestJS/Next.js |
+| Testing | Jest (unit) + Supertest (API) + Vitest (web) + Playwright (e2e) | Automated suite; CI on every push/PR |
+| Test runner trigger | **GitHub Actions** after each implementation merge | Lint + API tests (then web/e2e as apps exist) |
+
+---
+
+## Automated Testing Strategy (planned)
+
+> **Status:** Not implemented yet — apps are not scaffolded. This section is the committed plan. Wire it up in **Phase 5** (and incrementally per module once `apps/api` / `apps/web` exist).
+
+### Goal
+
+Every meaningful implementation change is covered by automated tests that run in CI on **push** and **pull_request**, so regressions are caught before merge/deploy.
+
+### Layers
+
+| Layer | Tool | When to add | What it covers |
+|-------|------|-------------|----------------|
+| API unit | Jest | With each NestJS module | Services, guards, pipes, pure logic |
+| API integration | Supertest + test Postgres | After module endpoints exist | Full HTTP request/response for critical flows |
+| Web unit | Vitest | Phase 3 (with `apps/web`) | Components, hooks, form validation |
+| Web e2e | Playwright | Phase 5 | Critical journeys (register → moodboard → hire → pay → review) |
+| Mobile smoke | Maestro / Detox (optional) | Phase 4–5 | Auth → project → stage approve |
+| Manual (dev) | Swagger + Postman | Phase 2 onwards | Exploratory checks while building modules |
+
+### When tests run
+
+| Trigger | Command / job | Notes |
+|---------|---------------|--------|
+| Local before commit | `pnpm --filter api test` (and web/e2e when available) | Developer habit during Phase 2+ |
+| Every push / PR | `.github/workflows/ci.yml` | Lint + API tests; expand to web/e2e later |
+| After merge to `main` | Same CI + staging deploy (Phase 5) | Block deploy on failed tests |
+
+### Critical flows (must have automated coverage by Phase 5)
+
+1. **Client:** register → verify email → moodboard → brief → request → compare proposals → accept → project → approve stage → review  
+2. **Designer:** register → portfolio → browse requests → proposal → upload deliverable  
+3. **Admin:** login → verify designer → resolve report  
+
+### Conventions (once code exists)
+
+- Prefer `--spec` when generating Nest resources so unit test stubs ship with modules  
+- Use a dedicated `DATABASE_URL` for tests (`inside_test`), never the dev DB  
+- Keep e2e suite small: happy path + one critical failure path per journey  
+- CI must fail the PR if lint or tests fail  
+
+Scaffold reference: [CI/CD Pipeline (GitHub Actions)](#cicd-pipeline-github-actions) below.
 
 ---
 
@@ -298,8 +343,11 @@ Add when needed:
 | Postman | Saved collection per module; export for interim demo |
 | Prisma Studio | Verify DB state after each endpoint test |
 | Cookie jar | Postman stores httpOnly JWT cookie after login |
+| Jest + Supertest | **Planned automated tests** — add per module once scaffolded; run in CI on every push/PR (see [Automated Testing Strategy](#automated-testing-strategy-planned)) |
 
 Postman auth flow: `POST /auth/register` → `POST /auth/login` → `GET /auth/me` → protected routes.
+
+During Phase 2, manual Swagger/Postman remains the day-to-day check. Automated Jest/Supertest coverage is added as modules stabilize and is required before Phase 5 sign-off.
 
 ### Development Conventions
 
@@ -632,6 +680,8 @@ Prompts: [`.stitch/DESIGN.md` Appendix B](.stitch/DESIGN.md). Order: [`.stitch/S
 
 ## Phase 5: Testing, Polish & Deployment (Weeks 12–13 and 19–22)
 
+> Execute the [Automated Testing Strategy](#automated-testing-strategy-planned): implement the suites, enable CI, then deploy.
+
 ### Weeks 12–13 — Core web + API testing & staging deploy
 
 | Layer | Tool | What to Test |
@@ -640,19 +690,21 @@ Prompts: [`.stitch/DESIGN.md` Appendix B](.stitch/DESIGN.md). Order: [`.stitch/S
 | API integration | Supertest | Full request-response cycles for critical flows |
 | Web unit | Vitest | Component rendering, hooks |
 | Web e2e | Playwright | Critical journeys (register → moodboard → request → proposal → project → pay → review) |
+| CI | GitHub Actions | Lint + tests on every push/PR (see workflow below) |
 
-Critical flows to test end-to-end:
+Critical flows to test end-to-end (automated):
 1. Client: register → verify email → create moodboard → generate brief → post request → compare proposals → accept → view project → approve stage → submit review
 2. Designer: register → create portfolio → browse requests → submit proposal → upload deliverable
 3. Admin: login → verify designer → view/resolve reports
 
 | Task | Details |
 |------|---------|
+| Automated test suites | Wire Jest/Supertest/Vitest/Playwright; green locally + in CI |
 | Error / loading states | 404, 500, empty states, skeleton loaders |
 | Form validation | Password strength, required fields, file size limits |
 | Security audit | CORS, rate limiting, sanitization (Prisma/React baselines) |
 | Responsive | Mobile, tablet, desktop widths |
-| Staging deploy | Railway (`apps/api`) + Vercel (`apps/web`) |
+| Staging deploy | Railway (`apps/api`) + Vercel (`apps/web`) — only after CI passes |
 
 ### Weeks 19–22 — Mobile harden, docs, evaluation
 
@@ -670,6 +722,7 @@ Critical flows to test end-to-end:
 
 ### Days 1–2: Database (first)
 - [ ] PostgreSQL running; `inside_dev` database created
+- [ ] Plan `inside_test` DB name for automated tests / CI (create when Jest/Supertest land)
 - [ ] `packages/database` initialised (`prisma init`)
 - [ ] Full `schema.prisma` written (all models + enums)
 - [ ] `prisma migrate dev --name init`
@@ -682,16 +735,19 @@ Critical flows to test end-to-end:
 - [ ] `GET /health` + Swagger at `/api/docs`
 - [ ] `apps/api/.env.example` added
 - [ ] `pnpm --filter api start:dev` runs
+- [ ] Automated Testing Strategy in this plan accepted (CI on push/PR; suites deferred to Phase 5 / per-module)
 
 ### Days 5–7: Auth module
 - [ ] `POST /auth/register`, `login`, `logout`, `GET /auth/me`
 - [ ] JWT httpOnly cookie + global guard
 - [ ] Auth flow tested in Swagger and Postman
+- [ ] Prefer Nest `--spec` / Jest stubs for Auth when generating the module
 
 ### Week 2 goal
 - [ ] User module complete
 - [ ] Portfolio CRUD + filtered list + favourites in Postman
 - [ ] Postman collection exported
+- [ ] Add/update Jest or Supertest coverage for Auth/User/Portfolio when practical (required by Phase 5)
 
 ---
 
@@ -767,6 +823,10 @@ Git branch convention:
 ## Production Launch Checklist
 
 - [ ] All API endpoints tested with Postman collection
+- [ ] Automated API unit + integration tests green (`pnpm --filter api test`)
+- [ ] Web unit (Vitest) and e2e (Playwright) critical journeys green
+- [ ] GitHub Actions CI: lint + tests on every push/PR; PRs fail on red
+- [ ] Deploy only after CI passes on `main`
 - [ ] Swagger docs published and accessible
 - [ ] Stripe webhook working end-to-end (test mode)
 - [ ] Cloudinary upload working for images
