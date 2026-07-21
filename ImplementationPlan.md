@@ -669,12 +669,12 @@ Critical flows to test end-to-end:
 ## Week 1 Checklist
 
 ### Days 1–2: Database (first)
-- [ ] PostgreSQL running; `inside_dev` database created
-- [ ] `packages/database` initialised (`prisma init`)
-- [ ] Full `schema.prisma` written (all models + enums)
-- [ ] `prisma migrate dev --name init`
-- [ ] Seed script written and run
-- [ ] Relations verified in Prisma Studio
+- [x] PostgreSQL running; `inside_dev` database created
+- [x] `packages/database` initialised (`prisma init`)
+- [x] Full `schema.prisma` written (all models + enums)
+- [x] `prisma migrate dev --name init`
+- [x] Seed script written and run
+- [x] Relations verified in Prisma Studio
 
 ### Days 3–4: Minimal API shell
 - [ ] Turborepo + pnpm workspaces in repo root

@@ -1,0 +1,22 @@
+{
+  "name": "inside",
+  "private": true,
+  "scripts": {
+    "db:generate": "pnpm --filter @inside/database db:generate",
+    "db:migrate": "pnpm --filter @inside/database db:migrate",
+    "db:seed": "pnpm --filter @inside/database db:seed",
+    "db:studio": "pnpm --filter @inside/database db:studio"
+  },
+  "packageManager": "pnpm@10.33.3",
+  "engines": {
+    "node": ">=20"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild"
+    ]
+  }
+}

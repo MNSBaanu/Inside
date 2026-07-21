@@ -65,7 +65,7 @@ Inside/
 └── README.md
 ```
 
-> Apps and packages are not yet scaffolded. Documentation lives under `docs/`.
+> `packages/database` is scaffolded (Phase 1). NestJS API and apps are not yet scaffolded.
 
 ---
 
@@ -133,33 +133,34 @@ Each service will use its own `.env` file. Expected variables:
 
 ### 3. Install and run
 
-> Setup commands will be finalised when each service is scaffolded. See [`ImplementationPlan.md`](ImplementationPlan.md) Phase 1 / Phase 0.
-
 ```bash
 pnpm install
 
-# Database (Phase 1)
-cd packages/database
-npx prisma migrate dev
-npx prisma generate
-npx prisma db seed
+# Database (Phase 1 — ready)
+cp packages/database/.env.example packages/database/.env
+# edit DATABASE_URL, then:
+pnpm db:migrate
+pnpm db:seed
+pnpm db:studio   # optional
 
-# API (Phase 0+)
-pnpm --filter api start:dev
+# API (Phase 0 — next)
+# pnpm --filter api start:dev
 
 # Web (Phase 3)
-pnpm --filter web dev
+# pnpm --filter web dev
 
 # Mobile (Phase 4)
-cd apps/mobile && npx expo start
+# cd apps/mobile && npx expo start
 ```
 
 ### 4. Database
 
+See [`packages/database/README.md`](packages/database/README.md).
+
 ```bash
-cd packages/database
-npx prisma migrate dev
-npx prisma generate
+pnpm db:migrate
+pnpm db:seed
+pnpm db:studio
 ```
 
 ---

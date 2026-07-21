@@ -8,3 +8,28 @@
 # portable draw.io used only for PNG export (large binaries)
 docs/Interim/Diagrams/.tools/
 
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build / generated
+dist/
+build/
+.next/
+.turbo/
+.netlify/
+packages/database/generated/
+
+# Logs & OS
+*.log
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
