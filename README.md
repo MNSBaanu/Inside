@@ -14,7 +14,7 @@
 
 Inside is a full-stack platform that connects **clients** and **interior designers** in one workflow. Clients browse completed room projects, build moodboards, submit structured briefs, hire designers, and approve work at each stage before funds are released. Designers publish portfolios, respond to requests, deliver concepts through a stage-gated workspace, and receive milestone payments.
 
-Implementation order and week-by-week plan: [`ImplementationPlan.md`](ImplementationPlan.md).
+Implementation order and week-by-week checklist: [`Checklist.docx`](Checklist.docx).
 
 ---
 
@@ -61,7 +61,7 @@ Inside/
 │   ├── shared/           # Shared TypeScript types
 │   └── eslint-config/
 ├── docs/
-├── ImplementationPlan.md
+├── Checklist.docx        # Merged plan + step checklist (single source of truth)
 └── README.md
 ```
 
@@ -133,7 +133,7 @@ Each service will use its own `.env` file. Expected variables:
 
 ### 3. Install and run
 
-> Setup commands will be finalised when each service is scaffolded. See [`ImplementationPlan.md`](ImplementationPlan.md) Phase 1 / Phase 0.
+> Setup commands will be finalised when each service is scaffolded. See [`Checklist.docx`](Checklist.docx) Steps 7–8 (Phase 0 / Phase 1).
 
 ```bash
 pnpm install
