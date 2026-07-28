@@ -1,0 +1,12 @@
+{
+  "name": "@inside/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0"
+  }
+}
