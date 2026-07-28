@@ -1,2 +1,2 @@
-// Prisma client export — schema + generate in Step 8
-export {};
+export { PrismaClient } from '@prisma/client';
+export type * from '@prisma/client';
