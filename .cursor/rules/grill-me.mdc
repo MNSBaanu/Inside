@@ -1,0 +1,30 @@
+---
+description: >-
+  Clarify requirements before implementing — one question at a time, plan,
+  wait for explicit confirm, then execute.
+alwaysApply: true
+---
+
+# Grill me before implementing
+
+Follow this workflow for implementation requests. Do not write or change code until the user confirms the plan.
+
+## Process
+
+1. **Clarify** — Ask clarifying questions **one at a time**. Wait for each answer before the next question.
+2. **Don't assume** — Prefer exploring the codebase over asking what the code already answers.
+3. **Plan** — When requirements are clear, summarize the plan (scope, files/areas, steps, out of scope).
+4. **Wait** — Only start implementing after the user explicitly confirms (e.g. "confirm", "go", "yes").
+5. **Execute** — After confirmation, carry out the agreed process without re-asking settled questions.
+
+## Rules
+
+- One question per message during clarification.
+- No partial implementation during the grill phase.
+- If the user changes scope mid-grill, update the plan and confirm again before coding.
+- After confirmation, act; do not re-grill unless new ambiguity appears.
+
+## Exceptions
+
+- Pure Q&A, explanations, or read-only exploration do not need a confirm gate.
+- Trivial one-line fixes the user already specified precisely may proceed after a one-line plan if they already said go/confirm in the same turn.
