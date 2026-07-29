@@ -138,11 +138,10 @@ Each service will use its own `.env` file. Expected variables:
 ```bash
 pnpm install
 
-# Database (Phase 1)
-cd packages/database
-npx prisma migrate dev
-npx prisma generate
-npx prisma db seed
+# Database (Phase 1) — Postgres 16 in Docker, creates inside_dev + inside_test
+docker compose up -d
+pnpm --filter @inside/database exec prisma migrate dev
+pnpm --filter @inside/database exec prisma db seed
 
 # API (Phase 0+)
 pnpm --filter api start:dev
@@ -156,11 +155,16 @@ cd apps/mobile && npx expo start
 
 ### 4. Database
 
+`docker-compose.yml` runs PostgreSQL 16 on `localhost:5432` with `inside_dev` (development) and `inside_test` (Jest/Supertest and CI). Credentials default to `postgres` / `postgres`; override with `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` and keep `DATABASE_URL` in sync.
+
 ```bash
-cd packages/database
-npx prisma migrate dev
-npx prisma generate
+pnpm --filter @inside/database db:migrate   # create/apply migrations
+pnpm --filter @inside/database db:generate  # regenerate Prisma client
+pnpm --filter @inside/database db:seed      # idempotent demo data
+pnpm --filter @inside/database db:studio    # browse data
 ```
+
+Seed accounts (password `Password123!`): `admin@inside.test`, `client@inside.test`, `designer@inside.test` (dual-role), `designer2@inside.test` (verification pending).
 
 ---
 

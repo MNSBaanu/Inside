@@ -7,4 +7,515 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Full models added in Step 8
+enum Role {
+  CLIENT
+  DESIGNER
+  ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum RequestType {
+  DIRECT
+  OPEN
+}
+
+enum RequestStatus {
+  OPEN
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+  CLOSED
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum ProjectStatus {
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+enum StageName {
+  PROPOSAL
+  CONCEPT
+  DESIGN
+  REVISION
+  COMPLETION
+}
+
+enum StageStatus {
+  PENDING
+  IN_PROGRESS
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  PAID
+  RELEASED
+  FAILED
+  REFUNDED
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ReportTargetType {
+  USER
+  PROJECT
+  PORTFOLIO
+  REVIEW
+  MESSAGE
+}
+
+enum ReportStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+enum NotificationType {
+  REQUEST
+  PROPOSAL
+  PROJECT
+  STAGE
+  DELIVERABLE
+  PAYMENT
+  MESSAGE
+  REVIEW
+  VERIFICATION
+  SYSTEM
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  role         Role          @default(CLIENT)
+  activeRole   Role          @default(CLIENT)
+  isVerified   Boolean       @default(false)
+  status       AccountStatus @default(ACTIVE)
+  bio          String?
+  avatarUrl    String?
+  phone        String?
+  location     String?
+  isAvailable  Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  sessions           Session[]
+  portfolios         Portfolio[]
+  favouritesGiven    Favourite[]        @relation("FavouriteClient")
+  favouritedBy       Favourite[]        @relation("FavouriteDesigner")
+  moodboards         Moodboard[]
+  briefs             Brief[]
+  requestsMade       ProjectRequest[]   @relation("RequestClient")
+  requestsReceived   ProjectRequest[]   @relation("RequestDesigner")
+  proposals          Proposal[]
+  projectsAsClient   Project[]          @relation("ProjectClient")
+  projectsAsDesigner Project[]          @relation("ProjectDesigner")
+  messagesSent       Message[]          @relation("MessageSender")
+  messagesReceived   Message[]          @relation("MessageReceiver")
+  reviewsWritten     Review[]           @relation("ReviewReviewer")
+  reviewsReceived    Review[]           @relation("ReviewDesigner")
+  notifications      Notification[]
+  verifications      Verification[]     @relation("VerificationDesigner")
+  verificationsReviewed Verification[]  @relation("VerificationReviewer")
+  reportsFiled       Report[]           @relation("ReportReporter")
+  reportsAgainst     Report[]           @relation("ReportReportedUser")
+  reportsResolved    Report[]           @relation("ReportResolver")
+  blocksMade         Block[]            @relation("BlockBlocker")
+  blocksReceived     Block[]            @relation("BlockBlocked")
+  activityLogs       ActivityLog[]
+
+  @@index([role])
+  @@index([activeRole])
+  @@index([status])
+  @@index([isAvailable])
+}
+
+model Session {
+  id               String    @id @default(uuid())
+  userId           String
+  refreshTokenHash String    @unique
+  userAgent        String?
+  ipAddress        String?
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Portfolio {
+  id          String   @id @default(uuid())
+  designerId  String
+  title       String
+  description String?
+  style       String
+  roomType    String
+  budget      Decimal? @db.Decimal(12, 2)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  designer User             @relation(fields: [designerId], references: [id], onDelete: Cascade)
+  images   PortfolioImage[]
+
+  @@index([designerId])
+  @@index([style])
+  @@index([roomType])
+  @@index([budget])
+  @@index([isPublished])
+}
+
+model PortfolioImage {
+  id           String   @id @default(uuid())
+  portfolioId  String
+  imageUrl     String
+  caption      String?
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+}
+
+model Favourite {
+  id         String   @id @default(uuid())
+  clientId   String
+  designerId String
+  createdAt  DateTime @default(now())
+
+  client   User @relation("FavouriteClient", fields: [clientId], references: [id], onDelete: Cascade)
+  designer User @relation("FavouriteDesigner", fields: [designerId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, designerId])
+  @@index([clientId])
+  @@index([designerId])
+}
+
+model Moodboard {
+  id         String   @id @default(uuid())
+  clientId   String
+  name       String
+  savedItems Json     @default("[]")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  client User    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  briefs Brief[]
+
+  @@index([clientId])
+}
+
+model Brief {
+  id          String   @id @default(uuid())
+  clientId    String
+  moodboardId String?
+  styles      String[]
+  rooms       String[]
+  budgetRange String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  client    User             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  moodboard Moodboard?       @relation(fields: [moodboardId], references: [id], onDelete: SetNull)
+  requests  ProjectRequest[]
+
+  @@index([clientId])
+  @@index([moodboardId])
+}
+
+model ProjectRequest {
+  id          String        @id @default(uuid())
+  clientId    String
+  designerId  String?
+  briefId     String?
+  title       String
+  description String?
+  type        RequestType   @default(DIRECT)
+  status      RequestStatus @default(PENDING)
+  budget      Decimal?      @db.Decimal(12, 2)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  client    User       @relation("RequestClient", fields: [clientId], references: [id], onDelete: Cascade)
+  designer  User?      @relation("RequestDesigner", fields: [designerId], references: [id], onDelete: SetNull)
+  brief     Brief?     @relation(fields: [briefId], references: [id], onDelete: SetNull)
+  proposals Proposal[]
+
+  @@index([clientId])
+  @@index([designerId])
+  @@index([briefId])
+  @@index([status])
+  @@index([type])
+}
+
+model Proposal {
+  id          String         @id @default(uuid())
+  requestId   String
+  designerId  String
+  scope       String
+  timeline    String
+  stageFees   Json           @default("[]")
+  totalAmount Decimal?       @db.Decimal(12, 2)
+  status      ProposalStatus @default(PENDING)
+  submittedAt DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  request  ProjectRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  designer User           @relation(fields: [designerId], references: [id], onDelete: Cascade)
+  project  Project?
+
+  @@unique([requestId, designerId])
+  @@index([requestId])
+  @@index([designerId])
+  @@index([status])
+}
+
+model Project {
+  id           String        @id @default(uuid())
+  proposalId   String        @unique
+  clientId     String
+  designerId   String
+  title        String
+  currentStage StageName     @default(PROPOSAL)
+  status       ProjectStatus @default(ACTIVE)
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  proposal     Proposal           @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  client       User               @relation("ProjectClient", fields: [clientId], references: [id], onDelete: Cascade)
+  designer     User               @relation("ProjectDesigner", fields: [designerId], references: [id], onDelete: Cascade)
+  stages       ProjectStage[]
+  payments     MilestonePayment[]
+  messages     Message[]
+  reviews      Review[]
+  activityLogs ActivityLog[]
+
+  @@index([clientId])
+  @@index([designerId])
+  @@index([status])
+  @@index([currentStage])
+}
+
+model ProjectStage {
+  id          String      @id @default(uuid())
+  projectId   String
+  stageOrder  Int
+  name        StageName
+  status      StageStatus @default(PENDING)
+  fee         Decimal?    @db.Decimal(12, 2)
+  dueDate     DateTime?
+  submittedAt DateTime?
+  approvedAt  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  project      Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  deliverables Deliverable[]
+  payments     MilestonePayment[]
+
+  @@unique([projectId, stageOrder])
+  @@index([projectId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model Deliverable {
+  id         String   @id @default(uuid())
+  stageId    String
+  version    Int      @default(1)
+  fileUrl    String
+  fileName   String?
+  notes      String?
+  feedback   String?
+  uploadedAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  stage ProjectStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@unique([stageId, version])
+  @@index([stageId])
+}
+
+model MilestonePayment {
+  id             String        @id @default(uuid())
+  projectId      String
+  stageId        String
+  amount         Decimal       @db.Decimal(12, 2)
+  status         PaymentStatus @default(PENDING)
+  stripeIntentId String?       @unique
+  paidAt         DateTime?
+  releasedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  project Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  stage   ProjectStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([stageId])
+  @@index([status])
+}
+
+model Message {
+  id             String    @id @default(uuid())
+  projectId      String
+  senderId       String
+  receiverId     String
+  content        String
+  attachmentUrl  String?
+  attachmentType String?
+  isRead         Boolean   @default(false)
+  readAt         DateTime?
+  sentAt         DateTime  @default(now())
+
+  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sender   User    @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User    @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, sentAt])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([receiverId, isRead])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  projectId  String
+  reviewerId String
+  designerId String
+  rating     Int
+  comment    String?
+  isVisible  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reviewer User    @relation("ReviewReviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+  designer User    @relation("ReviewDesigner", fields: [designerId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, reviewerId])
+  @@index([designerId])
+  @@index([reviewerId])
+  @@index([rating])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  metadata  Json?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model Verification {
+  id           String             @id @default(uuid())
+  designerId   String
+  status       VerificationStatus @default(PENDING)
+  evidenceUrl  String
+  notes        String?
+  reviewedById String?
+  reviewedAt   DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  designer   User  @relation("VerificationDesigner", fields: [designerId], references: [id], onDelete: Cascade)
+  reviewedBy User? @relation("VerificationReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([designerId])
+  @@index([status])
+}
+
+model Report {
+  id             String           @id @default(uuid())
+  reporterId     String
+  reportedUserId String?
+  targetType     ReportTargetType
+  targetId       String
+  reason         String
+  details        String?
+  status         ReportStatus     @default(OPEN)
+  resolvedById   String?
+  resolvedAt     DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  reporter     User  @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUser User? @relation("ReportReportedUser", fields: [reportedUserId], references: [id], onDelete: SetNull)
+  resolvedBy   User? @relation("ReportResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([reporterId])
+  @@index([reportedUserId])
+  @@index([status])
+  @@index([targetType, targetId])
+}
+
+model Block {
+  id        String   @id @default(uuid())
+  blockerId String
+  blockedId String
+  reason    String?
+  createdAt DateTime @default(now())
+
+  blocker User @relation("BlockBlocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("BlockBlocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  projectId String?
+  userId    String?
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, createdAt])
+  @@index([userId])
+  @@index([action])
+}
