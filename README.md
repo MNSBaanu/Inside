@@ -65,7 +65,7 @@ Inside/
 └── README.md
 ```
 
-**Current status:** PostgreSQL + Prisma done; Nest API with auth, users/role switch, portfolios, and automated tests. Web/mobile come later.
+**Current status:** PostgreSQL + Prisma done; Nest API with auth, users, portfolios, moodboards/briefs, and automated tests. Web/mobile come later.
 
 ---
 
@@ -182,6 +182,12 @@ Auth uses **Bearer JWT** (access token) plus refresh tokens stored hashed in `Se
 | DELETE | `/portfolios/:id` | Delete own |
 | POST | `/portfolios/:id/images` | Add image |
 | DELETE | `/portfolios/:id/images/:imageId` | Remove image |
+| GET/POST | `/moodboards` | List / create (client mode) |
+| GET/PATCH/DELETE | `/moodboards/:id` | Own moodboard |
+| POST/DELETE | `/moodboards/:id/items[/:index]` | Add / remove inspiration |
+| GET/POST | `/briefs` | List / create brief |
+| POST | `/moodboards/:id/briefs` | Generate brief from moodboard |
+| GET/PATCH/DELETE | `/briefs/:id` | Own brief |
 | GET | `/health` | API + database status |
 
 ```bash
