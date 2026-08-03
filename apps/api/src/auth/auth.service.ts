@@ -27,7 +27,11 @@ export type AuthUser = Pick<
   | 'activeRole'
   | 'isVerified'
   | 'status'
+  | 'bio'
   | 'avatarUrl'
+  | 'phone'
+  | 'location'
+  | 'isAvailable'
   | 'createdAt'
 >;
 
@@ -278,18 +282,39 @@ export class AuthService {
     return authToken;
   }
 
-  private async issueTokens(
-    user: User,
-    meta?: { userAgent?: string; ipAddress?: string },
-  ) {
+  async signAccessToken(user: User): Promise<string> {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
       role: user.role,
       activeRole: user.activeRole,
     };
+    return this.jwt.signAsync(payload);
+  }
 
-    const accessToken = await this.jwt.signAsync(payload);
+  toPublicUser(user: User): AuthUser {
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      activeRole: user.activeRole,
+      isVerified: user.isVerified,
+      status: user.status,
+      bio: user.bio,
+      avatarUrl: user.avatarUrl,
+      phone: user.phone,
+      location: user.location,
+      isAvailable: user.isAvailable,
+      createdAt: user.createdAt,
+    };
+  }
+
+  private async issueTokens(
+    user: User,
+    meta?: { userAgent?: string; ipAddress?: string },
+  ) {
+    const accessToken = await this.signAccessToken(user);
 
     const refreshToken = this.createRawToken();
     await this.prisma.session.create({
@@ -303,20 +328,6 @@ export class AuthService {
     });
 
     return { accessToken, refreshToken };
-  }
-
-  private toPublicUser(user: User): AuthUser {
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      activeRole: user.activeRole,
-      isVerified: user.isVerified,
-      status: user.status,
-      avatarUrl: user.avatarUrl,
-      createdAt: user.createdAt,
-    };
   }
 
   private createRawToken(): string {

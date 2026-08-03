@@ -8,8 +8,8 @@ export class HealthController {
   constructor(private readonly healthService: HealthService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Health check' })
-  @ApiOkResponse({ description: 'API is healthy' })
+  @ApiOperation({ summary: 'Health check (includes database)' })
+  @ApiOkResponse({ description: 'API and database are healthy' })
   getHealth() {
     return this.healthService.getHealth();
   }

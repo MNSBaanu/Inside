@@ -56,7 +56,7 @@ async function main() {
     },
   });
 
-  // Dual-role account: registered as DESIGNER, can switch activeRole to CLIENT.
+  // Designer can switch activeRole CLIENT ↔ DESIGNER via PATCH /users/me/active-role.
   const designer = await prisma.user.upsert({
     where: { email: 'designer@inside.test' },
     update: {},

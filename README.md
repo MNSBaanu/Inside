@@ -27,7 +27,7 @@ Implementation order and week-by-week checklist: [`Checklist.docx`](Checklist.do
 - **Project workspace** — staged flow (Proposal → Concept → Design → Revision → Completion)
 - **Messaging & notifications** — in-app and email alerts; push on mobile
 - **Milestone payments** — Stripe escrow with per-stage client approval
-- **Dual-role accounts** — one user can operate as client and designer
+- **Dual-role accounts** — designers can switch `activeRole` CLIENT ↔ DESIGNER
 - **Trust & admin** — verification, reviews, moderation, and platform oversight
 
 ---
@@ -48,24 +48,24 @@ Implementation order and week-by-week checklist: [`Checklist.docx`](Checklist.do
 
 ## Project Structure
 
-Turborepo monorepo (planned):
+Turborepo monorepo:
 
 ```
 Inside/
 ├── apps/
-│   ├── api/              # NestJS REST API — build first
-│   ├── web/              # Next.js web app — Phase 3
-│   └── mobile/           # Expo / React Native — Phase 4
+│   ├── api/              # NestJS REST API (auth + health — in progress)
+│   ├── web/              # Next.js web app — Phase 3 (not scaffolded yet)
+│   └── mobile/           # Expo / React Native — Phase 4 (not scaffolded yet)
 ├── packages/
-│   ├── database/         # Prisma schema + client — start here
-│   ├── shared/           # Shared TypeScript types
+│   ├── database/         # Prisma schema, migrations, seed
+│   ├── shared/           # Shared TypeScript types (stub)
 │   └── eslint-config/
 ├── docs/
-├── Checklist.docx        # Merged plan + step checklist (single source of truth)
+├── Checklist.docx
 └── README.md
 ```
 
-> Apps and packages are not yet scaffolded. Documentation lives under `docs/`.
+**Current status:** PostgreSQL + Prisma schema/seed done; Nest API with auth, user profile/role switch, and automated tests done. Web/mobile come later.
 
 ---
 
@@ -75,13 +75,11 @@ Inside/
 |-------------|---------|
 | Node.js | 18+ (20 LTS recommended) |
 | pnpm | Latest stable |
-| PostgreSQL | 14+ (16 recommended) |
+| PostgreSQL | 14+ (16 recommended) — via Docker Compose |
 | Git | Latest stable |
+| Docker Desktop | Required for local Postgres |
 
-**External services (development):**
-
-- [Cloudinary](https://cloudinary.com) — image and media storage
-- [Stripe](https://stripe.com) — payment processing (test mode)
+**External services (later phases):** Cloudinary, Stripe (test mode).
 
 ---
 
@@ -92,105 +90,75 @@ Inside/
 ```bash
 git clone <repository-url>
 cd Inside
+pnpm install
 ```
 
 ### 2. Environment variables
 
-Each service will use its own `.env` file. Expected variables:
+Copy examples:
 
-**API (`apps/api/.env`)**
+```bash
+cp packages/database/.env.example packages/database/.env
+cp apps/api/.env.example apps/api/.env
+```
+
+**API (`apps/api/.env`) — required now**
 
 | Variable | Description |
 |----------|-------------|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `JWT_SECRET` | Token signing secret |
+| `DATABASE_URL` | Dev DB (`inside_dev`) |
+| `JWT_SECRET` | Access-token signing secret |
+| `JWT_EXPIRES_IN` | e.g. `7d`, `12h`, `15m` (honored by the API) |
+| `JWT_REFRESH_DAYS` | Refresh session lifetime in days (default `30`) |
 | `CORS_ORIGIN` | Web origin (e.g. `http://localhost:3000`) |
 | `PORT` | API port (default `3001`) |
-| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
-| `CLOUDINARY_API_KEY` | Cloudinary API key |
-| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
-| `STRIPE_SECRET_KEY` | Stripe secret key |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+
+Optional for e2e: `DATABASE_URL_TEST` (defaults to `inside_test`).
+
+Cloudinary / Stripe vars are **not required** until those modules are built.
 
 **Database (`packages/database/.env`)**
 
 | Variable | Description |
 |----------|-------------|
-| `DATABASE_URL` | Same PostgreSQL connection string |
-
-**Web (`apps/web/.env.local`)**
-
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_API_URL` | Backend API base URL (e.g. `http://localhost:3001`) |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key |
-
-**Mobile (`apps/mobile/.env`)**
-
-| Variable | Description |
-|----------|-------------|
-| `API_URL` | Backend API base URL |
+| `DATABASE_URL` | Same as API for migrate/seed/Studio (`inside_dev`) |
 
 ### 3. Install and run
 
-> Setup commands will be finalised when each service is scaffolded. See [`Checklist.docx`](Checklist.docx) Steps 7–8 (Phase 0 / Phase 1).
-
 ```bash
-pnpm install
-
-# Database (Phase 1) — Postgres 16 in Docker, creates inside_dev + inside_test
+# Postgres 16 — creates inside_dev + inside_test
 docker compose up -d
-pnpm --filter @inside/database exec prisma migrate dev
-pnpm --filter @inside/database exec prisma db seed
 
-# API (Phase 0+)
+# Schema + sample data (dev DB)
+pnpm --filter @inside/database db:migrate
+pnpm --filter @inside/database db:seed
+
+# API
 pnpm --filter api start:dev
-
-# Web (Phase 3)
-pnpm --filter web dev
-
-# Mobile (Phase 4)
-cd apps/mobile && npx expo start
 ```
+
+Swagger: http://localhost:3001/api/docs · Health: http://localhost:3001/health
 
 ### 4. Database
 
-`docker-compose.yml` runs PostgreSQL 16 on `localhost:5432` with `inside_dev` (development) and `inside_test` (Jest/Supertest and CI). Credentials default to `postgres` / `postgres`; override with `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` and keep `DATABASE_URL` in sync.
-
-Copy `packages/database/.env.example` to `packages/database/.env` if you do not already have one.
+`docker-compose.yml` runs PostgreSQL 16 on `localhost:5432` with `inside_dev` (development) and `inside_test` (Jest e2e). Defaults: `postgres` / `postgres`.
 
 ```bash
-# 1. Start Postgres (Docker Desktop must be running)
-docker compose up -d
-
-# 2. Apply migrations + generate client
 pnpm --filter @inside/database db:migrate
 pnpm --filter @inside/database db:generate
-
-# 3. Load sample data (idempotent)
 pnpm --filter @inside/database db:seed
-
-# 4. Browse tables in the browser (Prisma Studio)
 pnpm --filter @inside/database db:studio
 ```
 
-Prisma Studio opens at [http://localhost:5555](http://localhost:5555). Use it to inspect users, requests, proposals, projects, payments, auth tokens, reports, and other seed rows.
+Prisma Studio: http://localhost:5555
 
-Seed accounts (password `Password123!`): `admin@inside.test`, `client@inside.test`, `client2@inside.test`, `designer@inside.test` (dual-role), `designer2@inside.test` (verification pending).
+Seed accounts (password `Password123!`): `admin@inside.test`, `client@inside.test`, `client2@inside.test`, `designer@inside.test`, `designer2@inside.test` (verification pending).
 
 ---
 
 ## API
 
-REST API served by NestJS. Interactive docs:
-
-```
-http://localhost:3001/api/docs
-```
-
-Health check: `GET http://localhost:3001/health`
-
-Auth routes (Bearer JWT for `/auth/me`):
+Auth uses **Bearer JWT** (access token) plus refresh tokens stored hashed in `Session`.
 
 | Method | Path | Description |
 |--------|------|-------------|
@@ -198,15 +166,20 @@ Auth routes (Bearer JWT for `/auth/me`):
 | POST | `/auth/login` | Login |
 | POST | `/auth/refresh` | Rotate refresh token |
 | POST | `/auth/logout` | Revoke refresh session |
-| GET | `/auth/me` | Current user |
+| GET | `/auth/me` | Current user (Bearer required) |
 | POST | `/auth/verify-email` | Verify with AuthToken |
 | POST | `/auth/forgot-password` | Create reset token |
 | POST | `/auth/reset-password` | Reset password |
+| GET | `/users/me` | Current profile (Bearer) |
+| PATCH | `/users/me` | Update profile |
+| PATCH | `/users/me/password` | Change password |
+| PATCH | `/users/me/active-role` | Switch activeRole (designers) |
+| GET | `/health` | API + database status |
 
 ```bash
 pnpm --filter api start:dev
-pnpm --filter api test
-pnpm --filter api test:e2e
+pnpm --filter api test          # unit
+pnpm --filter api test:e2e      # migrates inside_test, then e2e
 ```
 
 ---

@@ -28,7 +28,7 @@ describe('HealthController (e2e)', () => {
     return request(app.getHttpServer())
       .get('/health')
       .expect(200)
-      .expect({ success: true, data: { status: 'ok' } });
+      .expect({ success: true, data: { status: 'ok', database: 'up' } });
   });
 
   afterEach(async () => {
