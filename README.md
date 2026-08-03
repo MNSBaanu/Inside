@@ -65,7 +65,7 @@ Inside/
 └── README.md
 ```
 
-**Current status:** PostgreSQL + Prisma schema/seed done; Nest API with auth, user profile/role switch, and automated tests done. Web/mobile come later.
+**Current status:** PostgreSQL + Prisma done; Nest API with auth, users/role switch, portfolios, and automated tests. Web/mobile come later.
 
 ---
 
@@ -174,6 +174,14 @@ Auth uses **Bearer JWT** (access token) plus refresh tokens stored hashed in `Se
 | PATCH | `/users/me` | Update profile |
 | PATCH | `/users/me/password` | Change password |
 | PATCH | `/users/me/active-role` | Switch activeRole (designers) |
+| GET | `/portfolios` | List published (style, roomType, budget, page) |
+| GET | `/portfolios/mine` | Own portfolios (designer mode) |
+| GET | `/portfolios/:id` | Detail (owners see drafts) |
+| POST | `/portfolios` | Create (designer mode) |
+| PATCH | `/portfolios/:id` | Update own |
+| DELETE | `/portfolios/:id` | Delete own |
+| POST | `/portfolios/:id/images` | Add image |
+| DELETE | `/portfolios/:id/images/:imageId` | Remove image |
 | GET | `/health` | API + database status |
 
 ```bash
