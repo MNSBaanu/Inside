@@ -190,6 +190,25 @@ http://localhost:3001/api/docs
 
 Health check: `GET http://localhost:3001/health`
 
+Auth routes (Bearer JWT for `/auth/me`):
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/auth/register` | Register client/designer |
+| POST | `/auth/login` | Login |
+| POST | `/auth/refresh` | Rotate refresh token |
+| POST | `/auth/logout` | Revoke refresh session |
+| GET | `/auth/me` | Current user |
+| POST | `/auth/verify-email` | Verify with AuthToken |
+| POST | `/auth/forgot-password` | Create reset token |
+| POST | `/auth/reset-password` | Reset password |
+
+```bash
+pnpm --filter api start:dev
+pnpm --filter api test
+pnpm --filter api test:e2e
+```
+
 ---
 
 ## License
