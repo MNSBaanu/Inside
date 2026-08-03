@@ -884,6 +884,62 @@
         <mxCell id="er247" edge="1" parent="1" source="rel-fav" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;html=1;strokeColor=#10739e;strokeWidth=2;fontFamily=Tahoma;fontSize=10;fontColor=#23445D;labelBackgroundColor=#FFFFFF;fillColor=#b1ddf0;" target="ent-Favourite" value="*">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="ent-AuthToken" parent="1" style="shape=rectangle;whiteSpace=wrap;html=1;align=center;fontStyle=1;fillColor=#b1ddf0;strokeColor=#10739e;fontFamily=Tahoma;fontSize=12;rounded=0;" value="AuthToken" vertex="1">
+          <mxGeometry height="50" width="130" x="480" y="1300" as="geometry" />
+        </mxCell>
+        <mxCell id="a248" parent="1" style="shape=ellipse;whiteSpace=wrap;html=1;align=center;fillColor=#b1ddf0;strokeColor=#10739e;fontFamily=Tahoma;fontSize=9;" value="&lt;u&gt;id&lt;/u&gt;" vertex="1">
+          <mxGeometry height="34" width="96" x="386" y="1231" as="geometry" />
+        </mxCell>
+        <mxCell id="e249" edge="1" parent="1" source="a248" style="endArrow=none;html=1;dashed=1;dashPattern=4 3;strokeColor=#10739e;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;" target="ent-AuthToken" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a250" parent="1" style="shape=ellipse;whiteSpace=wrap;html=1;align=center;fillColor=#b1ddf0;strokeColor=#10739e;fontFamily=Tahoma;fontSize=9;" value="userId" vertex="1">
+          <mxGeometry height="34" width="96" x="534" y="1178" as="geometry" />
+        </mxCell>
+        <mxCell id="e251" edge="1" parent="1" source="a250" style="endArrow=none;html=1;dashed=1;dashPattern=4 3;strokeColor=#10739e;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;" target="ent-AuthToken" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a252" parent="1" style="shape=ellipse;whiteSpace=wrap;html=1;align=center;fillColor=#b1ddf0;strokeColor=#10739e;fontFamily=Tahoma;fontSize=9;" value="tokenHash" vertex="1">
+          <mxGeometry height="34" width="96" x="630" y="1306" as="geometry" />
+        </mxCell>
+        <mxCell id="e253" edge="1" parent="1" source="a252" style="endArrow=none;html=1;dashed=1;dashPattern=4 3;strokeColor=#10739e;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;" target="ent-AuthToken" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a254" parent="1" style="shape=ellipse;whiteSpace=wrap;html=1;align=center;fillColor=#b1ddf0;strokeColor=#10739e;fontFamily=Tahoma;fontSize=9;" value="type" vertex="1">
+          <mxGeometry height="34" width="96" x="560" y="1410" as="geometry" />
+        </mxCell>
+        <mxCell id="e255" edge="1" parent="1" source="a254" style="endArrow=none;html=1;dashed=1;dashPattern=4 3;strokeColor=#10739e;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;" target="ent-AuthToken" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a256" parent="1" style="shape=ellipse;whiteSpace=wrap;html=1;align=center;fillColor=#b1ddf0;strokeColor=#10739e;fontFamily=Tahoma;fontSize=9;" value="expiresAt" vertex="1">
+          <mxGeometry height="34" width="96" x="430" y="1410" as="geometry" />
+        </mxCell>
+        <mxCell id="e257" edge="1" parent="1" source="a256" style="endArrow=none;html=1;dashed=1;dashPattern=4 3;strokeColor=#10739e;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;" target="ent-AuthToken" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a258" parent="1" style="shape=ellipse;whiteSpace=wrap;html=1;align=center;fillColor=#b1ddf0;strokeColor=#10739e;fontFamily=Tahoma;fontSize=9;" value="usedAt" vertex="1">
+          <mxGeometry height="34" width="96" x="386" y="1331" as="geometry" />
+        </mxCell>
+        <mxCell id="e259" edge="1" parent="1" source="a258" style="endArrow=none;html=1;dashed=1;dashPattern=4 3;strokeColor=#10739e;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;" target="ent-AuthToken" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-auth-token" parent="1" style="shape=rhombus;whiteSpace=wrap;html=1;align=center;fontStyle=1;fillColor=#b1ddf0;strokeColor=#10739e;fontFamily=Tahoma;fontSize=11;" value="Has" vertex="1">
+          <mxGeometry height="50" width="100" x="360" y="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="er260" edge="1" parent="1" source="ent-User" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;html=1;strokeColor=#10739e;strokeWidth=2;fontFamily=Tahoma;fontSize=10;fontColor=#23445D;labelBackgroundColor=#FFFFFF;fillColor=#b1ddf0;" target="rel-auth-token" value="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="410" y="620" />
+              <mxPoint x="410" y="1185" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="er261" edge="1" parent="1" source="rel-auth-token" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;html=1;strokeColor=#10739e;strokeWidth=2;fontFamily=Tahoma;fontSize=10;fontColor=#23445D;labelBackgroundColor=#FFFFFF;fillColor=#b1ddf0;" target="ent-AuthToken" value="*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="note-prisma" parent="1" style="text;html=1;strokeColor=#10739e;fillColor=#dae8fc;align=left;fontFamily=Tahoma;fontSize=10;spacingLeft=6;spacingRight=6;spacingTop=4;spacingBottom=4;" value="Prisma also: Session, Verification, Block, ActivityLog.&lt;br&gt;FitScore is computed (not stored)." vertex="1">
+          <mxGeometry height="48" width="320" x="700" y="1220" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>

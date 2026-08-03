@@ -157,14 +157,26 @@ cd apps/mobile && npx expo start
 
 `docker-compose.yml` runs PostgreSQL 16 on `localhost:5432` with `inside_dev` (development) and `inside_test` (Jest/Supertest and CI). Credentials default to `postgres` / `postgres`; override with `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` and keep `DATABASE_URL` in sync.
 
+Copy `packages/database/.env.example` to `packages/database/.env` if you do not already have one.
+
 ```bash
-pnpm --filter @inside/database db:migrate   # create/apply migrations
-pnpm --filter @inside/database db:generate  # regenerate Prisma client
-pnpm --filter @inside/database db:seed      # idempotent demo data
-pnpm --filter @inside/database db:studio    # browse data
+# 1. Start Postgres (Docker Desktop must be running)
+docker compose up -d
+
+# 2. Apply migrations + generate client
+pnpm --filter @inside/database db:migrate
+pnpm --filter @inside/database db:generate
+
+# 3. Load sample data (idempotent)
+pnpm --filter @inside/database db:seed
+
+# 4. Browse tables in the browser (Prisma Studio)
+pnpm --filter @inside/database db:studio
 ```
 
-Seed accounts (password `Password123!`): `admin@inside.test`, `client@inside.test`, `designer@inside.test` (dual-role), `designer2@inside.test` (verification pending).
+Prisma Studio opens at [http://localhost:5555](http://localhost:5555). Use it to inspect users, requests, proposals, projects, payments, auth tokens, reports, and other seed rows.
+
+Seed accounts (password `Password123!`): `admin@inside.test`, `client@inside.test`, `client2@inside.test`, `designer@inside.test` (dual-role), `designer2@inside.test` (verification pending).
 
 ---
 

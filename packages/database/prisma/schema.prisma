@@ -105,6 +105,11 @@ enum NotificationType {
   SYSTEM
 }
 
+enum AuthTokenType {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
 model User {
   id           String        @id @default(uuid())
   email        String        @unique
@@ -146,11 +151,27 @@ model User {
   blocksMade         Block[]            @relation("BlockBlocker")
   blocksReceived     Block[]            @relation("BlockBlocked")
   activityLogs       ActivityLog[]
+  authTokens         AuthToken[]
 
   @@index([role])
   @@index([activeRole])
   @@index([status])
   @@index([isAvailable])
+}
+
+model AuthToken {
+  id        String        @id @default(uuid())
+  userId    String
+  tokenHash String        @unique
+  type      AuthTokenType
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type, expiresAt])
 }
 
 model Session {

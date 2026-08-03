@@ -138,7 +138,8 @@ Communication to application tier: **HTTPS / REST API (JSON)**
 
 | Component | Contents |
 |-----------|----------|
-| **PostgreSQL** (centre, via **Prisma ORM**) | users, designer_profiles, portfolio_projects, favourites, moodboards, structured_briefs, project_requests, proposals, projects, project_stages, deliverables, messages, notifications, milestone_payments, reviews, verifications, reports, blocks, activity_logs, sessions |
+| **PostgreSQL** (centre, via **Prisma ORM**) | users, portfolios, portfolio_images, favourites, moodboards, briefs, project_requests, proposals, projects, project_stages, deliverables, messages, notifications, milestone_payments, reviews, verifications, reports, blocks, activity_logs, sessions, auth_tokens |
+
 | **External Services** (left, dotted line) | **Stripe** — payment gateway · **Email API** — transactional email · **Expo Push** — mobile notifications |
 | **Cloudinary** (right, dotted line) | Portfolio images · Deliverable files · Image transforms & CDN · Uploaded assets |
 
