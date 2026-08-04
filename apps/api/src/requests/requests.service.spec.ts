@@ -1,9 +1,5 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import {
-  RequestStatus,
-  RequestType,
-  Role,
-} from '@inside/database';
+import { RequestStatus, RequestType, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RequestsService } from './requests.service';

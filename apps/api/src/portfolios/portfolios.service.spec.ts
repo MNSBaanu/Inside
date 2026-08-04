@@ -49,7 +49,13 @@ describe('PortfoliosService', () => {
           isPublished: true,
           createdAt: new Date(),
           updatedAt: new Date(),
-          designer: { id: 'd1', name: 'Ravi', avatarUrl: null, location: null, isVerified: true },
+          designer: {
+            id: 'd1',
+            name: 'Ravi',
+            avatarUrl: null,
+            location: null,
+            isVerified: true,
+          },
           images: [],
         },
       ],
@@ -72,11 +78,19 @@ describe('PortfoliosService', () => {
       budget: null,
       createdAt: new Date(),
       updatedAt: new Date(),
-      designer: { id: 'd1', name: 'Ravi', avatarUrl: null, location: null, isVerified: true },
+      designer: {
+        id: 'd1',
+        name: 'Ravi',
+        avatarUrl: null,
+        location: null,
+        isVerified: true,
+      },
       images: [],
     });
 
-    await expect(service.getById('p1')).rejects.toBeInstanceOf(NotFoundException);
+    await expect(service.getById('p1')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 
   it('forbids updating another designer portfolio', async () => {

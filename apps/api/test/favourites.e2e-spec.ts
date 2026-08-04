@@ -87,9 +87,11 @@ describe('FavouritesController (e2e)', () => {
       .set('Authorization', `Bearer ${clientToken}`)
       .expect(200);
 
-    expect(list.body.data.items.some((i: { designerId: string }) => i.designerId === designerId)).toBe(
-      true,
-    );
+    expect(
+      list.body.data.items.some(
+        (i: { designerId: string }) => i.designerId === designerId,
+      ),
+    ).toBe(true);
 
     await request(app.getHttpServer())
       .post('/favourites')

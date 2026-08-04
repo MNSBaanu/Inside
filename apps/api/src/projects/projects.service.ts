@@ -169,7 +169,10 @@ export class ProjectsService {
     return { success: true, data: { project: this.serialize(updated) } };
   }
 
-  async requirePartyAccess(id: string, user: AuthUser): Promise<ProjectWithIncludes> {
+  async requirePartyAccess(
+    id: string,
+    user: AuthUser,
+  ): Promise<ProjectWithIncludes> {
     const project = await this.prisma.project.findUnique({
       where: { id },
       include: projectInclude,

@@ -3,10 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  NotificationType,
-  VerificationStatus,
-} from '@inside/database';
+import { NotificationType, VerificationStatus } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';

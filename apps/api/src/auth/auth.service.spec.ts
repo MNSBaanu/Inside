@@ -24,7 +24,9 @@ describe('AuthService', () => {
       update: jest.fn(),
       updateMany: jest.fn(),
     },
-    $transaction: jest.fn((ops: unknown) => Promise.all(ops as Promise<unknown>[])),
+    $transaction: jest.fn((ops: unknown) =>
+      Promise.all(ops as Promise<unknown>[]),
+    ),
   };
 
   const jwt = {

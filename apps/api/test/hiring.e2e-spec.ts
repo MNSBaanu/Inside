@@ -142,7 +142,9 @@ describe('Hiring flow (e2e)', () => {
     expect(accepted.body.data.project.stages).toHaveLength(5);
     expect(accepted.body.data.project.title).toBe('Modern living room');
     expect(accepted.body.data.project.stages[0].name).toBe(StageName.PROPOSAL);
-    expect(accepted.body.data.project.stages[4].name).toBe(StageName.COMPLETION);
+    expect(accepted.body.data.project.stages[4].name).toBe(
+      StageName.COMPLETION,
+    );
 
     const dbProject = await prisma.project.findUnique({
       where: { proposalId },

@@ -70,10 +70,7 @@ export class RequestsController {
   @UseGuards(JwtAuthGuard, ClientModeGuard)
   @ApiOperation({ summary: 'Close OPEN request (client owner)' })
   @ApiOkResponse({ description: 'Closed' })
-  close(
-    @CurrentUser() user: AuthUser,
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
+  close(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.requestsService.close(user, id);
   }
 }

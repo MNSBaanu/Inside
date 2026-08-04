@@ -36,10 +36,7 @@ export class VerificationsController {
   @UseGuards(JwtAuthGuard, DesignerModeGuard)
   @ApiOperation({ summary: 'Designer submits a verification request' })
   @ApiCreatedResponse({ description: 'Submitted' })
-  submit(
-    @CurrentUser() user: AuthUser,
-    @Body() dto: CreateVerificationDto,
-  ) {
+  submit(@CurrentUser() user: AuthUser, @Body() dto: CreateVerificationDto) {
     return this.verifications.submit(user, dto);
   }
 

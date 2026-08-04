@@ -120,7 +120,8 @@ export class StagesService {
       throw new BadRequestException('Only submitted stages can be approved');
     }
 
-    const fee = stage.fee !== null && stage.fee !== undefined ? Number(stage.fee) : 0;
+    const fee =
+      stage.fee !== null && stage.fee !== undefined ? Number(stage.fee) : 0;
 
     const result = await this.prisma.$transaction(async (tx) => {
       const approved = await tx.projectStage.update({
@@ -246,7 +247,7 @@ export class StagesService {
     if (!stage) {
       throw new NotFoundException('Stage not found');
     }
-    return stage as StageWithProject;
+    return stage;
   }
 
   private async requireProjectParty(projectId: string, user: AuthUser) {
@@ -300,7 +301,10 @@ export class StagesService {
       stageOrder: stage.stageOrder,
       name: stage.name,
       status: stage.status,
-      fee: stage.fee !== null && stage.fee !== undefined ? Number(stage.fee) : null,
+      fee:
+        stage.fee !== null && stage.fee !== undefined
+          ? Number(stage.fee)
+          : null,
       dueDate: stage.dueDate,
       submittedAt: stage.submittedAt,
       approvedAt: stage.approvedAt,

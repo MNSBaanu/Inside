@@ -42,10 +42,7 @@ export class StagesController {
   @UseGuards(JwtAuthGuard, DesignerModeGuard)
   @ApiOperation({ summary: 'Designer starts a stage (PENDING → IN_PROGRESS)' })
   @ApiOkResponse({ description: 'Started' })
-  start(
-    @CurrentUser() user: AuthUser,
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
+  start(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.stages.start(user, id);
   }
 

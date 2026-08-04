@@ -156,7 +156,11 @@ export class PortfoliosService {
     return { success: true, data: { deleted: true } };
   }
 
-  async addImage(user: AuthUser, portfolioId: string, dto: AddPortfolioImageDto) {
+  async addImage(
+    user: AuthUser,
+    portfolioId: string,
+    dto: AddPortfolioImageDto,
+  ) {
     await this.requireOwned(portfolioId, user.id);
     const image = await this.prisma.portfolioImage.create({
       data: {

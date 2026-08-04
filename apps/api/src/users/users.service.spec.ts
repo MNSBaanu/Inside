@@ -1,7 +1,4 @@
-import {
-  ForbiddenException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { AccountStatus, Role } from '@inside/database';
 import * as bcrypt from 'bcryptjs';
 import { AuthService } from '../auth/auth.service';

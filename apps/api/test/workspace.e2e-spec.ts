@@ -34,7 +34,6 @@ describe('Workspace flow (e2e)', () => {
   let otherToken = '';
   let clientId = '';
   let designerId = '';
-  let adminId = '';
   let otherId = '';
   let projectId = '';
   let stageIds: string[] = [];
@@ -103,7 +102,7 @@ describe('Workspace flow (e2e)', () => {
     otherToken = other.body.data.accessToken;
     otherId = other.body.data.user.id;
 
-    const adminUser = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email: adminEmail,
         passwordHash: await bcrypt.hash(password, 10),
@@ -113,7 +112,6 @@ describe('Workspace flow (e2e)', () => {
         isVerified: true,
       },
     });
-    adminId = adminUser.id;
 
     const adminLogin = await request(app.getHttpServer())
       .post('/auth/login')
@@ -275,9 +273,7 @@ describe('Workspace flow (e2e)', () => {
       .get(`/projects/${projectId}`)
       .set(authHeader(clientToken))
       .expect(200);
-    expect(finalProject.body.data.project.status).toBe(
-      ProjectStatus.COMPLETED,
-    );
+    expect(finalProject.body.data.project.status).toBe(ProjectStatus.COMPLETED);
 
     // 7. Client sends message; designer receives notification
     const msg = await request(app.getHttpServer())
@@ -455,7 +451,9 @@ describe('Workspace flow (e2e)', () => {
       .set(authHeader(adminToken))
       .expect(200);
     expect(
-      openReports.body.data.items.some((r: { id: string }) => r.id === reportId),
+      openReports.body.data.items.some(
+        (r: { id: string }) => r.id === reportId,
+      ),
     ).toBe(true);
 
     await request(app.getHttpServer())

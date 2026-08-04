@@ -66,7 +66,9 @@ export class ProposalsService {
           designerId: user.id,
           scope: dto.scope,
           timeline: dto.timeline,
-          stageFees: dto.stageFees,
+          stageFees: JSON.parse(
+            JSON.stringify(dto.stageFees),
+          ) as Prisma.InputJsonValue,
           totalAmount,
         },
         include: proposalInclude,
@@ -81,7 +83,9 @@ export class ProposalsService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new ConflictException('You already submitted a proposal for this request');
+        throw new ConflictException(
+          'You already submitted a proposal for this request',
+        );
       }
       throw error;
     }
@@ -232,7 +236,9 @@ export class ProposalsService {
   ) {
     if (request.type === RequestType.DIRECT) {
       if (request.designerId !== user.id) {
-        throw new ForbiddenException('This direct request is not assigned to you');
+        throw new ForbiddenException(
+          'This direct request is not assigned to you',
+        );
       }
       if (request.status !== RequestStatus.PENDING) {
         throw new BadRequestException('Request is not awaiting a proposal');
@@ -314,7 +320,9 @@ export class ProposalsService {
         }
         return null;
       })
-      .filter((item): item is { name: StageName; fee: number } => item !== null);
+      .filter(
+        (item): item is { name: StageName; fee: number } => item !== null,
+      );
   }
 
   private serialize(proposal: {

@@ -8,7 +8,11 @@ describe('MatchingService', () => {
     brief: { findUnique: jest.fn() },
     portfolio: { findMany: jest.fn() },
   };
-  const user = { id: 'c1', role: Role.CLIENT, activeRole: Role.CLIENT } as AuthUser;
+  const user = {
+    id: 'c1',
+    role: Role.CLIENT,
+    activeRole: Role.CLIENT,
+  } as AuthUser;
   let service: MatchingService;
 
   beforeEach(() => {

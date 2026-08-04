@@ -4,11 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  RequestStatus,
-  RequestType,
-  Role,
-} from '@inside/database';
+import { RequestStatus, RequestType, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRequestDto } from './dto/create-request.dto';
@@ -35,10 +31,14 @@ export class RequestsService {
   async create(user: AuthUser, dto: CreateRequestDto) {
     if (dto.type === RequestType.DIRECT) {
       if (!dto.designerId) {
-        throw new BadRequestException('designerId is required for DIRECT requests');
+        throw new BadRequestException(
+          'designerId is required for DIRECT requests',
+        );
       }
       if (dto.designerId === user.id) {
-        throw new BadRequestException('Cannot send a direct request to yourself');
+        throw new BadRequestException(
+          'Cannot send a direct request to yourself',
+        );
       }
       const designer = await this.prisma.user.findUnique({
         where: { id: dto.designerId },
@@ -47,7 +47,9 @@ export class RequestsService {
         throw new NotFoundException('Designer not found');
       }
     } else if (dto.designerId) {
-      throw new BadRequestException('OPEN requests must not include designerId');
+      throw new BadRequestException(
+        'OPEN requests must not include designerId',
+      );
     }
 
     if (dto.briefId) {

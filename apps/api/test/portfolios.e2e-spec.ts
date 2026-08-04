@@ -118,7 +118,9 @@ describe('PortfoliosController (e2e)', () => {
       })
       .expect(403);
 
-    const user = await prisma.user.findUnique({ where: { email: clientEmail } });
+    const user = await prisma.user.findUnique({
+      where: { email: clientEmail },
+    });
     if (user) {
       await prisma.session.deleteMany({ where: { userId: user.id } });
       await prisma.authToken.deleteMany({ where: { userId: user.id } });

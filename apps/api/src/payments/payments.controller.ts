@@ -48,7 +48,9 @@ export class PaymentsController {
   }
 
   @Patch('payments/:id/release')
-  @ApiOperation({ summary: 'Release paid milestone to designer (client/admin)' })
+  @ApiOperation({
+    summary: 'Release paid milestone to designer (client/admin)',
+  })
   @ApiOkResponse({ description: 'Released' })
   release(
     @CurrentUser() user: AuthUser,

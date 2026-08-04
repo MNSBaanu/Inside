@@ -8,13 +8,18 @@ export class MatchingService {
   constructor(private readonly prisma: PrismaService) {}
 
   async matchDesigners(user: AuthUser, briefId: string) {
-    const brief = await this.prisma.brief.findUnique({ where: { id: briefId } });
+    const brief = await this.prisma.brief.findUnique({
+      where: { id: briefId },
+    });
     if (!brief || brief.clientId !== user.id) {
       throw new NotFoundException('Brief not found');
     }
 
     const portfolios = await this.prisma.portfolio.findMany({
-      where: { isPublished: true, designer: { role: Role.DESIGNER, status: 'ACTIVE' } },
+      where: {
+        isPublished: true,
+        designer: { role: Role.DESIGNER, status: 'ACTIVE' },
+      },
       include: {
         designer: {
           select: {
@@ -37,7 +42,12 @@ export class MatchingService {
         designer: (typeof portfolios)[0]['designer'];
         score: number;
         breakdown: { style: number; room: number; budget: number };
-        matchedPortfolios: { id: string; title: string; style: string; roomType: string }[];
+        matchedPortfolios: {
+          id: string;
+          title: string;
+          style: string;
+          roomType: string;
+        }[];
       }
     >();
 

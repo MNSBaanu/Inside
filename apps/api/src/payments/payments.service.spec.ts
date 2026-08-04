@@ -1,7 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PaymentStatus, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -71,9 +68,9 @@ describe('PaymentsService', () => {
 
   it('rejects pay by designer', async () => {
     prisma.milestonePayment.findUnique.mockResolvedValue(pendingPayment);
-    await expect(
-      service.markPaid(designer, 'pay1', {}),
-    ).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(service.markPaid(designer, 'pay1', {})).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
   });
 
   it('rejects release on pending payment', async () => {

@@ -12,10 +12,7 @@ describe('HealthController', () => {
     prisma = { $queryRaw: jest.fn() };
     const module: TestingModule = await Test.createTestingModule({
       controllers: [HealthController],
-      providers: [
-        HealthService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [HealthService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     controller = module.get<HealthController>(HealthController);

@@ -97,7 +97,9 @@ export class UsersService {
     }
 
     if (user.role !== Role.DESIGNER && user.role !== Role.CLIENT) {
-      throw new ForbiddenException('Role switch is not allowed for this account');
+      throw new ForbiddenException(
+        'Role switch is not allowed for this account',
+      );
     }
 
     const updated = await this.prisma.user.update({
