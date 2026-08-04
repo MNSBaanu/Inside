@@ -225,6 +225,8 @@ pnpm --filter api test          # unit
 pnpm --filter api test:e2e      # migrates inside_test, then e2e
 ```
 
+**CI:** On every push/PR to `main`, GitHub Actions runs API unit + e2e (`.github/workflows/ci.yml`). Web tests will be added when `apps/web` exists.
+
 ---
 
 ## License
