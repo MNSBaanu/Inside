@@ -1,0 +1,185 @@
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  AccountStatus,
+  NotificationType,
+  ReportStatus,
+  ReportTargetType,
+} from '@inside/database';
+import type { AuthUser } from '../auth/auth.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable()
+export class AdminService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
+
+  async listUsers() {
+    const items = await this.prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        activeRole: true,
+        isVerified: true,
+        status: true,
+        createdAt: true,
+      },
+    });
+    return { success: true, data: { items } };
+  }
+
+  async suspend(admin: AuthUser, userId: string) {
+    if (userId === admin.id) {
+      throw new BadRequestException('Cannot suspend yourself');
+    }
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.status === AccountStatus.SUSPENDED) {
+      throw new BadRequestException('User is already suspended');
+    }
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const u = await tx.user.update({
+        where: { id: userId },
+        data: { status: AccountStatus.SUSPENDED },
+      });
+      await tx.session.updateMany({
+        where: { userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      return u;
+    });
+
+    await this.notifications.notify({
+      userId,
+      type: NotificationType.SYSTEM,
+      title: 'Account suspended',
+      message: 'Your account was suspended by an administrator',
+    });
+
+    return {
+      success: true,
+      data: { user: { id: updated.id, status: updated.status } },
+    };
+  }
+
+  async reactivate(_admin: AuthUser, userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.status === AccountStatus.ACTIVE) {
+      throw new BadRequestException('User is already active');
+    }
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { status: AccountStatus.ACTIVE },
+    });
+
+    await this.notifications.notify({
+      userId,
+      type: NotificationType.SYSTEM,
+      title: 'Account reactivated',
+      message: 'Your account was reactivated',
+    });
+
+    return {
+      success: true,
+      data: { user: { id: updated.id, status: updated.status } },
+    };
+  }
+
+  async listOpenReports() {
+    const items = await this.prisma.report.findMany({
+      where: {
+        status: { in: [ReportStatus.OPEN, ReportStatus.UNDER_REVIEW] },
+      },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        reporter: { select: { id: true, name: true, email: true } },
+        reportedUser: { select: { id: true, name: true, email: true } },
+      },
+    });
+    return {
+      success: true,
+      data: { items: items.map((r) => this.serializeReport(r)) },
+    };
+  }
+
+  async resolveReport(admin: AuthUser, id: string) {
+    const report = await this.prisma.report.findUnique({ where: { id } });
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+    const updated = await this.prisma.report.update({
+      where: { id },
+      data: {
+        status: ReportStatus.RESOLVED,
+        resolvedById: admin.id,
+        resolvedAt: new Date(),
+      },
+    });
+    return { success: true, data: { report: this.serializeReport(updated) } };
+  }
+
+  async dismissReport(admin: AuthUser, id: string) {
+    const report = await this.prisma.report.findUnique({ where: { id } });
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+    const updated = await this.prisma.report.update({
+      where: { id },
+      data: {
+        status: ReportStatus.DISMISSED,
+        resolvedById: admin.id,
+        resolvedAt: new Date(),
+      },
+    });
+    return { success: true, data: { report: this.serializeReport(updated) } };
+  }
+
+  private serializeReport(r: {
+    id: string;
+    reporterId: string;
+    reportedUserId: string | null;
+    targetType: ReportTargetType;
+    targetId: string;
+    reason: string;
+    details: string | null;
+    status: ReportStatus;
+    resolvedById: string | null;
+    resolvedAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+    reporter?: { id: string; name: string; email: string };
+    reportedUser?: { id: string; name: string; email: string } | null;
+  }) {
+    return {
+      id: r.id,
+      reporterId: r.reporterId,
+      reportedUserId: r.reportedUserId,
+      targetType: r.targetType,
+      targetId: r.targetId,
+      reason: r.reason,
+      details: r.details,
+      status: r.status,
+      resolvedById: r.resolvedById,
+      resolvedAt: r.resolvedAt,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+      reporter: r.reporter ?? null,
+      reportedUser: r.reportedUser ?? null,
+    };
+  }
+}

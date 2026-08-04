@@ -65,7 +65,7 @@ Inside/
 └── README.md
 ```
 
-**Current status:** Nest API Phase 2 in progress — auth through hiring (match/requests/proposals). Web/mobile later.
+**Current status:** Nest API Phase 2 complete — auth, portfolios, moodboards/briefs, matching, hiring, project workspace (stages, deliverables, messages, milestone payments), reviews, notifications, reports, blocks, verifications, and admin moderation. Web/mobile later.
 
 ---
 
@@ -190,6 +190,33 @@ Auth uses **Bearer JWT** (access token) plus refresh tokens stored hashed in `Se
 | GET/POST | `/briefs` | List / create brief |
 | POST | `/moodboards/:id/briefs` | Generate brief from moodboard |
 | GET/PATCH/DELETE | `/briefs/:id` | Own brief |
+| GET | `/match/designers?briefId=` | Ranked designer matches for a brief |
+| POST | `/requests` | Create request (client mode) |
+| GET | `/requests` | List my requests (party view) |
+| GET/PATCH | `/requests/:id[/cancel,close]` | Get / cancel / close request |
+| POST/GET | `/requests/:id/proposals` | Submit / list proposals |
+| PATCH | `/proposals/:id/[withdraw,reject,accept]` | Proposal lifecycle |
+| GET | `/projects` | List my projects (party view) |
+| GET | `/projects/:id` | Get project (party access) |
+| PATCH | `/projects/:id/[cancel,on-hold,resume]` | Project status transitions |
+| GET | `/projects/:projectId/stages` | List stages |
+| PATCH | `/stages/:id/[start,submit,approve,reject]` | Stage transitions |
+| POST/GET | `/stages/:stageId/deliverables` | Upload / list deliverables |
+| PATCH | `/deliverables/:id/feedback` | Client feedback |
+| POST/GET | `/projects/:projectId/messages` | Send / list messages |
+| PATCH | `/projects/:projectId/messages/read-all` | Mark received messages read |
+| PATCH | `/messages/:id/read` | Mark one message read |
+| GET | `/projects/:projectId/payments` | List milestone payments |
+| PATCH | `/payments/:id/[pay,release]` | Pay / release milestone (stub) |
+| POST | `/projects/:projectId/reviews` | Client review on completed project |
+| GET | `/designers/:designerId/reviews` | Public reviews + summary |
+| GET/PATCH | `/notifications[/:id/read,/read-all]` | List / mark read |
+| POST/GET | `/reports[,/mine]` | File / list my reports |
+| GET/POST/DELETE | `/blocks[,/:blockedId]` | Block / unblock / list |
+| POST/GET | `/verifications[,/mine]` | Designer submits / lists own |
+| GET/PATCH | `/verifications/admin/pending[,/:id/approve,/:id/reject]` | Admin verification queue |
+| GET/PATCH | `/admin/users[,/:id/suspend,/:id/reactivate]` | Admin user management |
+| GET/PATCH | `/admin/reports[,/:id/resolve,/:id/dismiss]` | Admin report queue |
 | GET | `/health` | API + database status |
 
 ```bash

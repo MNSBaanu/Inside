@@ -13,6 +13,7 @@ import {
   StageName,
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProposalsService } from './proposals.service';
 
@@ -53,9 +54,14 @@ describe('ProposalsService', () => {
 
   let service: ProposalsService;
 
+  const notifications = { notify: jest.fn() };
+
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new ProposalsService(prisma as unknown as PrismaService);
+    service = new ProposalsService(
+      prisma as unknown as PrismaService,
+      notifications as unknown as NotificationsService,
+    );
   });
 
   it('creates proposal with summed totalAmount', async () => {

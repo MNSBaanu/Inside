@@ -1,0 +1,213 @@
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  NotificationType,
+  ProjectStatus,
+  Role,
+  StageName,
+  StageStatus,
+} from '@inside/database';
+import type { AuthUser } from '../auth/auth.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { PrismaService } from '../prisma/prisma.service';
+
+const projectInclude = {
+  stages: { orderBy: { stageOrder: 'asc' } },
+  client: { select: { id: true, name: true, avatarUrl: true } },
+  designer: {
+    select: {
+      id: true,
+      name: true,
+      avatarUrl: true,
+      isVerified: true,
+      isAvailable: true,
+    },
+  },
+} as const;
+
+type ProjectWithIncludes = {
+  id: string;
+  proposalId: string;
+  clientId: string;
+  designerId: string;
+  title: string;
+  currentStage: StageName;
+  status: ProjectStatus;
+  startedAt: Date | null;
+  completedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  stages: {
+    id: string;
+    stageOrder: number;
+    name: StageName;
+    status: StageStatus;
+    fee: unknown;
+    dueDate: Date | null;
+    submittedAt: Date | null;
+    approvedAt: Date | null;
+  }[];
+  client?: { id: string; name: string; avatarUrl: string | null };
+  designer?: {
+    id: string;
+    name: string;
+    avatarUrl: string | null;
+    isVerified: boolean;
+    isAvailable: boolean;
+  };
+};
+
+@Injectable()
+export class ProjectsService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
+
+  async listMine(user: AuthUser) {
+    const where =
+      user.activeRole === Role.DESIGNER
+        ? { designerId: user.id }
+        : { clientId: user.id };
+
+    const items = await this.prisma.project.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      include: projectInclude,
+    });
+
+    return {
+      success: true,
+      data: { items: items.map((p) => this.serialize(p)) },
+    };
+  }
+
+  async getById(user: AuthUser, id: string) {
+    const project = await this.requirePartyAccess(id, user);
+    return { success: true, data: { project: this.serialize(project) } };
+  }
+
+  async cancel(user: AuthUser, id: string) {
+    const project = await this.requirePartyAccess(id, user);
+    if (
+      project.status === ProjectStatus.COMPLETED ||
+      project.status === ProjectStatus.CANCELLED
+    ) {
+      throw new BadRequestException('Project is already closed');
+    }
+
+    const updated = await this.prisma.project.update({
+      where: { id },
+      data: { status: ProjectStatus.CANCELLED },
+      include: projectInclude,
+    });
+
+    const otherId =
+      user.id === project.clientId ? project.designerId : project.clientId;
+    await this.notifications.notify({
+      userId: otherId,
+      type: NotificationType.PROJECT,
+      title: 'Project cancelled',
+      message: `Project "${project.title}" was cancelled`,
+      metadata: { projectId: id },
+    });
+
+    return { success: true, data: { project: this.serialize(updated) } };
+  }
+
+  async putOnHold(user: AuthUser, id: string) {
+    const project = await this.requirePartyAccess(id, user);
+    if (project.status !== ProjectStatus.ACTIVE) {
+      throw new BadRequestException('Only active projects can be put on hold');
+    }
+
+    const updated = await this.prisma.project.update({
+      where: { id },
+      data: { status: ProjectStatus.ON_HOLD },
+      include: projectInclude,
+    });
+
+    const otherId =
+      user.id === project.clientId ? project.designerId : project.clientId;
+    await this.notifications.notify({
+      userId: otherId,
+      type: NotificationType.PROJECT,
+      title: 'Project on hold',
+      message: `Project "${project.title}" was placed on hold`,
+      metadata: { projectId: id },
+    });
+
+    return { success: true, data: { project: this.serialize(updated) } };
+  }
+
+  async resume(user: AuthUser, id: string) {
+    const project = await this.requirePartyAccess(id, user);
+    if (project.status !== ProjectStatus.ON_HOLD) {
+      throw new BadRequestException('Only on-hold projects can be resumed');
+    }
+
+    const updated = await this.prisma.project.update({
+      where: { id },
+      data: { status: ProjectStatus.ACTIVE },
+      include: projectInclude,
+    });
+
+    const otherId =
+      user.id === project.clientId ? project.designerId : project.clientId;
+    await this.notifications.notify({
+      userId: otherId,
+      type: NotificationType.PROJECT,
+      title: 'Project resumed',
+      message: `Project "${project.title}" is active again`,
+      metadata: { projectId: id },
+    });
+
+    return { success: true, data: { project: this.serialize(updated) } };
+  }
+
+  async requirePartyAccess(id: string, user: AuthUser): Promise<ProjectWithIncludes> {
+    const project = await this.prisma.project.findUnique({
+      where: { id },
+      include: projectInclude,
+    });
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    if (project.clientId !== user.id && project.designerId !== user.id) {
+      throw new ForbiddenException('You do not have access to this project');
+    }
+    return project;
+  }
+
+  serialize(project: ProjectWithIncludes) {
+    return {
+      id: project.id,
+      proposalId: project.proposalId,
+      clientId: project.clientId,
+      designerId: project.designerId,
+      title: project.title,
+      currentStage: project.currentStage,
+      status: project.status,
+      startedAt: project.startedAt,
+      completedAt: project.completedAt,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      stages: project.stages.map((s) => ({
+        id: s.id,
+        stageOrder: s.stageOrder,
+        name: s.name,
+        status: s.status,
+        fee: s.fee !== null && s.fee !== undefined ? Number(s.fee) : null,
+        dueDate: s.dueDate,
+        submittedAt: s.submittedAt,
+        approvedAt: s.approvedAt,
+      })),
+      client: project.client ?? null,
+      designer: project.designer ?? null,
+    };
+  }
+}

@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  NotificationType,
   Prisma,
   ProposalStatus,
   ProjectStatus,
@@ -15,6 +16,7 @@ import {
   StageName,
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 
@@ -40,7 +42,10 @@ const proposalInclude = {
 
 @Injectable()
 export class ProposalsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   async create(user: AuthUser, requestId: string, dto: CreateProposalDto) {
     const request = await this.prisma.projectRequest.findUnique({
@@ -201,6 +206,14 @@ export class ProposalsService {
           stages: { orderBy: { stageOrder: 'asc' } },
         },
       });
+    });
+
+    await this.notifications.notify({
+      userId: proposal.designerId,
+      type: NotificationType.PROPOSAL,
+      title: 'Proposal accepted',
+      message: `Your proposal for "${proposal.request.title}" was accepted`,
+      metadata: { projectId: project.id, proposalId: proposal.id },
     });
 
     return {
