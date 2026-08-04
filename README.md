@@ -65,7 +65,7 @@ Inside/
 └── README.md
 ```
 
-**Current status:** PostgreSQL + Prisma done; Nest API with auth, users, portfolios, favourites, moodboards/briefs, and automated tests. Web/mobile come later.
+**Current status:** Nest API Phase 2 in progress — auth through hiring (match/requests/proposals). Web/mobile later.
 
 ---
 

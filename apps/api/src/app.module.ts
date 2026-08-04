@@ -4,9 +4,12 @@ import { AuthModule } from './auth/auth.module';
 import { BriefsModule } from './briefs/briefs.module';
 import { FavouritesModule } from './favourites/favourites.module';
 import { HealthModule } from './health/health.module';
+import { MatchingModule } from './matching/matching.module';
 import { MoodboardsModule } from './moodboards/moodboards.module';
 import { PortfoliosModule } from './portfolios/portfolios.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ProposalsModule } from './proposals/proposals.module';
+import { RequestsModule } from './requests/requests.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -19,6 +22,9 @@ import { UsersModule } from './users/users.module';
     FavouritesModule,
     MoodboardsModule,
     BriefsModule,
+    MatchingModule,
+    RequestsModule,
+    ProposalsModule,
     HealthModule,
   ],
 })
