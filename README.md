@@ -53,7 +53,7 @@ Turborepo monorepo:
 ```
 Inside/
 ├── apps/
-│   ├── api/              # NestJS REST API (auth + health — in progress)
+│   ├── api/              # NestJS REST API (auth, users, portfolios, moodboards/briefs)
 │   ├── web/              # Next.js web app — Phase 3 (not scaffolded yet)
 │   └── mobile/           # Expo / React Native — Phase 4 (not scaffolded yet)
 ├── packages/
