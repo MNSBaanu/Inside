@@ -321,7 +321,43 @@ describe('Workspace flow (e2e)', () => {
       .expect(200);
     expect(notifications.body.data.items.length).toBeGreaterThan(0);
 
-    // 11. Blocks unique constraint
+    // 11. Reports create + list mine
+    const reported = await request(app.getHttpServer())
+      .post('/reports')
+      .set(authHeader(clientToken))
+      .send({
+        targetType: 'USER',
+        targetId: otherId,
+        reportedUserId: otherId,
+        reason: 'Inappropriate behaviour',
+      })
+      .expect(201);
+    expect(reported.body.data.report.status).toBe('OPEN');
+
+    await request(app.getHttpServer())
+      .post('/reports')
+      .set(authHeader(clientToken))
+      .send({
+        targetType: 'USER',
+        targetId: clientId,
+        reason: 'self',
+      })
+      .expect(400);
+
+    const myReports = await request(app.getHttpServer())
+      .get('/reports/mine')
+      .set(authHeader(clientToken))
+      .expect(200);
+    expect(
+      myReports.body.data.items.some(
+        (r: { id: string }) => r.id === reported.body.data.report.id,
+      ),
+    ).toBe(true);
+
+    // 12. AuthZ: unauthenticated protected route
+    await request(app.getHttpServer()).get('/projects').expect(401);
+
+    // 13. Blocks unique constraint
     await request(app.getHttpServer())
       .post('/blocks')
       .set(authHeader(clientToken))
@@ -398,6 +434,37 @@ describe('Workspace flow (e2e)', () => {
     // Non-admin cannot access admin routes
     await request(app.getHttpServer())
       .get('/admin/users')
+      .set(authHeader(clientToken))
+      .expect(403);
+
+    // Admin report queue + resolve
+    const filed = await request(app.getHttpServer())
+      .post('/reports')
+      .set(authHeader(clientToken))
+      .send({
+        targetType: 'USER',
+        targetId: otherId,
+        reportedUserId: otherId,
+        reason: 'Admin queue test',
+      })
+      .expect(201);
+    const reportId: string = filed.body.data.report.id;
+
+    const openReports = await request(app.getHttpServer())
+      .get('/admin/reports')
+      .set(authHeader(adminToken))
+      .expect(200);
+    expect(
+      openReports.body.data.items.some((r: { id: string }) => r.id === reportId),
+    ).toBe(true);
+
+    await request(app.getHttpServer())
+      .patch(`/admin/reports/${reportId}/resolve`)
+      .set(authHeader(adminToken))
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .patch(`/admin/reports/${reportId}/dismiss`)
       .set(authHeader(clientToken))
       .expect(403);
   });
