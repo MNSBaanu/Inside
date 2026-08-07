@@ -13,10 +13,7 @@ export class HealthService {
         data: { status: 'ok' as const, database: 'up' as const },
       };
     } catch {
-      throw new ServiceUnavailableException({
-        success: false,
-        data: { status: 'degraded' as const, database: 'down' as const },
-      });
+      throw new ServiceUnavailableException('Database unavailable');
     }
   }
 }

@@ -1,6 +1,11 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { BlocksService } from '../blocks/blocks.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { FavouritesService } from './favourites.service';
 
@@ -15,6 +20,8 @@ describe('FavouritesService', () => {
     },
   };
 
+  const blocks = { assertNotBlocked: jest.fn() };
+
   const client = {
     id: 'c1',
     role: Role.CLIENT,
@@ -25,7 +32,11 @@ describe('FavouritesService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new FavouritesService(prisma as unknown as PrismaService);
+    blocks.assertNotBlocked.mockResolvedValue(undefined);
+    service = new FavouritesService(
+      prisma as unknown as PrismaService,
+      blocks as unknown as BlocksService,
+    );
   });
 
   it('creates a favourite for a designer', async () => {
@@ -51,6 +62,21 @@ describe('FavouritesService', () => {
 
     const result = await service.create(client, { designerId: 'd1' });
     expect(result.data.favourite.designerId).toBe('d1');
+    expect(blocks.assertNotBlocked).toHaveBeenCalledWith('c1', 'd1');
+  });
+
+  it('rejects favourite when blocked', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'd1',
+      role: Role.DESIGNER,
+    });
+    blocks.assertNotBlocked.mockRejectedValue(
+      new ForbiddenException('You cannot interact with this user'),
+    );
+
+    await expect(
+      service.create(client, { designerId: 'd1' }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
   });
 
   it('maps duplicate favourite to ConflictException', async () => {

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { RequestStatus, RequestType, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { BlocksService } from '../blocks/blocks.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRequestDto } from './dto/create-request.dto';
 
@@ -26,7 +27,10 @@ const requestInclude = {
 
 @Injectable()
 export class RequestsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly blocks: BlocksService,
+  ) {}
 
   async create(user: AuthUser, dto: CreateRequestDto) {
     if (dto.type === RequestType.DIRECT) {
@@ -46,6 +50,7 @@ export class RequestsService {
       if (!designer || designer.role !== Role.DESIGNER) {
         throw new NotFoundException('Designer not found');
       }
+      await this.blocks.assertNotBlocked(user.id, dto.designerId);
     } else if (dto.designerId) {
       throw new BadRequestException(
         'OPEN requests must not include designerId',

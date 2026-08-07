@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma, Role } from '@inside/database';
@@ -13,6 +14,7 @@ describe('BlocksService', () => {
     user: { findUnique: jest.fn() },
     block: {
       findMany: jest.fn(),
+      findFirst: jest.fn(),
       findUnique: jest.fn(),
       create: jest.fn(),
       delete: jest.fn(),
@@ -78,5 +80,21 @@ describe('BlocksService', () => {
     await expect(service.remove(client, 'd1')).rejects.toBeInstanceOf(
       NotFoundException,
     );
+  });
+
+  it('assertNotBlocked throws when either side blocked', async () => {
+    prisma.block.findFirst.mockResolvedValue({ id: 'b1' });
+    await expect(service.assertNotBlocked('c1', 'd1')).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+  });
+
+  it('listBlockedCounterpartIds returns the other party ids', async () => {
+    prisma.block.findMany.mockResolvedValue([
+      { blockerId: 'c1', blockedId: 'd1' },
+      { blockerId: 'd2', blockedId: 'c1' },
+    ]);
+    const ids = await service.listBlockedCounterpartIds('c1');
+    expect([...ids].sort()).toEqual(['d1', 'd2']);
   });
 });

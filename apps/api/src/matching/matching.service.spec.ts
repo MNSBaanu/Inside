@@ -1,5 +1,6 @@
 import { MatchingService } from './matching.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { BlocksService } from '../blocks/blocks.service';
 import type { AuthUser } from '../auth/auth.service';
 import { Role } from '@inside/database';
 
@@ -7,6 +8,9 @@ describe('MatchingService', () => {
   const prisma = {
     brief: { findUnique: jest.fn() },
     portfolio: { findMany: jest.fn() },
+  };
+  const blocks = {
+    listBlockedCounterpartIds: jest.fn(),
   };
   const user = {
     id: 'c1',
@@ -17,7 +21,11 @@ describe('MatchingService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new MatchingService(prisma as unknown as PrismaService);
+    blocks.listBlockedCounterpartIds.mockResolvedValue(new Set());
+    service = new MatchingService(
+      prisma as unknown as PrismaService,
+      blocks as unknown as BlocksService,
+    );
   });
 
   it('scores style and room matches', async () => {
@@ -51,5 +59,27 @@ describe('MatchingService', () => {
     const result = await service.matchDesigners(user, 'b1');
     expect(result.data.items[0].score).toBe(100);
     expect(result.data.items[0].breakdown.style).toBe(40);
+  });
+
+  it('excludes blocked designers from the query', async () => {
+    prisma.brief.findUnique.mockResolvedValue({
+      id: 'b1',
+      clientId: 'c1',
+      styles: ['Scandinavian'],
+      rooms: ['Living Room'],
+      budgetRange: null,
+    });
+    blocks.listBlockedCounterpartIds.mockResolvedValue(new Set(['d9']));
+    prisma.portfolio.findMany.mockResolvedValue([]);
+
+    await service.matchDesigners(user, 'b1');
+
+    expect(prisma.portfolio.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          designerId: { notIn: ['d9'] },
+        }),
+      }),
+    );
   });
 });

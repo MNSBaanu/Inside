@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
+import { BlocksModule } from '../blocks/blocks.module';
 import { MatchingController } from './matching.controller';
 import { MatchingService } from './matching.service';
 
 @Module({
+  imports: [BlocksModule],
   controllers: [MatchingController],
   providers: [MatchingService],
   exports: [MatchingService],

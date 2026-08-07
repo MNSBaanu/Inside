@@ -1,6 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { RequestStatus, RequestType, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { BlocksService } from '../blocks/blocks.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RequestsService } from './requests.service';
 
@@ -15,6 +16,8 @@ describe('RequestsService', () => {
       update: jest.fn(),
     },
   };
+
+  const blocks = { assertNotBlocked: jest.fn() };
 
   const client = {
     id: 'c1',
@@ -32,7 +35,11 @@ describe('RequestsService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new RequestsService(prisma as unknown as PrismaService);
+    blocks.assertNotBlocked.mockResolvedValue(undefined);
+    service = new RequestsService(
+      prisma as unknown as PrismaService,
+      blocks as unknown as BlocksService,
+    );
   });
 
   it('creates OPEN request with OPEN status', async () => {

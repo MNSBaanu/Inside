@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -18,6 +19,42 @@ const blockedSelect = {
 @Injectable()
 export class BlocksService {
   constructor(private readonly prisma: PrismaService) {}
+
+  /** True if either user has blocked the other. */
+  async isBlockedEitherWay(userId: string, otherUserId: string) {
+    const block = await this.prisma.block.findFirst({
+      where: {
+        OR: [
+          { blockerId: userId, blockedId: otherUserId },
+          { blockerId: otherUserId, blockedId: userId },
+        ],
+      },
+      select: { id: true },
+    });
+    return Boolean(block);
+  }
+
+  async assertNotBlocked(userId: string, otherUserId: string) {
+    if (await this.isBlockedEitherWay(userId, otherUserId)) {
+      throw new ForbiddenException('You cannot interact with this user');
+    }
+  }
+
+  /** User ids that have a block with `userId` in either direction. */
+  async listBlockedCounterpartIds(userId: string): Promise<Set<string>> {
+    const blocks = await this.prisma.block.findMany({
+      where: {
+        OR: [{ blockerId: userId }, { blockedId: userId }],
+      },
+      select: { blockerId: true, blockedId: true },
+    });
+    const ids = new Set<string>();
+    for (const b of blocks) {
+      if (b.blockerId !== userId) ids.add(b.blockerId);
+      if (b.blockedId !== userId) ids.add(b.blockedId);
+    }
+    return ids;
+  }
 
   async listMine(user: AuthUser) {
     const items = await this.prisma.block.findMany({

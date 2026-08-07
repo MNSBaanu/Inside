@@ -91,4 +91,33 @@ describe('AuthController (e2e)', () => {
       .send({ email, password: 'DefinitelyWrong1!' })
       .expect(401);
   });
+
+  it('forgot-password and reset-password round trip', async () => {
+    const forgot = await request(app.getHttpServer())
+      .post('/auth/forgot-password')
+      .send({ email })
+      .expect(201);
+
+    expect(forgot.body.success).toBe(true);
+    expect(forgot.body.data.resetToken).toBeDefined();
+
+    const newPassword = 'NewPassword123!';
+    await request(app.getHttpServer())
+      .post('/auth/reset-password')
+      .send({
+        token: forgot.body.data.resetToken,
+        newPassword,
+      })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email, password })
+      .expect(401);
+
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email, password: newPassword })
+      .expect(201);
+  });
 });

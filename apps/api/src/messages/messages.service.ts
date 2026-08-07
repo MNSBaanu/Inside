@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { NotificationType } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { BlocksService } from '../blocks/blocks.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { SendMessageDto } from './dto/send-message.dto';
@@ -14,6 +15,7 @@ export class MessagesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly blocks: BlocksService,
   ) {}
 
   async list(user: AuthUser, projectId: string) {
@@ -32,6 +34,7 @@ export class MessagesService {
     const project = await this.requireParty(projectId, user);
     const receiverId =
       user.id === project.clientId ? project.designerId : project.clientId;
+    await this.blocks.assertNotBlocked(user.id, receiverId);
 
     const created = await this.prisma.message.create({
       data: {

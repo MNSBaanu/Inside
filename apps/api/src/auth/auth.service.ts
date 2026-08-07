@@ -94,8 +94,9 @@ export class AuthService {
       data: {
         user: this.toPublicUser(user),
         ...tokens,
-        // Dev/test only — email delivery comes later
-        emailVerificationToken: rawVerifyToken,
+        ...(this.exposeDevAuthSecrets()
+          ? { emailVerificationToken: rawVerifyToken }
+          : {}),
       },
     };
   }
@@ -209,8 +210,9 @@ export class AuthService {
       },
     });
 
-    // Dev/test only until email is wired
-    response.data.resetToken = rawToken;
+    if (this.exposeDevAuthSecrets()) {
+      response.data.resetToken = rawToken;
+    }
     return response;
   }
 
@@ -339,5 +341,10 @@ export class AuthService {
 
   private hashToken(raw: string): string {
     return createHash('sha256').update(raw).digest('hex');
+  }
+
+  /** Raw verify/reset tokens in API responses — never in production. */
+  private exposeDevAuthSecrets(): boolean {
+    return this.config.get<string>('NODE_ENV') !== 'production';
   }
 }

@@ -1,11 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { BlocksService } from '../blocks/blocks.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class MatchingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly blocks: BlocksService,
+  ) {}
 
   async matchDesigners(user: AuthUser, briefId: string) {
     const brief = await this.prisma.brief.findUnique({
@@ -15,10 +19,15 @@ export class MatchingService {
       throw new NotFoundException('Brief not found');
     }
 
+    const blockedIds = await this.blocks.listBlockedCounterpartIds(user.id);
+
     const portfolios = await this.prisma.portfolio.findMany({
       where: {
         isPublished: true,
         designer: { role: Role.DESIGNER, status: 'ACTIVE' },
+        ...(blockedIds.size
+          ? { designerId: { notIn: [...blockedIds] } }
+          : {}),
       },
       include: {
         designer: {

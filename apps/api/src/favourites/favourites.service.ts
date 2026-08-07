@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Prisma, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { BlocksService } from '../blocks/blocks.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateFavouriteDto } from './dto/create-favourite.dto';
 
@@ -21,7 +22,10 @@ const designerSelect = {
 
 @Injectable()
 export class FavouritesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly blocks: BlocksService,
+  ) {}
 
   async listMine(user: AuthUser) {
     const items = await this.prisma.favourite.findMany({
@@ -48,6 +52,8 @@ export class FavouritesService {
     if (!designer || designer.role !== Role.DESIGNER) {
       throw new NotFoundException('Designer not found');
     }
+
+    await this.blocks.assertNotBlocked(user.id, dto.designerId);
 
     try {
       const favourite = await this.prisma.favourite.create({

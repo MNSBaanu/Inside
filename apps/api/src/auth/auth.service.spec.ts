@@ -36,6 +36,7 @@ describe('AuthService', () => {
   const config = {
     get: jest.fn((key: string) => {
       if (key === 'JWT_REFRESH_DAYS') return '30';
+      if (key === 'NODE_ENV') return 'test';
       return undefined;
     }),
   };
@@ -107,5 +108,36 @@ describe('AuthService', () => {
     await expect(
       service.login({ email: 'client@inside.test', password: 'WrongPass1!' }),
     ).rejects.toBeInstanceOf(UnauthorizedException);
+  });
+
+  it('omits emailVerificationToken in production', async () => {
+    config.get.mockImplementation((key: string) => {
+      if (key === 'JWT_REFRESH_DAYS') return '30';
+      if (key === 'NODE_ENV') return 'production';
+      return undefined;
+    });
+    prisma.user.findUnique.mockResolvedValue(null);
+    prisma.user.create.mockResolvedValue({
+      id: 'u1',
+      email: 'prod@inside.test',
+      name: 'Prod',
+      role: Role.CLIENT,
+      activeRole: Role.CLIENT,
+      isVerified: false,
+      status: AccountStatus.ACTIVE,
+      avatarUrl: null,
+      createdAt: new Date(),
+      passwordHash: 'hash',
+    });
+    prisma.authToken.create.mockResolvedValue({});
+    prisma.session.create.mockResolvedValue({});
+
+    const result = await service.register({
+      email: 'prod@inside.test',
+      password: 'Password123!',
+      name: 'Prod',
+    });
+
+    expect(result.data.emailVerificationToken).toBeUndefined();
   });
 });

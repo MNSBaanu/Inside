@@ -1,6 +1,7 @@
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { BlocksService } from '../blocks/blocks.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { MessagesService } from './messages.service';
@@ -18,19 +19,13 @@ describe('MessagesService', () => {
   };
 
   const notifications = { notify: jest.fn() };
+  const blocks = { assertNotBlocked: jest.fn() };
 
   const client = {
     id: 'c1',
     name: 'Client',
     role: Role.CLIENT,
     activeRole: Role.CLIENT,
-  } as AuthUser;
-
-  const designer = {
-    id: 'd1',
-    name: 'Designer',
-    role: Role.DESIGNER,
-    activeRole: Role.DESIGNER,
   } as AuthUser;
 
   const stranger = {
@@ -43,9 +38,11 @@ describe('MessagesService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    blocks.assertNotBlocked.mockResolvedValue(undefined);
     service = new MessagesService(
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
+      blocks as unknown as BlocksService,
     );
   });
 
@@ -71,7 +68,25 @@ describe('MessagesService', () => {
 
     const result = await service.send(client, 'p1', { content: 'hi' });
     expect(result.data.message.receiverId).toBe('d1');
+    expect(blocks.assertNotBlocked).toHaveBeenCalledWith('c1', 'd1');
     expect(notifications.notify).toHaveBeenCalled();
+  });
+
+  it('rejects send when users are blocked', async () => {
+    prisma.project.findUnique.mockResolvedValue({
+      id: 'p1',
+      clientId: 'c1',
+      designerId: 'd1',
+      title: 'Sofa',
+    });
+    blocks.assertNotBlocked.mockRejectedValue(
+      new ForbiddenException('You cannot interact with this user'),
+    );
+
+    await expect(
+      service.send(client, 'p1', { content: 'hi' }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(prisma.message.create).not.toHaveBeenCalled();
   });
 
   it('rejects non-party from sending', async () => {
@@ -81,25 +96,27 @@ describe('MessagesService', () => {
       designerId: 'd1',
       title: 'Sofa',
     });
+
     await expect(
       service.send(stranger, 'p1', { content: 'hi' }),
     ).rejects.toBeInstanceOf(ForbiddenException);
   });
 
-  it('markRead requires receiver', async () => {
+  it('rejects markRead for non-receiver', async () => {
     prisma.message.findUnique.mockResolvedValue({
       id: 'm1',
-      receiverId: 'c1',
+      receiverId: 'd1',
       isRead: false,
     });
-    await expect(service.markRead(designer, 'm1')).rejects.toBeInstanceOf(
+
+    await expect(service.markRead(client, 'm1')).rejects.toBeInstanceOf(
       ForbiddenException,
     );
   });
 
-  it('list rejects with 404 for missing project', async () => {
-    prisma.project.findUnique.mockResolvedValue(null);
-    await expect(service.list(client, 'p1')).rejects.toBeInstanceOf(
+  it('404 when message missing on markRead', async () => {
+    prisma.message.findUnique.mockResolvedValue(null);
+    await expect(service.markRead(client, 'missing')).rejects.toBeInstanceOf(
       NotFoundException,
     );
   });
