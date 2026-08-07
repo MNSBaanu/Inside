@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "d7c4a9d6-44b7-4c04-8264-89b079139a0f",
+    "_postman_id": "057d0cb3-f27f-4b76-9b69-c53062d88122",
     "name": "Inside API",
     "description": "NestJS Phase 2 API for Inside (interior design marketplace).\n\n1. Select environment **Inside Local**\n2. Run **01 Auth → Login (seed client)** (or designer/admin)\n3. `accessToken` is saved automatically for Bearer auth\n4. Fill collection variables (`requestId`, `projectId`, etc.) from responses\n\nAuth: Bearer JWT (not cookies). Swagger: {{baseUrl}}/api/docs",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
