@@ -54,7 +54,7 @@ Turborepo monorepo:
 Inside/
 ├── apps/
 │   ├── api/              # NestJS REST API (auth, users, portfolios, moodboards/briefs)
-│   ├── web/              # Next.js web app — Phase 3 (not scaffolded yet)
+│   ├── web/              # Next.js web app — Phase 3 (scaffolded; auth UI next)
 │   └── mobile/           # Expo / React Native — Phase 4 (not scaffolded yet)
 ├── packages/
 │   ├── database/         # Prisma schema, migrations, seed
@@ -65,7 +65,7 @@ Inside/
 └── README.md
 ```
 
-**Current status:** Nest API Phase 2 complete — auth, portfolios, moodboards/briefs, matching, hiring, project workspace (stages, deliverables, messages, milestone payments), reviews, notifications, reports, blocks, verifications, and admin moderation. Web/mobile later.
+**Current status:** Nest API Phase 2 complete. Next.js web scaffolded (Step 34) — layouts, API client, role route gates. Next: Step 35 auth/profile UI. Mobile later.
 
 ---
 
