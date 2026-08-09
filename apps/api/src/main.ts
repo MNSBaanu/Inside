@@ -1,11 +1,16 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { config as loadEnv } from 'dotenv';
 import helmet from 'helmet';
+import { resolve } from 'path';
 import { AppModule } from './app.module';
 import { ApiExceptionFilter } from './common/filters/api-exception.filter';
 
 async function bootstrap() {
+  // Prefer apps/api/.env over a shell/system DATABASE_URL (e.g. Neon).
+  loadEnv({ path: resolve(process.cwd(), '.env'), override: true });
+
   const app = await NestFactory.create(AppModule);
 
   app.use(helmet());

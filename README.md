@@ -152,7 +152,19 @@ pnpm --filter @inside/database db:studio
 
 Prisma Studio: http://localhost:5555
 
-Seed accounts (password `Password123!`): `admin@inside.test`, `client@inside.test`, `client2@inside.test`, `designer@inside.test`, `designer2@inside.test` (verification pending).
+### Demo credentials (after `db:seed`)
+
+Password for all seed users: **`Password123!`**
+
+| Email | Role | Notes |
+|-------|------|--------|
+| `client@inside.test` | CLIENT | Primary client demo |
+| `client2@inside.test` | CLIENT | Second client |
+| `designer@inside.test` | DESIGNER | Dual-role capable (CLIENT ↔ DESIGNER) |
+| `designer2@inside.test` | DESIGNER | Verification pending |
+| `admin@inside.test` | ADMIN | Admin moderation |
+
+Web login: http://localhost:3000/login (demo fill buttons on the page).
 
 ---
 

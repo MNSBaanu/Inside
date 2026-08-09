@@ -9,6 +9,14 @@ import { Label } from '@/components/ui/label';
 import { formatApiError, loginRequest, redirectPathAfterAuth } from '@/lib/api/auth';
 import { cn } from '@/lib/utils';
 
+const DEMO_PASSWORD = 'Password123!';
+
+const DEMO_ACCOUNTS = [
+  { label: 'Client', email: 'client@inside.test' },
+  { label: 'Designer', email: 'designer@inside.test' },
+  { label: 'Admin', email: 'admin@inside.test' },
+] as const;
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -16,6 +24,12 @@ export function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+
+  function fillDemo(demoEmail: string) {
+    setEmail(demoEmail);
+    setPassword(DEMO_PASSWORD);
+    setError(null);
+  }
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -41,6 +55,26 @@ export function LoginForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Demo accounts</p>
+        <div className="flex flex-wrap gap-2">
+          {DEMO_ACCOUNTS.map((account) => (
+            <Button
+              key={account.email}
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={pending}
+              onClick={() => fillDemo(account.email)}
+            >
+              {account.label}
+            </Button>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Fills email + password ({DEMO_PASSWORD}). Then click Sign in.
+        </p>
+      </div>
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input

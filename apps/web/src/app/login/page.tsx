@@ -10,7 +10,7 @@ export default function LoginPage() {
         <div className="space-y-1">
           <h1 className="font-heading text-3xl tracking-tight">Log in</h1>
           <p className="text-sm text-muted-foreground">
-            Seed demo: client@inside.test / Password123!
+            Use a demo button below, or see README for all seed accounts.
           </p>
         </div>
         <Suspense fallback={<p className="text-sm text-muted-foreground">Loading…</p>}>
