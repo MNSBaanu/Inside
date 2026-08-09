@@ -1,4 +1,4 @@
-# Inside Nest API — multi-stage image for AWS App Runner
+# Inside Nest API — multi-stage image (e.g. Fly.io)
 FROM node:20-bookworm-slim AS base
 RUN apt-get update -qq \
   && apt-get install -y -qq openssl ca-certificates \
