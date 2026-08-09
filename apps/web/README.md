@@ -20,8 +20,9 @@ API issues **Bearer** access tokens (plus refresh). The web client stores tokens
 | Path | Access |
 |------|--------|
 | `/`, `/login`, `/register` | Public |
+| `/profile` | Authenticated |
 | `/client` | `activeRole === CLIENT` |
 | `/designer` | Designer in designer mode |
 | `/admin` | `role === ADMIN` |
 
-Next checklist step: **35 — Web auth + profile pages**.
+Next checklist step: **36 — Discovery, portfolio, favourites**.

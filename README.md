@@ -65,7 +65,7 @@ Inside/
 └── README.md
 ```
 
-**Current status:** Nest API Phase 2 complete. Next.js web scaffolded (Step 34) — layouts, API client, role route gates. Next: Step 35 auth/profile UI. Mobile later.
+**Current status:** Nest API Phase 2 complete. Web: Step 34 scaffold + Step 35 auth/profile UI. Next: Step 36 discovery/portfolio. Mobile later.
 
 ---
 

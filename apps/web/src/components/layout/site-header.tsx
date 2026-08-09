@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { LogoutButton } from '@/components/auth/logout-button';
 
 type SiteHeaderProps = {
   variant?: 'public' | 'app';
@@ -37,11 +38,12 @@ export function SiteHeader({ variant = 'public', title }: SiteHeaderProps) {
         ) : (
           <nav className="flex items-center gap-2">
             <Link
-              href="/"
+              href="/profile"
               className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
             >
-              Home
+              Profile
             </Link>
+            <LogoutButton />
           </nav>
         )}
       </div>

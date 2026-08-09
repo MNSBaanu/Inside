@@ -14,14 +14,15 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const gate = parseGateCookie(request.cookies.get(GATE_COOKIE)?.value);
   const area = areaFromPath(pathname);
+  const needsAuth = Boolean(area) || pathname.startsWith('/profile');
 
-  if (area) {
+  if (needsAuth) {
     if (!gate) {
       const login = new URL('/login', request.url);
       login.searchParams.set('next', pathname);
       return NextResponse.redirect(login);
     }
-    if (!canAccessArea(gate, area)) {
+    if (area && !canAccessArea(gate, area)) {
       return NextResponse.redirect(new URL(homePathForGate(gate), request.url));
     }
     return NextResponse.next();

@@ -29,6 +29,11 @@ export function setTokens(tokens: TokenPair) {
   localStorage.setItem(REFRESH_KEY, tokens.refreshToken);
 }
 
+export function setAccessToken(token: string) {
+  if (!canUseDom()) return;
+  localStorage.setItem(ACCESS_KEY, token);
+}
+
 export function clearTokens() {
   if (!canUseDom()) return;
   localStorage.removeItem(ACCESS_KEY);
