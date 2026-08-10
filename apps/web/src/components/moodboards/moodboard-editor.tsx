@@ -16,6 +16,7 @@ import {
   updateMoodboard,
 } from '@/lib/api/moodboards';
 import type { Moodboard } from '@/lib/api/types';
+import { DEMO_INSPO_1 } from '@/lib/media';
 import { cn } from '@/lib/utils';
 
 export function MoodboardEditor() {
@@ -23,9 +24,7 @@ export function MoodboardEditor() {
   const router = useRouter();
   const [board, setBoard] = useState<Moodboard | null>(null);
   const [name, setName] = useState('');
-  const [imageUrl, setImageUrl] = useState(
-    'https://picsum.photos/seed/inside-mood/800/600',
-  );
+  const [imageUrl, setImageUrl] = useState(DEMO_INSPO_1);
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

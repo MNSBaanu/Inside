@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { formatApiError } from '@/lib/api/auth';
 import { createPortfolio } from '@/lib/api/portfolios';
+import { DEMO_LIVING } from '@/lib/media';
 
 export function CreatePortfolioForm() {
   const router = useRouter();
@@ -15,9 +16,7 @@ export function CreatePortfolioForm() {
   const [style, setStyle] = useState('');
   const [roomType, setRoomType] = useState('');
   const [budget, setBudget] = useState('');
-  const [imageUrl, setImageUrl] = useState(
-    'https://picsum.photos/seed/inside-new/1200/800',
-  );
+  const [imageUrl, setImageUrl] = useState(DEMO_LIVING);
   const [isPublished, setIsPublished] = useState(true);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);

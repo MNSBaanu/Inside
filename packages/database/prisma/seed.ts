@@ -149,8 +149,18 @@ async function main() {
       roomType: 'Living Room',
       budget: 450000,
       images: [
-        { imageUrl: 'https://picsum.photos/seed/inside-living-1/1200/800', caption: 'Main view', displayOrder: 0 },
-        { imageUrl: 'https://picsum.photos/seed/inside-living-2/1200/800', caption: 'Seating detail', displayOrder: 1 },
+        {
+          imageUrl:
+            'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80',
+          caption: 'Main view',
+          displayOrder: 0,
+        },
+        {
+          imageUrl:
+            'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80',
+          caption: 'Seating detail',
+          displayOrder: 1,
+        },
       ],
     },
     {
@@ -160,7 +170,12 @@ async function main() {
       roomType: 'Kitchen',
       budget: 780000,
       images: [
-        { imageUrl: 'https://picsum.photos/seed/inside-kitchen-1/1200/800', caption: 'Island', displayOrder: 0 },
+        {
+          imageUrl:
+            'https://images.unsplash.com/photo-1556912173-46c336c7fd55?auto=format&fit=crop&w=1200&q=80',
+          caption: 'Island',
+          displayOrder: 0,
+        },
       ],
     },
   ];
@@ -169,7 +184,21 @@ async function main() {
     const existing = await prisma.portfolio.findFirst({
       where: { designerId: designer.id, title: seed.title },
     });
-    if (existing) continue;
+    if (existing) {
+      await prisma.portfolioImage.deleteMany({ where: { portfolioId: existing.id } });
+      await prisma.portfolio.update({
+        where: { id: existing.id },
+        data: {
+          description: seed.description,
+          style: seed.style,
+          roomType: seed.roomType,
+          budget: seed.budget,
+          isPublished: true,
+          images: { create: seed.images },
+        },
+      });
+      continue;
+    }
 
     await prisma.portfolio.create({
       data: {
@@ -187,7 +216,30 @@ async function main() {
   const ayeshaPortfolio = await prisma.portfolio.findFirst({
     where: { designerId: pendingDesigner.id, title: 'Coastal Bedroom Concept' },
   });
-  if (!ayeshaPortfolio) {
+  const coastalBedroomImages = [
+    {
+      imageUrl:
+        'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1200&q=80',
+      caption: 'Headboard wall',
+      displayOrder: 0,
+    },
+  ];
+  if (ayeshaPortfolio) {
+    await prisma.portfolioImage.deleteMany({
+      where: { portfolioId: ayeshaPortfolio.id },
+    });
+    await prisma.portfolio.update({
+      where: { id: ayeshaPortfolio.id },
+      data: {
+        description: 'Soft blues and rattan accents for a calm sleep space.',
+        style: 'Coastal',
+        roomType: 'Bedroom',
+        budget: 320000,
+        isPublished: true,
+        images: { create: coastalBedroomImages },
+      },
+    });
+  } else {
     await prisma.portfolio.create({
       data: {
         designerId: pendingDesigner.id,
@@ -198,13 +250,7 @@ async function main() {
         budget: 320000,
         isPublished: true,
         images: {
-          create: [
-            {
-              imageUrl: 'https://picsum.photos/seed/inside-bedroom-1/1200/800',
-              caption: 'Headboard wall',
-              displayOrder: 0,
-            },
-          ],
+          create: coastalBedroomImages,
         },
       },
     });
@@ -216,6 +262,18 @@ async function main() {
     create: { clientId: client.id, designerId: designer.id },
   });
 
+  const apartmentItems = [
+    {
+      imageUrl:
+        'https://images.unsplash.com/photo-1616137466211-f947bda0ca6d?auto=format&fit=crop&w=800&q=80',
+      note: 'Warm neutrals',
+    },
+    {
+      imageUrl:
+        'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80',
+      note: 'Open shelving',
+    },
+  ];
   let moodboard = await prisma.moodboard.findFirst({
     where: { clientId: client.id, name: 'Apartment Refresh' },
   });
@@ -224,11 +282,13 @@ async function main() {
       data: {
         clientId: client.id,
         name: 'Apartment Refresh',
-        savedItems: [
-          { imageUrl: 'https://picsum.photos/seed/inside-inspo-1/800/600', note: 'Warm neutrals' },
-          { imageUrl: 'https://picsum.photos/seed/inside-inspo-2/800/600', note: 'Open shelving' },
-        ],
+        savedItems: apartmentItems,
       },
+    });
+  } else {
+    moodboard = await prisma.moodboard.update({
+      where: { id: moodboard.id },
+      data: { savedItems: apartmentItems },
     });
   }
 
@@ -451,13 +511,25 @@ async function main() {
   let openMoodboard = await prisma.moodboard.findFirst({
     where: { clientId: secondClient.id, name: 'Coastal Bedroom' },
   });
+  const coastalMoodItems = [
+    {
+      imageUrl:
+        'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=800&q=80',
+      note: 'Soft blue palette',
+    },
+  ];
   if (!openMoodboard) {
     openMoodboard = await prisma.moodboard.create({
       data: {
         clientId: secondClient.id,
         name: 'Coastal Bedroom',
-        savedItems: [{ imageUrl: 'https://picsum.photos/seed/inside-coastal-1/800/600', note: 'Soft blue palette' }],
+        savedItems: coastalMoodItems,
       },
+    });
+  } else {
+    openMoodboard = await prisma.moodboard.update({
+      where: { id: openMoodboard.id },
+      data: { savedItems: coastalMoodItems },
     });
   }
 

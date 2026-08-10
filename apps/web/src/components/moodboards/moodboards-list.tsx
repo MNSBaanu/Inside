@@ -7,10 +7,10 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { EmptyState } from '@/components/layout/empty-state';
-import { PageHeader } from '@/components/layout/page-header';
 import { formatApiError } from '@/lib/api/auth';
 import { createMoodboard, deleteMoodboard, listMoodboards } from '@/lib/api/moodboards';
 import type { Moodboard } from '@/lib/api/types';
+import { DEMO_INSPO_2 } from '@/lib/media';
 import { cn } from '@/lib/utils';
 
 export function MoodboardsList() {
@@ -73,11 +73,26 @@ export function MoodboardsList() {
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        eyebrow="Client · Inspiration"
-        title="Moodboards"
-        description="Collect images and notes, then turn them into a brief."
-      />
+      <section className="relative overflow-hidden rounded-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={DEMO_INSPO_2}
+          alt=""
+          className="h-40 w-full object-cover md:h-52"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(100deg,oklch(0.18_0.03_155_/_0.75)_0%,oklch(0.18_0.03_155_/_0.3)_75%)]" />
+        <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/70">
+            Client · Inspiration
+          </p>
+          <h1 className="mt-2 font-heading text-3xl tracking-tight text-white md:text-4xl">
+            Moodboards
+          </h1>
+          <p className="mt-2 max-w-lg text-sm text-white/80">
+            Collect images and notes, then turn them into a brief.
+          </p>
+        </div>
+      </section>
 
       <form
         onSubmit={onCreate}

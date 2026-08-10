@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { EmptyState } from '@/components/layout/empty-state';
-import { PageHeader } from '@/components/layout/page-header';
 import { formatApiError } from '@/lib/api/auth';
 import { deleteBrief, listBriefs } from '@/lib/api/briefs';
 import type { Brief } from '@/lib/api/types';
+import { DEMO_KITCHEN } from '@/lib/media';
 import { cn } from '@/lib/utils';
 
 export function BriefsList() {
@@ -49,16 +49,37 @@ export function BriefsList() {
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        eyebrow="Client · Briefs"
-        title="Design briefs"
-        description="Capture styles, rooms, and budget — then match designers."
-        actions={
-          <Link href="/client/briefs/new" className={cn(buttonVariants())}>
+      <section className="relative overflow-hidden rounded-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={DEMO_KITCHEN}
+          alt=""
+          className="h-40 w-full object-cover md:h-52"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(100deg,oklch(0.18_0.03_155_/_0.75)_0%,oklch(0.18_0.03_155_/_0.3)_75%)]" />
+        <div className="absolute inset-0 flex flex-col justify-end gap-4 p-6 md:flex-row md:items-end md:justify-between md:p-8">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/70">
+              Client · Briefs
+            </p>
+            <h1 className="mt-2 font-heading text-3xl tracking-tight text-white md:text-4xl">
+              Design briefs
+            </h1>
+            <p className="mt-2 max-w-lg text-sm text-white/80">
+              Capture styles, rooms, and budget — then match designers.
+            </p>
+          </div>
+          <Link
+            href="/client/briefs/new"
+            className={cn(
+              buttonVariants(),
+              'bg-white text-[oklch(0.24_0.03_155)] hover:bg-white/90',
+            )}
+          >
             New brief
           </Link>
-        }
-      />
+        </div>
+      </section>
 
       {error ? (
         <p className="text-sm text-destructive" role="alert">

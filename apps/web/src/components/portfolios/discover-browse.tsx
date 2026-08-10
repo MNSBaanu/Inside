@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { EmptyState } from '@/components/layout/empty-state';
-import { PageHeader } from '@/components/layout/page-header';
 import { PortfolioCard } from '@/components/portfolios/portfolio-card';
 import { formatApiError } from '@/lib/api/auth';
 import { listPortfolios } from '@/lib/api/portfolios';
 import type { Portfolio } from '@/lib/api/types';
+import { DISCOVER_BANNER } from '@/lib/media';
 
 export function DiscoverBrowse() {
   const searchParams = useSearchParams();
@@ -64,15 +64,28 @@ export function DiscoverBrowse() {
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        eyebrow="Client · Discover"
-        title="Find the right rooms"
-        description={
-          designerId
-            ? 'Browsing published work from one designer.'
-            : 'Filter published portfolios by style, room, and budget.'
-        }
-      />
+      <section className="relative overflow-hidden rounded-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={DISCOVER_BANNER}
+          alt=""
+          className="h-48 w-full object-cover md:h-64"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(100deg,oklch(0.18_0.03_155_/_0.78)_0%,oklch(0.18_0.03_155_/_0.35)_70%)]" />
+        <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/70">
+            Client · Discover
+          </p>
+          <h1 className="mt-2 font-heading text-3xl tracking-tight text-white md:text-4xl">
+            Find the right rooms
+          </h1>
+          <p className="mt-2 max-w-lg text-sm text-white/80 md:text-base">
+            {designerId
+              ? 'Browsing published work from one designer.'
+              : 'Filter published portfolios by style, room, and budget.'}
+          </p>
+        </div>
+      </section>
 
       <form
         onSubmit={onSearch}
