@@ -1,6 +1,6 @@
 # Inside Web (Next.js)
 
-Phase 3 scaffold — App Router, Tailwind, shadcn/ui, API client, role route shells.
+Phase 3 — App Router, Tailwind, shadcn/ui, auth, discovery/portfolios/favourites.
 
 ## Setup
 
@@ -33,8 +33,12 @@ API issues **Bearer** access tokens (plus refresh). The web client stores tokens
 |------|--------|
 | `/`, `/login`, `/register` | Public |
 | `/profile` | Authenticated |
-| `/client` | `activeRole === CLIENT` |
-| `/designer` | Designer in designer mode |
+| `/portfolios/:id` | Public detail (favourite if client) |
+| `/client` | Discover browse/search |
+| `/client/favourites` | Client favourites |
+| `/designer` | My portfolios |
+| `/designer/portfolios/new` | Create portfolio |
+| `/designer/portfolios/:id` | Manage portfolio |
 | `/admin` | `role === ADMIN` |
 
-Next checklist step: **36 — Discovery, portfolio, favourites**.
+Next checklist step: **37**.
