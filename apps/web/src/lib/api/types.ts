@@ -224,6 +224,27 @@ export type Project = {
   designer?: RequestParty | null;
 };
 
+export type PaymentStatus =
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'PAID'
+  | 'RELEASED'
+  | 'FAILED'
+  | 'REFUNDED';
+
+export type MilestonePayment = {
+  id: string;
+  projectId: string;
+  stageId: string;
+  amount: number | null;
+  status: PaymentStatus;
+  stripeIntentId: string | null;
+  paidAt: string | null;
+  releasedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Deliverable = {
   id: string;
   stageId: string;

@@ -6,22 +6,29 @@ import { useParams } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { StatusPill } from '@/components/layout/status-pill';
 import { ModeSwitchNotice } from '@/components/projects/mode-switch-notice';
+import { PaymentsSummary } from '@/components/projects/payments-summary';
 import { StagePanel } from '@/components/projects/stage-panel';
 import { StageTimeline } from '@/components/projects/stage-timeline';
 import { fetchMe, formatApiError } from '@/lib/api/auth';
+import {
+  listPayments,
+  payPayment,
+  releasePayment,
+} from '@/lib/api/payments';
 import {
   cancelProject,
   getProject,
   holdProject,
   resumeProject,
 } from '@/lib/api/projects';
-import type { AuthUser, Project } from '@/lib/api/types';
+import type { AuthUser, MilestonePayment, Project } from '@/lib/api/types';
 import { STAGE_LABELS, formatLkr } from '@/lib/stages';
 import { cn } from '@/lib/utils';
 
 export function ProjectWorkspace() {
   const params = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
+  const [payments, setPayments] = useState<MilestonePayment[]>([]);
   const [me, setMe] = useState<AuthUser | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,8 +36,12 @@ export function ProjectWorkspace() {
   const [error, setError] = useState<string | null>(null);
 
   const refreshProject = useCallback(async () => {
-    const data = await getProject(params.id);
-    setProject(data.project);
+    const [projectData, paymentData] = await Promise.all([
+      getProject(params.id),
+      listPayments(params.id),
+    ]);
+    setProject(projectData.project);
+    setPayments(paymentData.items);
   }, [params.id]);
 
   const refreshMe = useCallback(async () => {
@@ -44,12 +55,14 @@ export function ProjectWorkspace() {
       setLoading(true);
       setError(null);
       try {
-        const [projectData, user] = await Promise.all([
+        const [projectData, paymentData, user] = await Promise.all([
           getProject(params.id),
+          listPayments(params.id),
           fetchMe(),
         ]);
         if (cancelled) return;
         setProject(projectData.project);
+        setPayments(paymentData.items);
         setMe(user);
       } catch (err) {
         if (!cancelled) setError(formatApiError(err));
@@ -214,7 +227,19 @@ export function ProjectWorkspace() {
         canAct={canAct}
         isCurrent={selected.name === project.currentStage}
         projectActive={projectActive}
+        payment={
+          payments.find((payment) => payment.stageId === selected.id) ?? null
+        }
         onChanged={refreshProject}
+      />
+
+      <PaymentsSummary
+        payments={payments}
+        stages={stages}
+        isClient={isClient}
+        busy={busy}
+        onPay={(id) => void runProjectAction(() => payPayment(id))}
+        onRelease={(id) => void runProjectAction(() => releasePayment(id))}
       />
     </div>
   );

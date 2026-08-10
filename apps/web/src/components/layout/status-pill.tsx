@@ -26,6 +26,11 @@ const TONE_BY_STATUS: Record<string, keyof typeof TONES> = {
   ON_HOLD: 'warning',
   COMPLETED: 'positive',
   CANCELLED: 'neutral',
+  PROCESSING: 'info',
+  PAID: 'info',
+  RELEASED: 'positive',
+  FAILED: 'danger',
+  REFUNDED: 'neutral',
 };
 
 export function StatusPill({

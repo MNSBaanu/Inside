@@ -17,7 +17,12 @@ import {
   startStage,
   submitStage,
 } from '@/lib/api/stages';
-import type { Deliverable, ProjectStage } from '@/lib/api/types';
+import { payPayment, releasePayment } from '@/lib/api/payments';
+import type {
+  Deliverable,
+  MilestonePayment,
+  ProjectStage,
+} from '@/lib/api/types';
 import { STAGE_LABELS, formatLkr } from '@/lib/stages';
 
 type Role = 'client' | 'designer' | 'viewer';
@@ -28,6 +33,7 @@ export function StagePanel({
   canAct,
   isCurrent,
   projectActive,
+  payment,
   onChanged,
 }: {
   stage: ProjectStage;
@@ -35,6 +41,7 @@ export function StagePanel({
   canAct: boolean;
   isCurrent: boolean;
   projectActive: boolean;
+  payment: MilestonePayment | null;
   onChanged: () => Promise<void>;
 }) {
   const [items, setItems] = useState<Deliverable[]>([]);
@@ -120,6 +127,11 @@ export function StagePanel({
                 Approved {new Date(stage.approvedAt).toLocaleDateString()}
               </span>
             ) : null}
+            {payment ? (
+              <span className="flex items-center gap-1.5">
+                Milestone <StatusPill value={payment.status} />
+              </span>
+            ) : null}
           </div>
         </div>
 
@@ -152,6 +164,27 @@ export function StagePanel({
               onClick={() => run(() => approveStage(stage.id))}
             >
               Approve
+            </Button>
+          ) : null}
+          {role === 'client' && payment?.status === 'PENDING' ? (
+            <Button
+              type="button"
+              size="sm"
+              disabled={busy}
+              onClick={() => run(() => payPayment(payment.id))}
+            >
+              Pay {formatLkr(payment.amount)}
+            </Button>
+          ) : null}
+          {role === 'client' && payment?.status === 'PAID' ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={busy}
+              onClick={() => run(() => releasePayment(payment.id))}
+            >
+              Release to designer
             </Button>
           ) : null}
         </div>
