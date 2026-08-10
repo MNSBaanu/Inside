@@ -107,16 +107,19 @@ export function ProfileForm() {
   }
 
   return (
-    <div className="mx-auto flex max-w-lg flex-col gap-6">
-      <div className="space-y-1">
-        <h1 className="font-heading text-3xl tracking-tight">Profile</h1>
+    <div className="mx-auto flex max-w-lg flex-col gap-8">
+      <div className="space-y-2 border-b border-border/60 pb-6">
+        <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          Account
+        </p>
+        <h1 className="font-heading text-3xl tracking-tight md:text-4xl">Profile</h1>
         <p className="text-sm text-muted-foreground">
           {user.email} · {user.role}
           {user.role === 'DESIGNER' ? ` · mode ${user.activeRole}` : ''}
         </p>
       </div>
 
-      <form onSubmit={onSave} className="flex flex-col gap-4">
+      <form onSubmit={onSave} className="surface-panel flex flex-col gap-4 p-5">
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
           <Input
@@ -178,7 +181,7 @@ export function ProfileForm() {
       </form>
 
       {user.role === 'DESIGNER' ? (
-        <div className="border-t border-border pt-4">
+        <div className="surface-panel p-5">
           <Button
             type="button"
             variant="outline"

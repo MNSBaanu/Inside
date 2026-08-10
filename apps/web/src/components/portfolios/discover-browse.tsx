@@ -1,17 +1,18 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { EmptyState } from '@/components/layout/empty-state';
+import { PageHeader } from '@/components/layout/page-header';
 import { PortfolioCard } from '@/components/portfolios/portfolio-card';
 import { formatApiError } from '@/lib/api/auth';
 import { listPortfolios } from '@/lib/api/portfolios';
 import type { Portfolio } from '@/lib/api/types';
 
 export function DiscoverBrowse() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const designerId = searchParams.get('designerId') ?? undefined;
   const [items, setItems] = useState<Portfolio[]>([]);
@@ -62,18 +63,20 @@ export function DiscoverBrowse() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-1">
-        <h1 className="font-heading text-3xl tracking-tight">Discover</h1>
-        <p className="text-muted-foreground">
-          Browse published portfolios by style, room, and budget.
-          {designerId ? ' Filtered to one designer.' : ''}
-        </p>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="Client · Discover"
+        title="Find the right rooms"
+        description={
+          designerId
+            ? 'Browsing published work from one designer.'
+            : 'Filter published portfolios by style, room, and budget.'
+        }
+      />
 
       <form
         onSubmit={onSearch}
-        className="grid gap-3 rounded-xl border border-border bg-card/60 p-4 sm:grid-cols-2 lg:grid-cols-4"
+        className="surface-panel grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4"
       >
         <div className="space-y-2">
           <Label htmlFor="style">Style</Label>
@@ -105,7 +108,7 @@ export function DiscoverBrowse() {
           />
         </div>
         <div className="flex items-end gap-2">
-          <Button type="submit" disabled={pending || loading} className="w-full">
+          <Button type="submit" disabled={pending || loading} className="flex-1">
             {pending || loading ? 'Searching…' : 'Search'}
           </Button>
           <Button
@@ -137,13 +140,18 @@ export function DiscoverBrowse() {
       ) : null}
 
       {!loading && items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No portfolios match.</p>
+        <EmptyState
+          title="No portfolios match"
+          description="Try a broader style or room, or clear filters to see everything published."
+          actionHref="/client"
+          actionLabel="Clear filters"
+        />
       ) : null}
 
       {items.length > 0 ? (
-        <>
+        <div className="space-y-4">
           <p className="text-sm text-muted-foreground">{total} results</p>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((portfolio) => (
               <PortfolioCard
                 key={portfolio.id}
@@ -152,12 +160,8 @@ export function DiscoverBrowse() {
               />
             ))}
           </div>
-        </>
+        </div>
       ) : null}
-
-      <Button type="button" variant="ghost" onClick={() => router.refresh()}>
-        Refresh
-      </Button>
     </div>
   );
 }

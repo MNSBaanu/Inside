@@ -52,13 +52,19 @@ export function CreatePortfolioForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto flex max-w-lg flex-col gap-4">
-      <div className="space-y-1">
-        <h1 className="font-heading text-3xl tracking-tight">New portfolio</h1>
+    <form onSubmit={onSubmit} className="mx-auto flex max-w-lg flex-col gap-5">
+      <div className="space-y-2 border-b border-border/60 pb-6">
+        <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          Designer · New
+        </p>
+        <h1 className="font-heading text-3xl tracking-tight md:text-4xl">
+          New portfolio
+        </h1>
         <p className="text-sm text-muted-foreground">
           Image upload uses a URL for now (Cloudinary later).
         </p>
       </div>
+      <div className="surface-panel space-y-4 p-5">
       <div className="space-y-2">
         <Label htmlFor="title">Title</Label>
         <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
@@ -118,6 +124,7 @@ export function CreatePortfolioForm() {
       <Button type="submit" disabled={pending}>
         {pending ? 'Creating…' : 'Create portfolio'}
       </Button>
+      </div>
     </form>
   );
 }

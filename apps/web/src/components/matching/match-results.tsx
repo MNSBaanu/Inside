@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { buttonVariants } from '@/components/ui/button';
+import { EmptyState } from '@/components/layout/empty-state';
+import { PageHeader } from '@/components/layout/page-header';
 import { formatApiError } from '@/lib/api/auth';
 import { getBrief } from '@/lib/api/briefs';
 import { matchDesigners } from '@/lib/api/matching';
@@ -42,31 +44,32 @@ export function MatchResults() {
   }, [params.id]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="font-heading text-3xl tracking-tight">Matches</h1>
-          <p className="text-muted-foreground">
-            {brief
-              ? `Ranked designers for ${brief.styles.join(', ')} · ${brief.rooms.join(', ')}`
-              : 'Designer fit scores for this brief'}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Link
-            href={`/client/briefs/${params.id}`}
-            className={cn(buttonVariants({ variant: 'outline' }))}
-          >
-            Edit brief
-          </Link>
-          <Link
-            href="/client/briefs"
-            className={cn(buttonVariants({ variant: 'ghost' }))}
-          >
-            All briefs
-          </Link>
-        </div>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="Matching"
+        title="Designer fit"
+        description={
+          brief
+            ? `Ranked for ${brief.styles.join(', ')} · ${brief.rooms.join(', ')}`
+            : 'Fit scores for this brief'
+        }
+        actions={
+          <>
+            <Link
+              href={`/client/briefs/${params.id}`}
+              className={cn(buttonVariants({ variant: 'outline' }))}
+            >
+              Edit brief
+            </Link>
+            <Link
+              href="/client/briefs"
+              className={cn(buttonVariants({ variant: 'ghost' }))}
+            >
+              All briefs
+            </Link>
+          </>
+        }
+      />
 
       {error ? (
         <p className="text-sm text-destructive" role="alert">
@@ -79,49 +82,58 @@ export function MatchResults() {
       ) : null}
 
       {!loading && items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          No strong matches yet. Try broader styles or rooms.
-        </p>
+        <EmptyState
+          title="No strong matches"
+          description="Try broader styles or rooms on the brief, then match again."
+          actionHref={`/client/briefs/${params.id}`}
+          actionLabel="Edit brief"
+        />
       ) : null}
 
       <ul className="space-y-4">
-        {items.map((item) => (
-          <li
-            key={item.designer.id}
-            className="rounded-xl border border-border bg-card/60 p-4"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="font-medium">
+        {items.map((item, index) => (
+          <li key={item.designer.id} className="surface-panel p-5">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="space-y-2">
+                <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                  Rank {index + 1}
+                </p>
+                <p className="font-heading text-2xl tracking-tight">
                   {item.designer.name}
-                  {item.designer.isVerified ? ' · Verified' : ''}
+                  {item.designer.isVerified ? (
+                    <span className="ml-2 text-sm font-sans text-muted-foreground">
+                      Verified
+                    </span>
+                  ) : null}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {item.designer.location ?? 'Location not set'}
                   {item.designer.isAvailable ? '' : ' · Unavailable'}
                 </p>
                 {item.designer.bio ? (
-                  <p className="mt-2 max-w-2xl text-sm text-foreground/90">
+                  <p className="max-w-2xl text-sm leading-relaxed text-foreground/90">
                     {item.designer.bio}
                   </p>
                 ) : null}
               </div>
-              <div className="text-right">
-                <p className="font-heading text-2xl tabular-nums">{item.score}</p>
-                <p className="text-xs text-muted-foreground">fit score</p>
+              <div className="rounded-2xl bg-secondary px-4 py-3 text-right">
+                <p className="font-heading text-3xl tabular-nums">{item.score}</p>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                  fit score
+                </p>
               </div>
             </div>
-            <p className="mt-3 text-xs text-muted-foreground">
+            <p className="mt-4 text-xs text-muted-foreground">
               Style {item.breakdown.style} · Room {item.breakdown.room} · Budget{' '}
               {item.breakdown.budget}
             </p>
             {item.matchedPortfolios.length > 0 ? (
-              <ul className="mt-3 flex flex-wrap gap-2">
+              <ul className="mt-4 flex flex-wrap gap-2">
                 {item.matchedPortfolios.map((p) => (
                   <li key={p.id}>
                     <Link
                       href={`/portfolios/${p.id}`}
-                      className="text-sm text-primary underline-offset-4 hover:underline"
+                      className="rounded-full bg-muted px-3 py-1 text-sm text-foreground/90 transition hover:bg-secondary"
                     >
                       {p.title}
                     </Link>
@@ -129,7 +141,7 @@ export function MatchResults() {
                 ))}
               </ul>
             ) : null}
-            <div className="mt-4">
+            <div className="mt-5">
               <Link
                 href={`/client?designerId=${item.designer.id}`}
                 className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}

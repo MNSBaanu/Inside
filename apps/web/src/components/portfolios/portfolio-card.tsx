@@ -15,17 +15,17 @@ export function PortfolioCard({ portfolio, href, className }: PortfolioCardProps
     <Link
       href={href}
       className={cn(
-        'group block overflow-hidden rounded-xl border border-border bg-card transition hover:border-primary/40',
+        'group block overflow-hidden rounded-2xl border border-border/70 bg-card transition duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_18px_40px_-28px_oklch(0.22_0.02_145_/_0.35)]',
         className,
       )}
     >
-      <div className="aspect-[4/3] bg-muted">
+      <div className="aspect-[4/3] overflow-hidden bg-muted">
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={cover}
             alt={portfolio.title}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+            className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
@@ -33,8 +33,17 @@ export function PortfolioCard({ portfolio, href, className }: PortfolioCardProps
           </div>
         )}
       </div>
-      <div className="space-y-1 p-3">
-        <h3 className="font-medium leading-snug tracking-tight">{portfolio.title}</h3>
+      <div className="space-y-2 p-4">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="font-heading text-lg leading-snug tracking-tight">
+            {portfolio.title}
+          </h3>
+          {!portfolio.isPublished ? (
+            <span className="shrink-0 rounded-md bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              Draft
+            </span>
+          ) : null}
+        </div>
         <p className="text-sm text-muted-foreground">
           {portfolio.style} · {portfolio.roomType}
         </p>

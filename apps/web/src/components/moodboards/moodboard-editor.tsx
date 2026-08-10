@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PageHeader } from '@/components/layout/page-header';
 import { formatApiError } from '@/lib/api/auth';
 import { generateBriefFromMoodboard } from '@/lib/api/briefs';
 import {
@@ -139,31 +140,30 @@ export function MoodboardEditor() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="font-heading text-3xl tracking-tight">{board.name}</h1>
-          <p className="text-muted-foreground">
-            {board.savedItems.length} inspiration items
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" disabled={busy} onClick={onGenerateBrief}>
-            {busy ? 'Working…' : 'Generate brief'}
-          </Button>
-          <Link
-            href={`/client/briefs/new?moodboardId=${board.id}`}
-            className={cn(buttonVariants({ variant: 'outline' }))}
-          >
-            New brief
-          </Link>
-          <Link
-            href="/client/moodboards"
-            className={cn(buttonVariants({ variant: 'ghost' }))}
-          >
-            Back
-          </Link>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Moodboard editor"
+        title={board.name}
+        description={`${board.savedItems.length} inspiration items · add notes, then generate a brief.`}
+        actions={
+          <>
+            <Button type="button" disabled={busy} onClick={onGenerateBrief}>
+              {busy ? 'Working…' : 'Generate brief'}
+            </Button>
+            <Link
+              href={`/client/briefs/new?moodboardId=${board.id}`}
+              className={cn(buttonVariants({ variant: 'outline' }))}
+            >
+              New brief
+            </Link>
+            <Link
+              href="/client/moodboards"
+              className={cn(buttonVariants({ variant: 'ghost' }))}
+            >
+              Back
+            </Link>
+          </>
+        }
+      />
 
       {error ? (
         <p className="text-sm text-destructive" role="alert">
@@ -174,7 +174,7 @@ export function MoodboardEditor() {
 
       <form
         onSubmit={onSaveName}
-        className="flex flex-col gap-3 rounded-xl border border-border bg-card/60 p-4 sm:flex-row sm:items-end"
+        className="surface-panel flex flex-col gap-3 p-5 sm:flex-row sm:items-end"
       >
         <div className="flex-1 space-y-2">
           <Label htmlFor="name">Name</Label>
@@ -191,7 +191,7 @@ export function MoodboardEditor() {
 
       <form
         onSubmit={onAddItem}
-        className="grid gap-3 rounded-xl border border-border bg-card/60 p-4 sm:grid-cols-2"
+        className="surface-panel grid gap-3 p-5 sm:grid-cols-2"
       >
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="imageUrl">Image URL</Label>
@@ -219,7 +219,7 @@ export function MoodboardEditor() {
         {board.savedItems.map((item, index) => (
           <figure
             key={`${item.imageUrl}-${index}`}
-            className="overflow-hidden rounded-xl border border-border bg-card"
+            className="surface-panel overflow-hidden"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

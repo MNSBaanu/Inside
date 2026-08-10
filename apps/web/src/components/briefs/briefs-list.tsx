@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { EmptyState } from '@/components/layout/empty-state';
+import { PageHeader } from '@/components/layout/page-header';
 import { formatApiError } from '@/lib/api/auth';
 import { deleteBrief, listBriefs } from '@/lib/api/briefs';
 import type { Brief } from '@/lib/api/types';
@@ -46,18 +48,17 @@ export function BriefsList() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="font-heading text-3xl tracking-tight">Briefs</h1>
-          <p className="text-muted-foreground">
-            Capture styles, rooms, and budget — then match designers.
-          </p>
-        </div>
-        <Link href="/client/briefs/new" className={cn(buttonVariants())}>
-          New brief
-        </Link>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="Client · Briefs"
+        title="Design briefs"
+        description="Capture styles, rooms, and budget — then match designers."
+        actions={
+          <Link href="/client/briefs/new" className={cn(buttonVariants())}>
+            New brief
+          </Link>
+        }
+      />
 
       {error ? (
         <p className="text-sm text-destructive" role="alert">
@@ -70,20 +71,25 @@ export function BriefsList() {
       ) : null}
 
       {!loading && items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No briefs yet.</p>
+        <EmptyState
+          title="No briefs yet"
+          description="Create a brief from scratch or generate one from a moodboard."
+          actionHref="/client/briefs/new"
+          actionLabel="New brief"
+        />
       ) : null}
 
       <ul className="space-y-3">
         {items.map((brief) => (
           <li
             key={brief.id}
-            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card/60 p-4"
+            className="surface-panel flex flex-wrap items-center justify-between gap-3 p-5"
           >
             <div>
-              <p className="font-medium">
+              <p className="font-heading text-lg tracking-tight">
                 {brief.styles.slice(0, 3).join(', ') || 'Untitled brief'}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {brief.rooms.join(', ') || 'No rooms'}
                 {brief.budgetRange ? ` · ${brief.budgetRange}` : ''}
                 {brief.moodboard ? ` · ${brief.moodboard.name}` : ''}

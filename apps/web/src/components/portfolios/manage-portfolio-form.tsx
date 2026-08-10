@@ -125,8 +125,15 @@ export function ManagePortfolioForm() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-heading text-3xl tracking-tight">Manage portfolio</h1>
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border/60 pb-6">
+        <div className="space-y-2">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            Designer · Manage
+          </p>
+          <h1 className="font-heading text-3xl tracking-tight md:text-4xl">
+            Manage portfolio
+          </h1>
+        </div>
         <Link
           href={`/portfolios/${portfolio.id}`}
           className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
@@ -135,7 +142,7 @@ export function ManagePortfolioForm() {
         </Link>
       </div>
 
-      <form onSubmit={onSave} className="flex flex-col gap-4">
+      <form onSubmit={onSave} className="surface-panel flex flex-col gap-4 p-5">
         <div className="space-y-2">
           <Label htmlFor="title">Title</Label>
           <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -183,8 +190,8 @@ export function ManagePortfolioForm() {
         </Button>
       </form>
 
-      <section className="space-y-4 border-t border-border pt-6">
-        <h2 className="text-lg font-medium">Images</h2>
+      <section className="surface-panel space-y-4 p-5">
+        <h2 className="font-heading text-xl tracking-tight">Images</h2>
         <form onSubmit={onAddImage} className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex-1 space-y-2">
             <Label htmlFor="imageUrl">Image URL</Label>
@@ -199,7 +206,7 @@ export function ManagePortfolioForm() {
         </form>
         <ul className="grid gap-3 sm:grid-cols-2">
           {portfolio.images.map((image) => (
-            <li key={image.id} className="overflow-hidden rounded-lg border border-border">
+            <li key={image.id} className="overflow-hidden rounded-xl border border-border/70">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={image.imageUrl}

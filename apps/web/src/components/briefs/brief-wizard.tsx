@@ -154,14 +154,15 @@ export function BriefWizard({ mode }: BriefWizardProps) {
   }
 
   return (
-    <div className="mx-auto max-w-xl space-y-6">
-      <div className="space-y-1">
-        <h1 className="font-heading text-3xl tracking-tight">
+    <div className="mx-auto max-w-xl space-y-8">
+      <div className="space-y-2 border-b border-border/60 pb-6">
+        <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          Step {step + 1} of {STEPS.length}
+        </p>
+        <h1 className="font-heading text-3xl tracking-tight md:text-4xl">
           {mode === 'edit' ? 'Edit brief' : 'New brief'}
         </h1>
-        <p className="text-muted-foreground">
-          Step {step + 1} of {STEPS.length}: {STEPS[step]}
-        </p>
+        <p className="text-muted-foreground">{STEPS[step]}</p>
       </div>
 
       <ol className="flex flex-wrap gap-2 text-sm">
@@ -169,12 +170,12 @@ export function BriefWizard({ mode }: BriefWizardProps) {
           <li
             key={label}
             className={cn(
-              'rounded-md px-2 py-1',
+              'rounded-full px-3 py-1.5',
               index === step
                 ? 'bg-primary text-primary-foreground'
                 : index < step
-                  ? 'bg-muted text-foreground'
-                  : 'text-muted-foreground',
+                  ? 'bg-secondary text-secondary-foreground'
+                  : 'bg-muted/60 text-muted-foreground',
             )}
           >
             {label}
@@ -246,7 +247,7 @@ export function BriefWizard({ mode }: BriefWizardProps) {
       ) : null}
 
       {step === 3 ? (
-        <div className="space-y-3 rounded-xl border border-border bg-card/60 p-4 text-sm">
+        <div className="surface-panel space-y-3 p-5 text-sm">
           <p>
             <span className="text-muted-foreground">Styles:</span>{' '}
             {parseList(styles).join(', ') || '—'}

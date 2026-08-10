@@ -54,8 +54,8 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <div className="space-y-2">
+    <form onSubmit={onSubmit} className="flex flex-col gap-5">
+      <div className="surface-panel space-y-3 p-4">
         <p className="text-sm font-medium">Demo accounts</p>
         <div className="flex flex-wrap gap-2">
           {DEMO_ACCOUNTS.map((account) => (

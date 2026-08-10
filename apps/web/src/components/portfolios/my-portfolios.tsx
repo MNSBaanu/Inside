@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { EmptyState } from '@/components/layout/empty-state';
+import { PageHeader } from '@/components/layout/page-header';
 import { PortfolioCard } from '@/components/portfolios/portfolio-card';
 import { formatApiError } from '@/lib/api/auth';
 import { deletePortfolio, listMyPortfolios } from '@/lib/api/portfolios';
@@ -47,18 +49,17 @@ export function MyPortfolios() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="font-heading text-3xl tracking-tight">My portfolios</h1>
-          <p className="text-muted-foreground">
-            Create and manage published work for discovery.
-          </p>
-        </div>
-        <Link href="/designer/portfolios/new" className={cn(buttonVariants())}>
-          New portfolio
-        </Link>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="Designer · Studio"
+        title="My portfolios"
+        description="Publish work so clients can discover and match you."
+        actions={
+          <Link href="/designer/portfolios/new" className={cn(buttonVariants())}>
+            New portfolio
+          </Link>
+        }
+      />
 
       {error ? (
         <p className="text-sm text-destructive" role="alert">
@@ -71,12 +72,15 @@ export function MyPortfolios() {
       ) : null}
 
       {!loading && items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          No portfolios yet. Create your first one.
-        </p>
+        <EmptyState
+          title="No portfolios yet"
+          description="Create your first published piece with style, room, and images."
+          actionHref="/designer/portfolios/new"
+          actionLabel="New portfolio"
+        />
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((portfolio) => (
           <div key={portfolio.id} className="space-y-2">
             <PortfolioCard
