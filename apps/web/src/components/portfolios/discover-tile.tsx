@@ -28,7 +28,7 @@ export function DiscoverTile({
   const aspect = ASPECTS[index % ASPECTS.length];
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card">
+    <article className="glass group relative overflow-hidden rounded-2xl">
       {canSave ? (
         <SaveDesignerButton
           designerId={portfolio.designerId}

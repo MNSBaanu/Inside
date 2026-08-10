@@ -24,7 +24,8 @@ export default function RegisterPage() {
         </div>
         <div className="flex flex-col">
           <SiteHeader />
-          <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-8 px-4 py-12">
+          <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-12">
+            <div className="glass flex flex-col gap-8 rounded-3xl p-7 md:p-8">
             <div className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                 Get started
@@ -41,6 +42,7 @@ export default function RegisterPage() {
                 Log in
               </Link>
             </p>
+            </div>
           </main>
         </div>
       </div>

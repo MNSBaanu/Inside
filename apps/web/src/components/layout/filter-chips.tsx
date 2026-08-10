@@ -35,7 +35,7 @@ export function FilterChips({
                 'rounded-full border px-3 py-1.5 text-sm transition-colors',
                 active
                   ? 'border-transparent bg-primary text-primary-foreground'
-                  : 'border-border/70 bg-card/70 text-muted-foreground hover:border-primary/40 hover:text-foreground',
+                  : 'border-border/60 bg-background/50 text-muted-foreground backdrop-blur-sm hover:border-primary/40 hover:text-foreground',
               )}
             >
               {option}

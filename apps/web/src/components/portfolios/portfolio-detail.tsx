@@ -239,7 +239,7 @@ export function PortfolioDetail() {
               <Link
                 key={item.id}
                 href={`/portfolios/${item.id}`}
-                className="group overflow-hidden rounded-2xl border border-border/60 bg-card"
+                className="glass group overflow-hidden rounded-2xl"
               >
                 <div className="aspect-[4/3] overflow-hidden bg-muted">
                   {item.images[0]?.imageUrl ? (

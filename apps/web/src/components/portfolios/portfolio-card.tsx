@@ -15,7 +15,7 @@ export function PortfolioCard({ portfolio, href, className }: PortfolioCardProps
     <Link
       href={href}
       className={cn(
-        'group block overflow-hidden rounded-2xl border border-border/70 bg-card transition duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_18px_40px_-28px_oklch(0.22_0.02_145_/_0.35)]',
+        'glass group block overflow-hidden rounded-2xl transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_60px_-32px_oklch(0.22_0.02_145_/_0.55)]',
         className,
       )}
     >

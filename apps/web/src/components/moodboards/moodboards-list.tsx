@@ -177,7 +177,7 @@ export function MoodboardsList() {
         {items.map((board) => (
           <li
             key={board.id}
-            className="group overflow-hidden rounded-2xl border border-border/60 bg-card transition-colors hover:border-primary/30"
+            className="glass group overflow-hidden rounded-2xl transition-shadow hover:shadow-[0_22px_60px_-32px_oklch(0.22_0.02_145_/_0.55)]"
           >
             <Link href={`/client/moodboards/${board.id}`} className="block">
               <CoverCollage board={board} />

@@ -118,7 +118,7 @@ export function DiscoverBrowse() {
         </div>
       </section>
 
-      <div className="sticky top-16 z-20 -mx-4 border-b border-border/60 bg-background/85 px-4 py-4 backdrop-blur-md md:-mx-6 md:px-6">
+      <div className="glass-strong sticky top-20 z-20 rounded-2xl p-5">
         <div className="grid gap-4 lg:grid-cols-[1fr_1fr_auto]">
           <FilterChips
             label="Style"

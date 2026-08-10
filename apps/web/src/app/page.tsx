@@ -36,7 +36,8 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-[linear-gradient(105deg,oklch(0.18_0.03_155_/_0.78)_0%,oklch(0.18_0.03_155_/_0.45)_45%,oklch(0.18_0.03_155_/_0.2)_100%)]" />
         <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-4 pb-16 pt-28 md:pb-24">
-          <p className="animate-rise font-heading text-6xl tracking-tight text-white md:text-8xl">
+          <div className="glass-dark animate-rise max-w-2xl rounded-3xl p-7 md:p-10">
+          <p className="font-heading text-6xl tracking-tight text-white md:text-8xl">
             Inside
           </p>
           <h1 className="animate-rise-delay mt-4 max-w-xl text-xl font-medium leading-snug text-white/95 md:text-2xl">
@@ -66,6 +67,7 @@ export default function HomePage() {
               Sign in
             </Link>
           </div>
+          </div>
         </div>
       </section>
 
@@ -84,7 +86,7 @@ export default function HomePage() {
         </div>
         <div className="grid gap-8 md:grid-cols-3">
           {STEPS.map((step, index) => (
-            <article key={step.title} className="space-y-4">
+            <article key={step.title} className="glass space-y-4 rounded-3xl p-4">
               <div className="aspect-[4/5] overflow-hidden rounded-2xl bg-muted">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
