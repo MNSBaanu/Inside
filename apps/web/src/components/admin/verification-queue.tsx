@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { AdminBadge } from '@/components/admin/admin-badge';
 import { EmptyState } from '@/components/layout/empty-state';
 import { PageHeader } from '@/components/layout/page-header';
+import { StatusPill } from '@/components/layout/status-pill';
 import { formatApiError } from '@/lib/api/auth';
 import {
   approveVerification,
@@ -98,7 +98,7 @@ export function VerificationQueue() {
                   <h2 className="font-heading text-xl tracking-tight">
                     {item.designer?.name ?? 'Designer'}
                   </h2>
-                  <AdminBadge value={item.status} />
+                  <StatusPill value={item.status} />
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {item.designer?.email ?? item.designerId}

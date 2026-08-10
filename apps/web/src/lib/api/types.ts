@@ -186,13 +186,25 @@ export type Proposal = {
   designer: RequestParty | null;
 };
 
+export type StageStatus =
+  | 'PENDING'
+  | 'IN_PROGRESS'
+  | 'SUBMITTED'
+  | 'APPROVED'
+  | 'REJECTED';
+
+export type ProjectStatus = 'ACTIVE' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED';
+
 export type ProjectStage = {
   id: string;
+  projectId?: string;
   stageOrder: number;
   name: StageName;
-  status: string;
+  status: StageStatus;
   fee: number | null;
   dueDate: string | null;
+  submittedAt?: string | null;
+  approvedAt?: string | null;
 };
 
 export type Project = {
@@ -202,11 +214,26 @@ export type Project = {
   designerId: string;
   title: string;
   currentStage: StageName;
-  status: string;
+  status: ProjectStatus;
   startedAt: string | null;
+  completedAt?: string | null;
   createdAt: string;
   updatedAt: string;
   stages: ProjectStage[];
+  client?: RequestParty | null;
+  designer?: RequestParty | null;
+};
+
+export type Deliverable = {
+  id: string;
+  stageId: string;
+  version: number;
+  fileUrl: string;
+  fileName: string | null;
+  notes: string | null;
+  feedback: string | null;
+  uploadedAt: string;
+  updatedAt: string;
 };
 
 export type AccountStatus = 'ACTIVE' | 'SUSPENDED';

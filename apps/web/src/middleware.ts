@@ -14,7 +14,10 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const gate = parseGateCookie(request.cookies.get(GATE_COOKIE)?.value);
   const area = areaFromPath(pathname);
-  const needsAuth = Boolean(area) || pathname.startsWith('/profile');
+  const needsAuth =
+    Boolean(area) ||
+    pathname.startsWith('/profile') ||
+    pathname.startsWith('/projects');
 
   if (needsAuth) {
     if (!gate) {

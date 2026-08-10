@@ -5,6 +5,7 @@ const links = [
   { href: '/client/moodboards', label: 'Moodboards' },
   { href: '/client/briefs', label: 'Briefs' },
   { href: '/client/requests', label: 'Requests' },
+  { href: '/projects', label: 'Projects' },
   { href: '/client/favourites', label: 'Favourites' },
 ];
 

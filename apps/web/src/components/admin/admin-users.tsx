@@ -4,10 +4,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AdminBadge } from '@/components/admin/admin-badge';
 import { EmptyState } from '@/components/layout/empty-state';
 import { FilterChips } from '@/components/layout/filter-chips';
 import { PageHeader } from '@/components/layout/page-header';
+import { StatusPill } from '@/components/layout/status-pill';
 import { formatApiError } from '@/lib/api/auth';
 import { listAdminUsers, reactivateUser, suspendUser } from '@/lib/api/admin';
 import type { AdminUser } from '@/lib/api/types';
@@ -157,7 +157,7 @@ export function AdminUsers() {
                   </td>
                   <td className="px-5 py-3">
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <AdminBadge value={user.role} />
+                      <StatusPill value={user.role} />
                       {user.isVerified ? (
                         <span className="text-xs text-muted-foreground">
                           Verified
@@ -166,7 +166,7 @@ export function AdminUsers() {
                     </div>
                   </td>
                   <td className="px-5 py-3">
-                    <AdminBadge value={user.status} />
+                    <StatusPill value={user.status} />
                   </td>
                   <td className="px-5 py-3 text-muted-foreground">
                     {new Date(user.createdAt).toLocaleDateString()}

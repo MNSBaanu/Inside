@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { AdminBadge } from '@/components/admin/admin-badge';
 import { EmptyState } from '@/components/layout/empty-state';
 import { PageHeader } from '@/components/layout/page-header';
+import { StatusPill } from '@/components/layout/status-pill';
 import { formatApiError } from '@/lib/api/auth';
 import { dismissReport, listOpenReports, resolveReport } from '@/lib/api/admin';
 import type { Report } from '@/lib/api/types';
@@ -92,8 +92,8 @@ export function ReportsQueue() {
                   <h2 className="font-heading text-xl tracking-tight">
                     {item.reason}
                   </h2>
-                  <AdminBadge value={item.status} />
-                  <AdminBadge value={item.targetType} />
+                  <StatusPill value={item.status} />
+                  <StatusPill value={item.targetType} />
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Reported by {item.reporter?.name ?? item.reporterId}

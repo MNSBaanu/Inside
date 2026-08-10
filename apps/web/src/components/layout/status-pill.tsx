@@ -13,7 +13,7 @@ const TONE_BY_STATUS: Record<string, keyof typeof TONES> = {
   SUSPENDED: 'danger',
   PENDING: 'warning',
   APPROVED: 'positive',
-  REJECTED: 'neutral',
+  REJECTED: 'danger',
   OPEN: 'warning',
   UNDER_REVIEW: 'info',
   RESOLVED: 'positive',
@@ -21,9 +21,14 @@ const TONE_BY_STATUS: Record<string, keyof typeof TONES> = {
   CLIENT: 'info',
   DESIGNER: 'info',
   ADMIN: 'info',
+  IN_PROGRESS: 'info',
+  SUBMITTED: 'warning',
+  ON_HOLD: 'warning',
+  COMPLETED: 'positive',
+  CANCELLED: 'neutral',
 };
 
-export function AdminBadge({
+export function StatusPill({
   value,
   className,
 }: {

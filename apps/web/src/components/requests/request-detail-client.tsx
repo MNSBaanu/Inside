@@ -181,6 +181,12 @@ export function RequestDetailClient() {
               </li>
             ))}
           </ol>
+          <Link
+            href={`/projects/${project.id}`}
+            className={cn(buttonVariants({ size: 'sm' }))}
+          >
+            Open workspace
+          </Link>
         </section>
       ) : null}
 

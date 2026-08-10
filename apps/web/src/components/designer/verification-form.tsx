@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AdminBadge } from '@/components/admin/admin-badge';
 import { PageHeader } from '@/components/layout/page-header';
+import { StatusPill } from '@/components/layout/status-pill';
 import { formatApiError } from '@/lib/api/auth';
 import {
   listMyVerifications,
@@ -133,7 +133,7 @@ export function VerificationForm() {
             >
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <AdminBadge value={item.status} />
+                  <StatusPill value={item.status} />
                   <span className="text-xs text-muted-foreground">
                     {new Date(item.createdAt).toLocaleDateString()}
                   </span>
