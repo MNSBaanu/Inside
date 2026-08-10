@@ -5,9 +5,15 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ImageUrlField } from '@/components/layout/image-url-field';
+import { TaxonomyField } from '@/components/layout/taxonomy-field';
 import { formatApiError } from '@/lib/api/auth';
 import { createPortfolio } from '@/lib/api/portfolios';
 import { DEMO_LIVING } from '@/lib/media';
+import { ROOM_OPTIONS, STYLE_OPTIONS } from '@/lib/taxonomy';
+
+const STYLE_LABELS = STYLE_OPTIONS.map((option) => option.label);
+const ROOM_LABELS = ROOM_OPTIONS.map((option) => option.label);
 
 export function CreatePortfolioForm() {
   const router = useRouter();
@@ -51,7 +57,7 @@ export function CreatePortfolioForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto flex max-w-lg flex-col gap-5">
+    <form onSubmit={onSubmit} className="mx-auto flex max-w-2xl flex-col gap-5">
       <div className="space-y-2 border-b border-border/60 pb-6">
         <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
           Designer · New
@@ -76,19 +82,22 @@ export function CreatePortfolioForm() {
           onChange={(e) => setDescription(e.target.value)}
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="style">Style</Label>
-        <Input id="style" value={style} onChange={(e) => setStyle(e.target.value)} required />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="roomType">Room type</Label>
-        <Input
-          id="roomType"
-          value={roomType}
-          onChange={(e) => setRoomType(e.target.value)}
-          required
-        />
-      </div>
+      <TaxonomyField
+        id="style"
+        label="Style"
+        options={STYLE_LABELS}
+        value={style}
+        onChange={setStyle}
+        placeholder="Japandi"
+      />
+      <TaxonomyField
+        id="roomType"
+        label="Room type"
+        options={ROOM_LABELS}
+        value={roomType}
+        onChange={setRoomType}
+        placeholder="Balcony"
+      />
       <div className="space-y-2">
         <Label htmlFor="budget">Budget (optional)</Label>
         <Input
@@ -99,14 +108,12 @@ export function CreatePortfolioForm() {
           onChange={(e) => setBudget(e.target.value)}
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="imageUrl">Cover image URL</Label>
-        <Input
-          id="imageUrl"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-        />
-      </div>
+      <ImageUrlField
+        id="imageUrl"
+        label="Cover image"
+        value={imageUrl}
+        onChange={setImageUrl}
+      />
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"

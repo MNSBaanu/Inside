@@ -1,0 +1,39 @@
+---
+description: Always verify lint, types, and build before creating a commit
+alwaysApply: true
+---
+
+# Verify before commit
+
+Before running `git commit`, verify the workspaces that have changes. Do not commit if any step fails — fix it and re-run.
+
+## Web (`apps/web`)
+
+```bash
+npm run lint
+npx tsc --noEmit
+npm run build
+```
+
+If `next dev` is running, stop it (or accept that `.next` is shared) before `npm run build`.
+A stale `.next` can cause a false `PageNotFoundError`; clear it and rebuild:
+
+```bash
+Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue; npm run build
+```
+
+## API (`apps/api`)
+
+```bash
+npm run lint
+npm run build
+npm test
+```
+
+`apps/api` lint runs with `--fix`, so re-check `git status` afterwards and stage any files it rewrote.
+
+## Rules
+
+- Run the checks for every workspace touched by the change, not just one.
+- Report the results in the summary before committing.
+- Never use `--no-verify` or skip these checks to get a commit through.

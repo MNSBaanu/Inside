@@ -6,7 +6,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PageHeader } from '@/components/layout/page-header';
+import { ImageUrlField } from '@/components/layout/image-url-field';
+import { MasonryGrid } from '@/components/layout/masonry-grid';
 import { formatApiError } from '@/lib/api/auth';
 import { generateBriefFromMoodboard } from '@/lib/api/briefs';
 import {
@@ -74,7 +75,7 @@ export function MoodboardEditor() {
   async function onAddItem(event: React.FormEvent) {
     event.preventDefault();
     if (!imageUrl.trim()) {
-      setError('Image URL is required.');
+      setError('Pick or paste an image first.');
       return;
     }
     setBusy(true);
@@ -87,7 +88,7 @@ export function MoodboardEditor() {
       });
       setBoard(data.moodboard);
       setNote('');
-      setMessage('Item added.');
+      setMessage('Added to board.');
     } catch (err) {
       setError(formatApiError(err));
     } finally {
@@ -130,123 +131,161 @@ export function MoodboardEditor() {
         <p className="text-sm text-destructive" role="alert">
           {error ?? 'Moodboard not found.'}
         </p>
-        <Link href="/client/moodboards" className={cn(buttonVariants({ variant: 'outline' }))}>
+        <Link
+          href="/client/moodboards"
+          className={cn(buttonVariants({ variant: 'outline' }))}
+        >
           Back
         </Link>
       </div>
     );
   }
 
+  const heroImage = board.savedItems[0]?.imageUrl ?? DEMO_INSPO_1;
+
   return (
     <div className="space-y-8">
-      <PageHeader
-        eyebrow="Moodboard editor"
-        title={board.name}
-        description={`${board.savedItems.length} inspiration items · add notes, then generate a brief.`}
-        actions={
-          <>
-            <Button type="button" disabled={busy} onClick={onGenerateBrief}>
+      <section className="relative overflow-hidden rounded-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={heroImage}
+          alt=""
+          className="h-40 w-full object-cover md:h-56"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(100deg,oklch(0.18_0.03_155_/_0.8)_0%,oklch(0.18_0.03_155_/_0.3)_78%)]" />
+        <div className="absolute inset-0 flex flex-col justify-end gap-4 p-6 md:flex-row md:items-end md:justify-between md:p-8">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/70">
+              Client · Moodboard
+            </p>
+            <h1 className="mt-2 font-heading text-3xl tracking-tight text-white md:text-4xl">
+              {board.name}
+            </h1>
+            <p className="mt-2 text-sm text-white/80">
+              {board.savedItems.length}{' '}
+              {board.savedItems.length === 1 ? 'image' : 'images'} · add notes,
+              then turn it into a brief.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              disabled={busy}
+              onClick={onGenerateBrief}
+              className="bg-white text-[oklch(0.24_0.03_155)] hover:bg-white/90"
+            >
               {busy ? 'Working…' : 'Generate brief'}
             </Button>
             <Link
-              href={`/client/briefs/new?moodboardId=${board.id}`}
-              className={cn(buttonVariants({ variant: 'outline' }))}
-            >
-              New brief
-            </Link>
-            <Link
               href="/client/moodboards"
-              className={cn(buttonVariants({ variant: 'ghost' }))}
+              className={cn(
+                buttonVariants({ variant: 'ghost' }),
+                'text-white hover:bg-white/10 hover:text-white',
+              )}
             >
               Back
             </Link>
-          </>
-        }
-      />
+          </div>
+        </div>
+      </section>
 
       {error ? (
         <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       ) : null}
-      {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
-
-      <form
-        onSubmit={onSaveName}
-        className="surface-panel flex flex-col gap-3 p-5 sm:flex-row sm:items-end"
-      >
-        <div className="flex-1 space-y-2">
-          <Label htmlFor="name">Name</Label>
-          <Input
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <Button type="submit" disabled={saving}>
-          {saving ? 'Saving…' : 'Save name'}
-        </Button>
-      </form>
-
-      <form
-        onSubmit={onAddItem}
-        className="surface-panel grid gap-3 p-5 sm:grid-cols-2"
-      >
-        <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="imageUrl">Image URL</Label>
-          <Input
-            id="imageUrl"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-          />
-        </div>
-        <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="note">Note</Label>
-          <Input
-            id="note"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Warm neutrals, oak flooring…"
-          />
-        </div>
-        <Button type="submit" disabled={busy} className="sm:col-span-2 sm:w-fit">
-          Add item
-        </Button>
-      </form>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {board.savedItems.map((item, index) => (
-          <figure
-            key={`${item.imageUrl}-${index}`}
-            className="surface-panel overflow-hidden"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={item.imageUrl}
-              alt={item.note ?? `Item ${index + 1}`}
-              className="aspect-[4/3] w-full object-cover"
-            />
-            <figcaption className="space-y-2 p-3">
-              <p className="text-sm text-muted-foreground">
-                {item.note ?? 'No note'}
-              </p>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                disabled={busy}
-                onClick={() => onRemoveItem(index)}
-              >
-                Remove
-              </Button>
-            </figcaption>
-          </figure>
-        ))}
-      </div>
-
-      {board.savedItems.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Add inspiration images above.</p>
+      {message ? (
+        <p className="text-sm text-primary" role="status">
+          {message}
+        </p>
       ) : null}
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="space-y-4">
+          {board.savedItems.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Nothing saved yet — add your first inspiration image on the right.
+            </p>
+          ) : (
+            <MasonryGrid className="sm:columns-2">
+              {board.savedItems.map((item, index) => (
+                <figure
+                  key={`${item.imageUrl}-${index}`}
+                  className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.imageUrl}
+                    alt={item.note ?? `Item ${index + 1}`}
+                    loading="lazy"
+                    className="w-full object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    disabled={busy}
+                    onClick={() => onRemoveItem(index)}
+                    className="absolute right-2 top-2 bg-black/45 text-white opacity-0 transition-opacity hover:bg-black/65 hover:text-white focus-visible:opacity-100 group-hover:opacity-100"
+                  >
+                    Remove
+                  </Button>
+                  {item.note ? (
+                    <figcaption className="px-4 py-3 text-sm text-muted-foreground">
+                      {item.note}
+                    </figcaption>
+                  ) : null}
+                </figure>
+              ))}
+            </MasonryGrid>
+          )}
+        </div>
+
+        <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
+          <form onSubmit={onAddItem} className="surface-panel space-y-4 p-5">
+            <h2 className="font-heading text-xl tracking-tight">
+              Add inspiration
+            </h2>
+            <ImageUrlField
+              id="imageUrl"
+              label="Image"
+              value={imageUrl}
+              onChange={setImageUrl}
+            />
+            <div className="space-y-2">
+              <Label htmlFor="note">Note</Label>
+              <Input
+                id="note"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Warm neutrals, oak flooring…"
+              />
+            </div>
+            <Button type="submit" disabled={busy} className="w-full justify-center">
+              Add to board
+            </Button>
+          </form>
+
+          <form onSubmit={onSaveName} className="surface-panel space-y-3 p-5">
+            <div className="space-y-2">
+              <Label htmlFor="name">Board name</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <Button
+              type="submit"
+              variant="outline"
+              disabled={saving}
+              className="w-full justify-center"
+            >
+              {saving ? 'Saving…' : 'Save name'}
+            </Button>
+          </form>
+        </aside>
+      </div>
     </div>
   );
 }

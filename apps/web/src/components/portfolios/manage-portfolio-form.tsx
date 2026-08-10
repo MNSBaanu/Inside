@@ -6,6 +6,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ImageUrlField } from '@/components/layout/image-url-field';
+import { TaxonomyField } from '@/components/layout/taxonomy-field';
 import { formatApiError } from '@/lib/api/auth';
 import {
   addPortfolioImage,
@@ -14,7 +16,11 @@ import {
   updatePortfolio,
 } from '@/lib/api/portfolios';
 import type { Portfolio } from '@/lib/api/types';
+import { ROOM_OPTIONS, STYLE_OPTIONS } from '@/lib/taxonomy';
 import { cn } from '@/lib/utils';
+
+const STYLE_LABELS = STYLE_OPTIONS.map((option) => option.label);
+const ROOM_LABELS = ROOM_OPTIONS.map((option) => option.label);
 
 export function ManagePortfolioForm() {
   const params = useParams<{ id: string }>();
@@ -155,18 +161,22 @@ export function ManagePortfolioForm() {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="style">Style</Label>
-          <Input id="style" value={style} onChange={(e) => setStyle(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="roomType">Room type</Label>
-          <Input
-            id="roomType"
-            value={roomType}
-            onChange={(e) => setRoomType(e.target.value)}
-          />
-        </div>
+        <TaxonomyField
+          id="style"
+          label="Style"
+          options={STYLE_LABELS}
+          value={style}
+          onChange={setStyle}
+          placeholder="Japandi"
+        />
+        <TaxonomyField
+          id="roomType"
+          label="Room type"
+          options={ROOM_LABELS}
+          value={roomType}
+          onChange={setRoomType}
+          placeholder="Balcony"
+        />
         <div className="space-y-2">
           <Label htmlFor="budget">Budget</Label>
           <Input
@@ -192,37 +202,38 @@ export function ManagePortfolioForm() {
 
       <section className="surface-panel space-y-4 p-5">
         <h2 className="font-heading text-xl tracking-tight">Images</h2>
-        <form onSubmit={onAddImage} className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <div className="flex-1 space-y-2">
-            <Label htmlFor="imageUrl">Image URL</Label>
-            <Input
-              id="imageUrl"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://…"
-            />
-          </div>
-          <Button type="submit">Add image</Button>
+        <form onSubmit={onAddImage} className="space-y-4">
+          <ImageUrlField
+            id="imageUrl"
+            label="Image"
+            value={imageUrl}
+            onChange={setImageUrl}
+          />
+          <Button type="submit" disabled={!imageUrl.trim()}>
+            Add image
+          </Button>
         </form>
         <ul className="grid gap-3 sm:grid-cols-2">
           {portfolio.images.map((image) => (
-            <li key={image.id} className="overflow-hidden rounded-xl border border-border/70">
+            <li
+              key={image.id}
+              className="group relative overflow-hidden rounded-xl border border-border/70"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={image.imageUrl}
                 alt={image.caption ?? 'Portfolio'}
                 className="aspect-[4/3] w-full object-cover"
               />
-              <div className="p-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onRemoveImage(image.id)}
-                >
-                  Remove
-                </Button>
-              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onRemoveImage(image.id)}
+                className="absolute right-2 top-2 bg-black/45 text-white opacity-0 transition-opacity hover:bg-black/65 hover:text-white focus-visible:opacity-100 group-hover:opacity-100"
+              >
+                Remove
+              </Button>
             </li>
           ))}
         </ul>

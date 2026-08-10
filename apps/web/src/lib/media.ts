@@ -28,3 +28,15 @@ export const DEMO_INSPO_2 =
   'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80';
 export const DEMO_COASTAL =
   'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=800&q=80';
+
+/** Click-to-pick gallery used by image URL fields until uploads exist. */
+export const SUGGESTED_IMAGES = [
+  DEMO_LIVING,
+  DEMO_LIVING_DETAIL,
+  DEMO_KITCHEN,
+  DEMO_BEDROOM,
+  DEMO_INSPO_1,
+  DEMO_INSPO_2,
+  'https://images.unsplash.com/photo-1615874959471-d2fa0db0afa0?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80',
+] as const;
