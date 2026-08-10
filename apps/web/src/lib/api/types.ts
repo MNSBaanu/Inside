@@ -209,6 +209,72 @@ export type Project = {
   stages: ProjectStage[];
 };
 
+export type AccountStatus = 'ACTIVE' | 'SUSPENDED';
+
+export type VerificationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export type ReportStatus = 'OPEN' | 'UNDER_REVIEW' | 'RESOLVED' | 'DISMISSED';
+
+export type ReportTargetType =
+  | 'USER'
+  | 'PROJECT'
+  | 'PORTFOLIO'
+  | 'REVIEW'
+  | 'MESSAGE';
+
+export type AdminUser = {
+  id: string;
+  email: string;
+  name: string;
+  role: Role;
+  activeRole: Role;
+  isVerified: boolean;
+  status: AccountStatus;
+  createdAt: string;
+};
+
+export type Verification = {
+  id: string;
+  designerId: string;
+  status: VerificationStatus;
+  evidenceUrl: string;
+  notes: string | null;
+  reviewedById: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  designer: {
+    id: string;
+    name: string;
+    email: string;
+    avatarUrl: string | null;
+    isVerified: boolean;
+  } | null;
+};
+
+export type ReportPerson = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+export type Report = {
+  id: string;
+  reporterId: string;
+  reportedUserId: string | null;
+  targetType: ReportTargetType;
+  targetId: string;
+  reason: string;
+  details: string | null;
+  status: ReportStatus;
+  resolvedById: string | null;
+  resolvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  reporter: ReportPerson | null;
+  reportedUser: ReportPerson | null;
+};
+
 export type MatchResult = {
   designer: {
     id: string;
