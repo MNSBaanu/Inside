@@ -92,3 +92,52 @@ export type Favourite = {
   createdAt: string;
   designer: FavouriteDesigner;
 };
+
+export type MoodboardItem = {
+  imageUrl: string;
+  note?: string;
+  portfolioId?: string;
+};
+
+export type Moodboard = {
+  id: string;
+  clientId: string;
+  name: string;
+  savedItems: MoodboardItem[];
+  createdAt: string;
+  updatedAt: string;
+  briefCount?: number;
+};
+
+export type Brief = {
+  id: string;
+  clientId: string;
+  moodboardId: string | null;
+  styles: string[];
+  rooms: string[];
+  budgetRange: string | null;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+  moodboard: { id: string; name: string } | null;
+};
+
+export type MatchResult = {
+  designer: {
+    id: string;
+    name: string;
+    avatarUrl: string | null;
+    location: string | null;
+    isVerified: boolean;
+    isAvailable: boolean;
+    bio: string | null;
+  };
+  score: number;
+  breakdown: { style: number; room: number; budget: number };
+  matchedPortfolios: {
+    id: string;
+    title: string;
+    style: string;
+    roomType: string;
+  }[];
+};

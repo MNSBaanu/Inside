@@ -1,6 +1,6 @@
 # Inside Web (Next.js)
 
-Phase 3 — App Router, Tailwind, shadcn/ui, auth, discovery/portfolios/favourites.
+Phase 3 — App Router, Tailwind, shadcn/ui, auth, discovery, moodboards, briefs, matching.
 
 ## Setup
 
@@ -35,10 +35,16 @@ API issues **Bearer** access tokens (plus refresh). The web client stores tokens
 | `/profile` | Authenticated |
 | `/portfolios/:id` | Public detail (favourite if client) |
 | `/client` | Discover browse/search |
-| `/client/favourites` | Client favourites |
+| `/client/favourites` | Favourites |
+| `/client/moodboards` | Moodboard list + create |
+| `/client/moodboards/:id` | Moodboard editor |
+| `/client/briefs` | Brief list |
+| `/client/briefs/new` | Multi-step brief form |
+| `/client/briefs/:id` | Edit brief |
+| `/client/briefs/:id/match` | Matching results |
 | `/designer` | My portfolios |
 | `/designer/portfolios/new` | Create portfolio |
 | `/designer/portfolios/:id` | Manage portfolio |
 | `/admin` | `role === ADMIN` |
 
-Next checklist step: **37**.
+Next checklist step: **38 — Requests & proposals**.

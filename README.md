@@ -65,7 +65,7 @@ Inside/
 └── README.md
 ```
 
-**Current status:** Nest API Phase 2 complete. Web: Steps 34–36 (scaffold, auth/profile, discovery/portfolios/favourites). Next: Step 37. Mobile later.
+**Current status:** Nest API Phase 2 complete. Web: Steps 34–37 (auth, discovery, moodboard/brief/matching). Next: Step 38 requests & proposals. Mobile later.
 
 ---
 
