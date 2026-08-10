@@ -1,16 +1,23 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { EmptyState } from '@/components/layout/empty-state';
-import { PortfolioCard } from '@/components/portfolios/portfolio-card';
-import { formatApiError } from '@/lib/api/auth';
+import { FilterChips } from '@/components/layout/filter-chips';
+import { MasonryGrid } from '@/components/layout/masonry-grid';
+import { DiscoverTile } from '@/components/portfolios/discover-tile';
+import { fetchMe, formatApiError } from '@/lib/api/auth';
+import { listFavourites } from '@/lib/api/favourites';
 import { listPortfolios } from '@/lib/api/portfolios';
 import type { Portfolio } from '@/lib/api/types';
 import { DISCOVER_BANNER } from '@/lib/media';
+import { BUDGET_BANDS, ROOM_OPTIONS, STYLE_OPTIONS } from '@/lib/taxonomy';
+import { cn } from '@/lib/utils';
+
+const STYLE_LABELS = STYLE_OPTIONS.map((option) => option.label);
+const ROOM_LABELS = ROOM_OPTIONS.map((option) => option.label);
+const BUDGET_LABELS = BUDGET_BANDS.map((band) => band.label);
 
 export function DiscoverBrowse() {
   const searchParams = useSearchParams();
@@ -19,27 +26,26 @@ export function DiscoverBrowse() {
   const [total, setTotal] = useState(0);
   const [style, setStyle] = useState('');
   const [roomType, setRoomType] = useState('');
-  const [maxBudget, setMaxBudget] = useState('');
+  const [budgetLabel, setBudgetLabel] = useState('');
+  const [savedDesigners, setSavedDesigners] = useState<Set<string>>(new Set());
+  const [canSave, setCanSave] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [pending, startTransition] = useTransition();
 
-  async function load(filters?: {
-    style?: string;
-    roomType?: string;
-    maxBudget?: string;
-    designerId?: string;
-  }) {
+  const maxBudget = useMemo(
+    () => BUDGET_BANDS.find((band) => band.label === budgetLabel)?.maxBudget,
+    [budgetLabel],
+  );
+
+  const load = useCallback(async () => {
     setError(null);
     setLoading(true);
     try {
       const data = await listPortfolios({
-        style: filters?.style || undefined,
-        roomType: filters?.roomType || undefined,
-        maxBudget: filters?.maxBudget
-          ? Number(filters.maxBudget)
-          : undefined,
-        designerId: filters?.designerId,
+        style: style || undefined,
+        roomType: roomType || undefined,
+        maxBudget,
+        designerId,
         pageSize: 24,
       });
       setItems(data.items);
@@ -49,17 +55,42 @@ export function DiscoverBrowse() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [style, roomType, maxBudget, designerId]);
 
   useEffect(() => {
-    void load({ designerId });
-  }, [designerId]);
+    void load();
+  }, [load]);
 
-  function onSearch(event: React.FormEvent) {
-    event.preventDefault();
-    startTransition(() => {
-      void load({ style, roomType, maxBudget, designerId });
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const me = await fetchMe().catch(() => null);
+      if (cancelled || me?.activeRole !== 'CLIENT') return;
+      setCanSave(true);
+      const favourites = await listFavourites().catch(() => null);
+      if (cancelled || !favourites) return;
+      setSavedDesigners(new Set(favourites.items.map((f) => f.designerId)));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  function onSavedChange(id: string, saved: boolean) {
+    setSavedDesigners((prev) => {
+      const next = new Set(prev);
+      if (saved) next.add(id);
+      else next.delete(id);
+      return next;
     });
+  }
+
+  const activeFilters = [style, roomType, budgetLabel].filter(Boolean);
+
+  function resetFilters() {
+    setStyle('');
+    setRoomType('');
+    setBudgetLabel('');
   }
 
   return (
@@ -69,78 +100,65 @@ export function DiscoverBrowse() {
         <img
           src={DISCOVER_BANNER}
           alt=""
-          className="h-48 w-full object-cover md:h-64"
+          className="h-48 w-full object-cover md:h-72"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(100deg,oklch(0.18_0.03_155_/_0.78)_0%,oklch(0.18_0.03_155_/_0.35)_70%)]" />
-        <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
+        <div className="absolute inset-0 bg-[linear-gradient(100deg,oklch(0.18_0.03_155_/_0.78)_0%,oklch(0.18_0.03_155_/_0.25)_75%)]" />
+        <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-9">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/70">
             Client · Discover
           </p>
-          <h1 className="mt-2 font-heading text-3xl tracking-tight text-white md:text-4xl">
-            Find the right rooms
+          <h1 className="mt-2 max-w-xl font-heading text-3xl leading-tight tracking-tight text-white md:text-5xl">
+            {designerId ? 'Work by this designer' : 'Browse rooms you love'}
           </h1>
-          <p className="mt-2 max-w-lg text-sm text-white/80 md:text-base">
+          <p className="mt-3 max-w-lg text-sm text-white/80 md:text-base">
             {designerId
-              ? 'Browsing published work from one designer.'
-              : 'Filter published portfolios by style, room, and budget.'}
+              ? 'Published portfolios from one designer.'
+              : 'Pick a style, a room, and a budget — then save the designers behind the work.'}
           </p>
         </div>
       </section>
 
-      <form
-        onSubmit={onSearch}
-        className="surface-panel grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4"
-      >
-        <div className="space-y-2">
-          <Label htmlFor="style">Style</Label>
-          <Input
-            id="style"
+      <div className="sticky top-16 z-20 -mx-4 border-b border-border/60 bg-background/85 px-4 py-4 backdrop-blur-md md:-mx-6 md:px-6">
+        <div className="grid gap-4 lg:grid-cols-[1fr_1fr_auto]">
+          <FilterChips
+            label="Style"
+            options={STYLE_LABELS}
             value={style}
-            onChange={(e) => setStyle(e.target.value)}
-            placeholder="Scandinavian"
+            onChange={setStyle}
           />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="roomType">Room</Label>
-          <Input
-            id="roomType"
+          <FilterChips
+            label="Room"
+            options={ROOM_LABELS}
             value={roomType}
-            onChange={(e) => setRoomType(e.target.value)}
-            placeholder="Living Room"
+            onChange={setRoomType}
+          />
+          <FilterChips
+            label="Budget"
+            options={BUDGET_LABELS}
+            value={budgetLabel}
+            onChange={setBudgetLabel}
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="maxBudget">Max budget</Label>
-          <Input
-            id="maxBudget"
-            type="number"
-            min={0}
-            value={maxBudget}
-            onChange={(e) => setMaxBudget(e.target.value)}
-            placeholder="800000"
-          />
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground">
+            {loading
+              ? 'Loading rooms…'
+              : `${total} ${total === 1 ? 'room' : 'rooms'}${
+                  activeFilters.length ? ` · ${activeFilters.join(' · ')}` : ''
+                }`}
+          </p>
+          {activeFilters.length ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={resetFilters}
+            >
+              Clear filters
+            </Button>
+          ) : null}
         </div>
-        <div className="flex items-end gap-2">
-          <Button type="submit" disabled={pending || loading} className="flex-1">
-            {pending || loading ? 'Searching…' : 'Search'}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={pending || loading}
-            onClick={() => {
-              setStyle('');
-              setRoomType('');
-              setMaxBudget('');
-              startTransition(() => {
-                void load({ designerId });
-              });
-            }}
-          >
-            Reset
-          </Button>
-        </div>
-      </form>
+      </div>
 
       {error ? (
         <p className="text-sm text-destructive" role="alert">
@@ -148,32 +166,27 @@ export function DiscoverBrowse() {
         </p>
       ) : null}
 
-      {loading && items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Loading portfolios…</p>
-      ) : null}
-
       {!loading && items.length === 0 ? (
         <EmptyState
-          title="No portfolios match"
-          description="Try a broader style or room, or clear filters to see everything published."
-          actionHref="/client"
-          actionLabel="Clear filters"
+          title="No rooms match"
+          description="Try a broader style or room, or clear the filters to see everything published."
         />
       ) : null}
 
       {items.length > 0 ? (
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">{total} results</p>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((portfolio) => (
-              <PortfolioCard
-                key={portfolio.id}
-                portfolio={portfolio}
-                href={`/portfolios/${portfolio.id}`}
-              />
-            ))}
-          </div>
-        </div>
+        <MasonryGrid className={cn(loading && 'opacity-60 transition-opacity')}>
+          {items.map((portfolio, index) => (
+            <DiscoverTile
+              key={portfolio.id}
+              portfolio={portfolio}
+              index={index}
+              canSave={canSave}
+              saved={savedDesigners.has(portfolio.designerId)}
+              onSavedChange={onSavedChange}
+              onError={setError}
+            />
+          ))}
+        </MasonryGrid>
       ) : null}
     </div>
   );

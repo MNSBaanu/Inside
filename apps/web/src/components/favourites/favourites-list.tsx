@@ -92,14 +92,35 @@ export function FavouritesList() {
         {items.map((fav) => (
           <li key={fav.id} className="surface-panel flex flex-col gap-4 p-5">
             <div>
-              <p className="font-heading text-xl tracking-tight">
-                {fav.designer.name}
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {fav.designer.location ?? 'Location not set'}
-                {fav.designer.isVerified ? ' · Verified' : ''}
-                {fav.designer.isAvailable ? '' : ' · Unavailable'}
-              </p>
+              <div className="flex items-center gap-3">
+                {fav.designer.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={fav.designer.avatarUrl}
+                    alt=""
+                    className="size-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="grid size-12 shrink-0 place-items-center rounded-full bg-secondary text-sm font-medium text-secondary-foreground">
+                    {fav.designer.name
+                      .split(' ')
+                      .map((part) => part[0])
+                      .join('')
+                      .slice(0, 2)
+                      .toUpperCase()}
+                  </span>
+                )}
+                <div className="min-w-0">
+                  <p className="truncate font-heading text-xl tracking-tight">
+                    {fav.designer.name}
+                  </p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {fav.designer.location ?? 'Location not set'}
+                    {fav.designer.isVerified ? ' · Verified' : ''}
+                    {fav.designer.isAvailable ? '' : ' · Unavailable'}
+                  </p>
+                </div>
+              </div>
               {fav.designer.bio ? (
                 <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-foreground/85">
                   {fav.designer.bio}

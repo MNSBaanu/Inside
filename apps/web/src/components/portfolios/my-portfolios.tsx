@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { EmptyState } from '@/components/layout/empty-state';
-import { PageHeader } from '@/components/layout/page-header';
 import { PortfolioCard } from '@/components/portfolios/portfolio-card';
 import { formatApiError } from '@/lib/api/auth';
 import { deletePortfolio, listMyPortfolios } from '@/lib/api/portfolios';
 import type { Portfolio } from '@/lib/api/types';
+import { DEMO_LIVING_DETAIL } from '@/lib/media';
 import { cn } from '@/lib/utils';
 
 export function MyPortfolios() {
@@ -48,18 +48,44 @@ export function MyPortfolios() {
     }
   }
 
+  const publishedCount = items.filter((p) => p.isPublished).length;
+  const draftCount = items.length - publishedCount;
+
   return (
     <div className="space-y-8">
-      <PageHeader
-        eyebrow="Designer · Studio"
-        title="My portfolios"
-        description="Publish work so clients can discover and match you."
-        actions={
-          <Link href="/designer/portfolios/new" className={cn(buttonVariants())}>
+      <section className="relative overflow-hidden rounded-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={DEMO_LIVING_DETAIL}
+          alt=""
+          className="h-40 w-full object-cover md:h-56"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(100deg,oklch(0.18_0.03_155_/_0.78)_0%,oklch(0.18_0.03_155_/_0.3)_75%)]" />
+        <div className="absolute inset-0 flex flex-col justify-end gap-4 p-6 md:flex-row md:items-end md:justify-between md:p-8">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/70">
+              Designer · Studio
+            </p>
+            <h1 className="mt-2 font-heading text-3xl tracking-tight text-white md:text-4xl">
+              My portfolios
+            </h1>
+            <p className="mt-2 max-w-lg text-sm text-white/80">
+              {publishedCount} published · {draftCount} draft
+              {draftCount === 1 ? '' : 's'} — publish work so clients can
+              discover and match you.
+            </p>
+          </div>
+          <Link
+            href="/designer/portfolios/new"
+            className={cn(
+              buttonVariants(),
+              'bg-white text-[oklch(0.24_0.03_155)] hover:bg-white/90',
+            )}
+          >
             New portfolio
           </Link>
-        }
-      />
+        </div>
+      </section>
 
       {error ? (
         <p className="text-sm text-destructive" role="alert">

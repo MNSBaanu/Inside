@@ -8,10 +8,42 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { EmptyState } from '@/components/layout/empty-state';
 import { formatApiError } from '@/lib/api/auth';
+import { generateBriefFromMoodboard } from '@/lib/api/briefs';
 import { createMoodboard, deleteMoodboard, listMoodboards } from '@/lib/api/moodboards';
 import type { Moodboard } from '@/lib/api/types';
 import { DEMO_INSPO_2 } from '@/lib/media';
 import { cn } from '@/lib/utils';
+
+function CoverCollage({ board }: { board: Moodboard }) {
+  const images = board.savedItems.slice(0, 3).map((item) => item.imageUrl);
+
+  if (images.length === 0) {
+    return (
+      <div className="flex aspect-[16/10] items-center justify-center bg-muted text-sm text-muted-foreground">
+        Empty board
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid aspect-[16/10] grid-cols-3 gap-0.5 bg-muted">
+      {images.map((src, index) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={`${src}-${index}`}
+          src={src}
+          alt=""
+          loading="lazy"
+          className={cn(
+            'h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]',
+            images.length === 1 && 'col-span-3',
+            images.length === 2 && index === 0 && 'col-span-2',
+          )}
+        />
+      ))}
+    </div>
+  );
+}
 
 export function MoodboardsList() {
   const router = useRouter();
@@ -71,6 +103,18 @@ export function MoodboardsList() {
     }
   }
 
+  async function onGenerateBrief(id: string) {
+    setBusyId(id);
+    setError(null);
+    try {
+      const data = await generateBriefFromMoodboard(id);
+      router.push(`/client/briefs/${data.brief.id}`);
+    } catch (err) {
+      setError(formatApiError(err));
+      setBusyId(null);
+    }
+  }
+
   return (
     <div className="space-y-8">
       <section className="relative overflow-hidden rounded-2xl">
@@ -78,7 +122,7 @@ export function MoodboardsList() {
         <img
           src={DEMO_INSPO_2}
           alt=""
-          className="h-40 w-full object-cover md:h-52"
+          className="h-40 w-full object-cover md:h-56"
         />
         <div className="absolute inset-0 bg-[linear-gradient(100deg,oklch(0.18_0.03_155_/_0.75)_0%,oklch(0.18_0.03_155_/_0.3)_75%)]" />
         <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
@@ -89,7 +133,7 @@ export function MoodboardsList() {
             Moodboards
           </h1>
           <p className="mt-2 max-w-lg text-sm text-white/80">
-            Collect images and notes, then turn them into a brief.
+            Collect images and notes, then turn a board into a brief in one click.
           </p>
         </div>
       </section>
@@ -129,56 +173,59 @@ export function MoodboardsList() {
         />
       ) : null}
 
-      <ul className="grid gap-4 sm:grid-cols-2">
-        {items.map((board) => {
-          const cover = board.savedItems[0]?.imageUrl;
-          return (
-            <li key={board.id} className="surface-panel overflow-hidden">
-              <div className="aspect-[16/9] bg-muted">
-                {cover ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={cover}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                    Empty board
-                  </div>
-                )}
+      <ul className="grid gap-5 sm:grid-cols-2">
+        {items.map((board) => (
+          <li
+            key={board.id}
+            className="group overflow-hidden rounded-2xl border border-border/60 bg-card transition-colors hover:border-primary/30"
+          >
+            <Link href={`/client/moodboards/${board.id}`} className="block">
+              <CoverCollage board={board} />
+            </Link>
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4">
+              <div className="min-w-0">
+                <Link
+                  href={`/client/moodboards/${board.id}`}
+                  className="font-heading text-lg tracking-tight hover:underline"
+                >
+                  {board.name}
+                </Link>
+                <p className="text-sm text-muted-foreground">
+                  {board.savedItems.length}{' '}
+                  {board.savedItems.length === 1 ? 'image' : 'images'}
+                  {board.briefCount != null
+                    ? ` · ${board.briefCount} ${board.briefCount === 1 ? 'brief' : 'briefs'}`
+                    : ''}
+                </p>
               </div>
-              <div className="flex flex-wrap items-center justify-between gap-3 p-4">
-                <div>
-                  <p className="font-heading text-lg tracking-tight">{board.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {board.savedItems.length} items
-                    {board.briefCount != null
-                      ? ` · ${board.briefCount} briefs`
-                      : ''}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Link
-                    href={`/client/moodboards/${board.id}`}
-                    className={cn(buttonVariants({ size: 'sm' }))}
-                  >
-                    Open
-                  </Link>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={busyId === board.id}
-                    onClick={() => onDelete(board.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  href={`/client/moodboards/${board.id}`}
+                  className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+                >
+                  Open
+                </Link>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={busyId === board.id}
+                  onClick={() => onGenerateBrief(board.id)}
+                >
+                  {busyId === board.id ? 'Working…' : 'Generate brief'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={busyId === board.id}
+                  onClick={() => onDelete(board.id)}
+                >
+                  Delete
+                </Button>
               </div>
-            </li>
-          );
-        })}
+            </div>
+          </li>
+        ))}
       </ul>
     </div>
   );
