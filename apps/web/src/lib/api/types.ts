@@ -224,6 +224,43 @@ export type Project = {
   designer?: RequestParty | null;
 };
 
+export type Message = {
+  id: string;
+  projectId: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  attachmentUrl: string | null;
+  attachmentType: string | null;
+  isRead: boolean;
+  readAt: string | null;
+  sentAt: string;
+};
+
+export type NotificationType =
+  | 'REQUEST'
+  | 'PROPOSAL'
+  | 'PROJECT'
+  | 'STAGE'
+  | 'DELIVERABLE'
+  | 'PAYMENT'
+  | 'MESSAGE'
+  | 'REVIEW'
+  | 'VERIFICATION'
+  | 'SYSTEM';
+
+export type AppNotification = {
+  id: string;
+  userId: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  metadata: Record<string, unknown> | null;
+  isRead: boolean;
+  readAt: string | null;
+  createdAt: string;
+};
+
 export type PaymentStatus =
   | 'PENDING'
   | 'PROCESSING'

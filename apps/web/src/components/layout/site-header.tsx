@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { AppNav } from '@/components/layout/app-nav';
+import { NotificationBell } from '@/components/layout/notification-bell';
 import { LogoutButton } from '@/components/auth/logout-button';
 import type { NavLink } from '@/components/layout/app-shell';
 
@@ -82,6 +83,7 @@ export function SiteHeader({
             </nav>
           ) : (
             <nav className="flex shrink-0 items-center gap-2">
+              <NotificationBell />
               <Link
                 href="/profile"
                 className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}
