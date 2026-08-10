@@ -239,6 +239,12 @@ export function MatchResults() {
                       onError={setError}
                     />
                     <Link
+                      href={`/client/requests/new?designerId=${item.designer.id}&briefId=${params.id}`}
+                      className={cn(buttonVariants())}
+                    >
+                      Invite designer
+                    </Link>
+                    <Link
                       href={`/client?designerId=${item.designer.id}`}
                       className={cn(buttonVariants({ variant: 'outline' }))}
                     >

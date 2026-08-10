@@ -124,6 +124,12 @@ export function BriefsList() {
                 Match
               </Link>
               <Link
+                href={`/client/requests/new?briefId=${brief.id}`}
+                className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+              >
+                Post request
+              </Link>
+              <Link
                 href={`/client/briefs/${brief.id}`}
                 className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
               >

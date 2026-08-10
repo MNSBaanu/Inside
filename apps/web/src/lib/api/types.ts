@@ -122,6 +122,93 @@ export type Brief = {
   moodboard: { id: string; name: string } | null;
 };
 
+export type RequestType = 'DIRECT' | 'OPEN';
+
+export type RequestStatus =
+  | 'OPEN'
+  | 'PENDING'
+  | 'ACCEPTED'
+  | 'REJECTED'
+  | 'CANCELLED'
+  | 'CLOSED';
+
+export type ProposalStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'WITHDRAWN';
+
+export type StageName =
+  | 'PROPOSAL'
+  | 'CONCEPT'
+  | 'DESIGN'
+  | 'REVISION'
+  | 'COMPLETION';
+
+export type RequestParty = {
+  id: string;
+  name: string;
+  avatarUrl: string | null;
+  isVerified?: boolean;
+  isAvailable?: boolean;
+};
+
+export type ProjectRequest = {
+  id: string;
+  clientId: string;
+  designerId: string | null;
+  briefId: string | null;
+  title: string;
+  description: string | null;
+  type: RequestType;
+  status: RequestStatus;
+  budget: number | null;
+  createdAt: string;
+  updatedAt: string;
+  brief: { id: string; styles: string[]; rooms: string[] } | null;
+  designer: RequestParty | null;
+  client: RequestParty | null;
+  proposalCount: number;
+};
+
+export type StageFee = {
+  name: StageName;
+  fee: number;
+};
+
+export type Proposal = {
+  id: string;
+  requestId: string;
+  designerId: string;
+  scope: string;
+  timeline: string;
+  stageFees: StageFee[];
+  totalAmount: number | null;
+  status: ProposalStatus;
+  submittedAt: string;
+  updatedAt: string;
+  designer: RequestParty | null;
+};
+
+export type ProjectStage = {
+  id: string;
+  stageOrder: number;
+  name: StageName;
+  status: string;
+  fee: number | null;
+  dueDate: string | null;
+};
+
+export type Project = {
+  id: string;
+  proposalId: string;
+  clientId: string;
+  designerId: string;
+  title: string;
+  currentStage: StageName;
+  status: string;
+  startedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  stages: ProjectStage[];
+};
+
 export type MatchResult = {
   designer: {
     id: string;
