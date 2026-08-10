@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { DesignerRatingBadge } from '@/components/reviews/designer-rating-badge';
 import type { Portfolio } from '@/lib/api/types';
 import { cn } from '@/lib/utils';
 
@@ -53,6 +54,10 @@ export function PortfolioCard({ portfolio, href, className }: PortfolioCardProps
             ? ` · LKR ${portfolio.budget.toLocaleString()}`
             : ''}
         </p>
+        <DesignerRatingBadge
+          designerId={portfolio.designerId}
+          className="block text-xs text-muted-foreground"
+        />
       </div>
     </Link>
   );

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { SaveDesignerButton } from '@/components/favourites/save-designer-button';
+import { DesignerRatingBadge } from '@/components/reviews/designer-rating-badge';
+import { DesignerReviews } from '@/components/reviews/designer-reviews';
 import { formatApiError, fetchMe } from '@/lib/api/auth';
 import { listFavourites } from '@/lib/api/favourites';
 import { getPortfolio, listPortfolios } from '@/lib/api/portfolios';
@@ -181,6 +183,10 @@ export function PortfolioDetail() {
                   {portfolio.designer.location ?? 'Interior designer'}
                   {portfolio.designer.isVerified ? ' · Verified' : ''}
                 </p>
+                <DesignerRatingBadge
+                  designerId={portfolio.designerId}
+                  className="mt-1 block text-xs text-muted-foreground"
+                />
               </div>
             </div>
 
@@ -228,6 +234,8 @@ export function PortfolioDetail() {
           </div>
         </aside>
       </div>
+
+      <DesignerReviews designerId={portfolio.designerId} />
 
       {related.length > 0 ? (
         <section className="space-y-4 border-t border-border/60 pt-8">

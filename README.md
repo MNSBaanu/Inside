@@ -65,7 +65,7 @@ Inside/
 └── README.md
 ```
 
-**Current status:** Nest API Phase 2 complete. Web: auth, discovery, moodboards/briefs/matching, requests & proposals, admin + verification, staged project workspace, milestone payments, project messaging, and a notifications bell. Next: reviews on completed projects, and user-side reporting/blocking. Mobile later.
+**Current status:** Nest API Phase 2 complete. Web: auth, discovery, moodboards/briefs/matching, requests & proposals, admin + verification, staged project workspace, milestone payments, messaging, notifications, and client reviews with designer ratings. Next: user-side reporting/blocking. Mobile later.
 
 ---
 

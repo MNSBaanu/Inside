@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { SaveDesignerButton } from '@/components/favourites/save-designer-button';
+import { DesignerRatingBadge } from '@/components/reviews/designer-rating-badge';
 import type { Portfolio } from '@/lib/api/types';
 import { cn } from '@/lib/utils';
 
@@ -63,13 +64,17 @@ export function DiscoverTile({
           <h3 className="mt-1 font-heading text-lg leading-snug tracking-tight text-white">
             {portfolio.title}
           </h3>
-          <p className="mt-1 flex items-center gap-2 text-xs text-white/75">
+          <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-white/75">
             <span>{portfolio.designer.name}</span>
             {portfolio.designer.isVerified ? (
               <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] uppercase tracking-wider">
                 Verified
               </span>
             ) : null}
+            <DesignerRatingBadge
+              designerId={portfolio.designerId}
+              className="text-white/80"
+            />
             {portfolio.budget != null ? (
               <span>· LKR {portfolio.budget.toLocaleString()}</span>
             ) : null}

@@ -8,6 +8,7 @@ import { StatusPill } from '@/components/layout/status-pill';
 import { ModeSwitchNotice } from '@/components/projects/mode-switch-notice';
 import { PaymentsSummary } from '@/components/projects/payments-summary';
 import { ProjectChat } from '@/components/projects/project-chat';
+import { ProjectReviewSection } from '@/components/projects/project-review-section';
 import { StagePanel } from '@/components/projects/stage-panel';
 import { StageTimeline } from '@/components/projects/stage-timeline';
 import { fetchMe, formatApiError } from '@/lib/api/auth';
@@ -239,6 +240,16 @@ export function ProjectWorkspace() {
           projectId={project.id}
           meId={me.id}
           counterpartyName={counterparty?.name ?? 'the other party'}
+        />
+      ) : null}
+
+      {me && isClient && project.status === 'COMPLETED' ? (
+        <ProjectReviewSection
+          projectId={project.id}
+          designerId={project.designerId}
+          designerName={project.designer?.name ?? 'your designer'}
+          me={me}
+          onUserRefresh={refreshMe}
         />
       ) : null}
 

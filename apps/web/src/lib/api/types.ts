@@ -294,6 +294,28 @@ export type Deliverable = {
   updatedAt: string;
 };
 
+export type Review = {
+  id: string;
+  projectId: string;
+  reviewerId: string;
+  designerId: string;
+  rating: number;
+  comment: string | null;
+  isVisible: boolean;
+  createdAt: string;
+  updatedAt: string;
+  reviewer: {
+    id: string;
+    name: string;
+    avatarUrl: string | null;
+  } | null;
+};
+
+export type ReviewSummary = {
+  count: number;
+  averageRating: number;
+};
+
 export type AccountStatus = 'ACTIVE' | 'SUSPENDED';
 
 export type VerificationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';

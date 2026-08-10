@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { buttonVariants } from '@/components/ui/button';
 import { StatusPill } from '@/components/layout/status-pill';
 import { EmptyState } from '@/components/layout/empty-state';
 import { PageHeader } from '@/components/layout/page-header';
-import { formatApiError } from '@/lib/api/auth';
+import { fetchMe, formatApiError } from '@/lib/api/auth';
 import { listProjects } from '@/lib/api/projects';
-import type { Project } from '@/lib/api/types';
+import type { AuthUser, Project } from '@/lib/api/types';
 import { STAGE_LABELS, formatLkr } from '@/lib/stages';
+import { cn } from '@/lib/utils';
 
 function progressOf(project: Project) {
   const approved = project.stages.filter(
@@ -19,6 +21,7 @@ function progressOf(project: Project) {
 
 export function ProjectsList() {
   const [items, setItems] = useState<Project[]>([]);
+  const [me, setMe] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,8 +29,13 @@ export function ProjectsList() {
     let cancelled = false;
     (async () => {
       try {
-        const data = await listProjects();
-        if (!cancelled) setItems(data.items);
+        const [data, user] = await Promise.all([
+          listProjects(),
+          fetchMe().catch(() => null),
+        ]);
+        if (cancelled) return;
+        setItems(data.items);
+        setMe(user);
       } catch (err) {
         if (!cancelled) setError(formatApiError(err));
       } finally {
@@ -72,11 +80,16 @@ export function ProjectsList() {
             (sum, stage) => sum + (stage.fee ?? 0),
             0,
           );
+          const canReview =
+            project.status === 'COMPLETED' &&
+            me?.id === project.clientId &&
+            me.activeRole === 'CLIENT';
+
           return (
-            <li key={project.id}>
+            <li key={project.id} className="surface-panel overflow-hidden">
               <Link
                 href={`/projects/${project.id}`}
-                className="surface-panel flex flex-wrap items-center justify-between gap-4 p-5 transition-shadow hover:shadow-[0_22px_60px_-32px_oklch(0.22_0.02_145_/_0.55)]"
+                className="flex flex-wrap items-center justify-between gap-4 p-5 transition-shadow hover:shadow-[0_22px_60px_-32px_oklch(0.22_0.02_145_/_0.55)]"
               >
                 <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -97,6 +110,16 @@ export function ProjectsList() {
                   {formatLkr(totalFee)}
                 </p>
               </Link>
+              {canReview ? (
+                <div className="border-t border-border/60 px-5 py-3">
+                  <Link
+                    href={`/projects/${project.id}#review`}
+                    className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+                  >
+                    Leave a review
+                  </Link>
+                </div>
+              ) : null}
             </li>
           );
         })}
