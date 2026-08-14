@@ -86,7 +86,10 @@ export default function HomePage() {
         </div>
         <div className="grid gap-8 md:grid-cols-3">
           {STEPS.map((step, index) => (
-            <article key={step.title} className="glass space-y-4 rounded-3xl p-4">
+            <article
+              key={step.title}
+              className="glass space-y-4 rounded-3xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_26px_64px_-34px_oklch(0.22_0.02_145_/_0.55)]"
+            >
               <div className="aspect-[4/5] overflow-hidden rounded-2xl bg-muted">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -95,10 +98,17 @@ export default function HomePage() {
                   className="h-full w-full object-cover transition duration-700 hover:scale-[1.03]"
                 />
               </div>
-              <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                0{index + 1}
-              </p>
-              <h3 className="font-heading text-2xl tracking-tight">{step.title}</h3>
+              <div className="flex items-center gap-3">
+                <span
+                  aria-hidden="true"
+                  className="grid size-8 shrink-0 place-items-center rounded-full border border-primary/15 bg-primary/[0.07] text-xs font-semibold text-primary"
+                >
+                  0{index + 1}
+                </span>
+                <h3 className="font-heading text-2xl tracking-tight">
+                  {step.title}
+                </h3>
+              </div>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {step.copy}
               </p>
@@ -136,7 +146,17 @@ export default function HomePage() {
 
       <footer className="border-t border-border/70 py-8">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 text-sm text-muted-foreground">
-          <span className="font-heading text-base text-foreground">Inside</span>
+          <span className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className="grid size-7 place-items-center rounded-full border border-primary/15 bg-primary/10 text-[13px] font-semibold text-primary"
+            >
+              In
+            </span>
+            <span className="font-heading text-base text-foreground">
+              Inside
+            </span>
+          </span>
           <span>Interior marketplace · academic project</span>
         </div>
       </footer>
