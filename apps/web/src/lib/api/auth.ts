@@ -69,6 +69,7 @@ export async function updateProfileRequest(input: {
   bio?: string;
   phone?: string;
   location?: string;
+  avatarUrl?: string;
   isAvailable?: boolean;
 }): Promise<AuthUser> {
   const data = await apiRequest<{ user: AuthUser }>('/users/me', {
@@ -77,6 +78,16 @@ export async function updateProfileRequest(input: {
   });
   setGateCookie(data.user);
   return data.user;
+}
+
+export async function changePasswordRequest(input: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<void> {
+  await apiRequest<{ passwordChanged: true }>('/users/me/password', {
+    method: 'PATCH',
+    body: input,
+  });
 }
 
 export async function switchActiveRoleRequest(

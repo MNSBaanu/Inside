@@ -14,6 +14,7 @@ import {
   switchActiveRoleRequest,
   updateProfileRequest,
 } from '@/lib/api/auth';
+import { ChangePasswordForm } from '@/components/profile/change-password-form';
 import { cn } from '@/lib/utils';
 
 export function ProfileForm() {
@@ -23,6 +24,7 @@ export function ProfileForm() {
   const [bio, setBio] = useState('');
   const [phone, setPhone] = useState('');
   const [location, setLocation] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [isAvailable, setIsAvailable] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,6 +43,7 @@ export function ProfileForm() {
         setBio(me.bio ?? '');
         setPhone(me.phone ?? '');
         setLocation(me.location ?? '');
+        setAvatarUrl(me.avatarUrl ?? '');
         setIsAvailable(me.isAvailable);
       } catch (err) {
         if (!cancelled) setError(formatApiError(err));
@@ -68,9 +71,11 @@ export function ProfileForm() {
         bio: bio.trim(),
         phone: phone.trim(),
         location: location.trim(),
+        avatarUrl: avatarUrl.trim(),
         ...(user?.role === 'DESIGNER' ? { isAvailable } : {}),
       });
       setUser(updated);
+      setAvatarUrl(updated.avatarUrl ?? '');
       setMessage('Profile saved.');
     } catch (err) {
       setError(formatApiError(err));
@@ -157,6 +162,23 @@ export function ProfileForm() {
             onChange={(e) => setLocation(e.target.value)}
           />
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="avatarUrl">Avatar image URL</Label>
+          <Input
+            id="avatarUrl"
+            value={avatarUrl}
+            onChange={(e) => setAvatarUrl(e.target.value)}
+            placeholder="https://…"
+          />
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={avatarUrl}
+              alt=""
+              className="mt-1 size-14 rounded-full object-cover"
+            />
+          ) : null}
+        </div>
         {user.role === 'DESIGNER' ? (
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -181,6 +203,8 @@ export function ProfileForm() {
           {saving ? 'Saving…' : 'Save profile'}
         </Button>
       </form>
+
+      <ChangePasswordForm />
 
       {user.role === 'DESIGNER' ? (
         <div className="surface-panel p-5">
