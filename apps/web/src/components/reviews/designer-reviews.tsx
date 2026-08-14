@@ -5,7 +5,8 @@ import {
   StarRating,
   formatRating,
 } from '@/components/reviews/star-rating';
-import { formatApiError } from '@/lib/api/auth';
+import { ReportUserForm } from '@/components/trust/report-user-form';
+import { fetchMe, formatApiError } from '@/lib/api/auth';
 import { listDesignerReviews } from '@/lib/api/reviews';
 import type { Review, ReviewSummary } from '@/lib/api/types';
 
@@ -15,6 +16,7 @@ export function DesignerReviews({ designerId }: { designerId: string }) {
     count: 0,
     averageRating: 0,
   });
+  const [viewerId, setViewerId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,10 +25,14 @@ export function DesignerReviews({ designerId }: { designerId: string }) {
     (async () => {
       setLoading(true);
       try {
-        const data = await listDesignerReviews(designerId);
+        const [data, me] = await Promise.all([
+          listDesignerReviews(designerId),
+          fetchMe().catch(() => null),
+        ]);
         if (cancelled) return;
         setItems(data.items);
         setSummary(data.summary);
+        setViewerId(me?.id ?? null);
       } catch (err) {
         if (!cancelled) setError(formatApiError(err));
       } finally {
@@ -81,6 +87,14 @@ export function DesignerReviews({ designerId }: { designerId: string }) {
               <p className="text-sm leading-relaxed text-foreground/90">
                 {item.comment}
               </p>
+            ) : null}
+            {viewerId && viewerId !== item.reviewerId ? (
+              <ReportUserForm
+                targetType="REVIEW"
+                targetId={item.id}
+                reportedUserId={item.reviewerId}
+                targetLabel="this review"
+              />
             ) : null}
           </li>
         ))}

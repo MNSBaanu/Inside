@@ -244,6 +244,12 @@ export function PortfolioDetail() {
                     reportedUserId={portfolio.designerId}
                     targetLabel={portfolio.designer.name}
                   />
+                  <ReportUserForm
+                    targetType="PORTFOLIO"
+                    targetId={portfolio.id}
+                    reportedUserId={portfolio.designerId}
+                    targetLabel="this portfolio"
+                  />
                 </div>
               ) : null}
             </div>

@@ -8,9 +8,11 @@ import { formatApiError } from '@/lib/api/auth';
 import {
   MESSAGE_MAX_LENGTH,
   listMessages,
+  markMessageRead,
   markProjectMessagesRead,
   sendMessage,
 } from '@/lib/api/messages';
+import { ReportUserForm } from '@/components/trust/report-user-form';
 import type { Message } from '@/lib/api/types';
 import { formatClockTime, formatRelativeTime } from '@/lib/time';
 import { usePoll } from '@/lib/use-poll';
@@ -22,10 +24,12 @@ export function ProjectChat({
   projectId,
   meId,
   counterpartyName,
+  counterpartyId,
 }: {
   projectId: string;
   meId: string;
   counterpartyName: string;
+  counterpartyId?: string;
 }) {
   const [items, setItems] = useState<Message[]>([]);
   const [content, setContent] = useState('');
@@ -38,12 +42,16 @@ export function ProjectChat({
 
   const markRead = useCallback(
     async (messages: Message[]) => {
-      const unread = messages.some(
+      const unread = messages.filter(
         (message) => message.receiverId === meId && !message.isRead,
       );
-      if (!unread) return;
+      if (unread.length === 0) return;
       try {
-        await markProjectMessagesRead(projectId);
+        if (unread.length === 1) {
+          await markMessageRead(unread[0].id);
+        } else {
+          await markProjectMessagesRead(projectId);
+        }
         setItems((prev) =>
           prev.map((message) =>
             message.receiverId === meId && !message.isRead
@@ -236,6 +244,14 @@ export function ProjectChat({
         <p className="text-xs text-muted-foreground">
           Enter sends · Shift + Enter adds a line
         </p>
+        {counterpartyId && items[0] ? (
+          <ReportUserForm
+            targetType="MESSAGE"
+            targetId={items[items.length - 1]?.id ?? items[0].id}
+            reportedUserId={counterpartyId}
+            targetLabel="a message"
+          />
+        ) : null}
       </div>
     </section>
   );
