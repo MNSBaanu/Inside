@@ -11,6 +11,8 @@ import { ProjectChat } from '@/components/projects/project-chat';
 import { ProjectReviewSection } from '@/components/projects/project-review-section';
 import { StagePanel } from '@/components/projects/stage-panel';
 import { StageTimeline } from '@/components/projects/stage-timeline';
+import { BlockUserButton } from '@/components/trust/block-user-button';
+import { ReportUserForm } from '@/components/trust/report-user-form';
 import { fetchMe, formatApiError } from '@/lib/api/auth';
 import {
   listPayments,
@@ -251,6 +253,33 @@ export function ProjectWorkspace() {
           me={me}
           onUserRefresh={refreshMe}
         />
+      ) : null}
+
+      {me && counterparty ? (
+        <section className="surface-panel space-y-3 p-5">
+          <h2 className="font-heading text-xl tracking-tight">Trust</h2>
+          <p className="text-sm text-muted-foreground">
+            Report or block {counterparty.name} if something goes wrong.
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+            <BlockUserButton
+              userId={counterparty.id}
+              userName={counterparty.name}
+            />
+            <ReportUserForm
+              targetType="USER"
+              targetId={counterparty.id}
+              reportedUserId={counterparty.id}
+              targetLabel={counterparty.name}
+            />
+          </div>
+          <ReportUserForm
+            targetType="PROJECT"
+            targetId={project.id}
+            reportedUserId={counterparty.id}
+            targetLabel="this project"
+          />
+        </section>
       ) : null}
 
       <PaymentsSummary

@@ -65,7 +65,7 @@ Inside/
 └── README.md
 ```
 
-**Current status:** Nest API Phase 2 complete. Web: auth, discovery, moodboards/briefs/matching, requests & proposals, admin + verification, staged project workspace, milestone payments, messaging, notifications, and client reviews with designer ratings. Next: user-side reporting/blocking. Mobile later.
+**Current status:** Nest API Phase 2 complete. Web covers the full marketplace flow: auth (including forgot/reset/verify), discovery, moodboards/briefs/matching, hiring, project workspace, payments, messaging, notifications, reviews, admin, and user-side report/block. Mobile later. Cloudinary uploads and live Stripe remain stubbed (URL + pay/release).
 
 ---
 

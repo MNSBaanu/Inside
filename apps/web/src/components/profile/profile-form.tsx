@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { AuthUser } from '@/lib/api/types';
@@ -13,6 +14,7 @@ import {
   switchActiveRoleRequest,
   updateProfileRequest,
 } from '@/lib/api/auth';
+import { cn } from '@/lib/utils';
 
 export function ProfileForm() {
   const router = useRouter();
@@ -194,6 +196,19 @@ export function ProfileForm() {
           </Button>
         </div>
       ) : null}
+
+      <div className="surface-panel space-y-2 p-5">
+        <h2 className="font-heading text-xl tracking-tight">Trust &amp; safety</h2>
+        <p className="text-sm text-muted-foreground">
+          Manage blocked users and reports you have filed.
+        </p>
+        <Link
+          href="/profile/safety"
+          className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+        >
+          Open safety settings
+        </Link>
+      </div>
     </div>
   );
 }

@@ -116,3 +116,30 @@ export function redirectPathAfterAuth(user: AuthUser): string {
 export function hasClientSession(): boolean {
   return Boolean(getAccessToken());
 }
+
+export function forgotPasswordRequest(email: string) {
+  return apiRequest<{ message: string; resetToken?: string }>(
+    '/auth/forgot-password',
+    {
+      method: 'POST',
+      auth: false,
+      body: { email },
+    },
+  );
+}
+
+export function resetPasswordRequest(token: string, newPassword: string) {
+  return apiRequest<{ reset: true }>('/auth/reset-password', {
+    method: 'POST',
+    auth: false,
+    body: { token, newPassword },
+  });
+}
+
+export function verifyEmailRequest(token: string) {
+  return apiRequest<{ verified: true }>('/auth/verify-email', {
+    method: 'POST',
+    auth: false,
+    body: { token },
+  });
+}

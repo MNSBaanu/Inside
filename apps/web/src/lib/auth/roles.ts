@@ -22,6 +22,8 @@ export function isPublicPath(pathname: string): boolean {
   return (
     pathname.startsWith('/login') ||
     pathname.startsWith('/register') ||
-    pathname.startsWith('/forgot-password')
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/reset-password') ||
+    pathname.startsWith('/verify-email')
   );
 }

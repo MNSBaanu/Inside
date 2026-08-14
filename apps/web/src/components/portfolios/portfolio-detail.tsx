@@ -7,6 +7,8 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { SaveDesignerButton } from '@/components/favourites/save-designer-button';
 import { DesignerRatingBadge } from '@/components/reviews/designer-rating-badge';
 import { DesignerReviews } from '@/components/reviews/designer-reviews';
+import { BlockUserButton } from '@/components/trust/block-user-button';
+import { ReportUserForm } from '@/components/trust/report-user-form';
 import { formatApiError, fetchMe } from '@/lib/api/auth';
 import { listFavourites } from '@/lib/api/favourites';
 import { getPortfolio, listPortfolios } from '@/lib/api/portfolios';
@@ -230,6 +232,20 @@ export function PortfolioDetail() {
               >
                 See all work
               </Link>
+              {user && user.id !== portfolio.designerId ? (
+                <div className="space-y-3 border-t border-border/60 pt-4">
+                  <BlockUserButton
+                    userId={portfolio.designerId}
+                    userName={portfolio.designer.name}
+                  />
+                  <ReportUserForm
+                    targetType="USER"
+                    targetId={portfolio.designerId}
+                    reportedUserId={portfolio.designerId}
+                    targetLabel={portfolio.designer.name}
+                  />
+                </div>
+              ) : null}
             </div>
           </div>
         </aside>
