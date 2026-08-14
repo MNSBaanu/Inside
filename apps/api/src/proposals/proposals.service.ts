@@ -203,6 +203,9 @@ export class ProposalsService {
               stageOrder: index + 1,
               name,
               fee: feeMap.get(name) ?? null,
+              dueDate: new Date(
+                Date.now() + (index + 1) * 14 * 24 * 60 * 60 * 1000,
+              ),
             })),
           },
         },

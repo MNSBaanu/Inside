@@ -25,9 +25,7 @@ export class MatchingService {
       where: {
         isPublished: true,
         designer: { role: Role.DESIGNER, status: 'ACTIVE' },
-        ...(blockedIds.size
-          ? { designerId: { notIn: [...blockedIds] } }
-          : {}),
+        ...(blockedIds.size ? { designerId: { notIn: [...blockedIds] } } : {}),
       },
       include: {
         designer: {

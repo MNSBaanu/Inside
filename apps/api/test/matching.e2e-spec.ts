@@ -92,7 +92,9 @@ describe('Matching (e2e)', () => {
       });
       await prisma.session.deleteMany({ where: { userId: clientId } });
       await prisma.authToken.deleteMany({ where: { userId: clientId } });
-      await prisma.user.delete({ where: { id: clientId } }).catch(() => undefined);
+      await prisma.user
+        .delete({ where: { id: clientId } })
+        .catch(() => undefined);
     }
     if (designerId) {
       await prisma.portfolio.deleteMany({ where: { designerId } });

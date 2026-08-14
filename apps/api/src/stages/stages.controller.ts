@@ -18,6 +18,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { ClientModeGuard } from '../auth/guards/client-mode.guard';
 import { DesignerModeGuard } from '../auth/guards/designer-mode.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UpdateStageDueDateDto } from './dto/update-stage-due-date.dto';
 import { RejectStageDto } from './dto/reject-stage.dto';
 import { StagesService } from './stages.service';
 
@@ -36,6 +37,18 @@ export class StagesController {
     @Param('projectId', ParseUUIDPipe) projectId: string,
   ) {
     return this.stages.listByProject(user, projectId);
+  }
+
+  @Patch('stages/:id/due-date')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Set or clear a stage due date (either party)' })
+  @ApiOkResponse({ description: 'Updated' })
+  setDueDate(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateStageDueDateDto,
+  ) {
+    return this.stages.setDueDate(user, id, dto.dueDate ?? null);
   }
 
   @Patch('stages/:id/start')
