@@ -17,7 +17,8 @@ export function middleware(request: NextRequest) {
   const needsAuth =
     Boolean(area) ||
     pathname.startsWith('/profile') ||
-    pathname.startsWith('/projects');
+    pathname.startsWith('/projects') ||
+    pathname.startsWith('/notifications');
 
   if (needsAuth) {
     if (!gate) {

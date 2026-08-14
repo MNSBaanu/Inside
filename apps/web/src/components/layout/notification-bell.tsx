@@ -235,11 +235,11 @@ export function NotificationBell() {
 
           <div className="border-t border-border/60 px-4 py-2">
             <Link
-              href="/projects"
+              href="/notifications"
               onClick={() => setOpen(false)}
               className="text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
-              Go to projects
+              See all notifications
             </Link>
           </div>
         </div>
