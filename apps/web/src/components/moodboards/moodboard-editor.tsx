@@ -7,7 +7,9 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ImageUrlField } from '@/components/layout/image-url-field';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { MasonryGrid } from '@/components/layout/masonry-grid';
+import { Skeleton, SkeletonList } from '@/components/layout/skeleton';
 import { formatApiError } from '@/lib/api/auth';
 import { generateBriefFromMoodboard } from '@/lib/api/briefs';
 import {
@@ -122,15 +124,20 @@ export function MoodboardEditor() {
   }
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading moodboard…</p>;
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-40 w-full rounded-3xl" />
+        <SkeletonList rows={2} />
+      </div>
+    );
   }
 
   if (!board) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-destructive" role="alert">
+        <InlineAlert tone="error">
           {error ?? 'Moodboard not found.'}
-        </p>
+        </InlineAlert>
         <Link
           href="/client/moodboards"
           className={cn(buttonVariants({ variant: 'outline' }))}
@@ -145,7 +152,7 @@ export function MoodboardEditor() {
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-2xl">
+      <section className="relative overflow-hidden rounded-3xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={heroImage}
@@ -189,16 +196,8 @@ export function MoodboardEditor() {
         </div>
       </section>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {message ? (
-        <p className="text-sm text-primary" role="status">
-          {message}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+      {message ? <InlineAlert tone="success">{message}</InlineAlert> : null}
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-4">

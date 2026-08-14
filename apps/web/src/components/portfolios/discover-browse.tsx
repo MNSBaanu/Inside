@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/layout/empty-state';
 import { FilterChips } from '@/components/layout/filter-chips';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { MasonryGrid } from '@/components/layout/masonry-grid';
 import { DiscoverTile } from '@/components/portfolios/discover-tile';
 import { fetchMe, formatApiError } from '@/lib/api/auth';
@@ -95,7 +97,7 @@ export function DiscoverBrowse() {
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-2xl">
+      <section className="relative overflow-hidden rounded-3xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={DISCOVER_BANNER}
@@ -160,14 +162,11 @@ export function DiscoverBrowse() {
         </div>
       </div>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
       {!loading && items.length === 0 ? (
         <EmptyState
+          icon={<Search className="size-5" />}
           title="No rooms match"
           description="Try a broader style or room, or clear the filters to see everything published."
         />

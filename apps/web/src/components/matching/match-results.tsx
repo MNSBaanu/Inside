@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { buttonVariants } from '@/components/ui/button';
 import { EmptyState } from '@/components/layout/empty-state';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { SkeletonList } from '@/components/layout/skeleton';
 import { SaveDesignerButton } from '@/components/favourites/save-designer-button';
 import { formatApiError } from '@/lib/api/auth';
 import { getBrief } from '@/lib/api/briefs';
@@ -87,7 +89,7 @@ export function MatchResults() {
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-2xl">
+      <section className="relative overflow-hidden rounded-3xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={DEMO_LIVING_DETAIL}
@@ -132,15 +134,9 @@ export function MatchResults() {
         </div>
       </section>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Matching designers…</p>
-      ) : null}
+      {loading ? <SkeletonList rows={3} /> : null}
 
       {!loading && items.length === 0 ? (
         <EmptyState

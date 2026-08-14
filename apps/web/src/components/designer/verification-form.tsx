@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { PageHeader } from '@/components/layout/page-header';
+import { SkeletonList } from '@/components/layout/skeleton';
 import { StatusPill } from '@/components/layout/status-pill';
 import { formatApiError } from '@/lib/api/auth';
 import {
@@ -87,24 +90,17 @@ export function VerificationForm() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="notes">Note for the reviewer (optional)</Label>
-          <Input
+          <Textarea
             id="notes"
+            rows={3}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Registered interior designer since 2019"
           />
         </div>
 
-        {error ? (
-          <p className="text-sm text-destructive" role="alert">
-            {error}
-          </p>
-        ) : null}
-        {message ? (
-          <p className="text-sm text-muted-foreground" role="status">
-            {message}
-          </p>
-        ) : null}
+        {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+        {message ? <InlineAlert tone="success">{message}</InlineAlert> : null}
 
         <Button type="submit" disabled={saving || hasPending}>
           {saving
@@ -117,9 +113,7 @@ export function VerificationForm() {
 
       <section className="space-y-3">
         <h2 className="font-heading text-2xl tracking-tight">History</h2>
-        {loading ? (
-          <p className="text-sm text-muted-foreground">Loading…</p>
-        ) : null}
+        {loading ? <SkeletonList rows={1} /> : null}
         {!loading && items.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             You have not submitted a verification request yet.

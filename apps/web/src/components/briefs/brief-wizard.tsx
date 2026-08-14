@@ -6,6 +6,8 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { Skeleton } from '@/components/layout/skeleton';
 import { VisualPicker } from '@/components/layout/visual-picker';
 import { formatApiError } from '@/lib/api/auth';
 import { createBrief, getBrief, updateBrief } from '@/lib/api/briefs';
@@ -176,15 +178,18 @@ export function BriefWizard({ mode }: BriefWizardProps) {
   }
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading brief…</p>;
+    return (
+      <div className="mx-auto max-w-3xl space-y-6">
+        <Skeleton className="h-10 w-2/3" />
+        <Skeleton className="h-56 w-full rounded-3xl" />
+      </div>
+    );
   }
 
   if (mode === 'edit' && !brief && error) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
+        <InlineAlert tone="error">{error}</InlineAlert>
         <Link
           href="/client/briefs"
           className={cn(buttonVariants({ variant: 'outline' }))}
@@ -374,11 +379,7 @@ export function BriefWizard({ mode }: BriefWizardProps) {
         </dl>
       ) : null}
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
       <div className="flex flex-wrap gap-2">
         {step > 0 ? (

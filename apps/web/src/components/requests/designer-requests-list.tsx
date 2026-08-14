@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { EmptyState } from '@/components/layout/empty-state';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { SkeletonList } from '@/components/layout/skeleton';
 import { StatusBadge } from '@/components/requests/status-badge';
 import { formatApiError } from '@/lib/api/auth';
 import { listRequests } from '@/lib/api/requests';
@@ -81,7 +83,7 @@ export function DesignerRequestsList() {
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-2xl">
+      <section className="relative overflow-hidden rounded-3xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={DEMO_BEDROOM}
@@ -102,15 +104,9 @@ export function DesignerRequestsList() {
         </div>
       </section>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Loading requests…</p>
-      ) : null}
+      {loading ? <SkeletonList rows={3} /> : null}
 
       {!loading && items.length === 0 ? (
         <EmptyState

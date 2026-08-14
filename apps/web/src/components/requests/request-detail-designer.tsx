@@ -6,6 +6,8 @@ import { useParams } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { Skeleton, SkeletonList } from '@/components/layout/skeleton';
 import { StatusBadge } from '@/components/requests/status-badge';
 import { fetchMe, formatApiError } from '@/lib/api/auth';
 import {
@@ -146,15 +148,21 @@ export function RequestDetailDesigner() {
   }
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading request…</p>;
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-10 w-2/3" />
+        <SkeletonList rows={2} />
+      </div>
+    );
   }
 
   if (!request) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-destructive" role="alert">
+        <InlineAlert tone="error">
           {error ?? 'Request not found.'}
-        </p>
+        </InlineAlert>
         <Link
           href="/designer/requests"
           className={cn(buttonVariants({ variant: 'outline' }))}
@@ -209,19 +217,11 @@ export function RequestDetailDesigner() {
         ) : null}
       </header>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {message ? (
-        <p className="text-sm text-primary" role="status">
-          {message}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+      {message ? <InlineAlert tone="success">{message}</InlineAlert> : null}
 
       {myProposal ? (
-        <section className="surface-panel space-y-3 p-5">
+        <section className="surface-panel space-y-3 p-5 md:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-heading text-xl tracking-tight">
               Your proposal

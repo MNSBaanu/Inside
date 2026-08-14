@@ -7,6 +7,8 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ImageUrlField } from '@/components/layout/image-url-field';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { Skeleton } from '@/components/layout/skeleton';
 import { TaxonomyField } from '@/components/layout/taxonomy-field';
 import { formatApiError } from '@/lib/api/auth';
 import {
@@ -118,14 +120,19 @@ export function ManagePortfolioForm() {
   }
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading…</p>;
+    return (
+      <div className="mx-auto max-w-2xl space-y-6">
+        <Skeleton className="h-10 w-1/2" />
+        <Skeleton className="h-64 w-full rounded-3xl" />
+      </div>
+    );
   }
 
   if (!portfolio) {
     return (
-      <p className="text-sm text-destructive" role="alert">
+      <InlineAlert tone="error">
         {error ?? 'Portfolio not found.'}
-      </p>
+      </InlineAlert>
     );
   }
 
@@ -239,16 +246,8 @@ export function ManagePortfolioForm() {
         </ul>
       </section>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {message ? (
-        <p className="text-sm text-primary" role="status">
-          {message}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+      {message ? <InlineAlert tone="success">{message}</InlineAlert> : null}
 
       <Button type="button" variant="ghost" onClick={() => router.push('/designer')}>
         Back to list

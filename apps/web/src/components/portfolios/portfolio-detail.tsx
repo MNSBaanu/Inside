@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { Skeleton } from '@/components/layout/skeleton';
 import { SaveDesignerButton } from '@/components/favourites/save-designer-button';
 import { DesignerRatingBadge } from '@/components/reviews/designer-rating-badge';
 import { DesignerReviews } from '@/components/reviews/designer-reviews';
@@ -73,15 +75,21 @@ export function PortfolioDetail() {
   }, [params.id]);
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading portfolio…</p>;
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-12 w-2/3" />
+        <Skeleton className="h-80 w-full rounded-2xl" />
+      </div>
+    );
   }
 
   if (!portfolio) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-destructive" role="alert">
+        <InlineAlert tone="error">
           {error ?? 'Portfolio not found.'}
-        </p>
+        </InlineAlert>
         <Button type="button" variant="outline" onClick={() => router.back()}>
           Go back
         </Button>
@@ -134,11 +142,7 @@ export function PortfolioDetail() {
         ) : null}
       </header>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="space-y-6">

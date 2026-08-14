@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ImageUrlField } from '@/components/layout/image-url-field';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { TaxonomyField } from '@/components/layout/taxonomy-field';
 import { formatApiError } from '@/lib/api/auth';
 import { createPortfolio } from '@/lib/api/portfolios';
@@ -114,19 +115,21 @@ export function CreatePortfolioForm() {
         value={imageUrl}
         onChange={setImageUrl}
       />
-      <label className="flex items-center gap-2 text-sm">
+      <label className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/30 p-4 text-sm">
         <input
           type="checkbox"
           checked={isPublished}
           onChange={(e) => setIsPublished(e.target.checked)}
+          className="mt-0.5 size-4 accent-[var(--primary)]"
         />
-        Publish immediately
+        <span>
+          <span className="font-medium">Publish immediately</span>
+          <span className="block text-muted-foreground">
+            Published work appears in client discovery and matching.
+          </span>
+        </span>
       </label>
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
       <Button type="submit" disabled={pending}>
         {pending ? 'Creating…' : 'Create portfolio'}
       </Button>

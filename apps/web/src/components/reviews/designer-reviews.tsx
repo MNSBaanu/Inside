@@ -5,6 +5,8 @@ import {
   StarRating,
   formatRating,
 } from '@/components/reviews/star-rating';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { Skeleton } from '@/components/layout/skeleton';
 import { ReportUserForm } from '@/components/trust/report-user-form';
 import { fetchMe, formatApiError } from '@/lib/api/auth';
 import { listDesignerReviews } from '@/lib/api/reviews';
@@ -56,14 +58,13 @@ export function DesignerReviews({ designerId }: { designerId: string }) {
       </div>
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">Loading reviews…</p>
+        <div className="space-y-2">
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full" />
+        </div>
       ) : null}
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
       {!loading && items.length === 0 ? (
         <p className="text-sm text-muted-foreground">

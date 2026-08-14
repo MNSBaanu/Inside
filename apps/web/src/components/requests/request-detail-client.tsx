@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { EmptyState } from '@/components/layout/empty-state';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { Skeleton, SkeletonList } from '@/components/layout/skeleton';
 import { StatusBadge } from '@/components/requests/status-badge';
 import { formatApiError } from '@/lib/api/auth';
 import {
@@ -94,15 +96,21 @@ export function RequestDetailClient() {
   }
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading request…</p>;
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-10 w-2/3" />
+        <SkeletonList rows={2} />
+      </div>
+    );
   }
 
   if (!request) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-destructive" role="alert">
+        <InlineAlert tone="error">
           {error ?? 'Request not found.'}
-        </p>
+        </InlineAlert>
         <Link
           href="/client/requests"
           className={cn(buttonVariants({ variant: 'outline' }))}
@@ -152,14 +160,10 @@ export function RequestDetailClient() {
         ) : null}
       </header>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
       {project ? (
-        <section className="surface-panel space-y-3 p-5">
+        <section className="surface-panel space-y-3 p-5 md:p-6">
           <h2 className="font-heading text-xl tracking-tight">
             Project created
           </h2>

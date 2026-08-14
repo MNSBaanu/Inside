@@ -7,6 +7,8 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { EmptyState } from '@/components/layout/empty-state';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { SkeletonList } from '@/components/layout/skeleton';
 import { formatApiError } from '@/lib/api/auth';
 import { generateBriefFromMoodboard } from '@/lib/api/briefs';
 import { createMoodboard, deleteMoodboard, listMoodboards } from '@/lib/api/moodboards';
@@ -117,7 +119,7 @@ export function MoodboardsList() {
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-2xl">
+      <section className="relative overflow-hidden rounded-3xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={DEMO_INSPO_2}
@@ -156,15 +158,9 @@ export function MoodboardsList() {
         </Button>
       </form>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Loading moodboards…</p>
-      ) : null}
+      {loading ? <SkeletonList rows={2} /> : null}
 
       {!loading && items.length === 0 ? (
         <EmptyState

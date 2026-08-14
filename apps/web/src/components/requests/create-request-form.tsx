@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { formatApiError } from '@/lib/api/auth';
 import { listBriefs } from '@/lib/api/briefs';
 import { listFavourites } from '@/lib/api/favourites';
@@ -222,11 +223,7 @@ export function CreateRequestForm() {
         </div>
       </div>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
       <div className="flex flex-wrap gap-2">
         <Button type="submit" disabled={pending}>
