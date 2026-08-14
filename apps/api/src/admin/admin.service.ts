@@ -149,6 +149,84 @@ export class AdminService {
     return { success: true, data: { report: this.serializeReport(updated) } };
   }
 
+  async markReportUnderReview(admin: AuthUser, id: string) {
+    const report = await this.prisma.report.findUnique({ where: { id } });
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+    if (
+      report.status !== ReportStatus.OPEN &&
+      report.status !== ReportStatus.UNDER_REVIEW
+    ) {
+      throw new BadRequestException('Report is already closed');
+    }
+    const updated = await this.prisma.report.update({
+      where: { id },
+      data: { status: ReportStatus.UNDER_REVIEW },
+    });
+    return { success: true, data: { report: this.serializeReport(updated) } };
+  }
+
+  async listReviews() {
+    const items = await this.prisma.review.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+      include: {
+        reviewer: { select: { id: true, name: true, avatarUrl: true } },
+        designer: { select: { id: true, name: true, email: true } },
+      },
+    });
+    return {
+      success: true,
+      data: {
+        items: items.map((r) => ({
+          id: r.id,
+          projectId: r.projectId,
+          reviewerId: r.reviewerId,
+          designerId: r.designerId,
+          rating: r.rating,
+          comment: r.comment,
+          isVisible: r.isVisible,
+          createdAt: r.createdAt,
+          updatedAt: r.updatedAt,
+          reviewer: r.reviewer ?? null,
+          designer: r.designer ?? null,
+        })),
+      },
+    };
+  }
+
+  async setReviewVisibility(id: string, isVisible: boolean) {
+    const review = await this.prisma.review.findUnique({ where: { id } });
+    if (!review) {
+      throw new NotFoundException('Review not found');
+    }
+    const updated = await this.prisma.review.update({
+      where: { id },
+      data: { isVisible },
+      include: {
+        reviewer: { select: { id: true, name: true, avatarUrl: true } },
+      },
+    });
+    return {
+      success: true,
+      data: {
+        review: {
+          id: updated.id,
+          projectId: updated.projectId,
+          reviewerId: updated.reviewerId,
+          designerId: updated.designerId,
+          rating: updated.rating,
+          comment: updated.comment,
+          isVisible: updated.isVisible,
+          createdAt: updated.createdAt,
+          updatedAt: updated.updatedAt,
+          reviewer: updated.reviewer ?? null,
+        },
+      },
+    };
+  }
+
   private serializeReport(r: {
     id: string;
     reporterId: string;

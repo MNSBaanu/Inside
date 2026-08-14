@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -16,6 +17,7 @@ import type { AuthUser } from '../auth/auth.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { SetReviewVisibilityDto } from './dto/set-review-visibility.dto';
 import { AdminService } from './admin.service';
 
 @ApiTags('admin')
@@ -59,6 +61,16 @@ export class AdminController {
     return this.admin.listOpenReports();
   }
 
+  @Patch('reports/:id/under-review')
+  @ApiOperation({ summary: 'Mark a report under review' })
+  @ApiOkResponse({ description: 'Under review' })
+  underReview(
+    @CurrentUser() admin: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.admin.markReportUnderReview(admin, id);
+  }
+
   @Patch('reports/:id/resolve')
   @ApiOperation({ summary: 'Resolve a report' })
   @ApiOkResponse({ description: 'Resolved' })
@@ -77,5 +89,22 @@ export class AdminController {
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.admin.dismissReport(admin, id);
+  }
+
+  @Get('reviews')
+  @ApiOperation({ summary: 'List reviews for moderation' })
+  @ApiOkResponse({ description: 'Reviews' })
+  reviews() {
+    return this.admin.listReviews();
+  }
+
+  @Patch('reviews/:id/visibility')
+  @ApiOperation({ summary: 'Show or hide a review publicly' })
+  @ApiOkResponse({ description: 'Updated' })
+  setReviewVisibility(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: SetReviewVisibilityDto,
+  ) {
+    return this.admin.setReviewVisibility(id, dto.isVisible);
   }
 }
