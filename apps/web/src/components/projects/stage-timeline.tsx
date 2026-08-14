@@ -45,6 +45,11 @@ export function StageTimeline({
               <p className="text-sm tabular-nums text-muted-foreground">
                 {formatLkr(stage.fee)}
               </p>
+              {stage.dueDate ? (
+                <p className="text-[11px] text-muted-foreground">
+                  Due {new Date(stage.dueDate).toLocaleDateString()}
+                </p>
+              ) : null}
             </button>
           </li>
         );

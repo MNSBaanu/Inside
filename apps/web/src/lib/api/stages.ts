@@ -29,3 +29,10 @@ export function rejectStage(id: string, reason?: string) {
     body: reason ? { reason } : {},
   });
 }
+
+export function setStageDueDate(id: string, dueDate: string | null) {
+  return apiRequest<{ stage: ProjectStage }>(`/stages/${id}/due-date`, {
+    method: 'PATCH',
+    body: { dueDate },
+  });
+}

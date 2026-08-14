@@ -7,6 +7,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { StatusPill } from '@/components/layout/status-pill';
 import { ModeSwitchNotice } from '@/components/projects/mode-switch-notice';
 import { PaymentsSummary } from '@/components/projects/payments-summary';
+import { ProjectActivityFeed } from '@/components/projects/project-activity';
 import { ProjectChat } from '@/components/projects/project-chat';
 import { ProjectReviewSection } from '@/components/projects/project-review-section';
 import { StagePanel } from '@/components/projects/stage-panel';
@@ -242,8 +243,11 @@ export function ProjectWorkspace() {
           projectId={project.id}
           meId={me.id}
           counterpartyName={counterparty?.name ?? 'the other party'}
+          counterpartyId={counterparty?.id}
         />
       ) : null}
+
+      <ProjectActivityFeed projectId={project.id} />
 
       {me && isClient && project.status === 'COMPLETED' ? (
         <ProjectReviewSection

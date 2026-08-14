@@ -26,3 +26,19 @@ export function resumeProject(id: string) {
     method: 'PATCH',
   });
 }
+
+export type ProjectActivity = {
+  id: string;
+  projectId: string | null;
+  userId: string | null;
+  action: string;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+  user: { id: string; name: string; avatarUrl: string | null } | null;
+};
+
+export function listProjectActivity(projectId: string) {
+  return apiRequest<{ items: ProjectActivity[] }>(
+    `/projects/${projectId}/activity`,
+  );
+}

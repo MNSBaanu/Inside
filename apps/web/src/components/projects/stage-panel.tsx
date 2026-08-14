@@ -14,6 +14,7 @@ import {
 import {
   approveStage,
   rejectStage,
+  setStageDueDate,
   startStage,
   submitStage,
 } from '@/lib/api/stages';
@@ -52,6 +53,9 @@ export function StagePanel({
   const [fileName, setFileName] = useState('');
   const [notes, setNotes] = useState('');
   const [reason, setReason] = useState('');
+  const [dueDateDraft, setDueDateDraft] = useState(
+    stage.dueDate ? stage.dueDate.slice(0, 10) : '',
+  );
   const [feedbackDrafts, setFeedbackDrafts] = useState<Record<string, string>>(
     {},
   );
@@ -72,7 +76,12 @@ export function StagePanel({
     void load();
   }, [load]);
 
+  useEffect(() => {
+    setDueDateDraft(stage.dueDate ? stage.dueDate.slice(0, 10) : '');
+  }, [stage.dueDate]);
+
   const openForWork = stage.status === 'IN_PROGRESS' || stage.status === 'REJECTED';
+  const canEditDueDate = canAct && (role === 'client' || role === 'designer');
   const designerCanStart =
     role === 'designer' && canAct && stage.status === 'PENDING' && isCurrent;
   const designerCanWork = role === 'designer' && canAct && openForWork;
@@ -195,6 +204,55 @@ export function StagePanel({
           {error}
         </p>
       ) : null}
+
+      <div className="flex flex-col gap-2 border-t border-border/60 pt-4 sm:flex-row sm:items-end">
+        <div className="flex-1 space-y-2">
+          <Label htmlFor="stage-due-date">Due date</Label>
+          <Input
+            id="stage-due-date"
+            type="date"
+            value={dueDateDraft}
+            disabled={!canEditDueDate || busy}
+            onChange={(e) => setDueDateDraft(e.target.value)}
+          />
+        </div>
+        {canEditDueDate ? (
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={busy || !dueDateDraft}
+              onClick={() =>
+                run(async () => {
+                  await setStageDueDate(
+                    stage.id,
+                    new Date(`${dueDateDraft}T12:00:00`).toISOString(),
+                  );
+                })
+              }
+            >
+              Save due date
+            </Button>
+            {stage.dueDate ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                disabled={busy}
+                onClick={() =>
+                  run(async () => {
+                    await setStageDueDate(stage.id, null);
+                    setDueDateDraft('');
+                  })
+                }
+              >
+                Clear
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
 
       {!projectActive ? (
         <p className="text-sm text-muted-foreground">
