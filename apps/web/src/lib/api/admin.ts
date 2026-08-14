@@ -40,6 +40,44 @@ export function dismissReport(id: string) {
   });
 }
 
+export function markReportUnderReview(id: string) {
+  return apiRequest<{ report: Report }>(`/admin/reports/${id}/under-review`, {
+    method: 'PATCH',
+  });
+}
+
+export function listAdminReviews() {
+  return apiRequest<{
+    items: Array<{
+      id: string;
+      projectId: string;
+      reviewerId: string;
+      designerId: string;
+      rating: number;
+      comment: string | null;
+      isVisible: boolean;
+      createdAt: string;
+      updatedAt: string;
+      reviewer: { id: string; name: string; avatarUrl: string | null } | null;
+      designer: { id: string; name: string; email: string } | null;
+    }>;
+  }>('/admin/reviews');
+}
+
+export function setReviewVisibility(id: string, isVisible: boolean) {
+  return apiRequest<{
+    review: {
+      id: string;
+      isVisible: boolean;
+      rating: number;
+      comment: string | null;
+    };
+  }>(`/admin/reviews/${id}/visibility`, {
+    method: 'PATCH',
+    body: { isVisible },
+  });
+}
+
 export function listPendingVerifications() {
   return apiRequest<{ items: Verification[] }>('/verifications/admin/pending');
 }

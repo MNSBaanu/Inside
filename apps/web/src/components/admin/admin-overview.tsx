@@ -70,6 +70,12 @@ export function AdminOverview() {
       value: counts.reports,
       copy: 'Trust & safety queue',
     },
+    {
+      href: '/admin/reviews',
+      label: 'Reviews',
+      value: null as number | null,
+      copy: 'Hide or restore public ratings',
+    },
   ];
 
   return (
@@ -101,7 +107,7 @@ export function AdminOverview() {
         </p>
       ) : null}
 
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => (
           <Link
             key={card.href}
@@ -112,7 +118,7 @@ export function AdminOverview() {
               {card.label}
             </p>
             <p className="font-heading text-4xl tabular-nums tracking-tight">
-              {loading ? '—' : card.value}
+              {card.value === null ? '→' : loading ? '—' : card.value}
             </p>
             <p className="text-sm text-muted-foreground">{card.copy}</p>
             <p className="pt-2 text-sm text-primary group-hover:underline">

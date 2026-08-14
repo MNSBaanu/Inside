@@ -6,7 +6,7 @@ import { EmptyState } from '@/components/layout/empty-state';
 import { PageHeader } from '@/components/layout/page-header';
 import { StatusPill } from '@/components/layout/status-pill';
 import { formatApiError } from '@/lib/api/auth';
-import { dismissReport, listOpenReports, resolveReport } from '@/lib/api/admin';
+import { dismissReport, listOpenReports, markReportUnderReview, resolveReport } from '@/lib/api/admin';
 import type { Report } from '@/lib/api/types';
 
 export function ReportsQueue() {
@@ -33,7 +33,10 @@ export function ReportsQueue() {
     };
   }, []);
 
-  async function onDecide(id: string, decision: 'resolve' | 'dismiss') {
+  async function onDecide(
+    id: string,
+    decision: 'resolve' | 'dismiss' | 'under-review',
+  ) {
     setBusyId(id);
     setError(null);
     setMessage(null);
@@ -41,11 +44,18 @@ export function ReportsQueue() {
       if (decision === 'resolve') {
         await resolveReport(id);
         setMessage('Report marked resolved.');
-      } else {
+        setItems((prev) => prev.filter((item) => item.id !== id));
+      } else if (decision === 'dismiss') {
         await dismissReport(id);
         setMessage('Report dismissed.');
+        setItems((prev) => prev.filter((item) => item.id !== id));
+      } else {
+        const data = await markReportUnderReview(id);
+        setMessage('Report marked under review.');
+        setItems((prev) =>
+          prev.map((item) => (item.id === id ? data.report : item)),
+        );
       }
-      setItems((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
       setError(formatApiError(err));
     } finally {
@@ -117,7 +127,18 @@ export function ReportsQueue() {
               Target id: <span className="font-mono">{item.targetId}</span>
             </p>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              {item.status === 'OPEN' ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={busyId === item.id}
+                  onClick={() => onDecide(item.id, 'under-review')}
+                >
+                  Under review
+                </Button>
+              ) : null}
               <Button
                 type="button"
                 size="sm"

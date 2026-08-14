@@ -5,6 +5,7 @@ const links = [
   { href: '/admin/users', label: 'Users' },
   { href: '/admin/verifications', label: 'Verification' },
   { href: '/admin/reports', label: 'Reports' },
+  { href: '/admin/reviews', label: 'Reviews' },
 ];
 
 export default function AdminLayout({
