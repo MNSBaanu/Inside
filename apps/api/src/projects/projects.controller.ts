@@ -41,6 +41,16 @@ export class ProjectsController {
     return this.projects.getById(user, id);
   }
 
+  @Get(':id/activity')
+  @ApiOperation({ summary: 'List project activity log (party access)' })
+  @ApiOkResponse({ description: 'Activity' })
+  activity(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.projects.listActivity(user, id);
+  }
+
   @Patch(':id/cancel')
   @ApiOperation({ summary: 'Cancel project (either party)' })
   @ApiOkResponse({ description: 'Cancelled' })

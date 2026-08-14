@@ -3,6 +3,7 @@ import { ProjectStatus, Role, StageName } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { ActivityService } from '../activity/activity.service';
 import { ProjectsService } from './projects.service';
 
 describe('ProjectsService', () => {
@@ -29,6 +30,7 @@ describe('ProjectsService', () => {
   const stranger = { id: 'x1', role: Role.CLIENT } as AuthUser;
 
   const notifications = { notify: jest.fn() };
+  const activity = { log: jest.fn(), listByProject: jest.fn() };
 
   let service: ProjectsService;
 
@@ -52,6 +54,7 @@ describe('ProjectsService', () => {
     service = new ProjectsService(
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
+      activity as unknown as ActivityService,
     );
   });
 

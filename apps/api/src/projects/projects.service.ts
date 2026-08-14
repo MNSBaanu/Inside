@@ -12,6 +12,7 @@ import {
   StageStatus,
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -66,6 +67,7 @@ export class ProjectsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly activity: ActivityService,
   ) {}
 
   async listMine(user: AuthUser) {
@@ -116,6 +118,12 @@ export class ProjectsService {
       metadata: { projectId: id },
     });
 
+    await this.activity.log({
+      projectId: id,
+      userId: user.id,
+      action: 'PROJECT_CANCELLED',
+    });
+
     return { success: true, data: { project: this.serialize(updated) } };
   }
 
@@ -139,6 +147,12 @@ export class ProjectsService {
       title: 'Project on hold',
       message: `Project "${project.title}" was placed on hold`,
       metadata: { projectId: id },
+    });
+
+    await this.activity.log({
+      projectId: id,
+      userId: user.id,
+      action: 'PROJECT_ON_HOLD',
     });
 
     return { success: true, data: { project: this.serialize(updated) } };
@@ -166,7 +180,19 @@ export class ProjectsService {
       metadata: { projectId: id },
     });
 
+    await this.activity.log({
+      projectId: id,
+      userId: user.id,
+      action: 'PROJECT_RESUMED',
+    });
+
     return { success: true, data: { project: this.serialize(updated) } };
+  }
+
+  async listActivity(user: AuthUser, id: string) {
+    await this.requirePartyAccess(id, user);
+    const items = await this.activity.listByProject(id);
+    return { success: true, data: { items } };
   }
 
   async requirePartyAccess(

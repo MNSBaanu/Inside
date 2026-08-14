@@ -12,6 +12,7 @@ import {
   StageStatus,
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -42,6 +43,7 @@ export class StagesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly activity: ActivityService,
   ) {}
 
   async listByProject(user: AuthUser, projectId: string) {
@@ -54,6 +56,27 @@ export class StagesService {
       success: true,
       data: { items: items.map((s) => this.serialize(s)) },
     };
+  }
+
+  async setDueDate(user: AuthUser, stageId: string, dueDate: Date | null) {
+    const stage = await this.requireStage(stageId);
+    if (
+      stage.project.clientId !== user.id &&
+      stage.project.designerId !== user.id
+    ) {
+      throw new ForbiddenException('You do not have access to this project');
+    }
+    const updated = await this.prisma.projectStage.update({
+      where: { id: stageId },
+      data: { dueDate },
+    });
+    await this.activity.log({
+      projectId: stage.projectId,
+      userId: user.id,
+      action: 'STAGE_DUE_DATE_SET',
+      metadata: { stageId, dueDate },
+    });
+    return { success: true, data: { stage: this.serialize(updated) } };
   }
 
   async start(user: AuthUser, stageId: string) {
@@ -78,6 +101,13 @@ export class StagesService {
       title: 'Stage started',
       message: `${stage.name} stage has been started`,
       metadata: { projectId: stage.projectId, stageId: stage.id },
+    });
+
+    await this.activity.log({
+      projectId: stage.projectId,
+      userId: user.id,
+      action: 'STAGE_STARTED',
+      metadata: { stageId: stage.id, name: stage.name },
     });
 
     return { success: true, data: { stage: this.serialize(updated) } };

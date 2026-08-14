@@ -9,6 +9,7 @@ import {
 import type { AuthUser } from '../auth/auth.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { ActivityService } from '../activity/activity.service';
 import { StagesService } from './stages.service';
 
 describe('StagesService', () => {
@@ -33,6 +34,7 @@ describe('StagesService', () => {
   };
 
   const notifications = { notify: jest.fn() };
+  const activity = { log: jest.fn(), listByProject: jest.fn() };
 
   const designer = {
     id: 'd1',
@@ -74,6 +76,7 @@ describe('StagesService', () => {
     service = new StagesService(
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
+      activity as unknown as ActivityService,
     );
   });
 
