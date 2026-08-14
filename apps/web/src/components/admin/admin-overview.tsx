@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { Flag, ShieldCheck, Star, Users } from 'lucide-react';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { StatCard } from '@/components/layout/stat-card';
 import { formatApiError } from '@/lib/api/auth';
 import {
   listAdminUsers,
@@ -55,76 +57,65 @@ export function AdminOverview() {
     {
       href: '/admin/users',
       label: 'Users',
-      value: counts.users,
-      copy: `${counts.suspended} suspended`,
+      value: loading ? '—' : counts.users,
+      hint: `${counts.suspended} suspended`,
+      icon: <Users className="size-4" />,
     },
     {
       href: '/admin/verifications',
       label: 'Verification queue',
-      value: counts.verifications,
-      copy: 'Designers awaiting review',
+      value: loading ? '—' : counts.verifications,
+      hint: 'Designers awaiting review',
+      icon: <ShieldCheck className="size-4" />,
     },
     {
       href: '/admin/reports',
       label: 'Open reports',
-      value: counts.reports,
-      copy: 'Trust & safety queue',
+      value: loading ? '—' : counts.reports,
+      hint: 'Trust & safety queue',
+      icon: <Flag className="size-4" />,
     },
     {
       href: '/admin/reviews',
       label: 'Reviews',
-      value: null as number | null,
-      copy: 'Hide or restore public ratings',
+      value: '·',
+      hint: 'Hide or restore public ratings',
+      icon: <Star className="size-4" />,
     },
   ];
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-2xl">
+      <section className="relative overflow-hidden rounded-3xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={DEMO_LIVING}
           alt=""
-          className="h-40 w-full object-cover md:h-56"
+          className="h-44 w-full object-cover md:h-60"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(100deg,oklch(0.18_0.03_155_/_0.82)_0%,oklch(0.18_0.03_155_/_0.35)_78%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(100deg,oklch(0.18_0.03_155_/_0.86)_0%,oklch(0.18_0.03_155_/_0.3)_78%)]" />
         <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/70">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.16em] text-white/85 backdrop-blur-sm">
+            <span
+              aria-hidden="true"
+              className="size-1.5 rounded-full bg-white/80"
+            />
             Admin · Oversight
-          </p>
-          <h1 className="mt-2 font-heading text-3xl tracking-tight text-white md:text-4xl">
+          </span>
+          <h1 className="mt-3 font-heading text-3xl tracking-tight text-white md:text-4xl">
             Platform control
           </h1>
-          <p className="mt-2 max-w-lg text-sm text-white/80">
+          <p className="mt-2 max-w-lg text-sm leading-relaxed text-white/80">
             Accounts, designer verification, and trust &amp; safety reports.
           </p>
         </div>
       </section>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => (
-          <Link
-            key={card.href}
-            href={card.href}
-            className="surface-panel group space-y-2 p-6 transition-shadow hover:shadow-[0_22px_60px_-32px_oklch(0.22_0.02_145_/_0.55)]"
-          >
-            <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-              {card.label}
-            </p>
-            <p className="font-heading text-4xl tabular-nums tracking-tight">
-              {card.value === null ? '→' : loading ? '—' : card.value}
-            </p>
-            <p className="text-sm text-muted-foreground">{card.copy}</p>
-            <p className="pt-2 text-sm text-primary group-hover:underline">
-              Open →
-            </p>
-          </Link>
+          <StatCard key={card.href} {...card} />
         ))}
       </div>
     </div>

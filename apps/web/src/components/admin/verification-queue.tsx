@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ExternalLink, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { EmptyState } from '@/components/layout/empty-state';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { PageHeader } from '@/components/layout/page-header';
+import { SkeletonList } from '@/components/layout/skeleton';
 import { StatusPill } from '@/components/layout/status-pill';
 import { formatApiError } from '@/lib/api/auth';
 import {
@@ -67,23 +70,14 @@ export function VerificationQueue() {
         description="Check the evidence a designer submitted, then approve or reject with a note."
       />
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {message ? (
-        <p className="text-sm text-muted-foreground" role="status">
-          {message}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+      {message ? <InlineAlert tone="success">{message}</InlineAlert> : null}
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Loading queue…</p>
-      ) : null}
+      {loading ? <SkeletonList rows={2} /> : null}
 
       {!loading && items.length === 0 ? (
         <EmptyState
+          icon={<ShieldCheck className="size-5" />}
           title="Queue is clear"
           description="No designer is waiting on verification right now."
         />
@@ -91,7 +85,7 @@ export function VerificationQueue() {
 
       <ul className="space-y-4">
         {items.map((item) => (
-          <li key={item.id} className="surface-panel space-y-4 p-5">
+          <li key={item.id} className="surface-panel space-y-4 p-5 md:p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -114,9 +108,10 @@ export function VerificationQueue() {
                 href={item.evidenceUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="text-primary underline-offset-4 hover:underline"
+                className="inline-flex items-center gap-1.5 text-primary underline-offset-4 hover:underline"
               >
                 View submitted evidence
+                <ExternalLink aria-hidden="true" className="size-3.5" />
               </a>
               {item.notes ? (
                 <p className="text-muted-foreground">
@@ -125,7 +120,7 @@ export function VerificationQueue() {
               ) : null}
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-3 border-t border-border/50 pt-4 sm:flex-row sm:items-center">
               <Input
                 value={notes[item.id] ?? ''}
                 onChange={(e) =>

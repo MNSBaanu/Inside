@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { Search, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { EmptyState } from '@/components/layout/empty-state';
 import { FilterChips } from '@/components/layout/filter-chips';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { PageHeader } from '@/components/layout/page-header';
+import { SkeletonList } from '@/components/layout/skeleton';
 import { StatusPill } from '@/components/layout/status-pill';
 import { formatApiError } from '@/lib/api/auth';
 import { listAdminUsers, reactivateUser, suspendUser } from '@/lib/api/admin';
@@ -88,12 +91,19 @@ export function AdminUsers() {
       <div className="surface-panel space-y-4 p-5">
         <div className="space-y-2">
           <Label htmlFor="user-search">Search</Label>
-          <Input
-            id="user-search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Name or email"
-          />
+          <div className="relative">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+            />
+            <Input
+              id="user-search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Name or email"
+              className="pl-9"
+            />
+          </div>
         </div>
         <FilterChips
           label="Role"
@@ -103,18 +113,13 @@ export function AdminUsers() {
         />
       </div>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Loading users…</p>
-      ) : null}
+      {loading ? <SkeletonList rows={2} /> : null}
 
       {!loading && filtered.length === 0 ? (
         <EmptyState
+          icon={<Users className="size-5" />}
           title="No users match"
           description="Clear the search or pick a different role."
         />
@@ -125,7 +130,7 @@ export function AdminUsers() {
           <table className="w-full min-w-[40rem] text-sm">
             <caption className="sr-only">Platform users</caption>
             <thead>
-              <tr className="border-b border-border/60 text-left text-xs uppercase tracking-wider text-muted-foreground">
+              <tr className="border-b border-border/60 bg-muted/30 text-left text-xs uppercase tracking-wider text-muted-foreground">
                 <th scope="col" className="px-5 py-3 font-medium">
                   User
                 </th>
@@ -147,13 +152,23 @@ export function AdminUsers() {
               {filtered.map((user) => (
                 <tr
                   key={user.id}
-                  className="border-b border-border/40 last:border-0"
+                  className="border-b border-border/40 transition-colors last:border-0 hover:bg-muted/25"
                 >
                   <td className="px-5 py-3">
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
+                    <div className="flex items-center gap-3">
+                      <span
+                        aria-hidden="true"
+                        className="grid size-9 shrink-0 place-items-center rounded-full border border-primary/15 bg-primary/[0.07] text-xs font-semibold uppercase text-primary"
+                      >
+                        {user.name.slice(0, 2)}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="font-medium">{user.name}</p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-5 py-3">
                     <div className="flex flex-wrap items-center gap-1.5">
