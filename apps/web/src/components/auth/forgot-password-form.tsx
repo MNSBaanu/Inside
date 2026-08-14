@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { forgotPasswordRequest, formatApiError } from '@/lib/api/auth';
 import { cn } from '@/lib/utils';
 
@@ -46,16 +47,8 @@ export function ForgotPasswordForm() {
           placeholder="you@example.com"
         />
       </div>
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {message ? (
-        <p className="text-sm text-muted-foreground" role="status">
-          {message}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+      {message ? <InlineAlert tone="success">{message}</InlineAlert> : null}
       {resetToken ? (
         <div className="surface-panel space-y-2 p-4 text-sm">
           <p className="font-medium">Dev reset link</p>
@@ -70,7 +63,7 @@ export function ForgotPasswordForm() {
           </Link>
         </div>
       ) : null}
-      <Button type="submit" disabled={pending} className="w-full">
+      <Button type="submit" disabled={pending} className="h-10 w-full">
         {pending ? 'Sending…' : 'Send reset link'}
       </Button>
       <p className="text-sm text-muted-foreground">

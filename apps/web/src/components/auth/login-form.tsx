@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { Sparkles } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { formatApiError, loginRequest, redirectPathAfterAuth } from '@/lib/api/auth';
 import { cn } from '@/lib/utils';
 
@@ -56,7 +58,10 @@ export function LoginForm() {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5">
       <div className="surface-panel space-y-3 p-4">
-        <p className="text-sm font-medium">Demo accounts</p>
+        <p className="flex items-center gap-2 text-sm font-medium">
+          <Sparkles aria-hidden="true" className="size-4 text-primary" />
+          Demo accounts
+        </p>
         <div className="flex flex-wrap gap-2">
           {DEMO_ACCOUNTS.map((account) => (
             <Button
@@ -107,12 +112,8 @@ export function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
-      <Button type="submit" disabled={pending} className="w-full">
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+      <Button type="submit" disabled={pending} className="h-10 w-full">
         {pending ? 'Signing in…' : 'Sign in'}
       </Button>
       <p className="text-sm text-muted-foreground">

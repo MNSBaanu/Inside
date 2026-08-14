@@ -3,8 +3,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Bell, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { PageHeader } from '@/components/layout/page-header';
+import { SkeletonList } from '@/components/layout/skeleton';
 import { StatusPill } from '@/components/layout/status-pill';
 import { EmptyState } from '@/components/layout/empty-state';
 import { formatApiError } from '@/lib/api/auth';
@@ -94,30 +97,30 @@ export function NotificationsPage() {
         title="Notifications"
         description="Everything that happened across your requests, projects, and account."
         actions={
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            disabled={busy || unread === 0}
-            onClick={() => void onMarkAll()}
-          >
-            Mark all read
-          </Button>
+          <>
+            <span className="surface-panel px-3 py-1.5 text-sm text-muted-foreground">
+              {unread} unread
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={busy || unread === 0}
+              onClick={() => void onMarkAll()}
+            >
+              Mark all read
+            </Button>
+          </>
         }
       />
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Loading…</p>
-      ) : null}
+      {loading ? <SkeletonList rows={4} /> : null}
 
       {!loading && items.length === 0 ? (
         <EmptyState
+          icon={<Bell className="size-5" />}
           title="No notifications"
           description="Updates about proposals, stages, payments, and messages will land here."
         />
@@ -131,23 +134,33 @@ export function NotificationsPage() {
               disabled={busy}
               onClick={() => void onOpen(item)}
               className={cn(
-                'surface-panel flex w-full flex-col gap-2 p-4 text-left transition-shadow hover:shadow-[0_22px_60px_-32px_oklch(0.22_0.02_145_/_0.55)]',
-                !item.isRead && 'border-primary/30',
+                'surface-panel group flex w-full items-start gap-4 p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_60px_-32px_oklch(0.22_0.02_145_/_0.55)]',
+                !item.isRead && 'border-primary/30 bg-primary/[0.03]',
               )}
             >
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusPill value={item.type} />
-                <span className="text-xs text-muted-foreground">
-                  {formatRelativeTime(item.createdAt)}
-                </span>
-                {!item.isRead ? (
-                  <span className="text-[11px] uppercase tracking-wider text-primary">
-                    Unread
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'mt-1.5 size-2 shrink-0 rounded-full',
+                  item.isRead ? 'bg-border' : 'bg-primary',
+                )}
+              />
+              <span className="min-w-0 flex-1 space-y-2">
+                <span className="flex flex-wrap items-center gap-2">
+                  <StatusPill value={item.type} />
+                  <span className="text-xs text-muted-foreground">
+                    {formatRelativeTime(item.createdAt)}
                   </span>
-                ) : null}
-              </div>
-              <p className="font-medium">{item.title}</p>
-              <p className="text-sm text-muted-foreground">{item.message}</p>
+                </span>
+                <span className="block font-medium">{item.title}</span>
+                <span className="block text-sm leading-relaxed text-muted-foreground">
+                  {item.message}
+                </span>
+              </span>
+              <ChevronRight
+                aria-hidden="true"
+                className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+              />
             </button>
           </li>
         ))}

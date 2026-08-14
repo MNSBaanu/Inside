@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { changePasswordRequest, formatApiError } from '@/lib/api/auth';
 
 export function ChangePasswordForm() {
@@ -41,8 +43,26 @@ export function ChangePasswordForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="surface-panel flex flex-col gap-4 p-5">
-      <h2 className="font-heading text-xl tracking-tight">Change password</h2>
+    <form
+      onSubmit={onSubmit}
+      className="surface-panel flex flex-col gap-4 p-5 md:p-6"
+    >
+      <div className="flex items-center gap-3">
+        <span
+          aria-hidden="true"
+          className="grid size-9 place-items-center rounded-xl border border-primary/15 bg-primary/[0.07] text-primary"
+        >
+          <Lock className="size-4" />
+        </span>
+        <div>
+          <h2 className="font-heading text-xl tracking-tight">
+            Change password
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Updating signs out your other sessions.
+          </p>
+        </div>
+      </div>
       <div className="space-y-2">
         <Label htmlFor="currentPassword">Current password</Label>
         <Input
@@ -79,17 +99,9 @@ export function ChangePasswordForm() {
           onChange={(e) => setConfirm(e.target.value)}
         />
       </div>
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {message ? (
-        <p className="text-sm text-muted-foreground" role="status">
-          {message}
-        </p>
-      ) : null}
-      <Button type="submit" disabled={pending}>
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+      {message ? <InlineAlert tone="success">{message}</InlineAlert> : null}
+      <Button type="submit" disabled={pending} className="w-fit">
         {pending ? 'Updating…' : 'Update password'}
       </Button>
     </form>

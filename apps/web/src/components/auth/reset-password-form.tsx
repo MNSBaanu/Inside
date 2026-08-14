@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { formatApiError, resetPasswordRequest } from '@/lib/api/auth';
 import { cn } from '@/lib/utils';
 
@@ -48,9 +49,9 @@ export function ResetPasswordForm() {
 
   if (done) {
     return (
-      <p className="text-sm text-muted-foreground" role="status">
+      <InlineAlert tone="success">
         Password updated. Redirecting to log in…
-      </p>
+      </InlineAlert>
     );
   }
 
@@ -91,12 +92,8 @@ export function ResetPasswordForm() {
           onChange={(e) => setConfirm(e.target.value)}
         />
       </div>
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
-      <Button type="submit" disabled={pending} className="w-full">
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+      <Button type="submit" disabled={pending} className="h-10 w-full">
         {pending ? 'Updating…' : 'Update password'}
       </Button>
       <p className="text-sm text-muted-foreground">

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import {
   formatApiError,
   redirectPathAfterAuth,
@@ -90,35 +91,46 @@ export function RegisterForm() {
       </div>
       <fieldset className="space-y-2">
         <legend className="text-sm font-medium">I am joining as</legend>
-        <div className="flex gap-4">
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="radio"
-              name="role"
-              value="CLIENT"
-              checked={role === 'CLIENT'}
-              onChange={() => setRole('CLIENT')}
-            />
-            Client
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="radio"
-              name="role"
-              value="DESIGNER"
-              checked={role === 'DESIGNER'}
-              onChange={() => setRole('DESIGNER')}
-            />
-            Designer
-          </label>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {(
+            [
+              { value: 'CLIENT', title: 'Client', copy: 'I have a space to design' },
+              {
+                value: 'DESIGNER',
+                title: 'Designer',
+                copy: 'I take on design work',
+              },
+            ] as const
+          ).map((option) => (
+            <label
+              key={option.value}
+              className={cn(
+                'flex cursor-pointer items-start gap-3 rounded-xl border p-3 text-sm transition-colors',
+                role === option.value
+                  ? 'border-primary/40 bg-primary/[0.06]'
+                  : 'border-border/60 hover:border-primary/25',
+              )}
+            >
+              <input
+                type="radio"
+                name="role"
+                value={option.value}
+                checked={role === option.value}
+                onChange={() => setRole(option.value)}
+                className="mt-0.5 size-4 accent-[var(--primary)]"
+              />
+              <span>
+                <span className="font-medium">{option.title}</span>
+                <span className="block text-xs text-muted-foreground">
+                  {option.copy}
+                </span>
+              </span>
+            </label>
+          ))}
         </div>
       </fieldset>
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
-      <Button type="submit" disabled={pending} className="w-full">
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+      <Button type="submit" disabled={pending} className="h-10 w-full">
         {pending ? 'Creating account…' : 'Create account'}
       </Button>
       <p className="text-sm text-muted-foreground">

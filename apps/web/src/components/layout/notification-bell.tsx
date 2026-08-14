@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StatusPill } from '@/components/layout/status-pill';
 import { formatApiError } from '@/lib/api/auth';
@@ -137,24 +138,9 @@ export function NotificationBell() {
         onClick={() => setOpen((value) => !value)}
         className="relative"
       >
-        <span aria-hidden="true" className="inline-flex size-4 items-center justify-center">
-          <svg viewBox="0 0 24 24" fill="none" className="size-4" aria-hidden="true">
-            <path
-              d="M6 9a6 6 0 1 1 12 0c0 3.5 1.5 5 2.5 6H3.5C4.5 14 6 12.5 6 9Z"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M10 18a2 2 0 0 0 4 0"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-            />
-          </svg>
-        </span>
+        <Bell aria-hidden="true" className="size-4" />
         {unread > 0 ? (
-          <span className="absolute -top-0.5 -right-0.5 grid min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] leading-4 font-medium text-white">
+          <span className="absolute -top-0.5 -right-0.5 grid min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] leading-4 font-medium text-white ring-2 ring-background">
             {unread > 99 ? '99+' : unread}
           </span>
         ) : null}
@@ -168,7 +154,14 @@ export function NotificationBell() {
           className="glass-strong absolute right-0 z-50 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl"
         >
           <div className="flex items-center justify-between gap-2 border-b border-border/60 px-4 py-3">
-            <p className="text-sm font-medium">Notifications</p>
+            <p className="text-sm font-medium">
+              Notifications
+              {unread > 0 ? (
+                <span className="ml-2 text-xs font-normal text-muted-foreground">
+                  {unread} unread
+                </span>
+              ) : null}
+            </p>
             <Button
               type="button"
               variant="ghost"
@@ -194,9 +187,17 @@ export function NotificationBell() {
             ) : null}
 
             {!loading && items.length === 0 ? (
-              <p className="px-4 py-6 text-sm text-muted-foreground">
-                You are all caught up.
-              </p>
+              <div className="flex flex-col items-center gap-2 px-4 py-8 text-center">
+                <span
+                  aria-hidden="true"
+                  className="grid size-10 place-items-center rounded-full border border-primary/15 bg-primary/[0.07] text-primary"
+                >
+                  <Bell className="size-4" />
+                </span>
+                <p className="text-sm text-muted-foreground">
+                  You are all caught up.
+                </p>
+              </div>
             ) : null}
 
             <ul>
@@ -233,13 +234,13 @@ export function NotificationBell() {
             </ul>
           </div>
 
-          <div className="border-t border-border/60 px-4 py-2">
+          <div className="border-t border-border/60 px-4 py-2.5">
             <Link
               href="/notifications"
               onClick={() => setOpen(false)}
-              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              className="text-xs font-medium text-primary underline-offset-4 transition-colors hover:underline"
             >
-              See all notifications
+              See all notifications →
             </Link>
           </div>
         </div>

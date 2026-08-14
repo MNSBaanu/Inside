@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { buttonVariants } from '@/components/ui/button';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { formatApiError, verifyEmailRequest } from '@/lib/api/auth';
 import { cn } from '@/lib/utils';
 
@@ -42,17 +43,15 @@ export function VerifyEmailPanel() {
   return (
     <div className="space-y-4">
       {status === 'working' || status === 'idle' ? (
-        <p className="text-sm text-muted-foreground">Verifying your email…</p>
+        <InlineAlert tone="info">Verifying your email…</InlineAlert>
       ) : null}
       {status === 'ok' ? (
-        <p className="text-sm text-muted-foreground" role="status">
+        <InlineAlert tone="success">
           Email verified. You can log in now.
-        </p>
+        </InlineAlert>
       ) : null}
       {status === 'error' ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
+        <InlineAlert tone="error">{error}</InlineAlert>
       ) : null}
       <Link
         href="/login"

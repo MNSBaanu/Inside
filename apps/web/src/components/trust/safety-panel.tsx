@@ -5,8 +5,11 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Flag, UserX } from 'lucide-react';
 import { EmptyState } from '@/components/layout/empty-state';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { PageHeader } from '@/components/layout/page-header';
+import { SkeletonList } from '@/components/layout/skeleton';
 import { StatusPill } from '@/components/layout/status-pill';
 import { formatApiError } from '@/lib/api/auth';
 import { listBlocks, blockUser, unblockUser, type Block } from '@/lib/api/blocks';
@@ -95,24 +98,14 @@ export function SafetyPanel() {
         </Link>
       </p>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {message ? (
-        <p className="text-sm text-muted-foreground" role="status">
-          {message}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
+      {message ? <InlineAlert tone="success">{message}</InlineAlert> : null}
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Loading…</p>
-      ) : null}
+      {loading ? <SkeletonList rows={2} /> : null}
 
       <section className="space-y-4">
         <h2 className="font-heading text-2xl tracking-tight">Blocked users</h2>
-        <form onSubmit={onBlock} className="surface-panel space-y-4 p-5">
+        <form onSubmit={onBlock} className="surface-panel space-y-4 p-5 md:p-6">
           <div className="space-y-2">
             <Label htmlFor="blockedId">User id to block</Label>
             <Input
@@ -143,6 +136,7 @@ export function SafetyPanel() {
 
         {!loading && blocks.length === 0 ? (
           <EmptyState
+            icon={<UserX className="size-5" />}
             title="No one blocked"
             description="Blocked users cannot message you on shared projects."
           />
@@ -180,6 +174,7 @@ export function SafetyPanel() {
         <h2 className="font-heading text-2xl tracking-tight">My reports</h2>
         {!loading && reports.length === 0 ? (
           <EmptyState
+            icon={<Flag className="size-5" />}
             title="No reports filed"
             description="You can report a designer from their portfolio or a project workspace."
           />
