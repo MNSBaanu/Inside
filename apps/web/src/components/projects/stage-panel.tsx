@@ -1,9 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { CalendarClock, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { Skeleton } from '@/components/layout/skeleton';
 import { StatusPill } from '@/components/layout/status-pill';
 import { formatApiError } from '@/lib/api/auth';
 import {
@@ -199,15 +203,14 @@ export function StagePanel({
         </div>
       </header>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
       <div className="flex flex-col gap-2 border-t border-border/60 pt-4 sm:flex-row sm:items-end">
         <div className="flex-1 space-y-2">
-          <Label htmlFor="stage-due-date">Due date</Label>
+          <Label htmlFor="stage-due-date">
+            <CalendarClock aria-hidden="true" className="size-3.5" />
+            Due date
+          </Label>
           <Input
             id="stage-due-date"
             type="date"
@@ -255,15 +258,15 @@ export function StagePanel({
       </div>
 
       {!projectActive ? (
-        <p className="text-sm text-muted-foreground">
+        <InlineAlert tone="info">
           Stage actions are paused while the project is not active.
-        </p>
+        </InlineAlert>
       ) : null}
 
       {designerCanWork && items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
+        <InlineAlert tone="info">
           Upload at least one deliverable before submitting.
-        </p>
+        </InlineAlert>
       ) : null}
 
       {clientCanDecide ? (
@@ -294,12 +297,16 @@ export function StagePanel({
       ) : null}
 
       <div className="space-y-3 border-t border-border/60 pt-5">
-        <h3 className="font-heading text-lg tracking-tight">
+        <h3 className="flex items-center gap-2 font-heading text-lg tracking-tight">
+          <FileText aria-hidden="true" className="size-4 text-primary" />
           Deliverables ({items.length})
         </h3>
 
         {loading ? (
-          <p className="text-sm text-muted-foreground">Loading deliverables…</p>
+          <div className="space-y-2">
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full" />
+          </div>
         ) : null}
 
         {!loading && items.length === 0 ? (
@@ -312,7 +319,7 @@ export function StagePanel({
           {items.map((item) => (
             <li
               key={item.id}
-              className="space-y-2 rounded-xl border border-border/60 p-4"
+              className="space-y-2 rounded-xl border border-border/60 bg-muted/25 p-4"
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -382,7 +389,7 @@ export function StagePanel({
         {designerCanWork ? (
           <form
             onSubmit={onUpload}
-            className="space-y-4 rounded-xl border border-border/60 p-4"
+            className="space-y-4 rounded-xl border border-dashed border-border/70 bg-muted/20 p-4"
           >
             <div className="space-y-2">
               <Label htmlFor="fileUrl">File link</Label>
@@ -406,8 +413,9 @@ export function StagePanel({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="deliverableNotes">Notes</Label>
-                <Input
+                <Textarea
                   id="deliverableNotes"
+                  rows={2}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Two palette options for the living room"

@@ -1,9 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { MessageSquare, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { Skeleton } from '@/components/layout/skeleton';
 import { formatApiError } from '@/lib/api/auth';
 import {
   MESSAGE_MAX_LENGTH,
@@ -127,25 +131,33 @@ export function ProjectChat({
         </p>
       </div>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
       <div
         ref={threadRef}
         aria-live="polite"
-        className="max-h-96 space-y-3 overflow-y-auto rounded-xl border border-border/60 p-4"
+        className="max-h-96 space-y-3 overflow-y-auto rounded-2xl border border-border/60 bg-muted/25 p-4"
       >
         {loading ? (
-          <p className="text-sm text-muted-foreground">Loading messages…</p>
+          <div className="space-y-3">
+            <Skeleton className="h-12 w-2/3" />
+            <Skeleton className="ml-auto h-12 w-1/2" />
+            <Skeleton className="h-12 w-3/5" />
+          </div>
         ) : null}
 
         {!loading && items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No messages yet. Say hello and share what you need next.
-          </p>
+          <div className="flex flex-col items-center gap-2 py-8 text-center">
+            <span
+              aria-hidden="true"
+              className="grid size-10 place-items-center rounded-full border border-primary/15 bg-primary/[0.07] text-primary"
+            >
+              <MessageSquare className="size-4" />
+            </span>
+            <p className="text-sm text-muted-foreground">
+              No messages yet. Say hello and share what you need next.
+            </p>
+          </div>
         ) : null}
 
         {items.map((message) => {
@@ -157,10 +169,10 @@ export function ProjectChat({
             >
               <div
                 className={cn(
-                  'max-w-[85%] space-y-1 rounded-2xl px-4 py-2.5',
+                  'max-w-[85%] space-y-1 px-4 py-2.5 shadow-sm',
                   mine
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary text-secondary-foreground',
+                    ? 'rounded-2xl rounded-br-md bg-primary text-primary-foreground'
+                    : 'rounded-2xl rounded-bl-md border border-border/60 bg-background text-foreground',
                 )}
               >
                 <p className="text-sm leading-relaxed whitespace-pre-wrap">
@@ -201,7 +213,7 @@ export function ProjectChat({
       <div className="space-y-3">
         <div className="space-y-2">
           <Label htmlFor="message-content">Message</Label>
-          <textarea
+          <Textarea
             id="message-content"
             rows={3}
             value={content}
@@ -214,7 +226,6 @@ export function ProjectChat({
               }
             }}
             placeholder="Share an update, ask a question, or confirm the next step…"
-            className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           />
           {remaining < 200 ? (
             <p className="text-xs text-muted-foreground">
@@ -238,6 +249,7 @@ export function ProjectChat({
             disabled={sending || !content.trim()}
             onClick={() => void onSend()}
           >
+            <Send aria-hidden="true" className="size-3.5" />
             {sending ? 'Sending…' : 'Send'}
           </Button>
         </div>

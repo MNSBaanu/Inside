@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { ArrowLeft, ShieldAlert } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { Skeleton } from '@/components/layout/skeleton';
 import { StatusPill } from '@/components/layout/status-pill';
 import { ModeSwitchNotice } from '@/components/projects/mode-switch-notice';
 import { PaymentsSummary } from '@/components/projects/payments-summary';
@@ -81,15 +84,22 @@ export function ProjectWorkspace() {
   }, [params.id]);
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading project…</p>;
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-10 w-2/3" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-64 w-full rounded-3xl" />
+      </div>
+    );
   }
 
   if (!project) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-destructive" role="alert">
+        <InlineAlert tone="error">
           {error ?? 'Project not found.'}
-        </p>
+        </InlineAlert>
         <Link
           href="/projects"
           className={cn(buttonVariants({ variant: 'outline' }))}
@@ -134,13 +144,14 @@ export function ProjectWorkspace() {
       <div>
         <Link
           href="/projects"
-          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-          ← All projects
+          <ArrowLeft aria-hidden="true" className="size-3.5" />
+          All projects
         </Link>
       </div>
 
-      <header className="space-y-3">
+      <header className="space-y-3 border-b border-border/60 pb-6">
         <div className="flex flex-wrap items-center gap-2">
           <StatusPill value={project.status} />
           <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -202,11 +213,7 @@ export function ProjectWorkspace() {
         ) : null}
       </header>
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
       {wrongMode && neededMode ? (
         <ModeSwitchNotice
@@ -260,8 +267,11 @@ export function ProjectWorkspace() {
       ) : null}
 
       {me && counterparty ? (
-        <section className="surface-panel space-y-3 p-5">
-          <h2 className="font-heading text-xl tracking-tight">Trust</h2>
+        <section className="surface-panel space-y-3 p-5 md:p-6">
+          <h2 className="flex items-center gap-2 font-heading text-xl tracking-tight">
+            <ShieldAlert aria-hidden="true" className="size-4 text-primary" />
+            Trust
+          </h2>
           <p className="text-sm text-muted-foreground">
             Report or block {counterparty.name} if something goes wrong.
           </p>

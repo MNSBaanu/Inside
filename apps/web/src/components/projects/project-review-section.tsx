@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { InlineAlert } from '@/components/layout/inline-alert';
+import { Skeleton } from '@/components/layout/skeleton';
 import { ModeSwitchNotice } from '@/components/projects/mode-switch-notice';
 import { StarRating } from '@/components/reviews/star-rating';
 import { formatApiError } from '@/lib/api/auth';
@@ -90,17 +93,16 @@ export function ProjectReviewSection({
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">Checking for an existing review…</p>
+        <div className="space-y-2">
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="h-4 w-2/3" />
+        </div>
       ) : null}
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
       {!loading && existing ? (
-        <div className="space-y-2 rounded-xl border border-border/60 p-4">
+        <div className="space-y-2 rounded-xl border border-border/60 bg-muted/25 p-4">
           <StarRating value={existing.rating} />
           {existing.comment ? (
             <p className="text-sm leading-relaxed">{existing.comment}</p>
@@ -121,14 +123,13 @@ export function ProjectReviewSection({
           </div>
           <div className="space-y-2">
             <Label htmlFor="review-comment">Comment (optional)</Label>
-            <textarea
+            <Textarea
               id="review-comment"
               rows={3}
               maxLength={2000}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="What went well, and what would you hire them for again?"
-              className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
             />
           </div>
           <Button type="submit" disabled={saving || rating < 1}>

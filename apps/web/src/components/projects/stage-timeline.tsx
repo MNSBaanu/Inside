@@ -28,15 +28,23 @@ export function StageTimeline({
               onClick={() => onSelect(stage.id)}
               aria-current={selected ? 'step' : undefined}
               className={cn(
-                'w-full space-y-2 rounded-2xl border p-4 text-left transition-colors',
+                'w-full space-y-2 rounded-2xl border p-4 text-left outline-none transition-all focus-visible:ring-3 focus-visible:ring-ring/40',
                 selected
-                  ? 'border-primary/50 bg-primary/5'
-                  : 'border-border/60 bg-background/40 hover:border-primary/30',
+                  ? 'border-primary/50 bg-primary/[0.06] shadow-[0_18px_44px_-30px_oklch(0.22_0.02_145_/_0.6)]'
+                  : 'border-border/60 bg-background/40 hover:-translate-y-0.5 hover:border-primary/30',
               )}
             >
-              <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              <p className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
                 Stage {stage.stageOrder}
-                {isCurrent ? ' · Current' : ''}
+                {isCurrent ? (
+                  <span className="inline-flex items-center gap-1 text-primary">
+                    <span
+                      aria-hidden="true"
+                      className="size-1.5 rounded-full bg-primary"
+                    />
+                    Current
+                  </span>
+                ) : null}
               </p>
               <p className="font-heading text-lg tracking-tight">
                 {STAGE_LABELS[stage.name]}

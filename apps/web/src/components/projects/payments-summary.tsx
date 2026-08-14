@@ -1,5 +1,6 @@
 'use client';
 
+import { Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StatusPill } from '@/components/layout/status-pill';
 import type { MilestonePayment, ProjectStage } from '@/lib/api/types';
@@ -38,20 +39,26 @@ export function PaymentsSummary({
   return (
     <section className="surface-panel space-y-5 p-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h2 className="font-heading text-2xl tracking-tight">Milestones</h2>
+        <h2 className="flex items-center gap-2 font-heading text-2xl tracking-tight">
+          <Wallet aria-hidden="true" className="size-5 text-primary" />
+          Milestones
+        </h2>
         <p className="text-sm text-muted-foreground">
           A milestone is billed when you approve its stage.
         </p>
       </div>
 
-      <dl className="grid gap-4 sm:grid-cols-4">
+      <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: 'Billed', value: billed },
           { label: 'Awaiting payment', value: outstanding },
           { label: 'Paid, in escrow', value: paid },
           { label: 'Released', value: released },
         ].map((item) => (
-          <div key={item.label} className="space-y-1">
+          <div
+            key={item.label}
+            className="space-y-1 rounded-xl border border-border/60 bg-muted/25 p-4"
+          >
             <dt className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
               {item.label}
             </dt>
@@ -71,7 +78,7 @@ export function PaymentsSummary({
           {payments.map((payment) => (
             <li
               key={payment.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 px-4 py-3"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-background/60 px-4 py-3 transition-colors hover:border-primary/25"
             >
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">

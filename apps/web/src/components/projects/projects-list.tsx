@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { FolderOpen } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { StatusPill } from '@/components/layout/status-pill';
 import { EmptyState } from '@/components/layout/empty-state';
+import { InlineAlert } from '@/components/layout/inline-alert';
 import { PageHeader } from '@/components/layout/page-header';
+import { SkeletonList } from '@/components/layout/skeleton';
 import { fetchMe, formatApiError } from '@/lib/api/auth';
 import { listProjects } from '@/lib/api/projects';
 import type { AuthUser, Project } from '@/lib/api/types';
@@ -55,18 +58,13 @@ export function ProjectsList() {
         description="Every hired project, stage by stage — concepts, approvals, and deliverables in one place."
       />
 
-      {error ? (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <InlineAlert tone="error">{error}</InlineAlert> : null}
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Loading projects…</p>
-      ) : null}
+      {loading ? <SkeletonList rows={3} /> : null}
 
       {!loading && items.length === 0 ? (
         <EmptyState
+          icon={<FolderOpen className="size-5" />}
           title="No projects yet"
           description="A project starts the moment a client accepts a proposal. Post a request or reply to one to get going."
           actionHref="/client/requests"
