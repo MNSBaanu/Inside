@@ -6,12 +6,13 @@ export type NavLink = {
 };
 
 type AppShellProps = {
-  title: string;
+  /** Route label kept for call sites; the header shows the brand only. */
+  title?: string;
   links?: NavLink[];
   children: React.ReactNode;
 };
 
-export function AppShell({ title, links = [], children }: AppShellProps) {
+export function AppShell({ links = [], children }: AppShellProps) {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,_var(--surface-mist),_var(--background)_38%)]">
       {/* Colour behind the glass so blur has something to refract */}
@@ -24,7 +25,7 @@ export function AppShell({ title, links = [], children }: AppShellProps) {
         <div className="absolute bottom-0 left-1/3 size-[26rem] rounded-full bg-[radial-gradient(circle,oklch(0.88_0.05_200_/_0.35),transparent_65%)] blur-3xl" />
       </div>
 
-      <SiteHeader variant="app" title={title} links={links} />
+      <SiteHeader variant="app" links={links} />
       <main className="mx-auto max-w-6xl px-4 py-8 md:py-10">{children}</main>
     </div>
   );

@@ -1,11 +1,20 @@
 import { cn } from '@/lib/utils';
 
 const TONES = {
-  neutral: 'bg-muted text-muted-foreground',
-  positive: 'bg-[oklch(0.92_0.06_150)] text-[oklch(0.32_0.08_150)]',
-  warning: 'bg-accent text-accent-foreground',
-  danger: 'bg-destructive/10 text-destructive',
-  info: 'bg-primary/10 text-primary',
+  neutral: 'border-border/70 bg-muted text-muted-foreground',
+  positive:
+    'border-[oklch(0.82_0.08_150_/_0.6)] bg-[oklch(0.94_0.05_150)] text-[oklch(0.34_0.08_150)]',
+  warning: 'border-accent-foreground/15 bg-accent text-accent-foreground',
+  danger: 'border-destructive/25 bg-destructive/10 text-destructive',
+  info: 'border-primary/20 bg-primary/10 text-primary',
+} as const;
+
+const DOTS = {
+  neutral: 'bg-muted-foreground/60',
+  positive: 'bg-[oklch(0.55_0.12_150)]',
+  warning: 'bg-[oklch(0.62_0.12_75)]',
+  danger: 'bg-destructive',
+  info: 'bg-primary',
 } as const;
 
 const TONE_BY_STATUS: Record<string, keyof typeof TONES> = {
@@ -59,11 +68,15 @@ export function StatusPill({
   return (
     <span
       className={cn(
-        'rounded-full px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wider',
+        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wider',
         TONES[tone],
         className,
       )}
     >
+      <span
+        aria-hidden="true"
+        className={cn('size-1.5 rounded-full', DOTS[tone])}
+      />
       {label}
     </span>
   );

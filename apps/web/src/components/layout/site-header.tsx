@@ -8,14 +8,12 @@ import type { NavLink } from '@/components/layout/app-shell';
 
 type SiteHeaderProps = {
   variant?: 'public' | 'app';
-  title?: string;
   links?: NavLink[];
   overlay?: boolean;
 };
 
 export function SiteHeader({
   variant = 'public',
-  title,
   links = [],
   overlay = false,
 }: SiteHeaderProps) {
@@ -38,23 +36,25 @@ export function SiteHeader({
           <div className="flex min-w-0 items-center gap-3 md:gap-6">
             <Link
               href="/"
+              aria-label="Inside — home"
               className={cn(
-                'font-heading shrink-0 text-xl tracking-tight',
+                'group/logo flex shrink-0 items-center gap-2 rounded-full transition-opacity hover:opacity-90',
                 overlay && 'text-white',
               )}
             >
-              Inside
-            </Link>
-            {title ? (
               <span
+                aria-hidden="true"
                 className={cn(
-                  'hidden text-sm sm:inline',
-                  overlay ? 'text-white/70' : 'text-muted-foreground',
+                  'grid size-7 place-items-center rounded-full border text-[13px] font-semibold',
+                  overlay
+                    ? 'border-white/30 bg-white/15 text-white'
+                    : 'border-primary/15 bg-primary/10 text-primary',
                 )}
               >
-                {title}
+                In
               </span>
-            ) : null}
+              <span className="font-heading text-xl tracking-tight">Inside</span>
+            </Link>
             {variant === 'app' && links.length > 0 ? (
               <AppNav links={links} />
             ) : null}
