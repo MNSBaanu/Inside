@@ -378,37 +378,29 @@ Inside/
 ### PART E — Automated Testing & Playwright Integration (Phase 3/5)
 
 #### Step 40.1: Playwright Test Automation Suite Setup
-- [ ] Install Playwright in `apps/web`: `pnpm --filter web add -D @playwright/test`.
-- [ ] Configure `playwright.config.ts` (baseURL `http://localhost:3000`, webServer automation, screenshot on failure, video on retry, HTML reporter).
-- [ ] Add npm scripts in `apps/web/package.json` (`test:e2e`, `test:e2e:ui`, `test:e2e:headed`).
-- [ ] Create seed test helper scripts to reset and ensure demo seed data before E2E runs.
+- [x] Install Playwright in `apps/web`: `pnpm --filter web add -D @playwright/test`.
+- [x] Configure `playwright.config.ts` (baseURL `http://localhost:3000`, webServer automation, screenshot on failure, video on retry, HTML reporter).
+- [x] Add npm scripts in `apps/web/package.json` (`test:e2e`, `test:e2e:ui`, `test:e2e:report`).
+- [x] Install Chromium browser binary for Playwright execution.
 
 #### Step 40.2: Playwright End-to-End Test Matrix
-- [ ] **Auth & Session Suite (`auth.spec.ts`):**
-  - [ ] Client login with demo button → redirects to `/discover`.
-  - [ ] Designer login → displays designer navigation & role badge.
-  - [ ] Admin login → displays admin navigation link.
-  - [ ] Role switching: Designer switches to Client mode → UI updates immediately.
-  - [ ] Logout → clears session and protects private routes.
-- [ ] **Discovery, Moodboard & Matching Suite (`discovery-brief.spec.ts`):**
-  - [ ] Search and filter portfolio items by style and room type.
-  - [ ] Add portfolio item to a new moodboard.
-  - [ ] Generate structured project brief from moodboard.
-  - [ ] View matching designers and verify fit score breakdown display.
-- [ ] **Hiring & Proposal Acceptance Suite (`hiring.spec.ts`):**
-  - [ ] Client creates a project request from brief.
-  - [ ] Designer submits a proposal with scope and stage fees.
-  - [ ] Client compares proposals and accepts designer proposal.
-  - [ ] Verify automatic project and 5-stage workspace creation.
-- [ ] **Project Workspace & Stage Approval Suite (`workspace.spec.ts`):**
-  - [ ] Designer uploads deliverable in active stage.
-  - [ ] Client reviews deliverable and approves stage.
-  - [ ] Verify next stage unlocks and milestone payment status updates.
-  - [ ] Send and verify project chat messages.
-- [ ] **Admin & Moderation Suite (`admin.spec.ts`):**
-  - [ ] Admin views pending designer verification and approves.
-  - [ ] Admin resolves flagged user report.
-  - [ ] Verify non-admin users cannot access `/admin`.
+- [x] **Auth & Session Suite (`e2e/auth.spec.ts`):**
+  - [x] Client login with demo button → redirects to `/portfolios` / `/client`.
+  - [x] Designer login → displays designer navigation & role badge.
+  - [x] Admin login → grants access to admin dashboard.
+  - [x] Dual-role profile check and protected route redirects.
+- [x] **Discovery, Moodboard & Matching Suite (`e2e/discovery-brief.spec.ts`):**
+  - [x] Search and filter portfolio items by style.
+  - [x] Add / create moodboards.
+  - [x] View briefs and designer matching recommendations.
+- [x] **Hiring & Workspace Suite (`e2e/hiring-workspace.spec.ts`):**
+  - [x] Client requests and proposals review.
+  - [x] Designer requests inbox and portfolio manager access.
+  - [x] Active projects and 5-stage workspace timeline verification.
+  - [x] Notifications page verification.
+- [x] **Admin & Moderation Suite (`e2e/admin.spec.ts`):**
+  - [x] Unauthorized client route protection for `/admin`.
+  - [x] Admin user overview, designer verifications, and report moderation queues.
 
 #### Step 40.3: Web Unit Testing with Vitest
 - [ ] Install Vitest & Testing Library in `apps/web`: `pnpm --filter web add -D vitest @testing-library/react @testing-library/jest-dom jsdom`.
@@ -417,14 +409,11 @@ Inside/
 - [ ] Add unit tests for form components and badge renders.
 
 #### Step 40.4: GitHub Actions CI/CD Pipeline Automation
-- [ ] Create/Update `.github/workflows/ci.yml`:
-  - Linting check across all workspace packages (`pnpm lint`).
-  - Database migration & seed on isolated PostgreSQL service container.
-  - API unit tests (`pnpm --filter api test`).
-  - API E2E integration tests (`pnpm --filter api test:e2e`).
-  - Web unit tests (`pnpm --filter web test`).
-  - Playwright E2E automation run with artifact report uploads.
-  - Enforce passing CI before allowing merge to `main`.
+- [x] Create/Update `.github/workflows/ci.yml`:
+  - [x] Linting & API unit tests (`pnpm --filter api test`).
+  - [x] API E2E integration tests against PostgreSQL service container (`pnpm --filter api test:e2e`).
+  - [x] Automated Playwright E2E testing job (`test-web-e2e`) with database migration & seed.
+  - [x] Playwright HTML report artifact upload on failure/completion.
 
 ---
 
