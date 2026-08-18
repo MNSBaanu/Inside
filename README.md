@@ -14,7 +14,7 @@
 
 Inside is a full-stack platform that connects **clients** and **interior designers** in one workflow. Clients browse completed room projects, build moodboards, submit structured briefs, hire designers, and approve work at each stage before funds are released. Designers publish portfolios, respond to requests, deliver concepts through a stage-gated workspace, and receive milestone payments.
 
-Implementation order and week-by-week checklist: [`Checklist.docx`](Checklist.docx).
+Implementation order and week-by-week checklist: [`Checklist.md`](Checklist.md).
 
 ---
 
@@ -61,7 +61,7 @@ Inside/
 │   ├── shared/           # Shared TypeScript types (stub)
 │   └── eslint-config/
 ├── docs/
-├── Checklist.docx
+├── Checklist.md
 └── README.md
 ```
 
