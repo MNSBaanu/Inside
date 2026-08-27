@@ -8,7 +8,7 @@
         <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Tahoma;fontSize=15;fontStyle=1;fontColor=#10739e;" value="Inside - Project Gantt Chart (Scrum)" vertex="1">
           <mxGeometry x="200" y="12" width="900" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="subtitle" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Tahoma;fontSize=10;fontStyle=2;fontColor=#10739e;" value="Agile (Scrum) | 22 Weeks | Design phase (pre-Scrum) + 9 product sprints | Status: July 2026 | Now: Week 4" vertex="1">
+        <mxCell id="subtitle" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Tahoma;fontSize=10;fontStyle=2;fontColor=#10739e;" value="Agile (Scrum) | 22 Weeks | Design phase (pre-Scrum) + 9 product sprints | Status: August 2026 | Now: Week 13" vertex="1">
           <mxGeometry x="200" y="36" width="900" height="18" as="geometry" />
         </mxCell>
         <mxCell id="legBg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;fontColor=#10739e;strokeColor=#10739e;strokeWidth=1;" value="" vertex="1">
@@ -114,10 +114,10 @@
           <mxGeometry x="1116" y="139" width="36" height="14" as="geometry" />
         </mxCell>
         <mxCell id="nowLbl" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Tahoma;fontSize=9;fontStyle=1;fontColor=#10739e;" value="v Now" vertex="1">
-          <mxGeometry x="458" y="153" width="50" height="14" as="geometry" />
+          <mxGeometry x="770" y="153" width="50" height="14" as="geometry" />
         </mxCell>
         <mxCell id="nowLine" parent="1" style="line;strokeWidth=2;strokeColor=#10739e;direction=south;" value="" vertex="1">
-          <mxGeometry x="485" y="160" width="2" height="1050" as="geometry" />
+          <mxGeometry x="797" y="160" width="2" height="1050" as="geometry" />
         </mxCell>
         <mxCell id="sec24" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=8;fontFamily=Tahoma;fontSize=11;fontStyle=1;fillColor=#0e6674;fontColor=#ffffff;strokeColor=#0a4a54;strokeWidth=1;" value="A. PRE-SCRUM: RESEARCH AND DESIGN (not product sprints)" vertex="1">
           <mxGeometry x="40" y="170" width="1092" height="26" as="geometry" />
