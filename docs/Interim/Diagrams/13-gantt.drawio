@@ -271,6 +271,9 @@
         <mxCell id="msl74" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Tahoma;fontSize=7;fontColor=#c47a20;" value="M6 Dissertation Submitted" vertex="1">
           <mxGeometry height="28" width="100" x="1084" y="1136" as="geometry" />
         </mxCell>
+        <mxCell id="footer" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontFamily=Tahoma;fontSize=9;fontStyle=2;fontColor=#10739e;" value="Note: Section A is academic research/design (UML etc.), not Scrum sprints. Section B is product delivery only. Dark = done. Light = planned. Dashed = continuous. Orange = milestones." vertex="1">
+          <mxGeometry x="40" y="1190" width="1200" height="24" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
