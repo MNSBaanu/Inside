@@ -1,16 +1,9 @@
 <mxfile host="Electron" agent="Cursor">
   <diagram name="Class Diagram" id="class-diagram">
-    <mxGraphModel dx="1600" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1450" math="0" shadow="0">
+    <mxGraphModel dx="2263" dy="1705" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1450" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <!-- Legend -->
-        <mxCell id="legend" parent="1" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;fontSize=9;fontFamily=Tahoma;" value="&lt;b&gt;Relationships:&lt;/b&gt;&lt;br&gt;────── Association&lt;br&gt;──◆── Composition&lt;br&gt;──────▷ Inheritance" vertex="1">
-          <mxGeometry height="70" width="180" x="20" y="20" as="geometry" />
-        </mxCell>
-
-        <!-- ========== USER HIERARCHY ========== -->
         <mxCell id="class-user" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=40;" value="&lt;&lt;abstract&gt;&gt;&#xa;User" vertex="1">
           <mxGeometry height="170" width="220" x="520" y="20" as="geometry" />
         </mxCell>
@@ -20,7 +13,6 @@
         <mxCell id="class-user-methods" parent="class-user" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ register()&#xa;+ login()&#xa;+ updateProfile()&#xa;+ switchRole()" vertex="1">
           <mxGeometry height="52" width="220" y="118" as="geometry" />
         </mxCell>
-
         <mxCell id="class-client" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Client" vertex="1">
           <mxGeometry height="157" width="200" x="160" y="240" as="geometry" />
         </mxCell>
@@ -30,7 +22,6 @@
         <mxCell id="class-client-methods" parent="class-client" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ createMoodboard()&#xa;+ postRequest()&#xa;+ approveStage()&#xa;+ makePayment()&#xa;+ submitReview()" vertex="1">
           <mxGeometry height="82" width="200" y="75" as="geometry" />
         </mxCell>
-
         <mxCell id="class-designer" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Designer" vertex="1">
           <mxGeometry height="157" width="200" x="420" y="240" as="geometry" />
         </mxCell>
@@ -40,7 +31,6 @@
         <mxCell id="class-designer-methods" parent="class-designer" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ createPortfolio()&#xa;+ submitProposal()&#xa;+ uploadDeliverable()&#xa;+ setAvailability()" vertex="1">
           <mxGeometry height="77" width="200" y="80" as="geometry" />
         </mxCell>
-
         <mxCell id="class-admin" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Admin" vertex="1">
           <mxGeometry height="157" width="200" x="700" y="240" as="geometry" />
         </mxCell>
@@ -50,19 +40,15 @@
         <mxCell id="class-admin-methods" parent="class-admin" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ verifyDesigner()&#xa;+ moderateContent()&#xa;+ suspendUser()&#xa;+ reviewReports()" vertex="1">
           <mxGeometry height="87" width="200" y="70" as="geometry" />
         </mxCell>
-
-        <!-- Inheritance -->
-        <mxCell id="rel-inherit-client" edge="1" parent="1" source="class-user" target="class-client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;endArrow=blockThin;endFill=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+        <mxCell id="rel-inherit-client" edge="1" parent="1" source="class-user" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;endArrow=blockThin;endFill=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="class-client">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="rel-inherit-designer" edge="1" parent="1" source="class-user" target="class-designer" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;endArrow=blockThin;endFill=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+        <mxCell id="rel-inherit-designer" edge="1" parent="1" source="class-user" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;endArrow=blockThin;endFill=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="class-designer">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="rel-inherit-admin" edge="1" parent="1" source="class-user" target="class-admin" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;endArrow=blockThin;endFill=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;">
+        <mxCell id="rel-inherit-admin" edge="1" parent="1" source="class-user" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;endArrow=blockThin;endFill=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="class-admin">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- ========== PORTFOLIO ========== -->
         <mxCell id="class-portfolio" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Portfolio" vertex="1">
           <mxGeometry height="162" width="200" x="960" y="230" as="geometry" />
         </mxCell>
@@ -72,7 +58,6 @@
         <mxCell id="class-portfolio-methods" parent="class-portfolio" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ create()&#xa;+ update()&#xa;+ delete()" vertex="1">
           <mxGeometry height="50" width="200" y="112" as="geometry" />
         </mxCell>
-
         <mxCell id="class-portfolio-image" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="PortfolioImage" vertex="1">
           <mxGeometry height="152" width="200" x="1220" y="230" as="geometry" />
         </mxCell>
@@ -82,8 +67,7 @@
         <mxCell id="class-portfolio-image-methods" parent="class-portfolio-image" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ upload()&#xa;+ reorder()" vertex="1">
           <mxGeometry height="50" width="200" y="102" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-designer-portfolio" edge="1" parent="1" source="class-designer" target="class-portfolio" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" value="owns">
+        <mxCell id="rel-designer-portfolio" edge="1" parent="1" source="class-designer" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="class-portfolio" value="owns">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="card-designer-portfolio-1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="1" vertex="1">
@@ -92,8 +76,7 @@
         <mxCell id="card-designer-portfolio-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="*" vertex="1">
           <mxGeometry height="18" width="18" x="930" y="300" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-portfolio-image" edge="1" parent="1" source="class-portfolio" target="class-portfolio-image" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;startArrow=diamond;startFill=1;endArrow=none;startSize=14;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" value="contains">
+        <mxCell id="rel-portfolio-image" edge="1" parent="1" source="class-portfolio" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;startArrow=diamond;startFill=1;endArrow=none;startSize=14;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="class-portfolio-image" value="contains">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="card-portfolio-image-1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="1" vertex="1">
@@ -102,8 +85,6 @@
         <mxCell id="card-portfolio-image-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="*" vertex="1">
           <mxGeometry height="18" width="18" x="1190" y="300" as="geometry" />
         </mxCell>
-
-        <!-- ========== DISCOVERY ========== -->
         <mxCell id="class-moodboard" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Moodboard" vertex="1">
           <mxGeometry height="162" width="200" x="160" y="450" as="geometry" />
         </mxCell>
@@ -113,7 +94,6 @@
         <mxCell id="class-moodboard-methods" parent="class-moodboard" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ addItem()&#xa;+ removeItem()&#xa;+ generateBrief()" vertex="1">
           <mxGeometry height="60" width="200" y="102" as="geometry" />
         </mxCell>
-
         <mxCell id="class-brief" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Brief" vertex="1">
           <mxGeometry height="162" width="200" x="420" y="450" as="geometry" />
         </mxCell>
@@ -123,8 +103,7 @@
         <mxCell id="class-brief-methods" parent="class-brief" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ edit()&#xa;+ attachToRequest()" vertex="1">
           <mxGeometry height="50" width="200" y="112" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-client-moodboard" edge="1" parent="1" source="class-client" target="class-moodboard" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" value="creates">
+        <mxCell id="rel-client-moodboard" edge="1" parent="1" source="class-client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="class-moodboard" value="creates">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="card-client-moodboard-1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="1" vertex="1">
@@ -133,8 +112,7 @@
         <mxCell id="card-client-moodboard-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="*" vertex="1">
           <mxGeometry height="18" width="18" x="270" y="420" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-moodboard-brief" edge="1" parent="1" source="class-moodboard" target="class-brief" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" value="generates">
+        <mxCell id="rel-moodboard-brief" edge="1" parent="1" source="class-moodboard" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="class-brief" value="generates">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="card-moodboard-brief-1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="1" vertex="1">
@@ -143,8 +121,6 @@
         <mxCell id="card-moodboard-brief-1b" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="1" vertex="1">
           <mxGeometry height="18" width="18" x="390" y="530" as="geometry" />
         </mxCell>
-
-        <!-- ========== HIRING ========== -->
         <mxCell id="class-request" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="ProjectRequest" vertex="1">
           <mxGeometry height="162" width="200" x="160" y="670" as="geometry" />
         </mxCell>
@@ -154,7 +130,6 @@
         <mxCell id="class-request-methods" parent="class-request" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ post()&#xa;+ close()" vertex="1">
           <mxGeometry height="50" width="200" y="112" as="geometry" />
         </mxCell>
-
         <mxCell id="class-proposal" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Proposal" vertex="1">
           <mxGeometry height="172" width="200" x="420" y="670" as="geometry" />
         </mxCell>
@@ -164,8 +139,7 @@
         <mxCell id="class-proposal-methods" parent="class-proposal" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ submit()&#xa;+ accept()&#xa;+ reject()" vertex="1">
           <mxGeometry height="50" width="200" y="122" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-client-request" edge="1" parent="1" source="class-client" target="class-request" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0.25;exitY=1;entryX=0.25;entryY=0;" value="posts">
+        <mxCell id="rel-client-request" edge="1" parent="1" source="class-client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0.25;exitY=1;entryX=0.25;entryY=0;" target="class-request" value="posts">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="210" y="640" />
@@ -175,8 +149,7 @@
         <mxCell id="card-client-request-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="*" vertex="1">
           <mxGeometry height="18" width="18" x="220" y="645" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-brief-request" edge="1" parent="1" source="class-brief" target="class-request" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0.25;exitY=1;entryX=0.75;entryY=0;" value="0..1">
+        <mxCell id="rel-brief-request" edge="1" parent="1" source="class-brief" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0.25;exitY=1;entryX=0.75;entryY=0;" target="class-request" value="0..1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="470" y="640" />
@@ -184,8 +157,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-
-        <mxCell id="rel-request-proposal" edge="1" parent="1" source="class-request" target="class-proposal" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" value="receives">
+        <mxCell id="rel-request-proposal" edge="1" parent="1" source="class-request" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="class-proposal" value="receives">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="card-request-proposal-1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="1" vertex="1">
@@ -194,8 +166,6 @@
         <mxCell id="card-request-proposal-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="*" vertex="1">
           <mxGeometry height="18" width="18" x="390" y="750" as="geometry" />
         </mxCell>
-
-        <!-- ========== PROJECT / WORKSPACE ========== -->
         <mxCell id="class-project" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Project" vertex="1">
           <mxGeometry height="162" width="200" x="700" y="670" as="geometry" />
         </mxCell>
@@ -205,7 +175,6 @@
         <mxCell id="class-project-methods" parent="class-project" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ create()&#xa;+ advanceStage()&#xa;+ getTimeline()" vertex="1">
           <mxGeometry height="50" width="200" y="112" as="geometry" />
         </mxCell>
-
         <mxCell id="class-stage" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="ProjectStage" vertex="1">
           <mxGeometry height="162" width="200" x="980" y="670" as="geometry" />
         </mxCell>
@@ -215,8 +184,7 @@
         <mxCell id="class-stage-methods" parent="class-stage" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ uploadDeliverable()&#xa;+ approve()&#xa;+ reject()" vertex="1">
           <mxGeometry height="50" width="200" y="112" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-proposal-project" edge="1" parent="1" source="class-proposal" target="class-project" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" value="becomes">
+        <mxCell id="rel-proposal-project" edge="1" parent="1" source="class-proposal" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="class-project" value="becomes">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="card-proposal-project-1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="1" vertex="1">
@@ -225,8 +193,7 @@
         <mxCell id="card-proposal-project-1b" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="1" vertex="1">
           <mxGeometry height="18" width="18" x="670" y="750" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-project-stage" edge="1" parent="1" source="class-project" target="class-stage" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;startArrow=diamond;startFill=1;endArrow=none;startSize=14;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" value="contains">
+        <mxCell id="rel-project-stage" edge="1" parent="1" source="class-project" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;startArrow=diamond;startFill=1;endArrow=none;startSize=14;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="class-stage" value="contains">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="card-project-stage-1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="1" vertex="1">
@@ -235,8 +202,6 @@
         <mxCell id="card-project-stage-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="*" vertex="1">
           <mxGeometry height="18" width="18" x="950" y="750" as="geometry" />
         </mxCell>
-
-        <!-- ========== DELIVERABLE / PAYMENT / MESSAGE / REVIEW ========== -->
         <mxCell id="class-deliverable" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Deliverable" vertex="1">
           <mxGeometry height="162" width="200" x="1240" y="670" as="geometry" />
         </mxCell>
@@ -246,8 +211,7 @@
         <mxCell id="class-deliverable-methods" parent="class-deliverable" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ upload()&#xa;+ addFeedback()" vertex="1">
           <mxGeometry height="50" width="200" y="112" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-stage-deliverable" edge="1" parent="1" source="class-stage" target="class-deliverable" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;startArrow=diamond;startFill=1;endArrow=none;startSize=14;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" value="contains">
+        <mxCell id="rel-stage-deliverable" edge="1" parent="1" source="class-stage" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;startArrow=diamond;startFill=1;endArrow=none;startSize=14;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="class-deliverable" value="contains">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="card-stage-deliverable-1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="1" vertex="1">
@@ -256,7 +220,6 @@
         <mxCell id="card-stage-deliverable-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="*" vertex="1">
           <mxGeometry height="18" width="18" x="1210" y="750" as="geometry" />
         </mxCell>
-
         <mxCell id="class-payment" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="MilestonePayment" vertex="1">
           <mxGeometry height="172" width="200" x="980" y="900" as="geometry" />
         </mxCell>
@@ -266,8 +229,7 @@
         <mxCell id="class-payment-methods" parent="class-payment" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ createIntent()&#xa;+ confirmPayment()&#xa;+ release()" vertex="1">
           <mxGeometry height="60" width="200" y="112" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-project-payment" edge="1" parent="1" source="class-project" target="class-payment" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;startArrow=diamond;startFill=1;endArrow=none;startSize=14;exitX=0.75;exitY=1;entryX=0.25;entryY=0;" value="has">
+        <mxCell id="rel-project-payment" edge="1" parent="1" source="class-project" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;startArrow=diamond;startFill=1;endArrow=none;startSize=14;exitX=0.75;exitY=1;entryX=0.25;entryY=0;" target="class-payment" value="has">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="850" y="870" />
@@ -278,7 +240,6 @@
         <mxCell id="card-project-payment-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="*" vertex="1">
           <mxGeometry height="18" width="18" x="1000" y="875" as="geometry" />
         </mxCell>
-
         <mxCell id="class-message" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Message" vertex="1">
           <mxGeometry height="192" width="200" x="700" y="900" as="geometry" />
         </mxCell>
@@ -288,14 +249,12 @@
         <mxCell id="class-message-methods" parent="class-message" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ send()&#xa;+ markRead()" vertex="1">
           <mxGeometry height="50" width="200" y="142" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-project-message" edge="1" parent="1" source="class-project" target="class-message" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" value="has">
+        <mxCell id="rel-project-message" edge="1" parent="1" source="class-project" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="class-message" value="has">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="card-project-message-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="*" vertex="1">
           <mxGeometry height="18" width="18" x="810" y="870" as="geometry" />
         </mxCell>
-
         <mxCell id="class-review" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Review" vertex="1">
           <mxGeometry height="182" width="200" x="420" y="900" as="geometry" />
         </mxCell>
@@ -305,8 +264,7 @@
         <mxCell id="class-review-methods" parent="class-review" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ submit()" vertex="1">
           <mxGeometry height="60" width="200" y="122" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-project-review" edge="1" parent="1" source="class-project" target="class-review" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0.25;exitY=1;entryX=1;entryY=0.5;" value="receives">
+        <mxCell id="rel-project-review" edge="1" parent="1" source="class-project" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0.25;exitY=1;entryX=1;entryY=0.5;" target="class-review" value="receives">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="750" y="860" />
@@ -318,8 +276,6 @@
         <mxCell id="card-project-review-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="0..1" vertex="1">
           <mxGeometry height="18" width="30" x="650" y="865" as="geometry" />
         </mxCell>
-
-        <!-- ========== NOTIFICATION / REPORT ========== -->
         <mxCell id="class-notification" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Notification" vertex="1">
           <mxGeometry height="182" width="200" x="160" y="900" as="geometry" />
         </mxCell>
@@ -329,8 +285,7 @@
         <mxCell id="class-notification-methods" parent="class-notification" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ send()&#xa;+ markRead()" vertex="1">
           <mxGeometry height="60" width="200" y="122" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-user-notification" edge="1" parent="1" source="class-user" target="class-notification" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0;exitY=0.5;entryX=0.5;entryY=0;" value="receives">
+        <mxCell id="rel-user-notification" edge="1" parent="1" source="class-user" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=0;exitY=0.5;entryX=0.5;entryY=0;" target="class-notification" value="receives">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="80" y="105" />
@@ -342,7 +297,6 @@
         <mxCell id="card-user-notification-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="*" vertex="1">
           <mxGeometry height="18" width="18" x="240" y="875" as="geometry" />
         </mxCell>
-
         <mxCell id="class-report" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=12;startSize=30;" value="Report" vertex="1">
           <mxGeometry height="172" width="200" x="1240" y="900" as="geometry" />
         </mxCell>
@@ -352,8 +306,7 @@
         <mxCell id="class-report-methods" parent="class-report" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="+ submit()&#xa;+ resolve()" vertex="1">
           <mxGeometry height="70" width="200" y="102" as="geometry" />
         </mxCell>
-
-        <mxCell id="rel-admin-report" edge="1" parent="1" source="class-admin" target="class-report" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=1;exitY=0.75;entryX=0.5;entryY=0;" value="reviews">
+        <mxCell id="rel-admin-report" edge="1" parent="1" source="class-admin" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10739e;strokeWidth=1;fontSize=10;fontFamily=Tahoma;fontColor=#23445d;exitX=1;exitY=0.75;entryX=0.5;entryY=0;" target="class-report" value="reviews">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1340" y="358" />
@@ -364,36 +317,30 @@
         <mxCell id="card-admin-report-n" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=10;fontFamily=Tahoma;" value="*" vertex="1">
           <mxGeometry height="18" width="18" x="1320" y="875" as="geometry" />
         </mxCell>
-
-        <!-- ========== ENUMERATIONS ========== -->
         <mxCell id="enum-role" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=11;startSize=40;" value="&lt;&lt;enumeration&gt;&gt;&#xa;RoleEnum" vertex="1">
           <mxGeometry height="100" width="130" x="40" y="1120" as="geometry" />
         </mxCell>
         <mxCell id="enum-role-vals" parent="enum-role" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="CLIENT&#xa;DESIGNER&#xa;ADMIN" vertex="1">
           <mxGeometry height="60" width="130" y="40" as="geometry" />
         </mxCell>
-
         <mxCell id="enum-proposal" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=11;startSize=40;" value="&lt;&lt;enumeration&gt;&gt;&#xa;ProposalStatus" vertex="1">
           <mxGeometry height="100" width="140" x="200" y="1120" as="geometry" />
         </mxCell>
         <mxCell id="enum-proposal-vals" parent="enum-proposal" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="PENDING&#xa;ACCEPTED&#xa;REJECTED" vertex="1">
           <mxGeometry height="60" width="140" y="40" as="geometry" />
         </mxCell>
-
         <mxCell id="enum-payment" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=11;startSize=40;" value="&lt;&lt;enumeration&gt;&gt;&#xa;PaymentStatus" vertex="1">
           <mxGeometry height="100" width="140" x="370" y="1120" as="geometry" />
         </mxCell>
         <mxCell id="enum-payment-vals" parent="enum-payment" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="PENDING&#xa;SUCCEEDED&#xa;FAILED" vertex="1">
           <mxGeometry height="60" width="140" y="40" as="geometry" />
         </mxCell>
-
         <mxCell id="enum-stage" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=11;startSize=40;" value="&lt;&lt;enumeration&gt;&gt;&#xa;StageStatus" vertex="1">
           <mxGeometry height="115" width="140" x="540" y="1120" as="geometry" />
         </mxCell>
         <mxCell id="enum-stage-vals" parent="enum-stage" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=top;spacingLeft=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontFamily=Tahoma;fontSize=10;" value="PENDING&#xa;IN_REVIEW&#xa;APPROVED&#xa;REJECTED" vertex="1">
           <mxGeometry height="75" width="140" y="40" as="geometry" />
         </mxCell>
-
         <mxCell id="enum-report" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;rounded=0;shadow=0;strokeWidth=1;fontFamily=Tahoma;fillColor=#b1ddf0;strokeColor=#10739e;fontSize=11;startSize=40;" value="&lt;&lt;enumeration&gt;&gt;&#xa;ReportStatus" vertex="1">
           <mxGeometry height="100" width="140" x="710" y="1120" as="geometry" />
         </mxCell>

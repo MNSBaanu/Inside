@@ -1,10 +1,10 @@
 <mxfile host="Electron" agent="Cursor">
   <diagram name="DFD Level 1 Diagram" id="dfd-level1">
-    <mxGraphModel dx="1810" dy="1364" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1810" dy="1364" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=#10739e;fillColor=#b1ddf0;fontFamily=Tahoma;fontStyle=1;fontSize=20;" value="Level 1 DFD for Inside Platform" vertex="1">
+        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Tahoma;fontStyle=1;fontSize=20;" value="Level 1 DFD for Inside Platform" vertex="1">
           <mxGeometry height="40" width="400" x="450" y="20" as="geometry" />
         </mxCell>
         <mxCell id="ent-client" parent="1" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="Client" vertex="1">
@@ -20,7 +20,7 @@
           <mxGeometry height="40" width="120" x="300" y="800" as="geometry" />
         </mxCell>
         <mxCell id="ent-cloudinary" parent="1" style="whiteSpace=wrap;html=1;rounded=0;fontFamily=Tahoma;fontStyle=1;fontSize=13;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="Cloudinary" vertex="1">
-          <mxGeometry height="40" width="120" x="850" y="280" as="geometry" />
+          <mxGeometry height="40" width="120" x="900" y="110" as="geometry" />
         </mxCell>
         <mxCell id="p1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Tahoma;fontStyle=1;fontSize=10;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;" value="1.0&#xa;User Management&#xa;&amp; Authentication" vertex="1">
           <mxGeometry height="80" width="150" x="280" y="70" as="geometry" />
@@ -47,7 +47,7 @@
           <mxGeometry height="80" width="150" x="280" y="880" as="geometry" />
         </mxCell>
         <mxCell id="ds-users" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D1  Users" vertex="1">
-          <mxGeometry height="40" width="140" x="580" y="90" as="geometry" />
+          <mxGeometry height="40" width="140" x="630" y="90" as="geometry" />
         </mxCell>
         <mxCell id="ds-portfolios" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D2  Portfolios" vertex="1">
           <mxGeometry height="40" width="140" x="580" y="210" as="geometry" />
@@ -56,19 +56,19 @@
           <mxGeometry height="40" width="140" x="580" y="330" as="geometry" />
         </mxCell>
         <mxCell id="ds-requests" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D4  Requests" vertex="1">
-          <mxGeometry height="40" width="140" x="850" y="420" as="geometry" />
+          <mxGeometry height="40" width="140" x="880" y="350" as="geometry" />
         </mxCell>
         <mxCell id="ds-proposals" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D5  Proposals" vertex="1">
-          <mxGeometry height="40" width="140" x="850" y="480" as="geometry" />
+          <mxGeometry height="40" width="140" x="890" y="700" as="geometry" />
         </mxCell>
         <mxCell id="ds-workspace" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=10;fontFamily=Tahoma;fontStyle=1;" value="D9  Project Workspace" vertex="1">
-          <mxGeometry height="40" width="160" x="580" y="570" as="geometry" />
+          <mxGeometry height="40" width="160" x="580" y="600" as="geometry" />
         </mxCell>
         <mxCell id="ds-payments" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D6  Payments" vertex="1">
           <mxGeometry height="40" width="140" x="580" y="690" as="geometry" />
         </mxCell>
         <mxCell id="ds-messages" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D7  Messages" vertex="1">
-          <mxGeometry height="40" width="140" x="850" y="540" as="geometry" />
+          <mxGeometry height="40" width="140" x="890" y="610" as="geometry" />
         </mxCell>
         <mxCell id="ds-reviews" parent="1" style="shape=partialRectangle;whiteSpace=wrap;html=1;top=1;bottom=1;left=1;right=0;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=2;fontSize=11;fontFamily=Tahoma;fontStyle=1;" value="D8  Reviews" vertex="1">
           <mxGeometry height="40" width="140" x="580" y="860" as="geometry" />
@@ -152,15 +152,16 @@
         <mxCell id="e16c" edge="1" parent="1" source="p7" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-client" value="Notifications">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="200" y="470" />
+              <mxPoint x="450" y="410" />
+              <mxPoint x="280" y="390" />
               <mxPoint x="200" y="275" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e16d" edge="1" parent="1" source="p7" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-designer" value="Notifications">
+        <mxCell id="e16d" edge="1" parent="1" source="p7" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ent-designer" value="Notifications">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="200" y="470" />
+              <mxPoint x="430" y="530" />
               <mxPoint x="200" y="525" />
             </Array>
           </mxGeometry>
@@ -178,7 +179,7 @@
         <mxCell id="e19" edge="1" parent="1" source="p5" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ent-cloudinary" value="Image Upload">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="750" y="590" />
+              <mxPoint x="750" y="520" />
               <mxPoint x="750" y="300" />
             </Array>
           </mxGeometry>
@@ -187,7 +188,7 @@
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="780" y="320" />
-              <mxPoint x="780" y="610" />
+              <mxPoint x="780" y="530" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -209,10 +210,10 @@
         <mxCell id="e22b" edge="1" parent="1" source="ds-portfolios" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p2" value="Portfolio Details">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e22c" edge="1" parent="1" source="ds-portfolios" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="p4" value="Portfolio Details">
+        <mxCell id="e22c" edge="1" parent="1" source="ds-portfolios" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;exitX=0;exitY=1;exitDx=0;exitDy=0;" target="p4" value="Portfolio Details">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="540" y="230" />
+              <mxPoint x="540" y="250" />
               <mxPoint x="540" y="470" />
             </Array>
           </mxGeometry>
@@ -227,7 +228,11 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e25" edge="1" parent="1" source="p4" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-proposals" value="Proposal Details">
-          <mxGeometry relative="1" as="geometry" />
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="530" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="e26" edge="1" parent="1" source="p5" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-workspace" value="Deliverable / Stage Data">
           <mxGeometry relative="1" as="geometry" />
@@ -259,11 +264,11 @@
         <mxCell id="e29b" edge="1" parent="1" source="ds-reports" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;strokeColor=#10739e;fillColor=#b1ddf0;" target="p8" value="Report Details">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e30" edge="1" parent="1" source="p8" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;" target="ds-users" value="Verification Status">
+        <mxCell id="e30" edge="1" parent="1" source="p8" style="endArrow=classic;html=1;rounded=0;strokeWidth=1.5;fontFamily=Tahoma;fontSize=10;fontStyle=0;align=center;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;strokeColor=#10739e;fillColor=#b1ddf0;entryX=0;entryY=1;entryDx=0;entryDy=0;" target="ds-users" value="Verification Status">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="500" y="920" />
-              <mxPoint x="500" y="110" />
+              <mxPoint x="500" y="130" />
             </Array>
           </mxGeometry>
         </mxCell>
