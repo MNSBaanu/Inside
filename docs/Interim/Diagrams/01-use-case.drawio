@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Cursor">
+<mxfile host="Electron" agent="Cursor" pages="2">
   <diagram name="Use Case Diagram" id="use-case">
-    <mxGraphModel dx="3017" dy="2273" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1.5" pageWidth="1400" pageHeight="2300" math="0" shadow="0">
+    <mxGraphModel dx="3620" dy="2728" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1.5" pageWidth="1400" pageHeight="2300" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -371,6 +371,14 @@
             <mxPoint x="1160" y="560" as="targetPoint" />
           </mxGeometry>
         </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="gL8eoxm5MyGpyPsSvvnQ" name="Page-2">
+    <mxGraphModel dx="2586" dy="1949" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="640" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
       </root>
     </mxGraphModel>
   </diagram>
