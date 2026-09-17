@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  ::selection {
+    @apply bg-ink text-canvas;
+  }
+}
+
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-shell px-6 md:px-12 lg:px-20;
+  }
+
+  .label {
+    @apply text-label font-medium uppercase text-muted;
+  }
+
+  .link-underline {
+    @apply underline decoration-hairline decoration-1 underline-offset-4 transition-colors duration-300 hover:decoration-ink;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
