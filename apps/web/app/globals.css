@@ -17,6 +17,11 @@
   ::selection {
     @apply bg-ink text-canvas;
   }
+
+  :focus-visible {
+    outline: 2px solid theme('colors.ink');
+    outline-offset: 3px;
+  }
 }
 
 @layer components {
@@ -30,6 +35,10 @@
 
   .link-underline {
     @apply underline decoration-hairline decoration-1 underline-offset-4 transition-colors duration-300 hover:decoration-ink;
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-6 focus:top-6 focus:z-[60] focus:bg-ink focus:px-5 focus:py-3 focus:text-label focus:uppercase focus:tracking-[0.12em] focus:text-canvas;
   }
 }
 
