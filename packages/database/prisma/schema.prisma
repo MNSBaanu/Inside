@@ -399,8 +399,8 @@ model MilestonePayment {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  project Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  stage   ProjectStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  project Project      @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  stage   ProjectStage @relation(fields: [stageId], references: [id], onDelete: Restrict)
 
   @@index([projectId])
   @@index([stageId])
