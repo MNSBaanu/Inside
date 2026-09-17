@@ -1,9 +1,9 @@
-// Placeholder photography. Swap these for curated interior shots before launch —
-// tonal consistency across the set matters more than any individual image.
-const placeholder = (seed: string, width: number, height: number) =>
-  `https://picsum.photos/seed/${seed}/${width}/${height}`;
+// Interior photography from Unsplash (free to use, no attribution required).
+// Every id below was verified to resolve before being added.
+const unsplash = (id: string, width: number, height: number) =>
+  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${width}&h=${height}&q=80`;
 
-export const heroImage = placeholder('inside-hero', 2400, 1350);
+export const heroImage = unsplash('1600210491892-03d54c0aaf87', 2400, 1100);
 
 export const featuredWork = [
   {
@@ -11,33 +11,30 @@ export const featuredWork = [
     title: 'Kalutara Villa',
     designer: 'Amara Weerasinghe',
     style: 'Tropical Modern',
-    src: placeholder('inside-work-1', 1200, 1600),
+    src: unsplash('1632119580908-ae947d4c7691', 1400, 1050),
   },
   {
     id: 'colombo-loft',
     title: 'Colombo Loft',
     designer: 'Devin Perera',
     style: 'Warm Minimal',
-    src: placeholder('inside-work-2', 1600, 1200),
+    src: unsplash('1600210491369-e753d80a41f3', 1400, 1050),
   },
   {
     id: 'galle-townhouse',
     title: 'Galle Townhouse',
     designer: 'Nadia Fernando',
     style: 'Coastal Classic',
-    src: placeholder('inside-work-3', 1200, 1600),
+    src: unsplash('1633330977020-2bdfb8530cc2', 1400, 1050),
   },
   {
     id: 'kandy-retreat',
     title: 'Kandy Retreat',
     designer: 'Roshan De Silva',
     style: 'Quiet Contemporary',
-    src: placeholder('inside-work-4', 1200, 1600),
+    src: unsplash('1688646953306-5ec93eab8c06', 1400, 1050),
   },
 ];
 
-export const spotlightImage = placeholder('inside-spotlight', 1600, 2000);
-export const authImage = placeholder('inside-auth', 1200, 1500);
-
-export const portfolioPlaceholder = (seed: string) =>
-  placeholder(`inside-portfolio-${seed}`, 1200, 900);
+export const spotlightImage = unsplash('1637649228998-6c78a67dfa6c', 1200, 1500);
+export const authImage = unsplash('1613545325278-f24b0cae1224', 1200, 1500);
