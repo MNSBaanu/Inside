@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { api } from '@/lib/api';
+import { api, setSessionExpiredHandler } from '@/lib/api';
 import { authStorage } from '@/lib/auth-storage';
 import type { AuthPayload, Role, User } from '@/lib/types';
 
@@ -43,6 +43,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const data = await api.get<{ user: User }>('/auth/me');
+      authStorage.markActive();
       setUser(data.user);
       setStatus('authenticated');
     } catch {
@@ -55,6 +56,14 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     void loadUser();
   }, [loadUser]);
+
+  useEffect(() => {
+    setSessionExpiredHandler(() => {
+      setUser(null);
+      setStatus('unauthenticated');
+    });
+    return () => setSessionExpiredHandler(null);
+  }, []);
 
   const adopt = useCallback((payload: AuthPayload) => {
     authStorage.save(payload.accessToken, payload.refreshToken);

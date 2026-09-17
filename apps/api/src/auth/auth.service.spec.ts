@@ -34,7 +34,7 @@ describe('AuthService', () => {
   };
 
   const config = {
-    get: jest.fn((key: string) => {
+    get: jest.fn((key: string): string | undefined => {
       if (key === 'JWT_REFRESH_DAYS') return '30';
       if (key === 'NODE_ENV') return 'test';
       return undefined;
@@ -111,7 +111,7 @@ describe('AuthService', () => {
   });
 
   it('omits emailVerificationToken in production', async () => {
-    config.get.mockImplementation((key: string) => {
+    config.get.mockImplementation((key: string): string | undefined => {
       if (key === 'JWT_REFRESH_DAYS') return '30';
       if (key === 'NODE_ENV') return 'production';
       return undefined;

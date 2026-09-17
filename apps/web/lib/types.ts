@@ -227,12 +227,26 @@ export type Message = {
   id: string;
   projectId: string;
   senderId: string;
+  receiverId: string;
   content: string;
   attachmentUrl: string | null;
   attachmentType: string | null;
+  isRead: boolean;
   readAt: string | null;
-  createdAt: string;
+  sentAt: string;
   sender?: PartySummary;
+};
+
+export type LastMessage = {
+  projectId: string;
+  senderId: string;
+  content: string;
+  sentAt: string;
+};
+
+export type ProjectListItem = Project & {
+  unreadCount: number;
+  lastMessage: LastMessage | null;
 };
 
 export type Deliverable = {
@@ -271,6 +285,25 @@ export type Review = {
 
 export type ReviewSummary = { count: number; averageRating: number };
 
+export type AdminReview = Review & {
+  designer?: { id: string; name: string; email: string } | null;
+};
+
+export type Report = {
+  id: string;
+  reporterId: string;
+  reportedUserId: string | null;
+  targetType: ReportTargetType;
+  targetId: string;
+  reason: string;
+  details: string | null;
+  status: ReportStatus;
+  resolvedById: string | null;
+  resolvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Favourite = {
   id: string;
   clientId: string;
@@ -293,6 +326,8 @@ export type Moodboard = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type ReportStatus = 'OPEN' | 'UNDER_REVIEW' | 'RESOLVED' | 'DISMISSED';
 
 export type ReportTargetType =
   | 'USER'

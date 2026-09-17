@@ -32,6 +32,17 @@ export function ErrorNotice({ message }: { message: string }) {
   );
 }
 
+export function SuccessNotice({ message }: { message: string }) {
+  return (
+    <p
+      role="status"
+      className="rounded-card bg-support-soft px-4 py-3 text-sm text-success"
+    >
+      {message}
+    </p>
+  );
+}
+
 export function Skeleton({ className }: { className?: string }) {
   return (
     <div className={cn('animate-pulse rounded-card bg-sand', className)} />

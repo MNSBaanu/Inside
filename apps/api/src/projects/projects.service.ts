@@ -82,9 +82,46 @@ export class ProjectsService {
       include: projectInclude,
     });
 
+    const projectIds = items.map((p) => p.id);
+    const [unreadRows, latestRows] = await Promise.all([
+      this.prisma.message.groupBy({
+        by: ['projectId'],
+        where: {
+          projectId: { in: projectIds },
+          receiverId: user.id,
+          isRead: false,
+        },
+        _count: { _all: true },
+      }),
+      this.prisma.message.findMany({
+        where: { projectId: { in: projectIds } },
+        orderBy: { sentAt: 'desc' },
+        distinct: ['projectId'],
+        select: {
+          projectId: true,
+          senderId: true,
+          content: true,
+          sentAt: true,
+        },
+      }),
+    ]);
+
+    const unreadByProject = new Map(
+      unreadRows.map((row) => [row.projectId, row._count._all]),
+    );
+    const lastByProject = new Map(
+      latestRows.map((row) => [row.projectId, row]),
+    );
+
     return {
       success: true,
-      data: { items: items.map((p) => this.serialize(p)) },
+      data: {
+        items: items.map((p) => ({
+          ...this.serialize(p),
+          unreadCount: unreadByProject.get(p.id) ?? 0,
+          lastMessage: lastByProject.get(p.id) ?? null,
+        })),
+      },
     };
   }
 

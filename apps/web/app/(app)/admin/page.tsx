@@ -5,12 +5,18 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { Rating } from '@/components/ui/rating';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api';
 import { formatDate, titleCase } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
 import { cn } from '@/lib/cn';
-import type { AccountStatus, Role, VerificationStatus } from '@/lib/types';
+import type {
+  AccountStatus,
+  AdminReview,
+  Role,
+  VerificationStatus,
+} from '@/lib/types';
 
 type AdminUser = {
   id: string;
@@ -43,7 +49,7 @@ type PendingVerification = {
   designer?: { id: string; name: string; avatarUrl: string | null };
 };
 
-const tabs = ['Users', 'Verifications', 'Reports'] as const;
+const tabs = ['Users', 'Verifications', 'Reports', 'Reviews'] as const;
 type Tab = (typeof tabs)[number];
 
 export default function AdminPage() {
@@ -56,12 +62,18 @@ export default function AdminPage() {
     '/verifications/admin/pending',
   );
   const reports = useApi<{ items: AdminReport[] }>('/admin/reports');
+  const reviews = useApi<{ items: AdminReview[] }>('/admin/reviews');
 
-  async function run(id: string, path: string, reload: () => void) {
+  async function run(
+    id: string,
+    path: string,
+    reload: () => void,
+    body: unknown = {},
+  ) {
     setActionError(null);
     setPending(id);
     try {
-      await api.patch(path, {});
+      await api.patch(path, body);
       reload();
     } catch (cause) {
       setActionError(errorMessage(cause));
@@ -77,7 +89,7 @@ export default function AdminPage() {
         Moderation.
       </h1>
       <p className="mt-4 max-w-xl text-muted">
-        Accounts, designer verification and reported content.
+        Accounts, designer verification, reported content and reviews.
       </p>
 
       {actionError ? (
@@ -276,6 +288,22 @@ export default function AdminPage() {
                   <p className="mt-4 text-muted">{report.reason}</p>
 
                   <div className="mt-6 flex flex-wrap gap-3">
+                    {report.status === 'OPEN' ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={pending === report.id}
+                        onClick={() =>
+                          run(
+                            report.id,
+                            `/admin/reports/${report.id}/under-review`,
+                            reports.reload,
+                          )
+                        }
+                      >
+                        Take under review
+                      </Button>
+                    ) : null}
                     <Button
                       size="sm"
                       disabled={pending === report.id}
@@ -309,6 +337,64 @@ export default function AdminPage() {
             </ul>
           ) : (
             <EmptyState title="No open reports." />
+          )
+        ) : null}
+
+        {tab === 'Reviews' ? (
+          reviews.loading ? (
+            <Skeleton className="h-48" />
+          ) : reviews.error ? (
+            <ErrorNotice message={reviews.error} />
+          ) : reviews.data && reviews.data.items.length > 0 ? (
+            <ul className="flex flex-col gap-4">
+              {reviews.data.items.map((review) => (
+                <li
+                  key={review.id}
+                  className="rounded-card border border-hairline bg-surface p-6"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <p className="font-display text-xl font-semibold">
+                        {review.reviewer?.name ?? 'Client'} on{' '}
+                        {review.designer?.name ?? 'designer'}
+                      </p>
+                      <p className="mt-1 text-sm text-muted">
+                        {formatDate(review.createdAt)}
+                      </p>
+                    </div>
+                    <Badge tone={review.isVisible ? 'support' : 'neutral'}>
+                      {review.isVisible ? 'Visible' : 'Hidden'}
+                    </Badge>
+                  </div>
+
+                  <Rating value={review.rating} className="mt-4" />
+
+                  {review.comment ? (
+                    <p className="mt-3 text-muted">{review.comment}</p>
+                  ) : null}
+
+                  <div className="mt-6">
+                    <Button
+                      size="sm"
+                      variant={review.isVisible ? 'outline' : 'primary'}
+                      disabled={pending === review.id}
+                      onClick={() =>
+                        run(
+                          review.id,
+                          `/admin/reviews/${review.id}/visibility`,
+                          reviews.reload,
+                          { isVisible: !review.isVisible },
+                        )
+                      }
+                    >
+                      {review.isVisible ? 'Hide review' : 'Show review'}
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <EmptyState title="No reviews yet." />
           )
         ) : null}
       </div>

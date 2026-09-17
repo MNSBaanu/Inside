@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
@@ -24,6 +24,29 @@ export function MessageThread({
   const [content, setContent] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const markingRef = useRef(false);
+
+  const unreadForMe =
+    data?.items.some(
+      (message) => message.receiverId === currentUserId && !message.isRead,
+    ) ?? false;
+
+  useEffect(() => {
+    if (!unreadForMe || markingRef.current) return;
+    markingRef.current = true;
+    void api
+      .patch(`/projects/${projectId}/messages/read-all`, {})
+      .then(() => reload())
+      .catch(() => undefined)
+      .finally(() => {
+        markingRef.current = false;
+      });
+  }, [unreadForMe, projectId, reload]);
+
+  useEffect(() => {
+    const timer = setInterval(() => void reload(), 15000);
+    return () => clearInterval(timer);
+  }, [reload]);
 
   async function onSend(event: React.FormEvent) {
     event.preventDefault();
@@ -81,7 +104,8 @@ export function MessageThread({
                       mine ? 'text-canvas/70' : 'text-muted',
                     )}
                   >
-                    {formatDate(message.createdAt)}
+                    {formatDate(message.sentAt)}
+                    {mine && message.isRead ? ' · Read' : ''}
                   </p>
                 </div>
               </li>

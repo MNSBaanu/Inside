@@ -13,6 +13,10 @@ describe('ProjectsService', () => {
       findUnique: jest.fn(),
       update: jest.fn(),
     },
+    message: {
+      findMany: jest.fn().mockResolvedValue([]),
+      groupBy: jest.fn().mockResolvedValue([]),
+    },
   };
 
   const client = {
@@ -60,6 +64,8 @@ describe('ProjectsService', () => {
 
   it('listMine returns designer projects for designer mode', async () => {
     prisma.project.findMany.mockResolvedValue([]);
+    prisma.message.groupBy.mockResolvedValue([]);
+    prisma.message.findMany.mockResolvedValue([]);
     await service.listMine(designer);
     expect(prisma.project.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ where: { designerId: 'd1' } }),

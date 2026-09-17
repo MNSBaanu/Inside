@@ -7,10 +7,18 @@ import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { formatDate, titleCase } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
-import type { Project } from '@/lib/types';
+import type { ProjectListItem } from '@/lib/types';
 
 export default function MessagesPage() {
-  const { data, error, loading } = useApi<{ items: Project[] }>('/projects');
+  const { data, error, loading } = useApi<{ items: ProjectListItem[] }>(
+    '/projects',
+  );
+
+  const threads = [...(data?.items ?? [])].sort((a, b) => {
+    const left = a.lastMessage?.sentAt ?? a.updatedAt;
+    const right = b.lastMessage?.sentAt ?? b.updatedAt;
+    return new Date(right).getTime() - new Date(left).getTime();
+  });
 
   return (
     <div>
@@ -31,24 +39,38 @@ export default function MessagesPage() {
             <Skeleton className="h-24" />
             <Skeleton className="h-24" />
           </div>
-        ) : data && data.items.length > 0 ? (
+        ) : threads.length > 0 ? (
           <ul className="flex flex-col gap-4">
-            {data.items.map((project) => (
+            {threads.map((project) => (
               <li key={project.id}>
                 <Link
                   href={`/projects/${project.id}`}
                   className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand"
                 >
-                  <div>
+                  <div className="min-w-0">
                     <p className="font-display text-xl font-semibold">
                       {project.title}
                     </p>
+                    <p className="mt-1 truncate text-sm text-muted">
+                      {project.lastMessage
+                        ? project.lastMessage.content
+                        : 'No messages yet.'}
+                    </p>
                     <p className="mt-1 text-sm text-muted">
                       {titleCase(project.currentStage)} ·{' '}
-                      {formatDate(project.updatedAt)}
+                      {formatDate(
+                        project.lastMessage?.sentAt ?? project.updatedAt,
+                      )}
                     </p>
                   </div>
-                  <StatusBadge status={project.status} />
+                  <div className="flex items-center gap-3">
+                    {project.unreadCount > 0 ? (
+                      <Badge tone="brand">
+                        {project.unreadCount} unread
+                      </Badge>
+                    ) : null}
+                    <StatusBadge status={project.status} />
+                  </div>
                 </Link>
               </li>
             ))}
