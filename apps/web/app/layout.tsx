@@ -3,6 +3,7 @@ import { Fraunces, Inter } from 'next/font/google';
 import './globals.css';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import { SessionProvider } from '@/components/providers/session-provider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -33,12 +34,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <body>
-        <a href="#main" className="skip-link">
-          Skip to content
-        </a>
-        <SiteHeader />
-        <main id="main">{children}</main>
-        <SiteFooter />
+        <SessionProvider>
+          <a href="#main" className="skip-link">
+            Skip to content
+          </a>
+          <SiteHeader />
+          <main id="main">{children}</main>
+          <SiteFooter />
+        </SessionProvider>
       </body>
     </html>
   );

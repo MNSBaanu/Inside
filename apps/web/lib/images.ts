@@ -37,3 +37,7 @@ export const featuredWork = [
 ];
 
 export const spotlightImage = placeholder('inside-spotlight', 1600, 2000);
+export const authImage = placeholder('inside-auth', 1200, 1500);
+
+export const portfolioPlaceholder = (seed: string) =>
+  placeholder(`inside-portfolio-${seed}`, 1200, 900);

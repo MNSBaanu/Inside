@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ButtonLink } from '@/components/ui/button';
+import { Avatar } from '@/components/ui/avatar';
+import { useSession } from '@/components/providers/session-provider';
 
 const navigation = [
   { href: '/designers', label: 'Designers' },
@@ -15,6 +17,7 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { user, status } = useSession();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -78,15 +81,35 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-5">
-          <Link
-            href="/login"
-            className="label hidden text-ink/70 transition-colors duration-300 hover:text-clay sm:block"
-          >
-            Sign in
-          </Link>
-          <ButtonLink href="/register" className="hidden sm:inline-flex">
-            Get started
-          </ButtonLink>
+          {status === 'authenticated' && user ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="label hidden text-ink/70 transition-colors duration-300 hover:text-clay sm:block"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/account"
+                aria-label={`Account — ${user.name}`}
+                className="hidden sm:block"
+              >
+                <Avatar name={user.name} src={user.avatarUrl} size={40} />
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="label hidden text-ink/70 transition-colors duration-300 hover:text-clay sm:block"
+              >
+                Sign in
+              </Link>
+              <ButtonLink href="/register" className="hidden sm:inline-flex">
+                Get started
+              </ButtonLink>
+            </>
+          )}
 
           <button
             type="button"
@@ -130,12 +153,30 @@ export function SiteHeader() {
         </nav>
 
         <div className="shell mt-10 flex flex-col gap-4 pb-12">
-          <ButtonLink href="/register" size="lg" fullWidth>
-            Get started
-          </ButtonLink>
-          <ButtonLink href="/login" size="lg" variant="outline" fullWidth>
-            Sign in
-          </ButtonLink>
+          {status === 'authenticated' ? (
+            <>
+              <ButtonLink href="/dashboard" size="lg" fullWidth>
+                Dashboard
+              </ButtonLink>
+              <ButtonLink
+                href="/account"
+                size="lg"
+                variant="outline"
+                fullWidth
+              >
+                Account
+              </ButtonLink>
+            </>
+          ) : (
+            <>
+              <ButtonLink href="/register" size="lg" fullWidth>
+                Get started
+              </ButtonLink>
+              <ButtonLink href="/login" size="lg" variant="outline" fullWidth>
+                Sign in
+              </ButtonLink>
+            </>
+          )}
         </div>
       </div>
     </header>
