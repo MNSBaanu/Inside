@@ -20,6 +20,18 @@ build/
 *.drawio.bkp
 *.bkp
 
-# portable draw.io used only for PNG export (large binaries)
-docs/Interim/Diagrams/.tools/
+# Academic documentation - kept on disk only, not in version control
+docs/
 
+# Test coverage
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS and editor cruft
+.DS_Store
+Thumbs.db
+.idea/
