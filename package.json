@@ -7,7 +7,8 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "test:e2e": "turbo run test:e2e"
+    "test:e2e": "turbo run test:e2e",
+    "bonto-start": "npx --yes pnpm@10.25.0 install && npx --yes pnpm@10.25.0 --filter @inside/database exec prisma generate && npx --yes pnpm@10.25.0 --filter api build && node apps/api/dist/main.js"
   },
   "devDependencies": {
     "turbo": "^2.5.4",
