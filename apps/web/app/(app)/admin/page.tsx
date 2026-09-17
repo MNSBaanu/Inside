@@ -101,7 +101,7 @@ export default function AdminPage() {
       <div
         role="tablist"
         aria-label="Admin sections"
-        className="mt-12 flex gap-2 border-b border-hairline"
+        className="mt-12 flex gap-2 overflow-x-auto border-b border-hairline"
       >
         {tabs.map((name) => (
           <button
@@ -111,7 +111,7 @@ export default function AdminPage() {
             aria-selected={tab === name}
             onClick={() => setTab(name)}
             className={cn(
-              '-mb-px border-b-2 px-5 py-3 text-label font-semibold uppercase transition-colors duration-300',
+              '-mb-px whitespace-nowrap border-b-2 px-5 py-3 text-label font-semibold uppercase transition-colors duration-300',
               tab === name
                 ? 'border-brand text-brand'
                 : 'border-transparent text-muted hover:text-ink',
