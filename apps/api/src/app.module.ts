@@ -21,6 +21,7 @@ import { ReportsModule } from './reports/reports.module';
 import { RequestsModule } from './requests/requests.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { StagesModule } from './stages/stages.module';
+import { UploadsModule } from './uploads/uploads.module';
 import { UsersModule } from './users/users.module';
 import { VerificationsModule } from './verifications/verifications.module';
 
@@ -49,6 +50,7 @@ import { VerificationsModule } from './verifications/verifications.module';
     BlocksModule,
     VerificationsModule,
     AdminModule,
+    UploadsModule,
     HealthModule,
   ],
 })

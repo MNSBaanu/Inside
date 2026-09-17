@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Field, Input, Textarea } from '@/components/ui/field';
+import { FileUpload } from '@/components/ui/file-upload';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api';
 import { formatMoney } from '@/lib/format';
@@ -142,21 +143,11 @@ export default function ManagePortfoliosPage() {
             />
           </Field>
 
-          <Field
-            label="Cover image URL"
-            htmlFor="imageUrl"
-            hint="Paste a link until uploads are available."
-          >
-            <Input
-              id="imageUrl"
-              type="url"
-              value={form.imageUrl}
-              onChange={(event) =>
-                setForm({ ...form, imageUrl: event.target.value })
-              }
-              placeholder="https://…"
-            />
-          </Field>
+          <FileUpload
+            folder="portfolios"
+            label="Cover image"
+            onUploaded={(file) => setForm({ ...form, imageUrl: file.url })}
+          />
 
           <Field label="Description" htmlFor="description">
             <Textarea

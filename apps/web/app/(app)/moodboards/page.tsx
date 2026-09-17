@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Field, Input } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { FileUpload } from '@/components/ui/file-upload';
 import { api, errorMessage } from '@/lib/api';
 import { formatDate } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
@@ -19,7 +20,6 @@ export default function MoodboardsPage() {
     useApi<{ items: Moodboard[] }>('/moodboards');
 
   const [name, setName] = useState('');
-  const [imageUrl, setImageUrl] = useState<Record<string, string>>({});
   const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -38,13 +38,10 @@ export default function MoodboardsPage() {
     }
   }
 
-  async function addItem(moodboardId: string) {
-    const url = imageUrl[moodboardId];
-    if (!url) return;
+  async function addItem(moodboardId: string, url: string) {
     setActionError(null);
     try {
       await api.post(`/moodboards/${moodboardId}/items`, { imageUrl: url });
-      setImageUrl({ ...imageUrl, [moodboardId]: '' });
       await reload();
     } catch (cause) {
       setActionError(errorMessage(cause));
@@ -185,31 +182,12 @@ export default function MoodboardsPage() {
                     <p className="mt-6 text-muted">No images on this board.</p>
                   )}
 
-                  <div className="mt-8 flex flex-wrap items-end gap-4">
-                    <div className="min-w-64 flex-1">
-                      <Field
-                        label="Add image URL"
-                        htmlFor={`img-${board.id}`}
-                        hint="Paste a link until uploads are available."
-                      >
-                        <Input
-                          id={`img-${board.id}`}
-                          type="url"
-                          value={imageUrl[board.id] ?? ''}
-                          onChange={(event) =>
-                            setImageUrl({
-                              ...imageUrl,
-                              [board.id]: event.target.value,
-                            })
-                          }
-                          placeholder="https://…"
-                        />
-                      </Field>
-                    </div>
-                    <Button size="sm" onClick={() => addItem(board.id)}>
-                      Add
-                    </Button>
-                  </div>
+                  <FileUpload
+                    className="mt-8"
+                    folder="moodboards"
+                    label="Add an image"
+                    onUploaded={(file) => void addItem(board.id, file.url)}
+                  />
                 </Card>
               </li>
             ))}

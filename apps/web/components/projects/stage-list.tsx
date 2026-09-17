@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Field, Input, Textarea } from '@/components/ui/field';
+import { Field, Textarea } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
+import { FileUpload } from '@/components/ui/file-upload';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api';
 import { formatDate, formatMoney, titleCase } from '@/lib/format';
@@ -235,28 +236,15 @@ function StageDeliverables({
 
       {canUpload ? (
         <form onSubmit={onUpload} className="mt-6 flex flex-col gap-4">
-          <Field
-            label="File URL"
-            htmlFor={`file-${stageId}`}
-            hint="Paste a link until uploads are wired up."
-          >
-            <Input
-              id={`file-${stageId}`}
-              type="url"
-              required
-              value={fileUrl}
-              onChange={(event) => setFileUrl(event.target.value)}
-              placeholder="https://…"
-            />
-          </Field>
-          <Field label="File name" htmlFor={`name-${stageId}`}>
-            <Input
-              id={`name-${stageId}`}
-              value={fileName}
-              onChange={(event) => setFileName(event.target.value)}
-              placeholder="Concept boards.pdf"
-            />
-          </Field>
+          <FileUpload
+            folder="deliverables"
+            accept="image/*,.pdf,.dwg,.dxf,.zip"
+            label="File"
+            onUploaded={(file) => {
+              setFileUrl(file.url);
+              setFileName(file.fileName);
+            }}
+          />
           <Field label="Notes" htmlFor={`notes-${stageId}`}>
             <Textarea
               id={`notes-${stageId}`}
@@ -265,7 +253,7 @@ function StageDeliverables({
             />
           </Field>
           <div>
-            <Button type="submit" size="sm" disabled={busy}>
+            <Button type="submit" size="sm" disabled={busy || !fileUrl}>
               {busy ? 'Adding…' : 'Add deliverable'}
             </Button>
           </div>
