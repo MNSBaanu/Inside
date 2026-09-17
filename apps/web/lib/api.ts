@@ -86,7 +86,10 @@ async function send<T>(
     .catch(() => null)) as ApiSuccess<T> | ApiFailure | null;
 
   if (!payload) {
-    throw new ApiError(response.status, 'The server returned an empty response');
+    throw new ApiError(
+      response.status,
+      `Unexpected non-JSON response (${response.status}) from ${baseUrl} — check the API is running there`,
+    );
   }
 
   if (!response.ok || !payload.success) {
