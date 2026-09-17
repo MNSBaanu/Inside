@@ -227,9 +227,23 @@ export type Message = {
   id: string;
   projectId: string;
   senderId: string;
-  body: string;
+  content: string;
+  attachmentUrl: string | null;
+  attachmentType: string | null;
   readAt: string | null;
   createdAt: string;
+  sender?: PartySummary;
+};
+
+export type Deliverable = {
+  id: string;
+  stageId: string;
+  fileUrl: string;
+  fileName: string | null;
+  notes: string | null;
+  feedback: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Notification = {
