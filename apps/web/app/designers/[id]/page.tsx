@@ -6,6 +6,10 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { ReviewList } from '@/components/reviews/review-list';
+import { FavouriteButton } from '@/components/designers/favourite-button';
+import { BlockButton } from '@/components/moderation/block-button';
+import { ReportDialog } from '@/components/moderation/report-dialog';
 import { formatMoney } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
 import type { DesignerProfile, PortfolioImage } from '@/lib/types';
@@ -91,14 +95,36 @@ export default function DesignerProfilePage({
               </div>
             </div>
 
-            <ButtonLink href={`/requests/new?designerId=${designer.id}`} size="lg">
-              Request this designer
-            </ButtonLink>
+            <div className="flex flex-wrap items-center gap-3">
+              <ButtonLink
+                href={`/requests/new?designerId=${designer.id}`}
+                size="lg"
+              >
+                Request this designer
+              </ButtonLink>
+              <FavouriteButton designerId={designer.id} />
+            </div>
           </div>
 
           {designer.bio ? (
             <p className="mt-10 max-w-3xl text-lg text-muted">{designer.bio}</p>
           ) : null}
+
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            <BlockButton userId={designer.id} />
+            <ReportDialog
+              targetType="USER"
+              targetId={designer.id}
+              reportedUserId={designer.id}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="shell mt-20">
+        <h2 className="font-display text-section font-semibold">Reviews</h2>
+        <div className="mt-10">
+          <ReviewList designerId={designer.id} />
         </div>
       </section>
 

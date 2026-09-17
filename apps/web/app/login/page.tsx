@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { AuthFooterLink, AuthLayout } from '@/components/auth/auth-layout';
@@ -65,6 +66,13 @@ function LoginForm() {
       <Button type="submit" size="lg" fullWidth disabled={submitting}>
         {submitting ? 'Signing in…' : 'Sign in'}
       </Button>
+
+      <Link
+        href="/forgot-password"
+        className="link-underline self-start text-sm text-muted"
+      >
+        Forgot your password?
+      </Link>
     </form>
   );
 }

@@ -1,9 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { api, errorMessage } from '@/lib/api';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { ButtonLink } from '@/components/ui/button';
+import { Button, ButtonLink } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { formatDate } from '@/lib/format';
@@ -21,6 +24,9 @@ export default function BriefDetailPage({
 }: {
   params: { id: string };
 }) {
+  const router = useRouter();
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const brief = useApi<{ brief: Brief }>(`/briefs/${params.id}`);
   const matches = useApi<{ briefId: string; items: Match[] }>(
     `/match/designers?briefId=${params.id}`,
@@ -36,6 +42,18 @@ export default function BriefDetailPage({
 
   const { brief: item } = brief.data;
 
+  async function onDelete() {
+    setDeleteError(null);
+    setDeleting(true);
+    try {
+      await api.delete(`/briefs/${params.id}`);
+      router.push('/briefs');
+    } catch (cause) {
+      setDeleteError(errorMessage(cause));
+      setDeleting(false);
+    }
+  }
+
   return (
     <div>
       <Badge tone="brand">Brief</Badge>
@@ -48,14 +66,24 @@ export default function BriefDetailPage({
         <CardHeader
           title="What you asked for"
           action={
-            <ButtonLink
-              href={`/requests/new?briefId=${item.id}`}
-              variant="outline"
-            >
-              Open to proposals
-            </ButtonLink>
+            <div className="flex flex-wrap gap-3">
+              <ButtonLink
+                href={`/requests/new?briefId=${item.id}`}
+                variant="outline"
+              >
+                Open to proposals
+              </ButtonLink>
+              <ButtonLink href={`/briefs/${item.id}/edit`} variant="ghost">
+                Edit
+              </ButtonLink>
+              <Button variant="ghost" onClick={onDelete} disabled={deleting}>
+                {deleting ? 'Deleting…' : 'Delete'}
+              </Button>
+            </div>
           }
         />
+
+        {deleteError ? <ErrorNotice message={deleteError} /> : null}
 
         <dl className="grid gap-8 sm:grid-cols-2">
           <div>

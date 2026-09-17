@@ -14,10 +14,14 @@ type NavItem = { href: string; label: string; roles?: Role[] };
 const navigation: NavItem[] = [
   { href: '/dashboard', label: 'Overview' },
   { href: '/briefs', label: 'Briefs', roles: ['CLIENT'] },
+  { href: '/moodboards', label: 'Moodboards', roles: ['CLIENT'] },
+  { href: '/favourites', label: 'Saved', roles: ['CLIENT'] },
   { href: '/requests', label: 'Requests' },
   { href: '/projects', label: 'Projects' },
   { href: '/messages', label: 'Messages' },
+  { href: '/notifications', label: 'Alerts' },
   { href: '/portfolios/manage', label: 'My work', roles: ['DESIGNER'] },
+  { href: '/verification', label: 'Verification', roles: ['DESIGNER'] },
   { href: '/admin', label: 'Admin', roles: ['ADMIN'] },
   { href: '/account', label: 'Account' },
 ];

@@ -255,3 +255,57 @@ export type Notification = {
   readAt: string | null;
   createdAt: string;
 };
+
+export type Review = {
+  id: string;
+  projectId: string;
+  reviewerId: string;
+  designerId: string;
+  rating: number;
+  comment: string | null;
+  isVisible: boolean;
+  createdAt: string;
+  updatedAt: string;
+  reviewer?: PartySummary;
+};
+
+export type ReviewSummary = { count: number; averageRating: number };
+
+export type Favourite = {
+  id: string;
+  clientId: string;
+  designerId: string;
+  createdAt: string;
+  designer?: PartySummary;
+};
+
+export type MoodboardItem = {
+  imageUrl: string;
+  note?: string | null;
+  portfolioId?: string | null;
+};
+
+export type Moodboard = {
+  id: string;
+  clientId: string;
+  name: string;
+  savedItems: MoodboardItem[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ReportTargetType =
+  | 'USER'
+  | 'PROJECT'
+  | 'PORTFOLIO'
+  | 'REVIEW'
+  | 'MESSAGE';
+
+export type Block = {
+  id: string;
+  blockerId: string;
+  blockedId: string;
+  reason: string | null;
+  createdAt: string;
+  blocked?: PartySummary;
+};

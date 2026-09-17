@@ -47,6 +47,19 @@ export default function RequestDetailPage({
     ['OPEN', 'PENDING'].includes(item.status) &&
     (item.type === 'OPEN' || item.designerId === user?.id);
 
+  async function changeRequest(action: 'cancel' | 'close') {
+    setActionError(null);
+    setPendingId(item.id);
+    try {
+      await api.patch(`/requests/${item.id}/${action}`, {});
+      await request.reload();
+    } catch (cause) {
+      setActionError(errorMessage(cause));
+    } finally {
+      setPendingId(null);
+    }
+  }
+
   async function act(
     proposalId: string,
     action: 'accept' | 'reject' | 'withdraw',
@@ -84,6 +97,27 @@ export default function RequestDetailPage({
         Created {formatDate(item.createdAt)}
         {item.budget !== null ? ` · Budget ${formatMoney(item.budget)}` : ''}
       </p>
+
+      {isClient && ['OPEN', 'PENDING'].includes(item.status) ? (
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={pendingId === item.id}
+            onClick={() => changeRequest('cancel')}
+          >
+            Cancel request
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={pendingId === item.id}
+            onClick={() => changeRequest('close')}
+          >
+            Close to new proposals
+          </Button>
+        </div>
+      ) : null}
 
       {item.description ? (
         <Card className="mt-10">

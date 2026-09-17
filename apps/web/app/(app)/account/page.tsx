@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
+import { PasswordForm } from '@/components/account/password-form';
+import { RoleSwitch } from '@/components/account/role-switch';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
@@ -184,6 +186,14 @@ export default function AccountPage() {
           </div>
         </form>
       </Card>
+
+      <div className="mt-8">
+        <RoleSwitch />
+      </div>
+
+      <div className="mt-8">
+        <PasswordForm />
+      </div>
     </div>
   );
 }

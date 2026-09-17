@@ -5,9 +5,11 @@ import { useSession } from '@/components/providers/session-provider';
 import { MessageThread } from '@/components/projects/message-thread';
 import { PaymentList } from '@/components/projects/payment-list';
 import { StageList } from '@/components/projects/stage-list';
+import { ReviewForm } from '@/components/reviews/review-form';
+import { ReviewList } from '@/components/reviews/review-list';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api';
 import { cn } from '@/lib/cn';
@@ -15,7 +17,7 @@ import { formatDate, titleCase } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
 import type { Project, ProjectStage } from '@/lib/types';
 
-const tabs = ['Stages', 'Payments', 'Messages'] as const;
+const tabs = ['Stages', 'Payments', 'Messages', 'Review'] as const;
 type Tab = (typeof tabs)[number];
 
 export default function ProjectWorkspacePage({
@@ -30,6 +32,7 @@ export default function ProjectWorkspacePage({
   );
 
   const [tab, setTab] = useState<Tab>('Stages');
+  const [reviewed, setReviewed] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -159,6 +162,24 @@ export default function ProjectWorkspacePage({
 
         {tab === 'Messages' && user ? (
           <MessageThread projectId={params.id} currentUserId={user.id} />
+        ) : null}
+
+        {tab === 'Review' ? (
+          item.status !== 'COMPLETED' ? (
+            <EmptyState
+              title="Not ready for a review yet."
+              description="A review can be left once the project is completed."
+            />
+          ) : !isClient ? (
+            <ReviewList designerId={item.designerId} />
+          ) : reviewed ? (
+            <ReviewList designerId={item.designerId} />
+          ) : (
+            <ReviewForm
+              projectId={params.id}
+              onSubmitted={() => setReviewed(true)}
+            />
+          )
         ) : null}
       </div>
     </div>
