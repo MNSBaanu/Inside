@@ -54,7 +54,7 @@ Turborepo monorepo:
 Inside/
 ├── apps/
 │   ├── api/              # NestJS REST API (auth, users, portfolios, moodboards/briefs)
-│   ├── web/              # Next.js web app — Phase 3 (auth + discovery)
+│   ├── web/              # Next.js web app — Phase 3 (not scaffolded yet)
 │   └── mobile/           # Expo / React Native — Phase 4 (not scaffolded yet)
 ├── packages/
 │   ├── database/         # Prisma schema, migrations, seed
@@ -65,7 +65,7 @@ Inside/
 └── README.md
 ```
 
-**Current status:** Nest API Phase 2 complete. Web covers the full marketplace flow: auth (including forgot/reset/verify), discovery, moodboards/briefs/matching, hiring, project workspace, payments, messaging, notifications, reviews, admin, and user-side report/block. Mobile later. Cloudinary uploads and live Stripe remain stubbed (URL + pay/release).
+**Current status:** Nest API Phase 2 complete (23 modules, 92 unit tests). Web (`apps/web`) is not scaffolded yet — being rebuilt from scratch. Mobile later. Cloudinary uploads and live Stripe remain stubbed (URL + pay/release).
 
 ---
 
@@ -164,7 +164,7 @@ Password for all seed users: **`Password123!`**
 | `designer2@inside.test` | DESIGNER | Verification pending |
 | `admin@inside.test` | ADMIN | Admin moderation |
 
-Web login: http://localhost:3000/login (demo fill buttons on the page).
+Web login (once `apps/web` is rebuilt): http://localhost:3000/login.
 
 ---
 
