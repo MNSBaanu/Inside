@@ -12,9 +12,9 @@ const config: Config = {
         muted: '#6C7471',
         hairline: '#DFD9CD',
         brand: {
-          DEFAULT: '#0F6B63',
-          soft: '#DAEBE8',
-          deep: '#0A4B45',
+          DEFAULT: '#0B5A3D',
+          soft: '#D9EAE0',
+          deep: '#063F29',
         },
         highlight: {
           DEFAULT: '#DFA02C',
