@@ -30,7 +30,7 @@ export default function DashboardPage() {
     <div>
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
-          <Badge tone="clay">Overview</Badge>
+          <Badge tone="brand">Overview</Badge>
           <h1 className="mt-6 font-display text-section font-semibold">
             Welcome back, {user?.name.split(' ')[0]}.
           </h1>
@@ -95,7 +95,7 @@ export default function DashboardPage() {
                 <li key={project.id}>
                   <Link
                     href={`/projects/${project.id}`}
-                    className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-clay"
+                    className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand"
                   >
                     <div>
                       <p className="font-display text-xl font-semibold">
@@ -128,7 +128,7 @@ export default function DashboardPage() {
                     aria-hidden
                     className={
                       item.readAt === null
-                        ? 'mt-2 h-2 w-2 shrink-0 rounded-pill bg-clay'
+                        ? 'mt-2 h-2 w-2 shrink-0 rounded-pill bg-brand'
                         : 'mt-2 h-2 w-2 shrink-0 rounded-pill bg-hairline'
                     }
                   />
@@ -168,7 +168,7 @@ function StatTile({
       {loading ? (
         <Skeleton className="mt-4 h-12 w-16 bg-canvas" />
       ) : (
-        <p className="mt-4 font-display text-5xl font-semibold text-clay">
+        <p className="mt-4 font-display text-5xl font-semibold text-brand">
           {value}
         </p>
       )}

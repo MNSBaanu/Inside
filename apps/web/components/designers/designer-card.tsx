@@ -32,7 +32,7 @@ export function DesignerCard({ designer }: { designer: DesignerSummary }) {
         <div className="flex items-center gap-3">
           <Avatar name={designer.name} src={designer.avatarUrl} size={44} />
           <div className="min-w-0">
-            <p className="truncate font-display text-xl font-semibold transition-colors duration-300 group-hover:text-clay">
+            <p className="truncate font-display text-xl font-semibold transition-colors duration-300 group-hover:text-brand">
               {designer.name}
             </p>
             <p className="truncate text-sm text-muted">
@@ -46,9 +46,9 @@ export function DesignerCard({ designer }: { designer: DesignerSummary }) {
         ) : null}
 
         <div className="mt-auto flex flex-wrap items-center gap-2 pt-6">
-          {designer.isVerified ? <Badge tone="sage">Verified</Badge> : null}
+          {designer.isVerified ? <Badge tone="support">Verified</Badge> : null}
           {designer.rating.count > 0 ? (
-            <Badge tone="ochre">
+            <Badge tone="highlight">
               {designer.rating.average?.toFixed(1)} ({designer.rating.count})
             </Badge>
           ) : null}

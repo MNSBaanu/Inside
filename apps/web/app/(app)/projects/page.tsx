@@ -14,7 +14,7 @@ export default function ProjectsPage() {
 
   return (
     <div>
-      <Badge tone="clay">Projects</Badge>
+      <Badge tone="brand">Projects</Badge>
       <h1 className="mt-6 font-display text-section font-semibold">
         Work in progress.
       </h1>
@@ -37,7 +37,7 @@ export default function ProjectsPage() {
               <li key={project.id}>
                 <Link
                   href={`/projects/${project.id}`}
-                  className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-clay"
+                  className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand"
                 >
                   <div>
                     <p className="font-display text-xl font-semibold">

@@ -33,7 +33,7 @@ export function PortfolioCard({
 
       <div className="mt-5 flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h3 className="truncate font-display text-2xl font-semibold transition-colors duration-300 group-hover:text-clay">
+          <h3 className="truncate font-display text-2xl font-semibold transition-colors duration-300 group-hover:text-brand">
             {portfolio.title}
           </h3>
           <p className="mt-1 truncate text-muted">{portfolio.designer.name}</p>

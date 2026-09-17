@@ -5,24 +5,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: '#FDF8F1',
+        canvas: '#FCF9F4',
         surface: '#FFFFFF',
-        sand: '#F4E7D5',
-        ink: '#231C16',
-        muted: '#7A6E63',
-        hairline: '#E8DECF',
-        clay: {
-          DEFAULT: '#C4553A',
-          soft: '#F8E3DA',
-          deep: '#9E3F28',
+        sand: '#EDE7DC',
+        ink: '#1B2422',
+        muted: '#6C7471',
+        hairline: '#DFD9CD',
+        brand: {
+          DEFAULT: '#0F6B63',
+          soft: '#DAEBE8',
+          deep: '#0A4B45',
         },
-        ochre: {
+        highlight: {
           DEFAULT: '#DFA02C',
           soft: '#FBEDD2',
         },
-        sage: {
-          DEFAULT: '#7F9471',
-          soft: '#E8EEE2',
+        support: {
+          DEFAULT: '#B8604A',
+          soft: '#F7E4DD',
         },
         success: '#3F7A52',
         warning: '#B07D20',

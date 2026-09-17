@@ -15,8 +15,8 @@ export default function OpengraphImage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          backgroundColor: '#FDF8F1',
-          color: '#231C16',
+          backgroundColor: '#FCF9F4',
+          color: '#1B2422',
           padding: '72px 80px',
         }}
       >
@@ -26,7 +26,7 @@ export default function OpengraphImage() {
             fontSize: 22,
             letterSpacing: '0.16em',
             textTransform: 'uppercase',
-            color: '#C4553A',
+            color: '#0F6B63',
           }}
         >
           Interior design marketplace
@@ -49,13 +49,13 @@ export default function OpengraphImage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderTop: '2px solid #C4553A',
+            borderTop: '2px solid #0F6B63',
             paddingTop: 32,
             fontSize: 30,
           }}
         >
           <div style={{ display: 'flex' }}>Inside</div>
-          <div style={{ display: 'flex', fontSize: 22, color: '#7A6E63' }}>
+          <div style={{ display: 'flex', fontSize: 22, color: '#6C7471' }}>
             Brief · Compare · Build
           </div>
         </div>

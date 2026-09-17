@@ -55,7 +55,7 @@ export default function VerificationPage() {
   if (!isDesigner) {
     return (
       <div>
-        <Badge tone="clay">Verification</Badge>
+        <Badge tone="brand">Verification</Badge>
         <h1 className="mt-6 font-display text-section font-semibold">
           For designers.
         </h1>
@@ -71,7 +71,7 @@ export default function VerificationPage() {
 
   return (
     <div>
-      <Badge tone="clay">Verification</Badge>
+      <Badge tone="brand">Verification</Badge>
       <h1 className="mt-6 font-display text-section font-semibold">
         Get the verified badge.
       </h1>

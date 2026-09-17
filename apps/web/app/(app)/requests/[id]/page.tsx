@@ -72,7 +72,7 @@ export default function RequestDetailPage({
 
   return (
     <div>
-      <Badge tone="clay">Request</Badge>
+      <Badge tone="brand">Request</Badge>
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-display text-section font-semibold">
           {item.title}
@@ -160,7 +160,7 @@ export default function RequestDetailPage({
                       </div>
                       <div>
                         <dt className="label text-muted">Total</dt>
-                        <dd className="mt-2 font-display text-2xl font-semibold text-clay">
+                        <dd className="mt-2 font-display text-2xl font-semibold text-brand">
                           {formatMoney(proposal.totalAmount)}
                         </dd>
                       </div>

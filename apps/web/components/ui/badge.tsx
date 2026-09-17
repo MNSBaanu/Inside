@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
-export type BadgeTone = 'neutral' | 'clay' | 'ochre' | 'sage' | 'ink';
+export type BadgeTone = 'neutral' | 'brand' | 'highlight' | 'support' | 'ink';
 
 const tones: Record<BadgeTone, string> = {
   neutral: 'bg-sand text-ink/70',
-  clay: 'bg-clay-soft text-clay-deep',
-  ochre: 'bg-ochre-soft text-warning',
-  sage: 'bg-sage-soft text-success',
+  brand: 'bg-brand-soft text-brand-deep',
+  highlight: 'bg-highlight-soft text-warning',
+  support: 'bg-support-soft text-success',
   ink: 'bg-ink text-canvas',
 };
 

@@ -71,7 +71,7 @@ export default function AccountPage() {
 
   return (
     <div>
-      <Badge tone="clay">Account</Badge>
+      <Badge tone="brand">Account</Badge>
       <h1 className="mt-6 font-display text-section font-semibold">
         Your profile.
       </h1>
@@ -89,7 +89,7 @@ export default function AccountPage() {
         <form onSubmit={onSubmit} className="flex flex-col gap-6">
           {error ? <ErrorNotice message={error} /> : null}
           {saved ? (
-            <p className="rounded-card bg-sage-soft px-4 py-3 text-sm text-success">
+            <p className="rounded-card bg-support-soft px-4 py-3 text-sm text-success">
               Profile updated.
             </p>
           ) : null}
@@ -161,7 +161,7 @@ export default function AccountPage() {
                 type="checkbox"
                 checked={isAvailable}
                 onChange={(event) => setIsAvailable(event.target.checked)}
-                className="h-4 w-4 accent-clay"
+                className="h-4 w-4 accent-brand"
               />
               <span className="text-sm">
                 I am available to take on new projects

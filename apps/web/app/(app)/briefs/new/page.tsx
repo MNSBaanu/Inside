@@ -65,7 +65,7 @@ export default function NewBriefPage() {
 
   return (
     <div>
-      <Badge tone="clay">New brief</Badge>
+      <Badge tone="brand">New brief</Badge>
       <h1 className="mt-6 font-display text-section font-semibold">
         Tell us about the space.
       </h1>

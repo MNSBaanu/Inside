@@ -75,7 +75,7 @@ export default function RegisterPage() {
                 className={cn(
                   'rounded-card border p-5 text-left transition-colors duration-300',
                   role === option.value
-                    ? 'border-clay bg-clay-soft'
+                    ? 'border-brand bg-brand-soft'
                     : 'border-hairline bg-surface hover:border-ink/30',
                 )}
               >

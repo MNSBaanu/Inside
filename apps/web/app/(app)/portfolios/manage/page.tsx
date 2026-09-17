@@ -76,7 +76,7 @@ export default function ManagePortfoliosPage() {
 
   return (
     <div>
-      <Badge tone="clay">My work</Badge>
+      <Badge tone="brand">My work</Badge>
       <h1 className="mt-6 font-display text-section font-semibold">
         Your published projects.
       </h1>
@@ -221,7 +221,7 @@ export default function ManagePortfoliosPage() {
                           {formatMoney(portfolio.budget)}
                         </p>
                       </div>
-                      <Badge tone={portfolio.isPublished ? 'sage' : 'neutral'}>
+                      <Badge tone={portfolio.isPublished ? 'support' : 'neutral'}>
                         {portfolio.isPublished ? 'Published' : 'Draft'}
                       </Badge>
                     </div>

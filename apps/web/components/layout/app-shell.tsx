@@ -70,7 +70,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 className={cn(
                   'whitespace-nowrap rounded-pill px-4 py-2.5 text-label font-semibold uppercase transition-colors duration-300',
                   active
-                    ? 'bg-clay text-canvas'
+                    ? 'bg-brand text-canvas'
                     : 'text-ink/70 hover:bg-sand hover:text-ink',
                 )}
               >

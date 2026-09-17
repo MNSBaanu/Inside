@@ -74,15 +74,15 @@ export default function DesignerProfilePage({
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {designer.isVerified ? (
-                    <Badge tone="sage">Verified</Badge>
+                    <Badge tone="support">Verified</Badge>
                   ) : null}
                   {designer.isAvailable ? (
-                    <Badge tone="ochre">Available</Badge>
+                    <Badge tone="highlight">Available</Badge>
                   ) : (
                     <Badge>Not taking work</Badge>
                   )}
                   {designer.rating.count > 0 ? (
-                    <Badge tone="clay">
+                    <Badge tone="brand">
                       {designer.rating.average?.toFixed(1)} from{' '}
                       {designer.rating.count} reviews
                     </Badge>
@@ -137,7 +137,7 @@ export default function DesignerProfilePage({
                 </div>
                 <div className="mt-5 flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <h3 className="truncate font-display text-2xl font-semibold transition-colors duration-300 group-hover:text-clay">
+                    <h3 className="truncate font-display text-2xl font-semibold transition-colors duration-300 group-hover:text-brand">
                       {portfolio.title}
                     </h3>
                     {portfolio.budget !== null ? (

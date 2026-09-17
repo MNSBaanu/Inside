@@ -61,7 +61,7 @@ export function MessageThread({
                 <div
                   className={cn(
                     'max-w-lg rounded-card px-5 py-4',
-                    mine ? 'bg-clay text-canvas' : 'bg-sand text-ink',
+                    mine ? 'bg-brand text-canvas' : 'bg-sand text-ink',
                   )}
                 >
                   <p className="whitespace-pre-line">{message.content}</p>

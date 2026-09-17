@@ -69,7 +69,7 @@ function NewRequestForm() {
             className={cn(
               'rounded-card border p-5 text-left transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50',
               type === 'DIRECT'
-                ? 'border-clay bg-clay-soft'
+                ? 'border-brand bg-brand-soft'
                 : 'border-hairline bg-surface hover:border-ink/30',
             )}
           >
@@ -90,7 +90,7 @@ function NewRequestForm() {
             className={cn(
               'rounded-card border p-5 text-left transition-colors duration-300',
               type === 'OPEN'
-                ? 'border-clay bg-clay-soft'
+                ? 'border-brand bg-brand-soft'
                 : 'border-hairline bg-surface hover:border-ink/30',
             )}
           >
@@ -157,7 +157,7 @@ function NewRequestForm() {
 export default function NewRequestPage() {
   return (
     <div>
-      <Badge tone="clay">New request</Badge>
+      <Badge tone="brand">New request</Badge>
       <h1 className="mt-6 font-display text-section font-semibold">
         Ask for proposals.
       </h1>

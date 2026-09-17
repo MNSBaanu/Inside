@@ -10,19 +10,19 @@ const steps = [
     number: '01',
     title: 'Write your brief',
     body: 'Describe the space, the budget and the feeling you are after. Add a moodboard if you already have one.',
-    tone: 'bg-ochre-soft',
+    tone: 'bg-highlight-soft',
   },
   {
     number: '02',
     title: 'Compare proposals',
     body: 'Verified designers respond with scope, timeline and cost. Read them side by side before you commit.',
-    tone: 'bg-sage-soft',
+    tone: 'bg-support-soft',
   },
   {
     number: '03',
     title: 'Work in one place',
     body: 'Track stages, approve deliverables and release milestone payments as the work actually completes.',
-    tone: 'bg-clay-soft',
+    tone: 'bg-brand-soft',
   },
 ];
 
@@ -37,12 +37,12 @@ export default function HomePage() {
     <>
       <section className="shell pb-20 pt-36 md:pb-28 md:pt-44">
         <Reveal>
-          <Badge tone="clay">Interior design marketplace</Badge>
+          <Badge tone="brand">Interior design marketplace</Badge>
         </Reveal>
         <Reveal delay={80}>
           <h1 className="mt-8 max-w-5xl font-display text-display font-semibold">
             Design the home you
-            <span className="text-clay"> keep imagining.</span>
+            <span className="text-brand"> keep imagining.</span>
           </h1>
         </Reveal>
         <Reveal delay={160}>
@@ -80,7 +80,7 @@ export default function HomePage() {
       </Reveal>
 
       <section className="shell py-20 md:py-28">
-        <div className="grid gap-10 rounded-card bg-clay px-8 py-12 text-canvas sm:grid-cols-3 md:px-16 md:py-16">
+        <div className="grid gap-10 rounded-card bg-brand px-8 py-12 text-canvas sm:grid-cols-3 md:px-16 md:py-16">
           {stats.map((stat, index) => (
             <Reveal key={stat.caption} delay={index * 100}>
               <p className="font-display text-5xl font-semibold md:text-6xl">
@@ -98,7 +98,7 @@ export default function HomePage() {
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <Reveal>
             <div>
-              <Badge tone="clay">Selected work</Badge>
+              <Badge tone="brand">Selected work</Badge>
               <h2 className="mt-6 max-w-xl font-display text-section font-semibold">
                 Rooms that earned their brief.
               </h2>
@@ -155,7 +155,7 @@ export default function HomePage() {
                 <div
                   className={`h-full rounded-card ${step.tone} p-8 transition-transform duration-500 ease-editorial hover:-translate-y-1 md:p-10`}
                 >
-                  <p className="font-display text-5xl font-semibold text-clay">
+                  <p className="font-display text-5xl font-semibold text-brand">
                     {step.number}
                   </p>
                   <h3 className="mt-8 font-display text-2xl font-semibold">
@@ -183,7 +183,7 @@ export default function HomePage() {
         </Reveal>
         <Reveal delay={120}>
           <div className="md:pl-6">
-            <Badge tone="sage">Verified designers</Badge>
+            <Badge tone="support">Verified designers</Badge>
             <h2 className="mt-6 font-display text-section font-semibold">
               Credentials checked before the first message.
             </h2>
@@ -245,7 +245,7 @@ function WorkCard({
       </div>
       <div className="mt-5 flex items-baseline justify-between gap-4">
         <div>
-          <h3 className="font-display text-2xl font-semibold transition-colors duration-300 group-hover:text-clay">
+          <h3 className="font-display text-2xl font-semibold transition-colors duration-300 group-hover:text-brand">
             {work.title}
           </h3>
           <p className="mt-1 text-muted">{work.designer}</p>

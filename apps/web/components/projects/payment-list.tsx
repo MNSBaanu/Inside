@@ -58,7 +58,7 @@ export function PaymentList({
             className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6"
           >
             <div>
-              <p className="font-display text-2xl font-semibold text-clay">
+              <p className="font-display text-2xl font-semibold text-brand">
                 {formatMoney(payment.amount)}
               </p>
               <p className="mt-1 text-sm text-muted">

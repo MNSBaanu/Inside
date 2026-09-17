@@ -15,11 +15,11 @@
   }
 
   ::selection {
-    @apply bg-clay text-canvas;
+    @apply bg-brand text-canvas;
   }
 
   :focus-visible {
-    outline: 2px solid theme('colors.clay.DEFAULT');
+    outline: 2px solid theme('colors.brand.DEFAULT');
     outline-offset: 3px;
   }
 }
@@ -34,11 +34,11 @@
   }
 
   .link-underline {
-    @apply underline decoration-clay decoration-2 underline-offset-[6px] transition-colors duration-300 hover:text-clay;
+    @apply underline decoration-brand decoration-2 underline-offset-[6px] transition-colors duration-300 hover:text-brand;
   }
 
   .skip-link {
-    @apply sr-only focus:not-sr-only focus:fixed focus:left-6 focus:top-6 focus:z-[60] focus:rounded-pill focus:bg-clay focus:px-5 focus:py-3 focus:text-label focus:font-semibold focus:uppercase focus:text-canvas;
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-6 focus:top-6 focus:z-[60] focus:rounded-pill focus:bg-brand focus:px-5 focus:py-3 focus:text-label focus:font-semibold focus:uppercase focus:text-canvas;
   }
 }
 

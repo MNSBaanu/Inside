@@ -72,7 +72,7 @@ export default function AdminPage() {
 
   return (
     <div>
-      <Badge tone="clay">Admin</Badge>
+      <Badge tone="brand">Admin</Badge>
       <h1 className="mt-6 font-display text-section font-semibold">
         Moderation.
       </h1>
@@ -101,7 +101,7 @@ export default function AdminPage() {
             className={cn(
               '-mb-px border-b-2 px-5 py-3 text-label font-semibold uppercase transition-colors duration-300',
               tab === name
-                ? 'border-clay text-clay'
+                ? 'border-brand text-brand'
                 : 'border-transparent text-muted hover:text-ink',
             )}
           >

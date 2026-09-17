@@ -53,7 +53,7 @@ export function StageList({
             >
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-pill bg-sand font-display text-lg font-semibold text-clay">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-pill bg-sand font-display text-lg font-semibold text-brand">
                     {stage.stageOrder}
                   </span>
                   <div>

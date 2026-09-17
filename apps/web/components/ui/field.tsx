@@ -7,7 +7,7 @@ import type {
 import { cn } from '@/lib/cn';
 
 const control =
-  'w-full rounded-card border border-hairline bg-surface px-4 py-3 text-base text-ink transition-colors duration-200 placeholder:text-muted/70 focus:border-clay focus:outline-none disabled:opacity-60';
+  'w-full rounded-card border border-hairline bg-surface px-4 py-3 text-base text-ink transition-colors duration-200 placeholder:text-muted/70 focus:border-brand focus:outline-none disabled:opacity-60';
 
 export function Field({
   label,

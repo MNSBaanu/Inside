@@ -116,7 +116,7 @@ export function ProposalForm({
         </div>
         <p className="mt-4 text-muted">
           Total:{' '}
-          <span className="font-display text-xl font-semibold text-clay">
+          <span className="font-display text-xl font-semibold text-brand">
             {formatMoney(total)}
           </span>
         </p>

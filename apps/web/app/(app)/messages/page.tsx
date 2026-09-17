@@ -14,7 +14,7 @@ export default function MessagesPage() {
 
   return (
     <div>
-      <Badge tone="clay">Messages</Badge>
+      <Badge tone="brand">Messages</Badge>
       <h1 className="mt-6 font-display text-section font-semibold">
         Conversations.
       </h1>
@@ -37,7 +37,7 @@ export default function MessagesPage() {
               <li key={project.id}>
                 <Link
                   href={`/projects/${project.id}`}
-                  className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-clay"
+                  className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand"
                 >
                   <div>
                     <p className="font-display text-xl font-semibold">

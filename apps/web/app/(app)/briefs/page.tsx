@@ -15,7 +15,7 @@ export default function BriefsPage() {
     <div>
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
-          <Badge tone="clay">Briefs</Badge>
+          <Badge tone="brand">Briefs</Badge>
           <h1 className="mt-6 font-display text-section font-semibold">
             Your briefs.
           </h1>
@@ -43,7 +43,7 @@ export default function BriefsPage() {
               <li key={brief.id}>
                 <Link
                   href={`/briefs/${brief.id}`}
-                  className="block rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-clay"
+                  className="block rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
@@ -55,7 +55,7 @@ export default function BriefsPage() {
                       </p>
                     </div>
                     {brief.budgetRange ? (
-                      <Badge tone="ochre">{brief.budgetRange}</Badge>
+                      <Badge tone="highlight">{brief.budgetRange}</Badge>
                     ) : null}
                   </div>
 

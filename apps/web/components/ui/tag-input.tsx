@@ -55,7 +55,7 @@ export function TagInput({
                 aria-label={`Remove ${value}`}
                 className="rounded-pill"
               >
-                <Badge tone="clay">{value} ×</Badge>
+                <Badge tone="brand">{value} ×</Badge>
               </button>
             </li>
           ))}
@@ -71,7 +71,7 @@ export function TagInput({
                 <button
                   type="button"
                   onClick={() => add(suggestion)}
-                  className="rounded-pill border border-hairline px-3 py-1.5 text-label font-semibold uppercase text-muted transition-colors duration-300 hover:border-clay hover:text-clay"
+                  className="rounded-pill border border-hairline px-3 py-1.5 text-label font-semibold uppercase text-muted transition-colors duration-300 hover:border-brand hover:text-brand"
                 >
                   + {suggestion}
                 </button>

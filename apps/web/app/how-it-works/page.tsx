@@ -15,31 +15,31 @@ const stages = [
     number: '01',
     title: 'Write your brief',
     body: 'Set out the room, the budget range, the timeline and the feeling you want. Attach a moodboard so designers can read your taste, not guess it.',
-    tone: 'bg-ochre-soft',
+    tone: 'bg-highlight-soft',
   },
   {
     number: '02',
     title: 'Get matched',
     body: 'We rank designers against your brief by style, room type, budget fit and availability. You can also invite a specific designer directly.',
-    tone: 'bg-sage-soft',
+    tone: 'bg-support-soft',
   },
   {
     number: '03',
     title: 'Compare proposals',
     body: 'Each proposal carries scope, cost and a timeline in weeks. Read them side by side, then accept the one that fits.',
-    tone: 'bg-clay-soft',
+    tone: 'bg-brand-soft',
   },
   {
     number: '04',
     title: 'Work in stages',
     body: 'Accepted proposals become a project split into stages — concept, design, revision, completion. Each stage is submitted and approved in the workspace.',
-    tone: 'bg-ochre-soft',
+    tone: 'bg-highlight-soft',
   },
   {
     number: '05',
     title: 'Pay per milestone',
     body: 'Payments sit against approved stages. Money is released as work is genuinely signed off, not up front.',
-    tone: 'bg-sage-soft',
+    tone: 'bg-support-soft',
   },
 ];
 
@@ -79,7 +79,7 @@ export default function HowItWorksPage() {
           {stages.map((stage, index) => (
             <Reveal key={stage.number} delay={index * 80}>
               <div className={`h-full rounded-card ${stage.tone} p-8 md:p-10`}>
-                <p className="font-display text-5xl font-semibold text-clay">
+                <p className="font-display text-5xl font-semibold text-brand">
                   {stage.number}
                 </p>
                 <h2 className="mt-8 font-display text-2xl font-semibold">

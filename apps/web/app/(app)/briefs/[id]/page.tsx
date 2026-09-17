@@ -38,7 +38,7 @@ export default function BriefDetailPage({
 
   return (
     <div>
-      <Badge tone="clay">Brief</Badge>
+      <Badge tone="brand">Brief</Badge>
       <h1 className="mt-6 font-display text-section font-semibold">
         {item.rooms.join(', ') || 'Untitled brief'}
       </h1>
@@ -138,7 +138,7 @@ export default function BriefDetailPage({
                   </Link>
 
                   <div className="flex items-center gap-4">
-                    <Badge tone="ochre">{match.score}% match</Badge>
+                    <Badge tone="highlight">{match.score}% match</Badge>
                     <ButtonLink
                       href={`/requests/new?designerId=${match.designer.id}&briefId=${item.id}`}
                     >

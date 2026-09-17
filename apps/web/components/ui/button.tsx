@@ -6,11 +6,11 @@ export type ButtonVariant = 'primary' | 'outline' | 'ghost' | 'onDark';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const variants: Record<ButtonVariant, string> = {
-  primary: 'bg-clay text-canvas hover:bg-clay-deep hover:shadow-lift',
+  primary: 'bg-brand text-canvas hover:bg-brand-deep hover:shadow-lift',
   outline:
     'border border-ink/20 text-ink hover:border-ink hover:bg-ink hover:text-canvas',
   ghost: 'text-ink hover:bg-sand',
-  onDark: 'bg-canvas text-clay-deep hover:bg-sand',
+  onDark: 'bg-canvas text-brand-deep hover:bg-sand',
 };
 
 const sizes: Record<ButtonSize, string> = {

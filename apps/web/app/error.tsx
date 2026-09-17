@@ -12,7 +12,7 @@ export default function Error({
 }) {
   return (
     <div className="shell flex min-h-[70vh] flex-col justify-center py-40">
-      <Badge tone="clay" className="w-fit">
+      <Badge tone="brand" className="w-fit">
         Something went wrong
       </Badge>
       <h1 className="mt-8 max-w-2xl font-display text-section font-semibold">

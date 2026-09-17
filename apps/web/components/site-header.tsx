@@ -65,7 +65,7 @@ export function SiteHeader() {
           className="font-display text-2xl font-semibold tracking-tight text-ink"
           aria-label="Inside — home"
         >
-          Inside<span className="text-clay">.</span>
+          Inside<span className="text-brand">.</span>
         </Link>
 
         <nav className="hidden items-center gap-10 md:flex">
@@ -73,7 +73,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="label text-ink/70 transition-colors duration-300 hover:text-clay"
+              className="label text-ink/70 transition-colors duration-300 hover:text-brand"
             >
               {item.label}
             </Link>
@@ -85,7 +85,7 @@ export function SiteHeader() {
             <>
               <Link
                 href="/dashboard"
-                className="label hidden text-ink/70 transition-colors duration-300 hover:text-clay sm:block"
+                className="label hidden text-ink/70 transition-colors duration-300 hover:text-brand sm:block"
               >
                 Dashboard
               </Link>
@@ -101,7 +101,7 @@ export function SiteHeader() {
             <>
               <Link
                 href="/login"
-                className="label hidden text-ink/70 transition-colors duration-300 hover:text-clay sm:block"
+                className="label hidden text-ink/70 transition-colors duration-300 hover:text-brand sm:block"
               >
                 Sign in
               </Link>

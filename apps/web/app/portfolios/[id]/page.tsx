@@ -46,7 +46,7 @@ export default function PortfolioDetailPage({
           <div>
             <div className="flex flex-wrap gap-2">
               {portfolio.style ? (
-                <Badge tone="clay">{portfolio.style}</Badge>
+                <Badge tone="brand">{portfolio.style}</Badge>
               ) : null}
               {portfolio.roomType ? <Badge>{portfolio.roomType}</Badge> : null}
             </div>
@@ -56,7 +56,7 @@ export default function PortfolioDetailPage({
           </div>
 
           {portfolio.budget !== null ? (
-            <p className="font-display text-3xl font-semibold text-clay">
+            <p className="font-display text-3xl font-semibold text-brand">
               {formatMoney(portfolio.budget)}
             </p>
           ) : null}
@@ -133,7 +133,7 @@ export default function PortfolioDetailPage({
 
           {portfolio.designer.isVerified ? (
             <div className="mt-5">
-              <Badge tone="sage">Verified designer</Badge>
+              <Badge tone="support">Verified designer</Badge>
             </div>
           ) : null}
 

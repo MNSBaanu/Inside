@@ -57,7 +57,7 @@ export default function ProjectWorkspacePage({
 
   return (
     <div>
-      <Badge tone="clay">Project</Badge>
+      <Badge tone="brand">Project</Badge>
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-display text-section font-semibold">
           {item.title}
@@ -125,7 +125,7 @@ export default function ProjectWorkspacePage({
             className={cn(
               '-mb-px border-b-2 px-5 py-3 text-label font-semibold uppercase transition-colors duration-300',
               tab === name
-                ? 'border-clay text-clay'
+                ? 'border-brand text-brand'
                 : 'border-transparent text-muted hover:text-ink',
             )}
           >

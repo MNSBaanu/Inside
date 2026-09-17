@@ -20,7 +20,7 @@ export default function RequestsPage() {
     <div>
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
-          <Badge tone="clay">Requests</Badge>
+          <Badge tone="brand">Requests</Badge>
           <h1 className="mt-6 font-display text-section font-semibold">
             {isClient ? 'Your requests.' : 'Work coming your way.'}
           </h1>
@@ -51,7 +51,7 @@ export default function RequestsPage() {
               <li key={request.id}>
                 <Link
                   href={`/requests/${request.id}`}
-                  className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-clay"
+                  className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand"
                 >
                   <div className="min-w-0">
                     <p className="font-display text-xl font-semibold">
