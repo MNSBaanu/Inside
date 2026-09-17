@@ -134,63 +134,76 @@ export type Paginated<T> = {
 export type Brief = {
   id: string;
   clientId: string;
-  title: string;
+  moodboardId: string | null;
+  styles: string[];
+  rooms: string[];
+  budgetRange: string | null;
   description: string | null;
-  roomType: string | null;
-  style: string | null;
-  budgetMin: number | null;
-  budgetMax: number | null;
-  timeline: string | null;
-  location: string | null;
   createdAt: string;
   updatedAt: string;
 };
 
-export type DesignRequest = {
+export type PartySummary = Pick<User, 'id' | 'name' | 'avatarUrl'> & {
+  isVerified?: boolean;
+  location?: string | null;
+};
+
+export type ProjectRequest = {
   id: string;
   clientId: string;
   designerId: string | null;
   briefId: string | null;
+  title: string;
+  description: string | null;
   type: RequestType;
   status: RequestStatus;
-  message: string | null;
+  budget: number | null;
   createdAt: string;
   updatedAt: string;
+  client?: PartySummary;
+  designer?: PartySummary | null;
 };
+
+export type StageFee = { name: StageName; fee: number };
 
 export type Proposal = {
   id: string;
   requestId: string;
   designerId: string;
+  scope: string;
+  timeline: string;
+  stageFees: StageFee[];
+  totalAmount: number | null;
   status: ProposalStatus;
-  coverLetter: string | null;
-  price: number | null;
-  timelineWeeks: number | null;
-  createdAt: string;
+  submittedAt: string;
   updatedAt: string;
+  designer?: PartySummary;
 };
 
 export type Project = {
   id: string;
+  proposalId: string;
   clientId: string;
   designerId: string;
-  proposalId: string | null;
   title: string;
+  currentStage: StageName;
   status: ProjectStatus;
-  budget: number | null;
   startedAt: string | null;
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  client?: PartySummary;
+  designer?: PartySummary;
 };
 
-export type Stage = {
+export type ProjectStage = {
   id: string;
   projectId: string;
+  stageOrder: number;
   name: StageName;
   status: StageStatus;
-  order: number;
-  amount: number | null;
+  fee: number | null;
+  dueDate: string | null;
   submittedAt: string | null;
   approvedAt: string | null;
   createdAt: string;
