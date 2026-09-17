@@ -27,10 +27,12 @@ const columns = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-hairline">
+    <footer className="border-t border-hairline bg-sand">
       <div className="shell grid gap-12 py-20 md:grid-cols-[1.5fr_repeat(3,1fr)] md:py-28">
         <div className="max-w-xs">
-          <p className="font-display text-xl tracking-tight">Inside</p>
+          <p className="font-display text-2xl font-semibold tracking-tight">
+            Inside<span className="text-clay">.</span>
+          </p>
           <p className="mt-4 text-sm text-muted">
             Interior design, from first brief to final handover.
           </p>
@@ -44,7 +46,7 @@ export function SiteFooter() {
                 <li key={`${column.heading}-${link.href}-${link.label}`}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted transition-colors duration-300 hover:text-ink"
+                    className="text-sm text-muted transition-colors duration-300 hover:text-clay"
                   >
                     {link.label}
                   </Link>

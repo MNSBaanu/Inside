@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { ButtonLink } from '@/components/ui/button';
 
 const navigation = [
   { href: '/designers', label: 'Designers' },
@@ -58,10 +59,10 @@ export function SiteHeader() {
       >
         <Link
           href="/"
-          className="font-display text-xl tracking-tight text-ink"
+          className="font-display text-2xl font-semibold tracking-tight text-ink"
           aria-label="Inside — home"
         >
-          Inside
+          Inside<span className="text-clay">.</span>
         </Link>
 
         <nav className="hidden items-center gap-10 md:flex">
@@ -69,26 +70,23 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="label text-ink/70 transition-colors duration-300 hover:text-ink"
+              className="label text-ink/70 transition-colors duration-300 hover:text-clay"
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-5">
           <Link
             href="/login"
-            className="label hidden text-ink/70 transition-colors duration-300 hover:text-ink sm:block"
+            className="label hidden text-ink/70 transition-colors duration-300 hover:text-clay sm:block"
           >
             Sign in
           </Link>
-          <Link
-            href="/register"
-            className="label hidden bg-ink px-5 py-3 text-canvas transition-opacity duration-300 hover:opacity-85 sm:block"
-          >
+          <ButtonLink href="/register" className="hidden sm:inline-flex">
             Get started
-          </Link>
+          </ButtonLink>
 
           <button
             type="button"
@@ -124,7 +122,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="border-b border-hairline py-6 font-display text-3xl tracking-tight"
+              className="border-b border-hairline py-6 font-display text-3xl font-semibold tracking-tight"
             >
               {item.label}
             </Link>
@@ -132,15 +130,12 @@ export function SiteHeader() {
         </nav>
 
         <div className="shell mt-10 flex flex-col gap-4 pb-12">
-          <Link
-            href="/register"
-            className="label bg-ink px-5 py-4 text-center text-canvas"
-          >
+          <ButtonLink href="/register" size="lg" fullWidth>
             Get started
-          </Link>
-          <Link href="/login" className="label py-4 text-center text-ink">
+          </ButtonLink>
+          <ButtonLink href="/login" size="lg" variant="outline" fullWidth>
             Sign in
-          </Link>
+          </ButtonLink>
         </div>
       </div>
     </header>

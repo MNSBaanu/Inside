@@ -1,10 +1,10 @@
 export default function Loading() {
   return (
-    <div className="shell pb-24 pt-40 md:pt-48">
-      <div className="h-3 w-40 animate-pulse bg-hairline" />
-      <div className="mt-10 h-14 w-full max-w-3xl animate-pulse bg-hairline md:h-20" />
-      <div className="mt-4 h-14 w-2/3 max-w-2xl animate-pulse bg-hairline md:h-20" />
-      <div className="mt-16 aspect-[16/9] w-full animate-pulse bg-hairline md:aspect-[21/9]" />
+    <div className="shell pb-24 pt-36 md:pt-44">
+      <div className="h-7 w-48 animate-pulse rounded-pill bg-sand" />
+      <div className="mt-10 h-16 w-full max-w-4xl animate-pulse rounded-card bg-sand md:h-24" />
+      <div className="mt-4 h-16 w-2/3 max-w-3xl animate-pulse rounded-card bg-sand md:h-24" />
+      <div className="mt-14 aspect-[16/10] w-full animate-pulse rounded-card bg-sand md:aspect-[21/9]" />
     </div>
   );
 }

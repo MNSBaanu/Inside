@@ -10,35 +10,35 @@
 
   body {
     @apply bg-canvas text-ink font-sans;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.65;
   }
 
   ::selection {
-    @apply bg-ink text-canvas;
+    @apply bg-clay text-canvas;
   }
 
   :focus-visible {
-    outline: 2px solid theme('colors.ink');
+    outline: 2px solid theme('colors.clay.DEFAULT');
     outline-offset: 3px;
   }
 }
 
 @layer components {
   .shell {
-    @apply mx-auto w-full max-w-shell px-6 md:px-12 lg:px-20;
+    @apply mx-auto w-full max-w-shell px-6 md:px-12 lg:px-16;
   }
 
   .label {
-    @apply text-label font-medium uppercase text-muted;
+    @apply text-label font-semibold uppercase;
   }
 
   .link-underline {
-    @apply underline decoration-hairline decoration-1 underline-offset-4 transition-colors duration-300 hover:decoration-ink;
+    @apply underline decoration-clay decoration-2 underline-offset-[6px] transition-colors duration-300 hover:text-clay;
   }
 
   .skip-link {
-    @apply sr-only focus:not-sr-only focus:fixed focus:left-6 focus:top-6 focus:z-[60] focus:bg-ink focus:px-5 focus:py-3 focus:text-label focus:uppercase focus:tracking-[0.12em] focus:text-canvas;
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-6 focus:top-6 focus:z-[60] focus:rounded-pill focus:bg-clay focus:px-5 focus:py-3 focus:text-label focus:font-semibold focus:uppercase focus:text-canvas;
   }
 }
 
