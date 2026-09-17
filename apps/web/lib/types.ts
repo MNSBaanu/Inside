@@ -90,6 +90,40 @@ export type Portfolio = {
   images: PortfolioImage[];
 };
 
+export type Rating = { average: number | null; count: number };
+
+export type DesignerPreview = {
+  id: string;
+  title: string;
+  style: string | null;
+  imageUrl: string | null;
+};
+
+export type DesignerSummary = {
+  id: string;
+  name: string;
+  bio: string | null;
+  avatarUrl: string | null;
+  location: string | null;
+  isVerified: boolean;
+  isAvailable: boolean;
+  portfolioCount: number;
+  previews: DesignerPreview[];
+  rating: Rating;
+};
+
+export type DesignerProfile = {
+  id: string;
+  name: string;
+  bio: string | null;
+  avatarUrl: string | null;
+  location: string | null;
+  isVerified: boolean;
+  isAvailable: boolean;
+  createdAt: string;
+  rating: Rating;
+};
+
 export type Paginated<T> = {
   items: T[];
   page: number;

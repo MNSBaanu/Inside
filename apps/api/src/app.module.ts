@@ -13,6 +13,7 @@ import { MoodboardsModule } from './moodboards/moodboards.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PaymentsModule } from './payments/payments.module';
 import { PortfoliosModule } from './portfolios/portfolios.module';
+import { DesignersModule } from './designers/designers.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
 import { ProposalsModule } from './proposals/proposals.module';
@@ -30,6 +31,7 @@ import { VerificationsModule } from './verifications/verifications.module';
     AuthModule,
     UsersModule,
     PortfoliosModule,
+    DesignersModule,
     FavouritesModule,
     MoodboardsModule,
     BriefsModule,
