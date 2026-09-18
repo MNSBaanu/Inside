@@ -23,6 +23,7 @@ function NewRequestForm() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [budget, setBudget] = useState('');
+  const [timeline, setTimeline] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -46,6 +47,7 @@ function NewRequestForm() {
         ...(type === 'DIRECT' ? { designerId } : {}),
         ...(briefId ? { briefId } : {}),
         ...(budget ? { budget: Number(budget) } : {}),
+        ...(timeline ? { timeline } : {}),
       });
       router.push(`/requests/${data.request.id}`);
     } catch (cause) {
@@ -123,6 +125,20 @@ function NewRequestForm() {
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           placeholder="What you need done, and anything a designer should know up front."
+        />
+      </Field>
+
+      <Field
+        label="Expected timeline"
+        htmlFor="timeline"
+        hint="Optional, for example 6 weeks."
+      >
+        <Input
+          id="timeline"
+          maxLength={200}
+          value={timeline}
+          onChange={(event) => setTimeline(event.target.value)}
+          placeholder="6 weeks"
         />
       </Field>
 

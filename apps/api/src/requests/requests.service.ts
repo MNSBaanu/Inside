@@ -90,6 +90,7 @@ export class RequestsService {
         briefId: dto.briefId,
         title: dto.title,
         description: dto.description,
+        timeline: dto.timeline,
         type: dto.type,
         status:
           dto.type === RequestType.DIRECT
@@ -287,6 +288,7 @@ export class RequestsService {
     briefId: string | null;
     title: string;
     description: string | null;
+    timeline: string | null;
     type: RequestType;
     status: RequestStatus;
     budget: unknown;
@@ -318,6 +320,7 @@ export class RequestsService {
       briefId: request.briefId,
       title: request.title,
       description: request.description,
+      timeline: request.timeline,
       type: request.type,
       status: request.status,
       budget: request.budget !== null ? Number(request.budget) : null,

@@ -34,6 +34,9 @@ export class VerificationsService {
   ) {}
 
   async submit(user: AuthUser, dto: CreateVerificationDto) {
+    if (user.isVerified) {
+      throw new BadRequestException('You are already verified');
+    }
     const pending = await this.prisma.verification.findFirst({
       where: {
         designerId: user.id,
@@ -137,7 +140,7 @@ export class VerificationsService {
         status: VerificationStatus.REJECTED,
         reviewedById: admin.id,
         reviewedAt: new Date(),
-        notes: dto.notes ?? verification.notes,
+        reviewNotes: dto.notes,
       },
     });
 
@@ -181,6 +184,7 @@ export class VerificationsService {
     status: VerificationStatus;
     evidenceUrl: string;
     notes: string | null;
+    reviewNotes: string | null;
     reviewedById: string | null;
     reviewedAt: Date | null;
     createdAt: Date;
@@ -199,6 +203,7 @@ export class VerificationsService {
       status: v.status,
       evidenceUrl: v.evidenceUrl,
       notes: v.notes,
+      reviewNotes: v.reviewNotes,
       reviewedById: v.reviewedById,
       reviewedAt: v.reviewedAt,
       createdAt: v.createdAt,

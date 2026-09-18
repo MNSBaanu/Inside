@@ -229,6 +229,7 @@ export class ProposalsService {
     const stageFees = this.parseStageFees(proposal.stageFees);
     const feeMap = new Map(stageFees.map((s) => [s.name, s.fee]));
 
+    const stageDays = this.stageDays(proposal.timeline);
     let declinedDesignerIds: string[] = [];
     const project = await this.prisma.$transaction(async (tx) => {
       const claimed = await tx.proposal.updateMany({
@@ -285,7 +286,7 @@ export class ProposalsService {
               name,
               fee: feeMap.get(name) ?? null,
               dueDate: new Date(
-                Date.now() + (index + 1) * 14 * 24 * 60 * 60 * 1000,
+                Date.now() + (index + 1) * stageDays * 24 * 60 * 60 * 1000,
               ),
             })),
           },
@@ -410,6 +411,15 @@ export class ProposalsService {
       throw new ForbiddenException('You do not own this request');
     }
     return proposal;
+  }
+
+  /** Spreads a proposal timeline such as "6 weeks" across the stages. */
+  private stageDays(timeline: string) {
+    const match = /(\d+(?:\.\d+)?)\s*(day|week|month)/i.exec(timeline);
+    if (!match) return 14;
+    const perUnit: Record<string, number> = { day: 1, week: 7, month: 30 };
+    const total = Number(match[1]) * perUnit[match[2].toLowerCase()];
+    return Math.max(1, Math.round(total / STAGE_ORDER.length));
   }
 
   private parseStageFees(raw: unknown): { name: StageName; fee: number }[] {

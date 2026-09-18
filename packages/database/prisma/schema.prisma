@@ -280,6 +280,7 @@ model ProjectRequest {
   briefId     String?
   title       String
   description String?
+  timeline    String?
   type        RequestType   @default(DIRECT)
   status      RequestStatus @default(PENDING)
   budget      Decimal?      @db.Decimal(12, 2)
@@ -475,6 +476,7 @@ model Verification {
   status       VerificationStatus @default(PENDING)
   evidenceUrl  String
   notes        String?
+  reviewNotes  String?
   reviewedById String?
   reviewedAt   DateTime?
   createdAt    DateTime           @default(now())

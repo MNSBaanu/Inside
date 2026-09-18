@@ -18,6 +18,7 @@ type Verification = {
   id: string;
   evidenceUrl: string;
   notes: string | null;
+  reviewNotes: string | null;
   status: VerificationStatus;
   createdAt: string;
 };
@@ -151,6 +152,11 @@ export default function VerificationPage() {
                     </p>
                     {item.notes ? (
                       <p className="mt-2 text-muted">{item.notes}</p>
+                    ) : null}
+                    {item.reviewNotes ? (
+                      <p className="mt-2 break-words text-sm">
+                        Admin feedback: {item.reviewNotes}
+                      </p>
                     ) : null}
                   </div>
                   <StatusBadge status={item.status} />

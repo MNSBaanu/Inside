@@ -159,6 +159,22 @@ export default function AdminPage() {
                   <div className="flex flex-wrap items-center gap-3">
                     <Badge>{titleCase(user.role)}</Badge>
                     <StatusBadge status={user.status} />
+                    {user.role === 'DESIGNER' && user.isVerified ? (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        disabled={pending === user.id}
+                        onClick={() =>
+                          run(
+                            user.id,
+                            `/admin/users/${user.id}/revoke-verification`,
+                            users.reload,
+                          )
+                        }
+                      >
+                        Revoke badge
+                      </Button>
+                    ) : null}
                     {user.status === 'ACTIVE' ? (
                       <Button
                         size="sm"

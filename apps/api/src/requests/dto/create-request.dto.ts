@@ -27,6 +27,12 @@ export class CreateRequestDto {
   @MaxLength(4000)
   description?: string;
 
+  @ApiPropertyOptional({ example: '6 weeks' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  timeline?: string;
+
   @ApiProperty({ enum: RequestType })
   @IsEnum(RequestType)
   type!: RequestType;

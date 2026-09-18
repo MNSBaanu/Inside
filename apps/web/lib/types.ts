@@ -156,6 +156,7 @@ export type ProjectRequest = {
   briefId: string | null;
   title: string;
   description: string | null;
+  timeline: string | null;
   type: RequestType;
   status: RequestStatus;
   budget: number | null;

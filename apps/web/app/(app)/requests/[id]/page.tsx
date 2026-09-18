@@ -98,6 +98,7 @@ export default function RequestDetailPage({
         {item.type === 'DIRECT' ? 'Direct request' : 'Open to proposals'} ·
         Created {formatDate(item.createdAt)}
         {item.budget !== null ? ` · Budget ${formatMoney(item.budget)}` : ''}
+        {item.timeline ? ` · Timeline ${item.timeline}` : ''}
       </p>
 
       {isClient && ['OPEN', 'PENDING'].includes(item.status) ? (

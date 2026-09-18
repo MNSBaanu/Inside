@@ -124,6 +124,34 @@ export class AdminService {
     };
   }
 
+  async revokeVerification(admin: AuthUser, userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (!user.isVerified) {
+      throw new BadRequestException('User is not verified');
+    }
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { isVerified: false },
+    });
+
+    await this.notifications.notify({
+      userId,
+      type: NotificationType.VERIFICATION,
+      title: 'Verification revoked',
+      message: 'An administrator removed your verified badge',
+    });
+    await this.activity.log({
+      userId: admin.id,
+      action: 'VERIFICATION_REVOKED',
+      metadata: { targetUserId: userId },
+    });
+
+    return { success: true, data: { user: { id: userId, isVerified: false } } };
+  }
+
   async listOpenReports(query: PaginationQueryDto) {
     const { page, pageSize, skip, take } = paginate(query, 100);
     const where = {
@@ -154,10 +182,7 @@ export class AdminService {
   }
 
   async resolveReport(admin: AuthUser, id: string) {
-    const report = await this.prisma.report.findUnique({ where: { id } });
-    if (!report) {
-      throw new NotFoundException('Report not found');
-    }
+    const report = await this.requireOpenReport(id);
     const updated = await this.prisma.report.update({
       where: { id },
       data: {
@@ -171,14 +196,18 @@ export class AdminService {
       action: 'REPORT_RESOLVED',
       metadata: { reportId: id },
     });
+    await this.notifications.notify({
+      userId: report.reporterId,
+      type: NotificationType.SYSTEM,
+      title: 'Report resolved',
+      message: 'An admin reviewed your report and took action',
+      metadata: { reportId: id },
+    });
     return { success: true, data: { report: this.serializeReport(updated) } };
   }
 
   async dismissReport(admin: AuthUser, id: string) {
-    const report = await this.prisma.report.findUnique({ where: { id } });
-    if (!report) {
-      throw new NotFoundException('Report not found');
-    }
+    const report = await this.requireOpenReport(id);
     const updated = await this.prisma.report.update({
       where: { id },
       data: {
@@ -190,6 +219,13 @@ export class AdminService {
     await this.activity.log({
       userId: admin.id,
       action: 'REPORT_DISMISSED',
+      metadata: { reportId: id },
+    });
+    await this.notifications.notify({
+      userId: report.reporterId,
+      type: NotificationType.SYSTEM,
+      title: 'Report dismissed',
+      message: 'An admin reviewed your report and found no violation',
       metadata: { reportId: id },
     });
     return { success: true, data: { report: this.serializeReport(updated) } };
@@ -281,6 +317,20 @@ export class AdminService {
         },
       },
     };
+  }
+
+  private async requireOpenReport(id: string) {
+    const report = await this.prisma.report.findUnique({ where: { id } });
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+    if (
+      report.status !== ReportStatus.OPEN &&
+      report.status !== ReportStatus.UNDER_REVIEW
+    ) {
+      throw new BadRequestException('Report is already closed');
+    }
+    return report;
   }
 
   async listActivity(query: PaginationQueryDto) {

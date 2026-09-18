@@ -56,6 +56,16 @@ export class AdminController {
     return this.admin.reactivate(admin, id);
   }
 
+  @Patch('users/:id/revoke-verification')
+  @ApiOperation({ summary: "Remove a designer's verified badge" })
+  @ApiOkResponse({ description: 'Badge removed' })
+  revokeVerification(
+    @CurrentUser() admin: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.admin.revokeVerification(admin, id);
+  }
+
   @Get('reports')
   @ApiOperation({ summary: 'List open + under-review reports' })
   @ApiOkResponse({ description: 'Reports' })
