@@ -1,6 +1,12 @@
 import { createHash } from 'crypto';
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Role } from '@inside/database';
+import type { AuthUser } from '../auth/auth.service';
 import { UploadFolder } from './dto/sign-upload.dto';
 
 type CloudinaryCredentials = {
@@ -15,30 +21,57 @@ const resourceTypes: Record<UploadFolder, 'image' | 'auto'> = {
   [UploadFolder.DELIVERABLES]: 'auto',
 };
 
+const IMAGE_FORMATS = 'jpg,jpeg,png,webp,gif,avif,heic';
+
+const allowedFormats: Record<UploadFolder, string> = {
+  [UploadFolder.PORTFOLIOS]: IMAGE_FORMATS,
+  [UploadFolder.MOODBOARDS]: IMAGE_FORMATS,
+  [UploadFolder.DELIVERABLES]: `${IMAGE_FORMATS},pdf,dwg,dxf,zip`,
+};
+
 @Injectable()
 export class UploadsService {
   constructor(private readonly config: ConfigService) {}
 
-  sign(folder: UploadFolder) {
+  sign(user: AuthUser, folder: UploadFolder) {
+    this.assertCanUpload(user, folder);
     const { cloudName, apiKey, apiSecret } = this.credentials();
-    const timestamp = Math.floor(Date.now() / 1000);
-    const namespaced = `inside/${folder}`;
 
+    // Cloudinary signs every upload parameter, sorted by name.
+    const signed = {
+      allowed_formats: allowedFormats[folder],
+      folder: `inside/${folder}`,
+      tags: `user_${user.id}`,
+      timestamp: String(Math.floor(Date.now() / 1000)),
+    };
     const signature = createHash('sha1')
-      .update(`folder=${namespaced}&timestamp=${timestamp}${apiSecret}`)
+      .update(
+        Object.entries(signed)
+          .map(([key, value]) => `${key}=${value}`)
+          .join('&') + apiSecret,
+      )
       .digest('hex');
 
     return {
       success: true,
       data: {
         cloudName,
-        apiKey,
-        timestamp,
-        signature,
-        folder: namespaced,
         resourceType: resourceTypes[folder],
+        params: { ...signed, api_key: apiKey, signature },
       },
     };
+  }
+
+  private assertCanUpload(user: AuthUser, folder: UploadFolder) {
+    const allowed =
+      folder === UploadFolder.MOODBOARDS
+        ? user.role !== Role.ADMIN && user.activeRole === Role.CLIENT
+        : user.role === Role.DESIGNER && user.activeRole === Role.DESIGNER;
+    if (!allowed) {
+      throw new ForbiddenException(
+        `Your current role cannot upload to ${folder}`,
+      );
+    }
   }
 
   private credentials(): CloudinaryCredentials {

@@ -4,11 +4,8 @@ export type UploadFolder = 'portfolios' | 'moodboards' | 'deliverables';
 
 type SignedUpload = {
   cloudName: string;
-  apiKey: string;
-  timestamp: number;
-  signature: string;
-  folder: string;
   resourceType: 'image' | 'auto';
+  params: Record<string, string>;
 };
 
 export type UploadedFile = { url: string; fileName: string };
@@ -21,10 +18,9 @@ export async function uploadFile(
 
   const form = new FormData();
   form.append('file', file);
-  form.append('api_key', signed.apiKey);
-  form.append('timestamp', String(signed.timestamp));
-  form.append('signature', signed.signature);
-  form.append('folder', signed.folder);
+  for (const [key, value] of Object.entries(signed.params)) {
+    form.append(key, value);
+  }
 
   const response = await fetch(
     `https://api.cloudinary.com/v1_1/${signed.cloudName}/${signed.resourceType}/upload`,
