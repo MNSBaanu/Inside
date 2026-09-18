@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { NotificationType, VerificationStatus } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -25,6 +26,7 @@ export class VerificationsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly activity: ActivityService,
   ) {}
 
   async submit(user: AuthUser, dto: CreateVerificationDto) {
@@ -101,6 +103,12 @@ export class VerificationsService {
       metadata: { verificationId: id },
     });
 
+    await this.activity.log({
+      userId: admin.id,
+      action: 'VERIFICATION_APPROVED',
+      metadata: { verificationId: id, designerId: verification.designerId },
+    });
+
     return { success: true, data: { verification: this.serialize(updated) } };
   }
 
@@ -125,6 +133,16 @@ export class VerificationsService {
         ? `Verification rejected: ${dto.notes}`
         : 'Your verification request was rejected',
       metadata: { verificationId: id },
+    });
+
+    await this.activity.log({
+      userId: admin.id,
+      action: 'VERIFICATION_REJECTED',
+      metadata: {
+        verificationId: id,
+        designerId: verification.designerId,
+        notes: dto.notes ?? null,
+      },
     });
 
     return { success: true, data: { verification: this.serialize(updated) } };

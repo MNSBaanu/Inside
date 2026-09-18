@@ -1,6 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Role, VerificationStatus } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { VerificationsService } from './verifications.service';
@@ -26,6 +27,7 @@ describe('VerificationsService', () => {
   };
 
   const notifications = { notify: jest.fn() };
+  const activity = { log: jest.fn() };
 
   const designer = {
     id: 'd1',
@@ -42,6 +44,7 @@ describe('VerificationsService', () => {
     service = new VerificationsService(
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
+      activity as unknown as ActivityService,
     );
   });
 

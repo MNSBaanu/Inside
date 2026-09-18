@@ -159,6 +159,17 @@ export class StagesService {
       metadata: { projectId: stage.projectId, stageId: stage.id },
     });
 
+    await this.activity.log({
+      projectId: stage.projectId,
+      userId: user.id,
+      action: 'STAGE_SUBMITTED',
+      metadata: {
+        stageId: stage.id,
+        name: stage.name,
+        version: latest.version,
+      },
+    });
+
     return { success: true, data: { stage: this.serialize(updated) } };
   }
 
@@ -236,7 +247,19 @@ export class StagesService {
       metadata: { projectId: stage.projectId, stageId: stage.id },
     });
 
+    await this.activity.log({
+      projectId: stage.projectId,
+      userId: user.id,
+      action: 'STAGE_APPROVED',
+      metadata: { stageId: stage.id, name: stage.name },
+    });
+
     if (result.projectCompleted) {
+      await this.activity.log({
+        projectId: stage.projectId,
+        userId: user.id,
+        action: 'PROJECT_COMPLETED',
+      });
       await Promise.all([
         this.notifications.notify({
           userId: stage.project.designerId,

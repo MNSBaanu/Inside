@@ -6,6 +6,7 @@ import {
   Role,
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AdminService } from './admin.service';
@@ -34,6 +35,7 @@ describe('AdminService', () => {
   };
 
   const notifications = { notify: jest.fn() };
+  const activity = { log: jest.fn() };
 
   const admin = { id: 'a1', role: Role.ADMIN } as AuthUser;
 
@@ -44,6 +46,7 @@ describe('AdminService', () => {
     service = new AdminService(
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
+      activity as unknown as ActivityService,
     );
   });
 

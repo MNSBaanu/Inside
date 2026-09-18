@@ -12,6 +12,7 @@ import {
   Role,
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { PayPaymentDto } from './dto/pay-payment.dto';
@@ -21,6 +22,7 @@ export class PaymentsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly activity: ActivityService,
   ) {}
 
   async listByProject(user: AuthUser, projectId: string) {
@@ -62,6 +64,13 @@ export class PaymentsService {
         metadata: { projectId: payment.projectId, paymentId: id },
       });
 
+      await this.activity.log({
+        projectId: payment.projectId,
+        userId: user.id,
+        action: 'PAYMENT_PAID',
+        metadata: { paymentId: id, amount: Number(payment.amount) },
+      });
+
       return { success: true, data: { payment: this.serialize(updated) } };
     } catch (error) {
       if (
@@ -96,6 +105,13 @@ export class PaymentsService {
       title: 'Milestone released',
       message: `Milestone payment of ${Number(payment.amount)} was released`,
       metadata: { projectId: payment.projectId, paymentId: id },
+    });
+
+    await this.activity.log({
+      projectId: payment.projectId,
+      userId: user.id,
+      action: 'PAYMENT_RELEASED',
+      metadata: { paymentId: id, amount: Number(payment.amount) },
     });
 
     return { success: true, data: { payment: this.serialize(updated) } };

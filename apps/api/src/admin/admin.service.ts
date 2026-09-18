@@ -10,6 +10,8 @@ import {
   ReportTargetType,
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { ActivityService } from '../activity/activity.service';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -18,6 +20,7 @@ export class AdminService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly activity: ActivityService,
   ) {}
 
   async listUsers() {
@@ -68,13 +71,19 @@ export class AdminService {
       message: 'Your account was suspended by an administrator',
     });
 
+    await this.activity.log({
+      userId: admin.id,
+      action: 'USER_SUSPENDED',
+      metadata: { targetUserId: userId },
+    });
+
     return {
       success: true,
       data: { user: { id: updated.id, status: updated.status } },
     };
   }
 
-  async reactivate(_admin: AuthUser, userId: string) {
+  async reactivate(admin: AuthUser, userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -92,6 +101,12 @@ export class AdminService {
       type: NotificationType.SYSTEM,
       title: 'Account reactivated',
       message: 'Your account was reactivated',
+    });
+
+    await this.activity.log({
+      userId: admin.id,
+      action: 'USER_REACTIVATED',
+      metadata: { targetUserId: userId },
     });
 
     return {
@@ -130,6 +145,11 @@ export class AdminService {
         resolvedAt: new Date(),
       },
     });
+    await this.activity.log({
+      userId: admin.id,
+      action: 'REPORT_RESOLVED',
+      metadata: { reportId: id },
+    });
     return { success: true, data: { report: this.serializeReport(updated) } };
   }
 
@@ -145,6 +165,11 @@ export class AdminService {
         resolvedById: admin.id,
         resolvedAt: new Date(),
       },
+    });
+    await this.activity.log({
+      userId: admin.id,
+      action: 'REPORT_DISMISSED',
+      metadata: { reportId: id },
     });
     return { success: true, data: { report: this.serializeReport(updated) } };
   }
@@ -163,6 +188,11 @@ export class AdminService {
     const updated = await this.prisma.report.update({
       where: { id },
       data: { status: ReportStatus.UNDER_REVIEW },
+    });
+    await this.activity.log({
+      userId: admin.id,
+      action: 'REPORT_UNDER_REVIEW',
+      metadata: { reportId: id },
     });
     return { success: true, data: { report: this.serializeReport(updated) } };
   }
@@ -196,7 +226,7 @@ export class AdminService {
     };
   }
 
-  async setReviewVisibility(id: string, isVisible: boolean) {
+  async setReviewVisibility(admin: AuthUser, id: string, isVisible: boolean) {
     const review = await this.prisma.review.findUnique({ where: { id } });
     if (!review) {
       throw new NotFoundException('Review not found');
@@ -207,6 +237,11 @@ export class AdminService {
       include: {
         reviewer: { select: { id: true, name: true, avatarUrl: true } },
       },
+    });
+    await this.activity.log({
+      userId: admin.id,
+      action: isVisible ? 'REVIEW_SHOWN' : 'REVIEW_HIDDEN',
+      metadata: { reviewId: id },
     });
     return {
       success: true,
@@ -225,6 +260,13 @@ export class AdminService {
         },
       },
     };
+  }
+
+  async listActivity(query: PaginationQueryDto) {
+    const page = query.page ?? 1;
+    const pageSize = query.pageSize ?? 50;
+    const { items, total } = await this.activity.listRecent(page, pageSize);
+    return { success: true, data: { items, page, pageSize, total } };
   }
 
   private serializeReport(r: {

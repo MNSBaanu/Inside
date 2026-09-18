@@ -16,6 +16,7 @@ import {
   StageName,
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
@@ -45,6 +46,7 @@ export class ProposalsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly activity: ActivityService,
   ) {}
 
   async create(user: AuthUser, requestId: string, dto: CreateProposalDto) {
@@ -267,6 +269,13 @@ export class ProposalsService {
       title: 'Proposal accepted',
       message: `Your proposal for "${proposal.request.title}" was accepted`,
       metadata: { projectId: project.id, proposalId: proposal.id },
+    });
+
+    await this.activity.log({
+      projectId: project.id,
+      userId: user.id,
+      action: 'PROPOSAL_ACCEPTED',
+      metadata: { proposalId: proposal.id, requestId: proposal.requestId },
     });
 
     await Promise.all(

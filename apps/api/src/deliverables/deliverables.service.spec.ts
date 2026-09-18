@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ProjectStatus, Role, StageName, StageStatus } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { DeliverablesService } from './deliverables.service';
@@ -18,6 +19,7 @@ describe('DeliverablesService', () => {
   };
 
   const notifications = { notify: jest.fn() };
+  const activity = { log: jest.fn() };
 
   const designer = {
     id: 'd1',
@@ -53,6 +55,7 @@ describe('DeliverablesService', () => {
     service = new DeliverablesService(
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
+      activity as unknown as ActivityService,
     );
   });
 

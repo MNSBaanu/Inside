@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Rating } from '@/components/ui/rating';
+import { describeActivity } from '@/components/projects/project-history';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api';
 import { formatDate, titleCase } from '@/lib/format';
@@ -14,6 +15,7 @@ import { useApi } from '@/lib/use-api';
 import { cn } from '@/lib/cn';
 import type {
   AccountStatus,
+  ActivityEntry,
   AdminReview,
   Role,
   VerificationStatus,
@@ -50,7 +52,13 @@ type PendingVerification = {
   designer?: { id: string; name: string; avatarUrl: string | null };
 };
 
-const tabs = ['Users', 'Verifications', 'Reports', 'Reviews'] as const;
+const tabs = [
+  'Users',
+  'Verifications',
+  'Reports',
+  'Reviews',
+  'Activity',
+] as const;
 type Tab = (typeof tabs)[number];
 
 export default function AdminPage() {
@@ -64,6 +72,7 @@ export default function AdminPage() {
   );
   const reports = useApi<{ items: AdminReport[] }>('/admin/reports');
   const reviews = useApi<{ items: AdminReview[] }>('/admin/reviews');
+  const activity = useApi<{ items: ActivityEntry[] }>('/admin/activity');
 
   async function run(
     id: string,
@@ -90,7 +99,8 @@ export default function AdminPage() {
         Moderation.
       </h1>
       <p className="mt-4 max-w-xl text-muted">
-        Accounts, designer verification, reported content and reviews.
+        Accounts, designer verification, reported content, reviews and
+        platform activity.
       </p>
 
       {actionError ? (
@@ -396,6 +406,38 @@ export default function AdminPage() {
             </ul>
           ) : (
             <EmptyState title="No reviews yet." />
+          )
+        ) : null}
+
+        {tab === 'Activity' ? (
+          activity.loading ? (
+            <Skeleton className="h-48" />
+          ) : activity.error ? (
+            <ErrorNotice message={activity.error} />
+          ) : activity.data && activity.data.items.length > 0 ? (
+            <ul className="flex flex-col divide-y divide-hairline rounded-card border border-hairline bg-surface">
+              {activity.data.items.map((entry) => (
+                <li
+                  key={entry.id}
+                  className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 p-5"
+                >
+                  <div className="min-w-0">
+                    <p className="font-semibold first-letter:uppercase">
+                      {describeActivity(entry)}
+                    </p>
+                    <p className="mt-1 break-words text-sm text-muted">
+                      {entry.user?.name ?? 'System'}
+                      {entry.project ? ` · ${entry.project.title}` : ''}
+                    </p>
+                  </div>
+                  <p className="text-sm text-muted">
+                    {formatDate(entry.createdAt)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <EmptyState title="No activity yet." />
           )
         ) : null}
       </div>

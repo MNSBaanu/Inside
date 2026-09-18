@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { MessageThread } from '@/components/projects/message-thread';
 import { PaymentList } from '@/components/projects/payment-list';
+import { ProjectHistory } from '@/components/projects/project-history';
 import { StageList } from '@/components/projects/stage-list';
 import { ReviewForm } from '@/components/reviews/review-form';
 import { ReviewList } from '@/components/reviews/review-list';
@@ -17,7 +18,7 @@ import { formatDate, titleCase } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
 import type { Project, ProjectStage } from '@/lib/types';
 
-const tabs = ['Stages', 'Payments', 'Messages', 'Review'] as const;
+const tabs = ['Stages', 'Payments', 'Messages', 'History', 'Review'] as const;
 type Tab = (typeof tabs)[number];
 
 export default function ProjectWorkspacePage({
@@ -116,7 +117,7 @@ export default function ProjectWorkspacePage({
       <div
         role="tablist"
         aria-label="Project sections"
-        className="mt-12 flex gap-2 border-b border-hairline"
+        className="mt-12 flex gap-2 overflow-x-auto border-b border-hairline"
       >
         {tabs.map((name) => (
           <button
@@ -126,7 +127,7 @@ export default function ProjectWorkspacePage({
             aria-selected={tab === name}
             onClick={() => setTab(name)}
             className={cn(
-              '-mb-px border-b-2 px-5 py-3 text-label font-semibold uppercase transition-colors duration-300',
+              '-mb-px whitespace-nowrap border-b-2 px-5 py-3 text-label font-semibold uppercase transition-colors duration-300',
               tab === name
                 ? 'border-brand text-brand'
                 : 'border-transparent text-muted hover:text-ink',
@@ -163,6 +164,8 @@ export default function ProjectWorkspacePage({
         {tab === 'Messages' && user ? (
           <MessageThread projectId={params.id} currentUserId={user.id} />
         ) : null}
+
+        {tab === 'History' ? <ProjectHistory projectId={params.id} /> : null}
 
         {tab === 'Review' ? (
           item.status !== 'COMPLETED' ? (

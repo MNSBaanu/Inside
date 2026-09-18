@@ -261,6 +261,17 @@ export type Deliverable = {
   updatedAt: string;
 };
 
+export type ActivityEntry = {
+  id: string;
+  projectId: string | null;
+  userId: string | null;
+  action: string;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+  user: { id: string; name: string } | null;
+  project?: { id: string; title: string } | null;
+};
+
 export type Notification = {
   id: string;
   userId: string;

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { NotificationType, ProjectStatus, StageStatus } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -18,6 +19,7 @@ export class DeliverablesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly activity: ActivityService,
   ) {}
 
   async listByStage(user: AuthUser, stageId: string) {
@@ -80,6 +82,13 @@ export class DeliverablesService {
       },
     });
 
+    await this.activity.log({
+      projectId: stage.projectId,
+      userId: user.id,
+      action: 'DELIVERABLE_UPLOADED',
+      metadata: { stageId: stage.id, deliverableId: created.id, version },
+    });
+
     return { success: true, data: { deliverable: this.serialize(created) } };
   }
 
@@ -126,6 +135,17 @@ export class DeliverablesService {
         projectId: deliverable.stage.projectId,
         stageId: deliverable.stageId,
         deliverableId: id,
+      },
+    });
+
+    await this.activity.log({
+      projectId: deliverable.stage.projectId,
+      userId: user.id,
+      action: 'DELIVERABLE_FEEDBACK',
+      metadata: {
+        stageId: deliverable.stageId,
+        deliverableId: id,
+        version: deliverable.version,
       },
     });
 

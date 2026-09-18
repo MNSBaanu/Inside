@@ -5,6 +5,7 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -16,6 +17,7 @@ import {
 import type { AuthUser } from '../auth/auth.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SetReviewVisibilityDto } from './dto/set-review-visibility.dto';
 import { AdminService } from './admin.service';
@@ -102,9 +104,17 @@ export class AdminController {
   @ApiOperation({ summary: 'Show or hide a review publicly' })
   @ApiOkResponse({ description: 'Updated' })
   setReviewVisibility(
+    @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: SetReviewVisibilityDto,
   ) {
-    return this.admin.setReviewVisibility(id, dto.isVisible);
+    return this.admin.setReviewVisibility(user, id, dto.isVisible);
+  }
+
+  @Get('activity')
+  @ApiOperation({ summary: 'Platform activity and admin audit trail' })
+  @ApiOkResponse({ description: 'Activity log entries, newest first' })
+  activity(@Query() query: PaginationQueryDto) {
+    return this.admin.listActivity(query);
   }
 }

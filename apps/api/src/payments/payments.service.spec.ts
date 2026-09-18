@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PaymentStatus, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsService } from './payments.service';
@@ -16,6 +17,7 @@ describe('PaymentsService', () => {
   };
 
   const notifications = { notify: jest.fn() };
+  const activity = { log: jest.fn() };
 
   const client = {
     id: 'c1',
@@ -50,6 +52,7 @@ describe('PaymentsService', () => {
     service = new PaymentsService(
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
+      activity as unknown as ActivityService,
     );
   });
 
