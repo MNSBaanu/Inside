@@ -13,6 +13,7 @@ import { formatDate } from '@/lib/format';
 import { safeHref } from '@/lib/url';
 import { useApi } from '@/lib/use-api';
 import type { VerificationStatus } from '@/lib/types';
+import { FileUpload } from '@/components/ui/file-upload';
 
 type Verification = {
   id: string;
@@ -100,6 +101,12 @@ export default function VerificationPage() {
               value={evidenceUrl}
               onChange={(event) => setEvidenceUrl(event.target.value)}
               placeholder="https://…"
+            />
+            <FileUpload
+              folder="attachments"
+              accept="image/*,.pdf"
+              label="Or upload a document"
+              onUploaded={(file) => setEvidenceUrl(file.url)}
             />
           </Field>
 

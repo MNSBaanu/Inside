@@ -14,6 +14,7 @@ import { api, errorMessage } from '@/lib/api';
 import { formatDate, formatMoney, titleCase } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
 import type { Project, Proposal, ProjectRequest } from '@/lib/types';
+import { ProposalComparison } from '@/components/proposals/proposal-comparison';
 
 export default function RequestDetailPage({
   params,
@@ -41,6 +42,9 @@ export default function RequestDetailPage({
   const myProposal = proposals.data?.items.find(
     (proposal) => proposal.designerId === user?.id,
   );
+  const comparable =
+    proposals.data?.items.filter((proposal) => proposal.status === 'PENDING') ??
+    [];
   const canResubmit =
     myProposal?.status === 'WITHDRAWN' || myProposal?.status === 'REJECTED';
   const canPropose =
@@ -179,6 +183,12 @@ export default function RequestDetailPage({
           ) : proposals.error ? (
             <ErrorNotice message={proposals.error} />
           ) : proposals.data && proposals.data.items.length > 0 ? (
+            <>
+            {isClient && comparable.length >= 2 ? (
+              <div className="mb-8">
+                <ProposalComparison proposals={comparable} />
+              </div>
+            ) : null}
             <ul className="flex flex-col gap-6">
               {proposals.data.items.map((proposal) => (
                 <li key={proposal.id}>
@@ -269,6 +279,7 @@ export default function RequestDetailPage({
                 </li>
               ))}
             </ul>
+            </>
           ) : (
             <EmptyState
               title="No proposals yet."

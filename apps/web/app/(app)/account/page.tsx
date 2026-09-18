@@ -12,6 +12,7 @@ import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api';
 import type { User } from '@/lib/types';
+import { FileUpload } from '@/components/ui/file-upload';
 
 export default function AccountPage() {
   const { user, refreshUser, logout } = useSession();
@@ -144,7 +145,7 @@ export default function AccountPage() {
           <Field
             label="Avatar URL"
             htmlFor="avatarUrl"
-            hint="Paste a link to an image until uploads are available."
+            hint="Upload a photo or paste an https link."
           >
             <Input
               id="avatarUrl"
@@ -154,6 +155,13 @@ export default function AccountPage() {
                 setForm({ ...form, avatarUrl: event.target.value })
               }
               placeholder="https://…"
+            />
+            <FileUpload
+              folder="attachments"
+              label="Upload a photo"
+              onUploaded={(file) =>
+                setForm((current) => ({ ...current, avatarUrl: file.url }))
+              }
             />
           </Field>
 

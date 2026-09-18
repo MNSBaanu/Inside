@@ -1,6 +1,10 @@
 import { api } from './api';
 
-export type UploadFolder = 'portfolios' | 'moodboards' | 'deliverables';
+export type UploadFolder =
+  | 'portfolios'
+  | 'moodboards'
+  | 'deliverables'
+  | 'attachments';
 
 type SignedUpload = {
   cloudName: string;

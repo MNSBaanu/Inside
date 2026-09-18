@@ -19,6 +19,7 @@ const resourceTypes: Record<UploadFolder, 'image' | 'auto'> = {
   [UploadFolder.PORTFOLIOS]: 'image',
   [UploadFolder.MOODBOARDS]: 'image',
   [UploadFolder.DELIVERABLES]: 'auto',
+  [UploadFolder.ATTACHMENTS]: 'auto',
 };
 
 const IMAGE_FORMATS = 'jpg,jpeg,png,webp,gif,avif,heic';
@@ -27,6 +28,7 @@ const allowedFormats: Record<UploadFolder, string> = {
   [UploadFolder.PORTFOLIOS]: IMAGE_FORMATS,
   [UploadFolder.MOODBOARDS]: IMAGE_FORMATS,
   [UploadFolder.DELIVERABLES]: `${IMAGE_FORMATS},pdf,dwg,dxf,zip`,
+  [UploadFolder.ATTACHMENTS]: `${IMAGE_FORMATS},pdf,doc,docx,xls,xlsx,zip`,
 };
 
 @Injectable()
@@ -63,10 +65,15 @@ export class UploadsService {
   }
 
   private assertCanUpload(user: AuthUser, folder: UploadFolder) {
-    const allowed =
-      folder === UploadFolder.MOODBOARDS
-        ? user.role !== Role.ADMIN && user.activeRole === Role.CLIENT
-        : user.role === Role.DESIGNER && user.activeRole === Role.DESIGNER;
+    const designer =
+      user.role === Role.DESIGNER && user.activeRole === Role.DESIGNER;
+    const allowed = {
+      [UploadFolder.PORTFOLIOS]: designer,
+      [UploadFolder.DELIVERABLES]: designer,
+      [UploadFolder.MOODBOARDS]:
+        user.role !== Role.ADMIN && user.activeRole === Role.CLIENT,
+      [UploadFolder.ATTACHMENTS]: user.role !== Role.ADMIN,
+    }[folder];
     if (!allowed) {
       throw new ForbiddenException(
         `Your current role cannot upload to ${folder}`,
