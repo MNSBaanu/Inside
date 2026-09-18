@@ -49,7 +49,7 @@ describe('UsersService', () => {
       status: AccountStatus.ACTIVE,
     });
 
-    const result = await service.switchActiveRole('d1', {
+    const result = await service.switchActiveRole('d1', 's1', {
       activeRole: 'CLIENT',
     });
 
@@ -71,7 +71,7 @@ describe('UsersService', () => {
     });
 
     await expect(
-      service.switchActiveRole('c1', { activeRole: 'DESIGNER' }),
+      service.switchActiveRole('c1', 's1', { activeRole: 'DESIGNER' }),
     ).rejects.toBeInstanceOf(ForbiddenException);
   });
 

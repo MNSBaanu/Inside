@@ -8,9 +8,9 @@ describe('parseJwtExpiresIn', () => {
     expect(parseJwtExpiresIn('30s')).toBe(30);
   });
 
-  it('accepts raw seconds and defaults to 7d', () => {
+  it('accepts raw seconds and defaults to 15m', () => {
     expect(parseJwtExpiresIn('3600')).toBe(3600);
-    expect(parseJwtExpiresIn(undefined)).toBe(604800);
-    expect(parseJwtExpiresIn('nope')).toBe(604800);
+    expect(parseJwtExpiresIn(undefined)).toBe(900);
+    expect(parseJwtExpiresIn('nope')).toBe(900);
   });
 });

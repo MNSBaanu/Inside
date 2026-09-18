@@ -80,7 +80,11 @@ export class UsersService {
     };
   }
 
-  async switchActiveRole(userId: string, dto: SwitchActiveRoleDto) {
+  async switchActiveRole(
+    userId: string,
+    sessionId: string,
+    dto: SwitchActiveRoleDto,
+  ) {
     const user = await this.requireActiveUser(userId);
     const nextRole =
       dto.activeRole === 'DESIGNER' ? Role.DESIGNER : Role.CLIENT;
@@ -107,7 +111,10 @@ export class UsersService {
       data: { activeRole: nextRole },
     });
 
-    const accessToken = await this.authService.signAccessToken(updated);
+    const accessToken = await this.authService.signAccessToken(
+      updated,
+      sessionId,
+    );
 
     return {
       success: true,

@@ -69,7 +69,7 @@ describe('AuthService', () => {
       passwordHash: 'hash',
     });
     prisma.authToken.create.mockResolvedValue({});
-    prisma.session.create.mockResolvedValue({});
+    prisma.session.create.mockResolvedValue({ id: 's1' });
 
     const result = await service.register({
       email: 'new@inside.test',

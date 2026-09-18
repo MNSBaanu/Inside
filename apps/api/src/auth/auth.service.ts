@@ -35,8 +35,12 @@ export type AuthUser = Pick<
   | 'createdAt'
 > & { emailVerified: boolean };
 
+/** The authenticated user plus the refresh session its access token belongs to. */
+export type RequestUser = AuthUser & { sessionId: string };
+
 export type JwtPayload = {
   sub: string;
+  sid: string;
   email: string;
   role: Role;
   activeRole: Role;
@@ -264,14 +268,25 @@ export class AuthService {
     return { success: true, data: { verified: true } };
   }
 
-  async validateJwtPayload(payload: JwtPayload): Promise<AuthUser> {
-    const user = await this.prisma.user.findUnique({
-      where: { id: payload.sub },
-    });
-    if (!user || user.status === AccountStatus.SUSPENDED) {
+  /** Access tokens stop working as soon as their session is revoked. */
+  async validateJwtPayload(payload: JwtPayload): Promise<RequestUser> {
+    if (!payload.sid) {
       throw new UnauthorizedException();
     }
-    return this.toPublicUser(user);
+    const session = await this.prisma.session.findUnique({
+      where: { id: payload.sid },
+      include: { user: true },
+    });
+    if (
+      !session ||
+      session.userId !== payload.sub ||
+      session.revokedAt ||
+      session.expiresAt < new Date() ||
+      session.user.status === AccountStatus.SUSPENDED
+    ) {
+      throw new UnauthorizedException();
+    }
+    return { ...this.toPublicUser(session.user), sessionId: session.id };
   }
 
   private async findValidAuthToken(rawToken: string, type: AuthTokenType) {
@@ -290,9 +305,10 @@ export class AuthService {
     return authToken;
   }
 
-  async signAccessToken(user: User): Promise<string> {
+  async signAccessToken(user: User, sessionId: string): Promise<string> {
     const payload: JwtPayload = {
       sub: user.id,
+      sid: sessionId,
       email: user.email,
       role: user.role,
       activeRole: user.activeRole,
@@ -323,10 +339,8 @@ export class AuthService {
     user: User,
     meta?: { userAgent?: string; ipAddress?: string },
   ) {
-    const accessToken = await this.signAccessToken(user);
-
     const refreshToken = this.createRawToken();
-    await this.prisma.session.create({
+    const session = await this.prisma.session.create({
       data: {
         userId: user.id,
         refreshTokenHash: this.hashToken(refreshToken),
@@ -335,6 +349,7 @@ export class AuthService {
         expiresAt: new Date(Date.now() + this.refreshTtlMs),
       },
     });
+    const accessToken = await this.signAccessToken(user, session.id);
 
     return { accessToken, refreshToken };
   }

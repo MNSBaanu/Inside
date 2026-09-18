@@ -42,7 +42,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const data = await api.get<{ user: User }>('/auth/me');
+      const data = await api.get<{ user: User }>('/users/me');
       authStorage.markActive();
       setUser(data.user);
       setStatus('authenticated');

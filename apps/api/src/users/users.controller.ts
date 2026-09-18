@@ -6,7 +6,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import type { AuthUser } from '../auth/auth.service';
+import type { AuthUser, RequestUser } from '../auth/auth.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -52,9 +52,9 @@ export class UsersController {
   })
   @ApiOkResponse({ description: 'Updated role and new access token' })
   switchActiveRole(
-    @CurrentUser() user: AuthUser,
+    @CurrentUser() user: RequestUser,
     @Body() dto: SwitchActiveRoleDto,
   ) {
-    return this.usersService.switchActiveRole(user.id, dto);
+    return this.usersService.switchActiveRole(user.id, user.sessionId, dto);
   }
 }
