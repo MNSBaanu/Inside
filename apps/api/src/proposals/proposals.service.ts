@@ -170,10 +170,25 @@ export class ProposalsService {
     const feeMap = new Map(stageFees.map((s) => [s.name, s.fee]));
 
     const project = await this.prisma.$transaction(async (tx) => {
-      await tx.proposal.update({
-        where: { id },
+      const claimed = await tx.proposal.updateMany({
+        where: { id, status: ProposalStatus.PENDING },
         data: { status: ProposalStatus.ACCEPTED },
       });
+      const requestClaimed = await tx.projectRequest.updateMany({
+        where: {
+          id: proposal.requestId,
+          status: { in: [RequestStatus.OPEN, RequestStatus.PENDING] },
+        },
+        data: {
+          status: RequestStatus.ACCEPTED,
+          designerId: proposal.designerId,
+        },
+      });
+      if (claimed.count === 0 || requestClaimed.count === 0) {
+        throw new ConflictException(
+          'This proposal or request has already been decided',
+        );
+      }
 
       await tx.proposal.updateMany({
         where: {
@@ -182,14 +197,6 @@ export class ProposalsService {
           status: ProposalStatus.PENDING,
         },
         data: { status: ProposalStatus.REJECTED },
-      });
-
-      await tx.projectRequest.update({
-        where: { id: proposal.requestId },
-        data: {
-          status: RequestStatus.ACCEPTED,
-          designerId: proposal.designerId,
-        },
       });
 
       return tx.project.create({

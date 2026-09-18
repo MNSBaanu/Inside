@@ -23,7 +23,7 @@ describe('ProposalsService', () => {
       update: jest.fn(),
       updateMany: jest.fn(),
     },
-    projectRequest: { update: jest.fn() },
+    projectRequest: { updateMany: jest.fn() },
     project: { create: jest.fn() },
   };
 
@@ -170,6 +170,8 @@ describe('ProposalsService', () => {
       status: ProposalStatus.PENDING,
     });
 
+    tx.proposal.updateMany.mockResolvedValue({ count: 1 });
+    tx.projectRequest.updateMany.mockResolvedValue({ count: 1 });
     tx.project.create.mockResolvedValue({
       id: 'proj1',
       proposalId: 'p1',
@@ -194,12 +196,15 @@ describe('ProposalsService', () => {
     const result = await service.accept(client, 'p1');
 
     expect(result.data.project.stages).toHaveLength(5);
-    expect(tx.proposal.update).toHaveBeenCalledWith({
-      where: { id: 'p1' },
+    expect(tx.proposal.updateMany).toHaveBeenCalledWith({
+      where: { id: 'p1', status: ProposalStatus.PENDING },
       data: { status: ProposalStatus.ACCEPTED },
     });
-    expect(tx.projectRequest.update).toHaveBeenCalledWith({
-      where: { id: 'r1' },
+    expect(tx.projectRequest.updateMany).toHaveBeenCalledWith({
+      where: {
+        id: 'r1',
+        status: { in: [RequestStatus.OPEN, RequestStatus.PENDING] },
+      },
       data: {
         status: RequestStatus.ACCEPTED,
         designerId: 'd1',

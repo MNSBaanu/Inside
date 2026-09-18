@@ -16,6 +16,8 @@ describe('StagesService', () => {
   const tx = {
     projectStage: {
       update: jest.fn(),
+      updateMany: jest.fn(),
+      findUniqueOrThrow: jest.fn(),
       findFirst: jest.fn(),
     },
     milestonePayment: { create: jest.fn() },
@@ -134,7 +136,8 @@ describe('StagesService', () => {
       ...baseStage,
       status: StageStatus.SUBMITTED,
     });
-    tx.projectStage.update.mockResolvedValueOnce({
+    tx.projectStage.updateMany.mockResolvedValue({ count: 1 });
+    tx.projectStage.findUniqueOrThrow.mockResolvedValue({
       ...baseStage,
       status: StageStatus.APPROVED,
       approvedAt: new Date(),
@@ -175,7 +178,8 @@ describe('StagesService', () => {
         currentStage: StageName.COMPLETION,
       },
     });
-    tx.projectStage.update.mockResolvedValueOnce({
+    tx.projectStage.updateMany.mockResolvedValue({ count: 1 });
+    tx.projectStage.findUniqueOrThrow.mockResolvedValue({
       ...baseStage,
       status: StageStatus.APPROVED,
       approvedAt: new Date(),

@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -154,9 +155,15 @@ export class StagesService {
       stage.fee !== null && stage.fee !== undefined ? Number(stage.fee) : 0;
 
     const result = await this.prisma.$transaction(async (tx) => {
-      const approved = await tx.projectStage.update({
-        where: { id: stageId },
+      const claimed = await tx.projectStage.updateMany({
+        where: { id: stageId, status: StageStatus.SUBMITTED },
         data: { status: StageStatus.APPROVED, approvedAt: new Date() },
+      });
+      if (claimed.count === 0) {
+        throw new ConflictException('Stage has already been reviewed');
+      }
+      const approved = await tx.projectStage.findUniqueOrThrow({
+        where: { id: stageId },
       });
 
       if (fee > 0) {

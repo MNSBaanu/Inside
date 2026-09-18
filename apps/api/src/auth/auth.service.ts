@@ -142,10 +142,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    await this.prisma.session.update({
-      where: { id: session.id },
+    const revoked = await this.prisma.session.updateMany({
+      where: { id: session.id, revokedAt: null },
       data: { revokedAt: new Date() },
     });
+    if (revoked.count === 0) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
 
     const tokens = await this.issueTokens(session.user, {
       userAgent: session.userAgent ?? undefined,
