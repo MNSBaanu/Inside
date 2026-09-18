@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { BlocksModule } from './blocks/blocks.module';
@@ -28,6 +30,13 @@ import { VerificationsModule } from './verifications/verifications.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: 60_000, limit: 120 }],
+      skipIf: (context) =>
+        process.env.THROTTLE_DISABLED === 'true' ||
+        context.switchToHttp().getRequest<{ method: string }>().method ===
+          'GET',
+    }),
     PrismaModule,
     AuthModule,
     UsersModule,
@@ -53,5 +62,6 @@ import { VerificationsModule } from './verifications/verifications.module';
     UploadsModule,
     HealthModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

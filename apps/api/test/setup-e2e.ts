@@ -12,3 +12,4 @@ process.env.JWT_SECRET =
   'dev-only-replace-me-abcdefghijklmnopqrstuvwxyz0123456789';
 process.env.JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? '1h';
 process.env.EXPOSE_DEV_AUTH_TOKENS = 'true';
+process.env.THROTTLE_DISABLED = 'true';
