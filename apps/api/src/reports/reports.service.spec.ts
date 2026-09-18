@@ -10,6 +10,11 @@ describe('ReportsService', () => {
       create: jest.fn(),
       findMany: jest.fn(),
     },
+    user: { count: jest.fn().mockResolvedValue(1) },
+    project: { count: jest.fn().mockResolvedValue(1) },
+    portfolio: { count: jest.fn().mockResolvedValue(1) },
+    review: { count: jest.fn().mockResolvedValue(1) },
+    message: { count: jest.fn().mockResolvedValue(1) },
   };
 
   const client = {

@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -9,6 +11,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import {
   AddMoodboardItemDto,
   CreateMoodboardDto,
+  MAX_MOODBOARD_ITEMS,
   MoodboardItemDto,
   UpdateMoodboardDto,
 } from './dto/moodboard.dto';
@@ -68,6 +71,19 @@ export class MoodboardsService {
   async addItem(user: AuthUser, id: string, dto: AddMoodboardItemDto) {
     const moodboard = await this.requireOwned(id, user.id);
     const items = this.asItems(moodboard.savedItems);
+    if (items.length >= MAX_MOODBOARD_ITEMS) {
+      throw new BadRequestException(
+        `A moodboard can hold up to ${MAX_MOODBOARD_ITEMS} items`,
+      );
+    }
+    if (dto.portfolioId) {
+      const portfolios = await this.prisma.portfolio.count({
+        where: { id: dto.portfolioId, isPublished: true },
+      });
+      if (portfolios === 0) {
+        throw new NotFoundException('Portfolio not found');
+      }
+    }
     items.push({
       imageUrl: dto.imageUrl,
       ...(dto.note !== undefined ? { note: dto.note } : {}),
@@ -75,10 +91,7 @@ export class MoodboardsService {
         ? { portfolioId: dto.portfolioId }
         : {}),
     });
-    const updated = await this.prisma.moodboard.update({
-      where: { id },
-      data: { savedItems: this.toJson(items) },
-    });
+    const updated = await this.saveItems(moodboard, items);
     return { success: true, data: { moodboard: this.serialize(updated) } };
   }
 
@@ -89,11 +102,27 @@ export class MoodboardsService {
       throw new NotFoundException('Moodboard item not found');
     }
     items.splice(index, 1);
-    const updated = await this.prisma.moodboard.update({
-      where: { id },
+    const updated = await this.saveItems(moodboard, items);
+    return { success: true, data: { moodboard: this.serialize(updated) } };
+  }
+
+  /** Saves only if nobody changed the moodboard since it was read. */
+  private async saveItems(
+    moodboard: { id: string; updatedAt: Date },
+    items: MoodboardItemDto[],
+  ) {
+    const { count } = await this.prisma.moodboard.updateMany({
+      where: { id: moodboard.id, updatedAt: moodboard.updatedAt },
       data: { savedItems: this.toJson(items) },
     });
-    return { success: true, data: { moodboard: this.serialize(updated) } };
+    if (count === 0) {
+      throw new ConflictException(
+        'This moodboard was changed elsewhere. Reload and try again.',
+      );
+    }
+    return this.prisma.moodboard.findUniqueOrThrow({
+      where: { id: moodboard.id },
+    });
   }
 
   private async requireOwned(id: string, clientId: string) {

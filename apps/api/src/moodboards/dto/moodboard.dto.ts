@@ -1,14 +1,18 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   IsArray,
   IsOptional,
   IsString,
   IsUrl,
+  IsUUID,
   MaxLength,
   MinLength,
   ValidateNested,
 } from 'class-validator';
+
+export const MAX_MOODBOARD_ITEMS = 100;
 
 export class MoodboardItemDto {
   @ApiProperty({ example: 'https://picsum.photos/seed/inspo/800/600' })
@@ -23,7 +27,7 @@ export class MoodboardItemDto {
 
   @ApiPropertyOptional({ description: 'Optional linked portfolio id' })
   @IsOptional()
-  @IsString()
+  @IsUUID()
   portfolioId?: string;
 }
 
@@ -37,6 +41,7 @@ export class CreateMoodboardDto {
   @ApiPropertyOptional({ type: [MoodboardItemDto] })
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(MAX_MOODBOARD_ITEMS)
   @ValidateNested({ each: true })
   @Type(() => MoodboardItemDto)
   savedItems?: MoodboardItemDto[];
@@ -53,6 +58,7 @@ export class UpdateMoodboardDto {
   @ApiPropertyOptional({ type: [MoodboardItemDto] })
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(MAX_MOODBOARD_ITEMS)
   @ValidateNested({ each: true })
   @Type(() => MoodboardItemDto)
   savedItems?: MoodboardItemDto[];

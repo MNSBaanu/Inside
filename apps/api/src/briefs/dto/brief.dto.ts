@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
+  ArrayMinSize,
   IsArray,
   IsOptional,
   IsString,
@@ -44,6 +45,7 @@ export class UpdateBriefDto {
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()
   @IsArray()
+  @ArrayMinSize(1)
   @ArrayMaxSize(20)
   @IsString({ each: true })
   styles?: string[];
@@ -51,6 +53,7 @@ export class UpdateBriefDto {
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()
   @IsArray()
+  @ArrayMinSize(1)
   @ArrayMaxSize(20)
   @IsString({ each: true })
   rooms?: string[];

@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ReportStatus, ReportTargetType } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -9,8 +13,14 @@ export class ReportsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(user: AuthUser, dto: CreateReportDto) {
-    if (dto.targetType === ReportTargetType.USER && dto.targetId === user.id) {
+    if (
+      (dto.targetType === ReportTargetType.USER && dto.targetId === user.id) ||
+      dto.reportedUserId === user.id
+    ) {
       throw new BadRequestException('Cannot report yourself');
+    }
+    if (!(await this.targetExists(dto.targetType, dto.targetId))) {
+      throw new NotFoundException('Reported item not found');
     }
 
     const report = await this.prisma.report.create({
@@ -36,6 +46,21 @@ export class ReportsService {
       success: true,
       data: { items: items.map((r) => this.serialize(r)) },
     };
+  }
+
+  private async targetExists(type: ReportTargetType, id: string) {
+    const counters: Record<ReportTargetType, () => Promise<number>> = {
+      [ReportTargetType.USER]: () => this.prisma.user.count({ where: { id } }),
+      [ReportTargetType.PROJECT]: () =>
+        this.prisma.project.count({ where: { id } }),
+      [ReportTargetType.PORTFOLIO]: () =>
+        this.prisma.portfolio.count({ where: { id } }),
+      [ReportTargetType.REVIEW]: () =>
+        this.prisma.review.count({ where: { id } }),
+      [ReportTargetType.MESSAGE]: () =>
+        this.prisma.message.count({ where: { id } }),
+    };
+    return (await counters[type]()) > 0;
   }
 
   serialize(r: {

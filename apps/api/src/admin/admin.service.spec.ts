@@ -79,7 +79,11 @@ describe('AdminService', () => {
   });
 
   it('resolveReport sets status RESOLVED with admin', async () => {
-    prisma.report.findUnique.mockResolvedValue({ id: 'r1' });
+    prisma.report.findUnique.mockResolvedValue({
+      id: 'r1',
+      reporterId: 'u2',
+      status: ReportStatus.OPEN,
+    });
     prisma.report.update.mockResolvedValue({
       id: 'r1',
       reporterId: 'u2',

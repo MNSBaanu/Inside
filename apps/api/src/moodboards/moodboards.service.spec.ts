@@ -11,6 +11,8 @@ describe('MoodboardsService', () => {
       findUnique: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
+      updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+      findUniqueOrThrow: jest.fn(),
       delete: jest.fn(),
     },
   };
@@ -37,7 +39,7 @@ describe('MoodboardsService', () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-    prisma.moodboard.update.mockResolvedValue({
+    prisma.moodboard.findUniqueOrThrow.mockResolvedValue({
       id: 'm1',
       clientId: 'c1',
       name: 'Board',
