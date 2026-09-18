@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -18,6 +19,7 @@ import {
 import type { AuthUser } from '../auth/auth.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { MessagesService } from './messages.service';
 
@@ -34,8 +36,9 @@ export class MessagesController {
   list(
     @CurrentUser() user: AuthUser,
     @Param('projectId', ParseUUIDPipe) projectId: string,
+    @Query() query: PaginationQueryDto,
   ) {
-    return this.messages.list(user, projectId);
+    return this.messages.list(user, projectId, query);
   }
 
   @Post('projects/:projectId/messages')

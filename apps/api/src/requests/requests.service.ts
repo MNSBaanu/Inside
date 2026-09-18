@@ -13,6 +13,10 @@ import {
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { BlocksService } from '../blocks/blocks.service';
+import {
+  PaginationQueryDto,
+  paginate,
+} from '../common/dto/pagination-query.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRequestDto } from './dto/create-request.dto';
@@ -104,7 +108,8 @@ export class RequestsService {
     return { success: true, data: { request: this.serialize(request) } };
   }
 
-  async listMine(user: AuthUser) {
+  async listMine(user: AuthUser, query: PaginationQueryDto) {
+    const { page, pageSize, skip, take } = paginate(query);
     const where =
       user.activeRole === Role.CLIENT
         ? { clientId: user.id }
@@ -119,15 +124,25 @@ export class RequestsService {
             ],
           };
 
-    const items = await this.prisma.projectRequest.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      include: requestInclude,
-    });
+    const [total, items] = await Promise.all([
+      this.prisma.projectRequest.count({ where }),
+      this.prisma.projectRequest.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        include: requestInclude,
+        skip,
+        take,
+      }),
+    ]);
 
     return {
       success: true,
-      data: { items: items.map((r) => this.serialize(r)) },
+      data: {
+        items: items.map((r) => this.serialize(r)),
+        page,
+        pageSize,
+        total,
+      },
     };
   }
 

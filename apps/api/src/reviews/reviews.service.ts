@@ -12,6 +12,10 @@ import {
   Role,
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import {
+  PaginationQueryDto,
+  paginate,
+} from '../common/dto/pagination-query.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
@@ -86,7 +90,8 @@ export class ReviewsService {
     }
   }
 
-  async listByDesigner(designerId: string) {
+  async listByDesigner(designerId: string, query: PaginationQueryDto) {
+    const { page, pageSize, skip, take } = paginate(query);
     const designer = await this.prisma.user.findUnique({
       where: { id: designerId },
       select: { id: true, role: true },
@@ -99,6 +104,8 @@ export class ReviewsService {
       where: { designerId, isVisible: true },
       orderBy: { createdAt: 'desc' },
       include: { reviewer: { select: reviewerSelect } },
+      skip,
+      take,
     });
 
     const aggregate = await this.prisma.review.aggregate({
@@ -111,6 +118,8 @@ export class ReviewsService {
       success: true,
       data: {
         items: items.map((r) => this.serialize(r)),
+        page,
+        pageSize,
         summary: {
           count: aggregate._count._all,
           averageRating: aggregate._avg.rating ?? 0,

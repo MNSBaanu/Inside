@@ -11,7 +11,10 @@ import {
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { ActivityService } from '../activity/activity.service';
-import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import {
+  PaginationQueryDto,
+  paginate,
+} from '../common/dto/pagination-query.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -23,21 +26,27 @@ export class AdminService {
     private readonly activity: ActivityService,
   ) {}
 
-  async listUsers() {
-    const items = await this.prisma.user.findMany({
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        activeRole: true,
-        isVerified: true,
-        status: true,
-        createdAt: true,
-      },
-    });
-    return { success: true, data: { items } };
+  async listUsers(query: PaginationQueryDto) {
+    const { page, pageSize, skip, take } = paginate(query, 100);
+    const [total, items] = await Promise.all([
+      this.prisma.user.count(),
+      this.prisma.user.findMany({
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take,
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          activeRole: true,
+          isVerified: true,
+          status: true,
+          createdAt: true,
+        },
+      }),
+    ]);
+    return { success: true, data: { items, page, pageSize, total } };
   }
 
   async suspend(admin: AuthUser, userId: string) {
@@ -115,20 +124,32 @@ export class AdminService {
     };
   }
 
-  async listOpenReports() {
-    const items = await this.prisma.report.findMany({
-      where: {
-        status: { in: [ReportStatus.OPEN, ReportStatus.UNDER_REVIEW] },
-      },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        reporter: { select: { id: true, name: true, email: true } },
-        reportedUser: { select: { id: true, name: true, email: true } },
-      },
-    });
+  async listOpenReports(query: PaginationQueryDto) {
+    const { page, pageSize, skip, take } = paginate(query, 100);
+    const where = {
+      status: { in: [ReportStatus.OPEN, ReportStatus.UNDER_REVIEW] },
+    };
+    const [total, items] = await Promise.all([
+      this.prisma.report.count({ where }),
+      this.prisma.report.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take,
+        include: {
+          reporter: { select: { id: true, name: true, email: true } },
+          reportedUser: { select: { id: true, name: true, email: true } },
+        },
+      }),
+    ]);
     return {
       success: true,
-      data: { items: items.map((r) => this.serializeReport(r)) },
+      data: {
+        items: items.map((r) => this.serializeReport(r)),
+        page,
+        pageSize,
+        total,
+      },
     };
   }
 
@@ -263,8 +284,7 @@ export class AdminService {
   }
 
   async listActivity(query: PaginationQueryDto) {
-    const page = query.page ?? 1;
-    const pageSize = query.pageSize ?? 50;
+    const { page, pageSize } = paginate(query);
     const { items, total } = await this.activity.listRecent(page, pageSize);
     return { success: true, data: { items, page, pageSize, total } };
   }

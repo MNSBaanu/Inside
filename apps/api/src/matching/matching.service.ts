@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Role } from '@inside/database';
+import { Prisma, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { BlocksService } from '../blocks/blocks.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -20,12 +20,28 @@ export class MatchingService {
     }
 
     const blockedIds = await this.blocks.listBlockedCounterpartIds(user.id);
+    const budget = this.parseBudgetMid(brief.budgetRange);
+
+    // Only portfolios that can reach the minimum score: a style or room
+    // match, or a budget within 50% of the brief.
+    const relevant: Prisma.PortfolioWhereInput[] = [
+      ...brief.styles.map((style) => ({
+        style: { equals: style, mode: 'insensitive' as const },
+      })),
+      ...brief.rooms.map((room) => ({
+        roomType: { equals: room, mode: 'insensitive' as const },
+      })),
+      ...(budget !== null
+        ? [{ budget: { gte: budget * 0.5, lte: budget * 1.5 } }]
+        : []),
+    ];
 
     const portfolios = await this.prisma.portfolio.findMany({
       where: {
         isPublished: true,
         designer: { role: Role.DESIGNER, status: 'ACTIVE' },
         ...(blockedIds.size ? { designerId: { notIn: [...blockedIds] } } : {}),
+        OR: relevant,
       },
       include: {
         designer: {
@@ -42,7 +58,6 @@ export class MatchingService {
       },
     });
 
-    const budget = this.parseBudgetMid(brief.budgetRange);
     const byDesigner = new Map<
       string,
       {

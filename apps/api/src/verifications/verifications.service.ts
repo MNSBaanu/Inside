@@ -6,6 +6,10 @@ import {
 import { NotificationType, VerificationStatus } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { ActivityService } from '../activity/activity.service';
+import {
+  PaginationQueryDto,
+  paginate,
+} from '../common/dto/pagination-query.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -64,15 +68,27 @@ export class VerificationsService {
     };
   }
 
-  async listPending() {
-    const items = await this.prisma.verification.findMany({
-      where: { status: VerificationStatus.PENDING },
-      orderBy: { createdAt: 'asc' },
-      include: { designer: { select: designerSelect } },
-    });
+  async listPending(query: PaginationQueryDto) {
+    const { page, pageSize, skip, take } = paginate(query, 100);
+    const where = { status: VerificationStatus.PENDING };
+    const [total, items] = await Promise.all([
+      this.prisma.verification.count({ where }),
+      this.prisma.verification.findMany({
+        where,
+        orderBy: { createdAt: 'asc' },
+        include: { designer: { select: designerSelect } },
+        skip,
+        take,
+      }),
+    ]);
     return {
       success: true,
-      data: { items: items.map((v) => this.serialize(v)) },
+      data: {
+        items: items.map((v) => this.serialize(v)),
+        page,
+        pageSize,
+        total,
+      },
     };
   }
 

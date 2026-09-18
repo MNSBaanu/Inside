@@ -6,6 +6,10 @@ import {
 import { NotificationType } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { BlocksService } from '../blocks/blocks.service';
+import {
+  PaginationQueryDto,
+  paginate,
+} from '../common/dto/pagination-query.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { SendMessageDto } from './dto/send-message.dto';
@@ -18,15 +22,27 @@ export class MessagesService {
     private readonly blocks: BlocksService,
   ) {}
 
-  async list(user: AuthUser, projectId: string) {
+  /** Page 1 holds the newest messages; each page is returned oldest first. */
+  async list(user: AuthUser, projectId: string, query: PaginationQueryDto) {
     await this.requireParty(projectId, user);
-    const items = await this.prisma.message.findMany({
-      where: { projectId },
-      orderBy: { sentAt: 'asc' },
-    });
+    const { page, pageSize, skip, take } = paginate(query, 100);
+    const [total, items] = await Promise.all([
+      this.prisma.message.count({ where: { projectId } }),
+      this.prisma.message.findMany({
+        where: { projectId },
+        orderBy: { sentAt: 'desc' },
+        skip,
+        take,
+      }),
+    ]);
     return {
       success: true,
-      data: { items: items.map((m) => this.serialize(m)) },
+      data: {
+        items: items.reverse().map((m) => this.serialize(m)),
+        page,
+        pageSize,
+        total,
+      },
     };
   }
 

@@ -18,3 +18,9 @@ export class PaginationQueryDto {
   @Max(100)
   pageSize?: number;
 }
+
+export function paginate(query: PaginationQueryDto, defaultPageSize = 50) {
+  const page = query.page ?? 1;
+  const pageSize = query.pageSize ?? defaultPageSize;
+  return { page, pageSize, skip: (page - 1) * pageSize, take: pageSize };
+}

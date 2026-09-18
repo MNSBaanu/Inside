@@ -13,6 +13,7 @@ describe('RequestsService', () => {
     projectRequest: {
       create: jest.fn(),
       findMany: jest.fn(),
+      count: jest.fn().mockResolvedValue(0),
       findUnique: jest.fn(),
       update: jest.fn(),
     },
@@ -130,7 +131,7 @@ describe('RequestsService', () => {
   it('lists designer-visible OPEN requests', async () => {
     prisma.projectRequest.findMany.mockResolvedValue([]);
 
-    await service.listMine(designer);
+    await service.listMine(designer, {});
 
     expect(prisma.projectRequest.findMany).toHaveBeenCalledWith(
       expect.objectContaining({

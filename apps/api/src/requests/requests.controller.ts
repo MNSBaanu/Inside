@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -20,6 +21,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { ClientModeGuard } from '../auth/guards/client-mode.guard';
 import { DesignerModeGuard } from '../auth/guards/designer-mode.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { RequestsService } from './requests.service';
 
@@ -41,8 +43,8 @@ export class RequestsController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'List my requests (client or designer view)' })
   @ApiOkResponse({ description: 'Requests' })
-  list(@CurrentUser() user: AuthUser) {
-    return this.requestsService.listMine(user);
+  list(@CurrentUser() user: AuthUser, @Query() query: PaginationQueryDto) {
+    return this.requestsService.listMine(user, query);
   }
 
   @Get(':id')

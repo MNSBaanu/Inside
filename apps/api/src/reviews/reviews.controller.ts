@@ -5,6 +5,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -18,6 +19,7 @@ import type { AuthUser } from '../auth/auth.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { ClientModeGuard } from '../auth/guards/client-mode.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { ReviewsService } from './reviews.service';
 
@@ -42,7 +44,10 @@ export class ReviewsController {
   @Get('designers/:designerId/reviews')
   @ApiOperation({ summary: 'Public reviews for a designer' })
   @ApiOkResponse({ description: 'Reviews with summary' })
-  list(@Param('designerId', ParseUUIDPipe) designerId: string) {
-    return this.reviews.listByDesigner(designerId);
+  list(
+    @Param('designerId', ParseUUIDPipe) designerId: string,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.reviews.listByDesigner(designerId, query);
   }
 }

@@ -32,8 +32,8 @@ export class AdminController {
   @Get('users')
   @ApiOperation({ summary: 'List users' })
   @ApiOkResponse({ description: 'Users' })
-  users() {
-    return this.admin.listUsers();
+  users(@Query() query: PaginationQueryDto) {
+    return this.admin.listUsers(query);
   }
 
   @Patch('users/:id/suspend')
@@ -59,8 +59,8 @@ export class AdminController {
   @Get('reports')
   @ApiOperation({ summary: 'List open + under-review reports' })
   @ApiOkResponse({ description: 'Reports' })
-  reports() {
-    return this.admin.listOpenReports();
+  reports(@Query() query: PaginationQueryDto) {
+    return this.admin.listOpenReports(query);
   }
 
   @Patch('reports/:id/under-review')

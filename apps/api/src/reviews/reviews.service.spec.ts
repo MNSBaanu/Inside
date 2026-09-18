@@ -106,7 +106,7 @@ describe('ReviewsService', () => {
 
   it('listByDesigner rejects non-designer id', async () => {
     prisma.user.findUnique.mockResolvedValue({ id: 'x', role: Role.CLIENT });
-    await expect(service.listByDesigner('x')).rejects.toBeInstanceOf(
+    await expect(service.listByDesigner('x', {})).rejects.toBeInstanceOf(
       NotFoundException,
     );
   });

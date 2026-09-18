@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -20,6 +21,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { DesignerModeGuard } from '../auth/guards/designer-mode.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import {
   CreateVerificationDto,
   RejectVerificationDto,
@@ -52,8 +54,8 @@ export class VerificationsController {
   @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiOperation({ summary: 'Admin: list pending verification queue' })
   @ApiOkResponse({ description: 'Pending' })
-  listPending() {
-    return this.verifications.listPending();
+  listPending(@Query() query: PaginationQueryDto) {
+    return this.verifications.listPending(query);
   }
 
   @Patch(':id/approve')
