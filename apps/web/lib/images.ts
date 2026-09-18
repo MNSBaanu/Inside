@@ -1,3 +1,14 @@
+const optimizedHosts = new Set(['res.cloudinary.com', 'images.unsplash.com']);
+
+/** User images can live on any https host; only known hosts use the optimizer. */
+export function isOptimizableImage(src: string) {
+  try {
+    return optimizedHosts.has(new URL(src).hostname);
+  } catch {
+    return false;
+  }
+}
+
 // Interior photography from Unsplash (free to use, no attribution required).
 // Every id below was verified to resolve before being added.
 const unsplash = (id: string, width: number, height: number) =>

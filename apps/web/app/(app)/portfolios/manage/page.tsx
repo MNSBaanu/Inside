@@ -13,6 +13,7 @@ import { api, errorMessage } from '@/lib/api';
 import { formatMoney } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
 import type { Portfolio } from '@/lib/types';
+import { isOptimizableImage } from '@/lib/images';
 
 export default function ManagePortfoliosPage() {
   const { data, error, loading, reload } =
@@ -190,6 +191,7 @@ export default function ManagePortfoliosPage() {
                     {portfolio.images[0] ? (
                       <Image
                         src={portfolio.images[0].imageUrl}
+                        unoptimized={!isOptimizableImage(portfolio.images[0].imageUrl)}
                         alt={portfolio.title}
                         fill
                         sizes="(min-width: 640px) 45vw, 100vw"

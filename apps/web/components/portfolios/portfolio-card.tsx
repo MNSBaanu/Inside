@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { formatMoney } from '@/lib/format';
 import type { Portfolio } from '@/lib/types';
+import { isOptimizableImage } from '@/lib/images';
 
 export function PortfolioCard({
   portfolio,
@@ -19,6 +20,7 @@ export function PortfolioCard({
         {cover ? (
           <Image
             src={cover.imageUrl}
+            unoptimized={!isOptimizableImage(cover.imageUrl)}
             alt={portfolio.title}
             fill
             sizes={sizes}

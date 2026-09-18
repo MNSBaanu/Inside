@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { cn } from '@/lib/cn';
+import { isOptimizableImage } from '@/lib/images';
 
 export function Avatar({
   name,
@@ -28,7 +29,10 @@ export function Avatar({
       )}
     >
       {src ? (
-        <Image src={src} alt={name} fill sizes={`${size}px`} className="object-cover" />
+        <Image
+          src={src}
+          unoptimized={!isOptimizableImage(src)}
+          alt={name} fill sizes={`${size}px`} className="object-cover" />
       ) : (
         <span style={{ fontSize: size * 0.36 }}>{initials}</span>
       )}

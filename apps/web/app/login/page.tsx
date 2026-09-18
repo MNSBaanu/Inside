@@ -9,12 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { errorMessage } from '@/lib/api';
+import { safeRedirectPath } from '@/lib/url';
 
 function LoginForm() {
   const { login } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('next') ?? '/dashboard';
+  const redirectTo = safeRedirectPath(searchParams.get('next'), '/dashboard');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

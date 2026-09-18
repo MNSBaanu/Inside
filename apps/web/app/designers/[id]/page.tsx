@@ -13,6 +13,7 @@ import { ReportDialog } from '@/components/moderation/report-dialog';
 import { formatMoney } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
 import type { DesignerProfile, PortfolioImage } from '@/lib/types';
+import { isOptimizableImage } from '@/lib/images';
 
 type ProfilePortfolio = {
   id: string;
@@ -150,6 +151,7 @@ export default function DesignerProfilePage({
                   {portfolio.images[0] ? (
                     <Image
                       src={portfolio.images[0].imageUrl}
+                      unoptimized={!isOptimizableImage(portfolio.images[0].imageUrl)}
                       alt={portfolio.title}
                       fill
                       sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"

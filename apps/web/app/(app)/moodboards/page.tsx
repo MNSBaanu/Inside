@@ -13,6 +13,7 @@ import { formatDate } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
 import type { Brief, Moodboard } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { isOptimizableImage } from '@/lib/images';
 
 export default function MoodboardsPage() {
   const router = useRouter();
@@ -162,6 +163,7 @@ export default function MoodboardsPage() {
                           <div className="relative aspect-square overflow-hidden rounded-card bg-sand">
                             <Image
                               src={item.imageUrl}
+                              unoptimized={!isOptimizableImage(item.imageUrl)}
                               alt={item.note ?? 'Moodboard image'}
                               fill
                               sizes="(min-width: 640px) 25vw, 100vw"

@@ -9,6 +9,7 @@ import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { formatMoney } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
 import type { Portfolio } from '@/lib/types';
+import { isOptimizableImage } from '@/lib/images';
 
 export default function PortfolioDetailPage({
   params,
@@ -68,6 +69,7 @@ export default function PortfolioDetailPage({
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-card shadow-lift">
             <Image
               src={cover.imageUrl}
+              unoptimized={!isOptimizableImage(cover.imageUrl)}
               alt={cover.caption ?? portfolio.title}
               fill
               priority
@@ -93,6 +95,7 @@ export default function PortfolioDetailPage({
                   <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-sand">
                     <Image
                       src={image.imageUrl}
+                      unoptimized={!isOptimizableImage(image.imageUrl)}
                       alt={image.caption ?? portfolio.title}
                       fill
                       sizes="(min-width: 640px) 40vw, 100vw"
