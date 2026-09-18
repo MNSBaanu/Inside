@@ -15,11 +15,13 @@ describe('AuthService', () => {
     },
     authToken: {
       create: jest.fn(),
+      deleteMany: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
     },
     session: {
       create: jest.fn(),
+      deleteMany: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
       updateMany: jest.fn(),

@@ -32,6 +32,9 @@ export class PrismaService
       `;
       this.logger.log(`Prisma connected (${rows[0]?.db ?? 'unknown'})`);
     } catch (error) {
+      if (process.env.NODE_ENV === 'production') {
+        throw error;
+      }
       this.logger.warn(
         `Prisma not connected yet (configure DATABASE_URL / Step 8): ${
           error instanceof Error ? error.message : String(error)

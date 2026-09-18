@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { NotificationType, Prisma } from '@inside/database';
@@ -17,6 +18,8 @@ export type NotifyInput = {
 
 @Injectable()
 export class NotificationsService {
+  private readonly logger = new Logger(NotificationsService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   /**
@@ -34,8 +37,13 @@ export class NotificationsService {
           metadata: (input.metadata ?? undefined) as Prisma.InputJsonValue,
         },
       });
-    } catch {
-      // intentionally swallow — notifications are best-effort
+    } catch (error) {
+      // Best-effort: log instead of failing the caller.
+      this.logger.warn(
+        `Failed to notify ${input.userId}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
     }
   }
 

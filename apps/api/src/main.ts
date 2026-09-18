@@ -8,8 +8,12 @@ import { AppModule } from './app.module';
 import { ApiExceptionFilter } from './common/filters/api-exception.filter';
 
 async function bootstrap() {
-  // Prefer apps/api/.env over a shell/system DATABASE_URL (e.g. Neon).
-  loadEnv({ path: resolve(process.cwd(), '.env'), override: true });
+  // Locally, prefer apps/api/.env over a shell/system DATABASE_URL (e.g. Neon).
+  // In production, platform-provided variables always win.
+  loadEnv({
+    path: resolve(process.cwd(), '.env'),
+    override: process.env.NODE_ENV !== 'production',
+  });
 
   const app = await NestFactory.create(AppModule);
 
@@ -27,14 +31,16 @@ async function bootstrap() {
     }),
   );
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Inside API')
-    .setDescription('Interior design marketplace API')
-    .setVersion('0.1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, document);
+  if (process.env.NODE_ENV !== 'production') {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Inside API')
+      .setDescription('Interior design marketplace API')
+      .setVersion('0.1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api/docs', app, document);
+  }
 
   const port = Number(process.env.PORT ?? 3001);
   await app.listen(port);

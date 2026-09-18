@@ -49,6 +49,11 @@ export type JwtPayload = {
 @Injectable()
 export class AuthService {
   private readonly bcryptRounds = 10;
+  /** Compared against when the email is unknown, so timing doesn't reveal accounts. */
+  private readonly dummyHash = bcrypt.hashSync(
+    randomBytes(16).toString('hex'),
+    this.bcryptRounds,
+  );
   private readonly refreshTtlMs: number;
 
   constructor(
@@ -113,6 +118,7 @@ export class AuthService {
       where: { email: dto.email.toLowerCase() },
     });
     if (!user) {
+      await bcrypt.compare(dto.password, this.dummyHash);
       throw new UnauthorizedException('Invalid email or password');
     }
 
@@ -339,6 +345,20 @@ export class AuthService {
     user: User,
     meta?: { userAgent?: string; ipAddress?: string },
   ) {
+    const now = new Date();
+    await this.prisma.session.deleteMany({
+      where: {
+        userId: user.id,
+        OR: [
+          { expiresAt: { lt: now } },
+          { revokedAt: { lt: new Date(now.getTime() - this.refreshTtlMs) } },
+        ],
+      },
+    });
+    await this.prisma.authToken.deleteMany({
+      where: { userId: user.id, expiresAt: { lt: now } },
+    });
+
     const refreshToken = this.createRawToken();
     const session = await this.prisma.session.create({
       data: {
