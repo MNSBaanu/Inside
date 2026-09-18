@@ -20,28 +20,24 @@ export const featuredWork = [
   {
     id: 'kalutara-villa',
     title: 'Kalutara Villa',
-    designer: 'Amara Weerasinghe',
     style: 'Tropical Modern',
     src: unsplash('1632119580908-ae947d4c7691', 1400, 1050),
   },
   {
     id: 'colombo-loft',
     title: 'Colombo Loft',
-    designer: 'Devin Perera',
     style: 'Warm Minimal',
     src: unsplash('1600210491369-e753d80a41f3', 1400, 1050),
   },
   {
     id: 'galle-townhouse',
     title: 'Galle Townhouse',
-    designer: 'Nadia Fernando',
     style: 'Coastal Classic',
     src: unsplash('1633330977020-2bdfb8530cc2', 1400, 1050),
   },
   {
     id: 'kandy-retreat',
     title: 'Kandy Retreat',
-    designer: 'Roshan De Silva',
     style: 'Quiet Contemporary',
     src: unsplash('1688646953306-5ec93eab8c06', 1400, 1050),
   },

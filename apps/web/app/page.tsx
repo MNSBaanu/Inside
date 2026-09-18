@@ -233,7 +233,7 @@ function WorkCard({
   sizes: string;
 }) {
   return (
-    <Link href={`/portfolios/${work.id}`} className="group block">
+    <Link href="/portfolios" className="group block">
       <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-sand shadow-card">
         <Image
           src={work.src}
@@ -248,7 +248,7 @@ function WorkCard({
           <h3 className="font-display text-2xl font-semibold transition-colors duration-300 group-hover:text-brand">
             {work.title}
           </h3>
-          <p className="mt-1 text-muted">{work.designer}</p>
+          <p className="mt-1 text-muted">Illustrative project</p>
         </div>
         <Badge className="whitespace-nowrap">{work.style}</Badge>
       </div>

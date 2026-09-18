@@ -20,6 +20,7 @@ import type {
   Role,
   VerificationStatus,
 } from '@/lib/types';
+import { useSession } from '@/components/providers/session-provider';
 
 type AdminUser = {
   id: string;
@@ -66,13 +67,24 @@ export default function AdminPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
 
-  const users = useApi<{ items: AdminUser[] }>('/admin/users');
-  const verifications = useApi<{ items: PendingVerification[] }>(
-    '/verifications/admin/pending',
+  const { user } = useSession();
+  const isAdmin = user?.role === 'ADMIN';
+
+  const users = useApi<{ items: AdminUser[] }>(
+    isAdmin ? '/admin/users' : null,
   );
-  const reports = useApi<{ items: AdminReport[] }>('/admin/reports');
-  const reviews = useApi<{ items: AdminReview[] }>('/admin/reviews');
-  const activity = useApi<{ items: ActivityEntry[] }>('/admin/activity');
+  const verifications = useApi<{ items: PendingVerification[] }>(
+    isAdmin ? '/verifications/admin/pending' : null,
+  );
+  const reports = useApi<{ items: AdminReport[] }>(
+    isAdmin ? '/admin/reports' : null,
+  );
+  const reviews = useApi<{ items: AdminReview[] }>(
+    isAdmin ? '/admin/reviews' : null,
+  );
+  const activity = useApi<{ items: ActivityEntry[] }>(
+    isAdmin ? '/admin/activity' : null,
+  );
 
   async function run(
     id: string,
@@ -90,6 +102,15 @@ export default function AdminPage() {
     } finally {
       setPending(null);
     }
+  }
+
+  if (!isAdmin) {
+    return (
+      <EmptyState
+        title="Admins only."
+        description="This area is for platform administrators."
+      />
+    );
   }
 
   return (

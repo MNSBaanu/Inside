@@ -40,6 +40,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const projects = useApi<{ items: ProjectListItem[] }>(
     authed ? '/projects' : null,
   );
+  const reloadNotifications = notifications.reload;
+  const reloadProjects = projects.reload;
+
+  useEffect(() => {
+    void reloadNotifications();
+    void reloadProjects();
+  }, [pathname, reloadNotifications, reloadProjects]);
 
   const unreadAlerts =
     notifications.data?.items.filter((item) => item.readAt === null).length ?? 0;

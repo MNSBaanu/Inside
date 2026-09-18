@@ -33,6 +33,7 @@ function writeSessionCookie(present: boolean) {
 }
 
 export const authStorage = {
+  refreshKey: REFRESH_KEY,
   getAccessToken: () => read(ACCESS_KEY),
   markActive: () => writeSessionCookie(true),
   getRefreshToken: () => read(REFRESH_KEY),

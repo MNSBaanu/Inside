@@ -173,7 +173,7 @@ export default function MoodboardsPage() {
                           <button
                             type="button"
                             onClick={() => removeItem(board.id, index)}
-                            className="mt-2 text-sm text-muted underline underline-offset-4 hover:text-brand"
+                            className="mt-1 inline-flex min-h-11 items-center text-sm text-muted underline underline-offset-4 hover:text-brand"
                           >
                             Remove
                           </button>

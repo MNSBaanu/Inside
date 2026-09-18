@@ -65,6 +65,17 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     return () => setSessionExpiredHandler(null);
   }, []);
 
+  useEffect(() => {
+    function onStorage(event: StorageEvent) {
+      if (event.key === authStorage.refreshKey && event.newValue === null) {
+        setUser(null);
+        setStatus('unauthenticated');
+      }
+    }
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
   const adopt = useCallback((payload: AuthPayload) => {
     authStorage.save(payload.accessToken, payload.refreshToken);
     setUser(payload.user);
