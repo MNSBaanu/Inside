@@ -1,5 +1,10 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { RequestStatus, RequestType, Role } from '@inside/database';
+import {
+  AccountStatus,
+  RequestStatus,
+  RequestType,
+  Role,
+} from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { BlocksService } from '../blocks/blocks.service';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -19,7 +24,10 @@ describe('RequestsService', () => {
     },
   };
 
-  const blocks = { assertNotBlocked: jest.fn() };
+  const blocks = {
+    assertNotBlocked: jest.fn(),
+    listBlockedCounterpartIds: jest.fn().mockResolvedValue(new Set()),
+  };
   const notifications = { notify: jest.fn() };
 
   const client = {
@@ -85,6 +93,7 @@ describe('RequestsService', () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'd1',
       role: Role.DESIGNER,
+      status: AccountStatus.ACTIVE,
     });
     prisma.projectRequest.create.mockResolvedValue({
       id: 'r2',
@@ -141,7 +150,7 @@ describe('RequestsService', () => {
             {
               type: RequestType.OPEN,
               status: RequestStatus.OPEN,
-              clientId: { not: 'd1' },
+              clientId: { notIn: ['d1'] },
             },
           ],
         },

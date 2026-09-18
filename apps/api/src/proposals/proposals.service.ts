@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  AccountStatus,
   NotificationType,
   Prisma,
   ProposalStatus,
@@ -17,6 +18,7 @@ import {
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { ActivityService } from '../activity/activity.service';
+import { BlocksService } from '../blocks/blocks.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
@@ -47,6 +49,7 @@ export class ProposalsService {
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
     private readonly activity: ActivityService,
+    private readonly blocks: BlocksService,
   ) {}
 
   async create(user: AuthUser, requestId: string, dto: CreateProposalDto) {
@@ -58,6 +61,7 @@ export class ProposalsService {
     }
 
     this.assertCanPropose(user, request);
+    await this.blocks.assertNotBlocked(user.id, request.clientId);
 
     const stageNames = new Set(dto.stageFees.map((s) => s.name));
     if (stageNames.size !== dto.stageFees.length) {
@@ -197,7 +201,7 @@ export class ProposalsService {
   async accept(user: AuthUser, id: string) {
     const proposal = await this.prisma.proposal.findUnique({
       where: { id },
-      include: { request: true },
+      include: { request: true, designer: { select: { status: true } } },
     });
     if (!proposal) {
       throw new NotFoundException('Proposal not found');
@@ -211,6 +215,10 @@ export class ProposalsService {
     if (proposal.status !== ProposalStatus.PENDING) {
       throw new BadRequestException('Only pending proposals can be accepted');
     }
+    if (proposal.designer.status !== AccountStatus.ACTIVE) {
+      throw new BadRequestException('This designer is no longer available');
+    }
+    await this.blocks.assertNotBlocked(user.id, proposal.designerId);
     if (
       proposal.request.status !== RequestStatus.OPEN &&
       proposal.request.status !== RequestStatus.PENDING

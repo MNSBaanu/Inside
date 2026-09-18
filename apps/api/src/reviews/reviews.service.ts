@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  AccountStatus,
   NotificationType,
   Prisma,
   ProjectStatus,
@@ -94,9 +95,13 @@ export class ReviewsService {
     const { page, pageSize, skip, take } = paginate(query);
     const designer = await this.prisma.user.findUnique({
       where: { id: designerId },
-      select: { id: true, role: true },
+      select: { id: true, role: true, status: true },
     });
-    if (!designer || designer.role !== Role.DESIGNER) {
+    if (
+      !designer ||
+      designer.role !== Role.DESIGNER ||
+      designer.status !== AccountStatus.ACTIVE
+    ) {
       throw new NotFoundException('Designer not found');
     }
 

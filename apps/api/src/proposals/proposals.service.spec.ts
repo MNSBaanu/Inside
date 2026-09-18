@@ -4,6 +4,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import {
+  AccountStatus,
   Prisma,
   ProposalStatus,
   ProjectStatus,
@@ -14,6 +15,7 @@ import {
 } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { ActivityService } from '../activity/activity.service';
+import { BlocksService } from '../blocks/blocks.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProposalsService } from './proposals.service';
@@ -58,6 +60,7 @@ describe('ProposalsService', () => {
 
   const notifications = { notify: jest.fn() };
   const activity = { log: jest.fn() };
+  const blocks = { assertNotBlocked: jest.fn() };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -65,6 +68,7 @@ describe('ProposalsService', () => {
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
       activity as unknown as ActivityService,
+      blocks as unknown as BlocksService,
     );
   });
 
@@ -171,6 +175,7 @@ describe('ProposalsService', () => {
         title: 'Living room',
         status: RequestStatus.OPEN,
       },
+      designer: { status: AccountStatus.ACTIVE },
       status: ProposalStatus.PENDING,
     });
 

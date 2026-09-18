@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  AccountStatus,
   NotificationType,
   ProposalStatus,
   RequestStatus,
@@ -59,7 +60,11 @@ export class RequestsService {
       const designer = await this.prisma.user.findUnique({
         where: { id: dto.designerId },
       });
-      if (!designer || designer.role !== Role.DESIGNER) {
+      if (
+        !designer ||
+        designer.role !== Role.DESIGNER ||
+        designer.status !== AccountStatus.ACTIVE
+      ) {
         throw new NotFoundException('Designer not found');
       }
       await this.blocks.assertNotBlocked(user.id, dto.designerId);
@@ -110,6 +115,10 @@ export class RequestsService {
 
   async listMine(user: AuthUser, query: PaginationQueryDto) {
     const { page, pageSize, skip, take } = paginate(query);
+    const hidden =
+      user.activeRole === Role.CLIENT
+        ? []
+        : [...(await this.blocks.listBlockedCounterpartIds(user.id))];
     const where =
       user.activeRole === Role.CLIENT
         ? { clientId: user.id }
@@ -119,7 +128,7 @@ export class RequestsService {
               {
                 type: RequestType.OPEN,
                 status: RequestStatus.OPEN,
-                clientId: { not: user.id },
+                clientId: { notIn: [user.id, ...hidden] },
               },
             ],
           };

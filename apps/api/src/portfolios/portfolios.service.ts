@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@inside/database';
+import { AccountStatus, Prisma } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddPortfolioImageDto } from './dto/add-portfolio-image.dto';
@@ -33,6 +33,7 @@ export class PortfoliosService {
     const pageSize = Math.min(query.pageSize ?? 20, 50);
     const where: Prisma.PortfolioWhereInput = {
       isPublished: true,
+      designer: { status: AccountStatus.ACTIVE },
       ...(query.style
         ? { style: { equals: query.style, mode: 'insensitive' } }
         : {}),
@@ -91,7 +92,13 @@ export class PortfoliosService {
       throw new NotFoundException('Portfolio not found');
     }
     const isOwner = viewer?.id === portfolio.designerId;
-    if (!portfolio.isPublished && !isOwner) {
+    const isVisible =
+      isOwner ||
+      (portfolio.isPublished &&
+        (await this.prisma.user.count({
+          where: { id: portfolio.designerId, status: AccountStatus.ACTIVE },
+        })) > 0);
+    if (!isVisible) {
       throw new NotFoundException('Portfolio not found');
     }
     return { success: true, data: { portfolio: this.serialize(portfolio) } };
