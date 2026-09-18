@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsBooleanString,
-  IsNumber,
+  IsInt,
   IsOptional,
   IsString,
   Min,
@@ -32,14 +32,14 @@ export class ListDesignersQueryDto {
   @ApiPropertyOptional({ default: 1 })
   @IsOptional()
   @Type(() => Number)
-  @IsNumber()
+  @IsInt()
   @Min(1)
   page?: number;
 
   @ApiPropertyOptional({ default: 12 })
   @IsOptional()
   @Type(() => Number)
-  @IsNumber()
+  @IsInt()
   @Min(1)
   pageSize?: number;
 }
