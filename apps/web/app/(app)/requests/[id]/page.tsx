@@ -234,7 +234,7 @@ export default function RequestDetailPage({
                         {proposal.stageFees.map((stage) => (
                           <li key={stage.name}>
                             <Badge>
-                              {titleCase(stage.name)} — {formatMoney(stage.fee)}
+                              {titleCase(stage.name)} - {formatMoney(stage.fee)}
                             </Badge>
                           </li>
                         ))}

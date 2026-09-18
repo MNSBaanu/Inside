@@ -63,7 +63,7 @@ export function SiteHeader() {
         <Link
           href="/"
           className="font-display text-2xl font-semibold tracking-tight text-ink"
-          aria-label="Inside — home"
+          aria-label="Inside - home"
         >
           Inside<span className="text-brand">.</span>
         </Link>
@@ -91,7 +91,7 @@ export function SiteHeader() {
               </Link>
               <Link
                 href="/account"
-                aria-label={`Account — ${user.name}`}
+                aria-label={`Account - ${user.name}`}
                 className="hidden sm:block"
               >
                 <Avatar name={user.name} src={user.avatarUrl} size={40} />

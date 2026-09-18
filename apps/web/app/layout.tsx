@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
   ),
-  title: 'Inside — Interior design, matched to your space',
+  title: 'Inside - Interior design, matched to your space',
   description:
     'A marketplace connecting homeowners with interior designers, from first brief to final handover.',
 };

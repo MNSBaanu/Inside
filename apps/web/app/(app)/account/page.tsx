@@ -86,7 +86,7 @@ export default function AccountPage() {
       <Card className="mt-12">
         <CardHeader
           title="Profile details"
-          description="Keep this current — it feeds your public profile."
+          description="Keep this current - it feeds your public profile."
         />
 
         <form onSubmit={onSubmit} className="flex flex-col gap-6">

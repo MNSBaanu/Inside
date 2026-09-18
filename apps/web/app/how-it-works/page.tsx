@@ -32,7 +32,7 @@ const stages = [
   {
     number: '04',
     title: 'Work in stages',
-    body: 'Accepted proposals become a project split into stages — concept, design, revision, completion. Each stage is submitted and approved in the workspace.',
+    body: 'Accepted proposals become a project split into stages - concept, design, revision, completion. Each stage is submitted and approved in the workspace.',
     tone: 'bg-highlight-soft',
   },
   {
@@ -54,7 +54,7 @@ const assurances = [
   },
   {
     title: 'You stay in control',
-    body: 'Reject a stage and ask for revisions, put a project on hold, or cancel — the status is always explicit.',
+    body: 'Reject a stage and ask for revisions, put a project on hold, or cancel - the status is always explicit.',
   },
 ];
 

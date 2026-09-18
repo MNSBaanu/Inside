@@ -49,7 +49,7 @@ export default function HomePage() {
           <div className="mt-12 flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
             <p className="max-w-lg text-lg text-muted">
               Brief your project once, compare proposals from verified
-              designers, and manage the work through to handover — without
+              designers, and manage the work through to handover - without
               losing the thread across a dozen conversations.
             </p>
             <div className="flex flex-wrap items-center gap-4">

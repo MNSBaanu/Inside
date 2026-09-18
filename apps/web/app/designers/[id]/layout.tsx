@@ -12,7 +12,7 @@ export async function generateMetadata({
   );
 
   if (!data) {
-    return { title: 'Designer — Inside' };
+    return { title: 'Designer - Inside' };
   }
 
   const { designer } = data;
@@ -23,10 +23,10 @@ export async function generateMetadata({
     }.`;
 
   return {
-    title: `${designer.name} — Inside`,
+    title: `${designer.name} - Inside`,
     description,
     openGraph: {
-      title: `${designer.name} — Inside`,
+      title: `${designer.name} - Inside`,
       description,
       type: 'profile',
       ...(designer.avatarUrl ? { images: [designer.avatarUrl] } : {}),

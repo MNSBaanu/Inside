@@ -21,7 +21,7 @@ export function ProposalComparison({ proposals }: { proposals: Proposal[] }) {
       label: titleCase(stage),
       values: proposals.map((p) => {
         const fee = p.stageFees.find((item) => item.name === stage);
-        return fee ? formatMoney(fee.fee) : '—';
+        return fee ? formatMoney(fee.fee) : '-';
       }),
     })),
   ];

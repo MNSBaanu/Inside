@@ -12,7 +12,7 @@ export async function generateMetadata({
   );
 
   if (!data) {
-    return { title: 'Project — Inside' };
+    return { title: 'Project - Inside' };
   }
 
   const { portfolio } = data;
@@ -22,10 +22,10 @@ export async function generateMetadata({
   const image = portfolio.images[0]?.imageUrl;
 
   return {
-    title: `${portfolio.title} — Inside`,
+    title: `${portfolio.title} - Inside`,
     description,
     openGraph: {
-      title: `${portfolio.title} — Inside`,
+      title: `${portfolio.title} - Inside`,
       description,
       type: 'article',
       ...(image ? { images: [image] } : {}),

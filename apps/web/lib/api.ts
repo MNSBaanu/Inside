@@ -88,7 +88,7 @@ async function send<T>(
   if (!payload) {
     throw new ApiError(
       response.status,
-      `Unexpected non-JSON response (${response.status}) from ${baseUrl} — check the API is running there`,
+      `Unexpected non-JSON response (${response.status}) from ${baseUrl} - check the API is running there`,
     );
   }
 

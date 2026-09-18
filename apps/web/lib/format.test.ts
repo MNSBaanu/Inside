@@ -3,8 +3,8 @@ import { formatBudgetRange, formatDate, formatMoney, titleCase } from './format'
 
 describe('formatMoney', () => {
   it('renders an em dash when there is no amount', () => {
-    expect(formatMoney(null)).toBe('—');
-    expect(formatMoney(undefined)).toBe('—');
+    expect(formatMoney(null)).toBe('-');
+    expect(formatMoney(undefined)).toBe('-');
   });
 
   it('formats zero rather than treating it as missing', () => {
@@ -35,7 +35,7 @@ describe('formatBudgetRange', () => {
 
 describe('formatDate', () => {
   it('renders an em dash for a missing date', () => {
-    expect(formatDate(null)).toBe('—');
+    expect(formatDate(null)).toBe('-');
   });
 
   it('formats an ISO string', () => {

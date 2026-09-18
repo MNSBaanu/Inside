@@ -83,7 +83,7 @@ export default function LoginPage() {
     <AuthLayout
       eyebrow="Welcome back"
       title="Sign in to Inside."
-      description="Pick up where you left off — your briefs, proposals and projects are waiting."
+      description="Pick up where you left off - your briefs, proposals and projects are waiting."
       footer={
         <AuthFooterLink
           href="/register"

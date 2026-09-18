@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Interior design projects — Inside',
+  title: 'Interior design projects - Inside',
   description:
     'Explore finished interior projects published by designers on Inside.',
 };
