@@ -7,6 +7,7 @@ import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { formatDate } from '@/lib/format';
+import { safeHref } from '@/lib/url';
 import { useApi } from '@/lib/use-api';
 import type { Message } from '@/lib/types';
 
@@ -90,7 +91,7 @@ export function MessageThread({
                   <p className="whitespace-pre-line">{message.content}</p>
                   {message.attachmentUrl ? (
                     <a
-                      href={message.attachmentUrl}
+                      href={safeHref(message.attachmentUrl)}
                       target="_blank"
                       rel="noreferrer"
                       className="mt-2 block text-sm underline underline-offset-4"

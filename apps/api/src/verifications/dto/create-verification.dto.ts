@@ -1,9 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsUrl,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateVerificationDto {
   @ApiProperty({ example: 'https://cdn.example.com/id.pdf' })
-  @IsString()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
   @MinLength(4)
   @MaxLength(2000)
   evidenceUrl!: string;

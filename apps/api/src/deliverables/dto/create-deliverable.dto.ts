@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 
 export class CreateDeliverableDto {
   @ApiProperty({ example: 'https://cdn.example.com/proposal-v1.pdf' })
-  @IsString()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
   @MaxLength(2000)
   fileUrl!: string;
 

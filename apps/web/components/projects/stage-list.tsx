@@ -8,6 +8,7 @@ import { FileUpload } from '@/components/ui/file-upload';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api';
 import { formatDate, formatMoney, titleCase } from '@/lib/format';
+import { safeHref } from '@/lib/url';
 import type { Deliverable, ProjectStage } from '@/lib/types';
 
 type StageAction = 'start' | 'submit' | 'approve' | 'reject';
@@ -207,7 +208,7 @@ function StageDeliverables({
           {items.map((deliverable) => (
             <li key={deliverable.id} className="rounded-card bg-sand p-5">
               <a
-                href={deliverable.fileUrl}
+                href={safeHref(deliverable.fileUrl)}
                 target="_blank"
                 rel="noreferrer"
                 className="link-underline font-semibold"

@@ -9,6 +9,7 @@ import { Rating } from '@/components/ui/rating';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api';
 import { formatDate, titleCase } from '@/lib/format';
+import { safeHref } from '@/lib/url';
 import { useApi } from '@/lib/use-api';
 import { cn } from '@/lib/cn';
 import type {
@@ -212,7 +213,7 @@ export default function AdminPage() {
                   </div>
 
                   <a
-                    href={item.evidenceUrl}
+                    href={safeHref(item.evidenceUrl)}
                     target="_blank"
                     rel="noreferrer"
                     className="link-underline mt-4 inline-block"

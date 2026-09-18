@@ -10,6 +10,7 @@ import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api';
 import { formatDate } from '@/lib/format';
+import { safeHref } from '@/lib/url';
 import { useApi } from '@/lib/use-api';
 import type { VerificationStatus } from '@/lib/types';
 
@@ -138,7 +139,7 @@ export default function VerificationPage() {
                 >
                   <div className="min-w-0">
                     <a
-                      href={item.evidenceUrl}
+                      href={safeHref(item.evidenceUrl)}
                       target="_blank"
                       rel="noreferrer"
                       className="link-underline font-semibold"
