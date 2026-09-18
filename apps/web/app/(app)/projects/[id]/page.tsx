@@ -11,6 +11,7 @@ import { ReviewList } from '@/components/reviews/review-list';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { Field, Textarea } from '@/components/ui/field';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api';
 import { cn } from '@/lib/cn';
@@ -36,6 +37,8 @@ export default function ProjectWorkspacePage({
   const [reviewed, setReviewed] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
 
   if (project.loading) return <Skeleton className="h-64" />;
   if (project.error || !project.data) {
@@ -46,11 +49,18 @@ export default function ProjectWorkspacePage({
   const isClient = user?.id === item.clientId;
   const isDesigner = user?.id === item.designerId;
 
-  async function changeStatus(action: 'cancel' | 'on-hold' | 'resume') {
+  async function changeStatus(
+    action: 'cancel' | 'on-hold' | 'resume',
+    body: { reason?: string } = {},
+  ) {
     setActionError(null);
     setBusy(true);
     try {
-      await api.patch(`/projects/${params.id}/${action}`, {});
+      await api.patch(`/projects/${params.id}/${action}`, body);
+      if (action === 'cancel') {
+        setCancelling(false);
+        setCancelReason('');
+      }
       await project.reload();
     } catch (cause) {
       setActionError(errorMessage(cause));
@@ -106,12 +116,45 @@ export default function ProjectWorkspacePage({
               size="sm"
               variant="outline"
               disabled={busy}
-              onClick={() => changeStatus('cancel')}
+              onClick={() => setCancelling(!cancelling)}
             >
               Cancel project
             </Button>
           ) : null}
         </div>
+      ) : null}
+
+      {isClient && cancelling && item.status !== 'CANCELLED' ? (
+        <form
+          className="mt-4 flex max-w-xl flex-col gap-3"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void changeStatus('cancel', { reason: cancelReason.trim() });
+          }}
+        >
+          <Field
+            label="Why are you cancelling?"
+            htmlFor="cancel-reason"
+            hint="The designer sees this reason in the project history."
+          >
+            <Textarea
+              id="cancel-reason"
+              value={cancelReason}
+              onChange={(event) => setCancelReason(event.target.value)}
+              required
+              maxLength={1000}
+            />
+          </Field>
+          <div>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={busy || cancelReason.trim().length < 2}
+            >
+              Confirm cancellation
+            </Button>
+          </div>
+        </form>
       ) : null}
 
       <div

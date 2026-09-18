@@ -67,9 +67,28 @@ export class StagesService {
     ) {
       throw new ForbiddenException('You do not have access to this project');
     }
+    if (
+      stage.project.status === ProjectStatus.COMPLETED ||
+      stage.project.status === ProjectStatus.CANCELLED
+    ) {
+      throw new BadRequestException('Project is closed');
+    }
+    if (stage.status === StageStatus.APPROVED) {
+      throw new BadRequestException('Approved stages cannot be rescheduled');
+    }
     const updated = await this.prisma.projectStage.update({
       where: { id: stageId },
       data: { dueDate },
+    });
+    await this.notifications.notify({
+      userId:
+        user.id === stage.project.clientId
+          ? stage.project.designerId
+          : stage.project.clientId,
+      type: NotificationType.STAGE,
+      title: 'Stage due date changed',
+      message: `${user.name} changed the ${stage.name} due date`,
+      metadata: { projectId: stage.projectId, stageId },
     });
     await this.activity.log({
       projectId: stage.projectId,

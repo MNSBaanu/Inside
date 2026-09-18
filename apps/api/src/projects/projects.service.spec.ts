@@ -85,7 +85,7 @@ describe('ProjectsService', () => {
       ...activeProject,
       status: ProjectStatus.CANCELLED,
     });
-    const result = await service.cancel(client, 'p1');
+    const result = await service.cancel(client, 'p1', 'Budget changed');
     expect(result.data.project.status).toBe(ProjectStatus.CANCELLED);
     expect(notifications.notify).toHaveBeenCalledWith(
       expect.objectContaining({ userId: 'd1' }),
@@ -97,7 +97,7 @@ describe('ProjectsService', () => {
       ...activeProject,
       status: ProjectStatus.COMPLETED,
     });
-    await expect(service.cancel(client, 'p1')).rejects.toBeInstanceOf(
+    await expect(service.cancel(client, 'p1', 'x')).rejects.toBeInstanceOf(
       BadRequestException,
     );
   });

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -15,6 +16,7 @@ import {
 import type { AuthUser } from '../auth/auth.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CancelProjectDto } from './dto/cancel-project.dto';
 import { ProjectsService } from './projects.service';
 
 @ApiTags('projects')
@@ -57,8 +59,9 @@ export class ProjectsController {
   cancel(
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: CancelProjectDto,
   ) {
-    return this.projects.cancel(user, id);
+    return this.projects.cancel(user, id, dto.reason);
   }
 
   @Patch(':id/on-hold')
@@ -72,7 +75,9 @@ export class ProjectsController {
   }
 
   @Patch(':id/resume')
-  @ApiOperation({ summary: 'Resume on-hold project (either party)' })
+  @ApiOperation({
+    summary: 'Resume on-hold project (the party who put it on hold)',
+  })
   @ApiOkResponse({ description: 'Active' })
   resume(
     @CurrentUser() user: AuthUser,

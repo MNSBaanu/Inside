@@ -130,7 +130,7 @@ export class ProjectsService {
     return { success: true, data: { project: this.serialize(project) } };
   }
 
-  async cancel(user: AuthUser, id: string) {
+  async cancel(user: AuthUser, id: string, reason: string) {
     const project = await this.requirePartyAccess(id, user);
     if (
       project.status === ProjectStatus.COMPLETED ||
@@ -151,7 +151,7 @@ export class ProjectsService {
       userId: otherId,
       type: NotificationType.PROJECT,
       title: 'Project cancelled',
-      message: `Project "${project.title}" was cancelled`,
+      message: `Project "${project.title}" was cancelled: ${reason}`,
       metadata: { projectId: id },
     });
 
@@ -159,6 +159,7 @@ export class ProjectsService {
       projectId: id,
       userId: user.id,
       action: 'PROJECT_CANCELLED',
+      metadata: { reason },
     });
 
     return { success: true, data: { project: this.serialize(updated) } };
@@ -199,6 +200,16 @@ export class ProjectsService {
     const project = await this.requirePartyAccess(id, user);
     if (project.status !== ProjectStatus.ON_HOLD) {
       throw new BadRequestException('Only on-hold projects can be resumed');
+    }
+    const pausedBy = await this.prisma.activityLog.findFirst({
+      where: { projectId: id, action: 'PROJECT_ON_HOLD' },
+      orderBy: { createdAt: 'desc' },
+      select: { userId: true },
+    });
+    if (pausedBy?.userId && pausedBy.userId !== user.id) {
+      throw new ForbiddenException(
+        'Only the person who put the project on hold can resume it',
+      );
     }
 
     const updated = await this.prisma.project.update({
