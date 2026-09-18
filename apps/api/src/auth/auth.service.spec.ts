@@ -37,6 +37,7 @@ describe('AuthService', () => {
     get: jest.fn((key: string): string | undefined => {
       if (key === 'JWT_REFRESH_DAYS') return '30';
       if (key === 'NODE_ENV') return 'test';
+      if (key === 'EXPOSE_DEV_AUTH_TOKENS') return 'true';
       return undefined;
     }),
   };
@@ -115,6 +116,7 @@ describe('AuthService', () => {
     config.get.mockImplementation((key: string): string | undefined => {
       if (key === 'JWT_REFRESH_DAYS') return '30';
       if (key === 'NODE_ENV') return 'production';
+      if (key === 'EXPOSE_DEV_AUTH_TOKENS') return 'true';
       return undefined;
     });
     prisma.user.findUnique.mockResolvedValue(null);

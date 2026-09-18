@@ -344,8 +344,11 @@ export class AuthService {
     return createHash('sha256').update(raw).digest('hex');
   }
 
-  /** Raw verify/reset tokens in API responses — never in production. */
+  /** Raw verify/reset tokens in API responses — opt-in, never in production. */
   private exposeDevAuthSecrets(): boolean {
-    return this.config.get<string>('NODE_ENV') !== 'production';
+    return (
+      this.config.get<string>('EXPOSE_DEV_AUTH_TOKENS') === 'true' &&
+      this.config.get<string>('NODE_ENV') !== 'production'
+    );
   }
 }
