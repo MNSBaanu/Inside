@@ -126,7 +126,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="min-w-0">
-        {user.isVerified ? null : (
+        {user.emailVerified ? null : (
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-card bg-highlight-soft px-6 py-4">
             <p className="text-sm text-warning">
               Your email isn&apos;t verified yet.

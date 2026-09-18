@@ -118,6 +118,7 @@ model User {
   role         Role          @default(CLIENT)
   activeRole   Role          @default(CLIENT)
   isVerified   Boolean       @default(false)
+  emailVerified DateTime?
   status       AccountStatus @default(ACTIVE)
   bio          String?
   avatarUrl    String?

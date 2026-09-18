@@ -33,7 +33,7 @@ export type AuthUser = Pick<
   | 'location'
   | 'isAvailable'
   | 'createdAt'
->;
+> & { emailVerified: boolean };
 
 export type JwtPayload = {
   sub: string;
@@ -250,7 +250,7 @@ export class AuthService {
     await this.prisma.$transaction([
       this.prisma.user.update({
         where: { id: authToken.userId },
-        data: { isVerified: true },
+        data: { emailVerified: new Date() },
       }),
       this.prisma.authToken.update({
         where: { id: authToken.id },
@@ -305,6 +305,7 @@ export class AuthService {
       role: user.role,
       activeRole: user.activeRole,
       isVerified: user.isVerified,
+      emailVerified: user.emailVerified !== null,
       status: user.status,
       bio: user.bio,
       avatarUrl: user.avatarUrl,

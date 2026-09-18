@@ -46,6 +46,7 @@ export type User = {
   role: Role;
   activeRole: Role;
   isVerified: boolean;
+  emailVerified: boolean;
   status: AccountStatus;
   bio: string | null;
   avatarUrl: string | null;
