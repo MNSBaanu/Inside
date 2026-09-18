@@ -30,6 +30,9 @@ describe('StagesService', () => {
       update: jest.fn(),
       findMany: jest.fn(),
     },
+    deliverable: {
+      findFirst: jest.fn().mockResolvedValue({ uploadedAt: new Date() }),
+    },
     $transaction: jest.fn(async (fn: (t: typeof tx) => Promise<unknown>) =>
       fn(tx),
     ),

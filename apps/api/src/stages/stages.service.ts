@@ -127,6 +127,25 @@ export class StagesService {
       );
     }
 
+    const latest = await this.prisma.deliverable.findFirst({
+      where: { stageId },
+      orderBy: { version: 'desc' },
+    });
+    if (!latest) {
+      throw new BadRequestException(
+        'Upload a deliverable before submitting this stage',
+      );
+    }
+    if (
+      stage.status === StageStatus.REJECTED &&
+      stage.submittedAt &&
+      latest.uploadedAt <= stage.submittedAt
+    ) {
+      throw new BadRequestException(
+        'Upload a revised deliverable before resubmitting',
+      );
+    }
+
     const updated = await this.prisma.projectStage.update({
       where: { id: stageId },
       data: { status: StageStatus.SUBMITTED, submittedAt: new Date() },
@@ -239,7 +258,7 @@ export class StagesService {
     return { success: true, data: { stage: this.serialize(result.approved) } };
   }
 
-  async reject(user: AuthUser, stageId: string, reason?: string) {
+  async reject(user: AuthUser, stageId: string, reason: string) {
     const stage = await this.requireStage(stageId);
     this.assertClient(user, stage);
     this.assertProjectActive(stage);
@@ -256,10 +275,15 @@ export class StagesService {
       userId: stage.project.designerId,
       type: NotificationType.STAGE,
       title: 'Stage rejected',
-      message: reason
-        ? `${stage.name} stage was rejected: ${reason}`
-        : `${stage.name} stage was rejected — please revise and resubmit`,
+      message: `${stage.name} stage was rejected: ${reason}`,
       metadata: { projectId: stage.projectId, stageId: stage.id },
+    });
+
+    await this.activity.log({
+      projectId: stage.projectId,
+      userId: user.id,
+      action: 'STAGE_REJECTED',
+      metadata: { stageId: stage.id, name: stage.name, reason },
     });
 
     return { success: true, data: { stage: this.serialize(updated) } };

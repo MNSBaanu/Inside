@@ -27,12 +27,22 @@ export function StageList({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
   const [openStage, setOpenStage] = useState<string | null>(null);
+  const [rejecting, setRejecting] = useState<string | null>(null);
+  const [reason, setReason] = useState('');
 
-  async function act(stageId: string, action: StageAction) {
+  async function act(
+    stageId: string,
+    action: StageAction,
+    body?: { reason: string },
+  ) {
     setError(null);
     setPending(stageId);
     try {
-      await api.patch(`/stages/${stageId}/${action}`);
+      await api.patch(`/stages/${stageId}/${action}`, body);
+      if (action === 'reject') {
+        setRejecting(null);
+        setReason('');
+      }
       onChanged();
     } catch (cause) {
       setError(errorMessage(cause));
@@ -81,13 +91,17 @@ export function StageList({
                   </Button>
                 ) : null}
 
-                {isDesigner && stage.status === 'IN_PROGRESS' ? (
+                {isDesigner &&
+                (stage.status === 'IN_PROGRESS' ||
+                  stage.status === 'REJECTED') ? (
                   <Button
                     size="sm"
                     disabled={busy}
                     onClick={() => act(stage.id, 'submit')}
                   >
-                    Submit for review
+                    {stage.status === 'REJECTED'
+                      ? 'Resubmit for review'
+                      : 'Submit for review'}
                   </Button>
                 ) : null}
 
@@ -104,7 +118,9 @@ export function StageList({
                       size="sm"
                       variant="outline"
                       disabled={busy}
-                      onClick={() => act(stage.id, 'reject')}
+                      onClick={() =>
+                        setRejecting(rejecting === stage.id ? null : stage.id)
+                      }
                     >
                       Request changes
                     </Button>
@@ -121,6 +137,39 @@ export function StageList({
                   {openStage === stage.id ? 'Hide files' : 'Files'}
                 </Button>
               </div>
+
+              {rejecting === stage.id && stage.status === 'SUBMITTED' ? (
+                <form
+                  className="mt-4 flex flex-col gap-3"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void act(stage.id, 'reject', { reason: reason.trim() });
+                  }}
+                >
+                  <Field
+                    label="What needs to change?"
+                    htmlFor={`reject-reason-${stage.id}`}
+                    hint="The designer sees this feedback with the stage history."
+                  >
+                    <Textarea
+                      id={`reject-reason-${stage.id}`}
+                      value={reason}
+                      onChange={(event) => setReason(event.target.value)}
+                      required
+                      maxLength={1000}
+                    />
+                  </Field>
+                  <div>
+                    <Button
+                      type="submit"
+                      size="sm"
+                      disabled={busy || reason.trim().length < 2}
+                    >
+                      Send feedback
+                    </Button>
+                  </div>
+                </form>
+              ) : null}
 
               {openStage === stage.id ? (
                 <StageDeliverables

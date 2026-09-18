@@ -1,10 +1,10 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 
 export class RejectStageDto {
-  @ApiPropertyOptional({ description: 'Reason shared with the designer' })
-  @IsOptional()
+  @ApiProperty({ description: 'Feedback shared with the designer' })
   @IsString()
+  @MinLength(2)
   @MaxLength(1000)
-  reason?: string;
+  reason!: string;
 }
