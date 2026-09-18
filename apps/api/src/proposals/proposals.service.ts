@@ -60,21 +60,37 @@ export class ProposalsService {
     this.assertCanPropose(user, request);
 
     const totalAmount = dto.stageFees.reduce((sum, s) => sum + s.fee, 0);
+    const terms = {
+      scope: dto.scope,
+      timeline: dto.timeline,
+      stageFees: JSON.parse(
+        JSON.stringify(dto.stageFees),
+      ) as Prisma.InputJsonValue,
+      totalAmount,
+    };
+
+    const previous = await this.prisma.proposal.findUnique({
+      where: { requestId_designerId: { requestId, designerId: user.id } },
+    });
+    const canResubmit =
+      previous?.status === ProposalStatus.WITHDRAWN ||
+      previous?.status === ProposalStatus.REJECTED;
 
     try {
-      const proposal = await this.prisma.proposal.create({
-        data: {
-          requestId,
-          designerId: user.id,
-          scope: dto.scope,
-          timeline: dto.timeline,
-          stageFees: JSON.parse(
-            JSON.stringify(dto.stageFees),
-          ) as Prisma.InputJsonValue,
-          totalAmount,
-        },
-        include: proposalInclude,
-      });
+      const proposal = canResubmit
+        ? await this.prisma.proposal.update({
+            where: { id: previous.id },
+            data: {
+              ...terms,
+              status: ProposalStatus.PENDING,
+              submittedAt: new Date(),
+            },
+            include: proposalInclude,
+          })
+        : await this.prisma.proposal.create({
+            data: { requestId, designerId: user.id, ...terms },
+            include: proposalInclude,
+          });
 
       await this.notifications.notify({
         userId: request.clientId,

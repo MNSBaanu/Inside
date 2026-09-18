@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import {
   NotificationType,
+  ProposalStatus,
   RequestStatus,
   RequestType,
   Role,
@@ -169,6 +170,49 @@ export class RequestsService {
       where: { id },
       data: { status: RequestStatus.CLOSED },
       include: requestInclude,
+    });
+
+    return { success: true, data: { request: this.serialize(updated) } };
+  }
+
+  async decline(user: AuthUser, id: string) {
+    const request = await this.prisma.projectRequest.findUnique({
+      where: { id },
+    });
+    if (!request) {
+      throw new NotFoundException('Request not found');
+    }
+    if (request.type !== RequestType.DIRECT || request.designerId !== user.id) {
+      throw new ForbiddenException(
+        'This direct request is not assigned to you',
+      );
+    }
+    if (request.status !== RequestStatus.PENDING) {
+      throw new BadRequestException('Request is not awaiting a response');
+    }
+
+    const [updated] = await this.prisma.$transaction([
+      this.prisma.projectRequest.update({
+        where: { id },
+        data: { status: RequestStatus.REJECTED },
+        include: requestInclude,
+      }),
+      this.prisma.proposal.updateMany({
+        where: {
+          requestId: id,
+          designerId: user.id,
+          status: ProposalStatus.PENDING,
+        },
+        data: { status: ProposalStatus.WITHDRAWN },
+      }),
+    ]);
+
+    await this.notifications.notify({
+      userId: request.clientId,
+      type: NotificationType.REQUEST,
+      title: 'Request declined',
+      message: `${user.name} declined your request "${request.title}"`,
+      metadata: { requestId: id },
     });
 
     return { success: true, data: { request: this.serialize(updated) } };

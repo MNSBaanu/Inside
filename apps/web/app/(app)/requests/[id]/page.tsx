@@ -41,13 +41,15 @@ export default function RequestDetailPage({
   const myProposal = proposals.data?.items.find(
     (proposal) => proposal.designerId === user?.id,
   );
+  const canResubmit =
+    myProposal?.status === 'WITHDRAWN' || myProposal?.status === 'REJECTED';
   const canPropose =
     isDesigner &&
-    !myProposal &&
+    (!myProposal || canResubmit) &&
     ['OPEN', 'PENDING'].includes(item.status) &&
     (item.type === 'OPEN' || item.designerId === user?.id);
 
-  async function changeRequest(action: 'cancel' | 'close') {
+  async function changeRequest(action: 'cancel' | 'close' | 'decline') {
     setActionError(null);
     setPendingId(item.id);
     try {
@@ -119,6 +121,22 @@ export default function RequestDetailPage({
         </div>
       ) : null}
 
+      {isDesigner &&
+      item.type === 'DIRECT' &&
+      item.designerId === user?.id &&
+      item.status === 'PENDING' ? (
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={pendingId === item.id}
+            onClick={() => changeRequest('decline')}
+          >
+            Decline request
+          </Button>
+        </div>
+      ) : null}
+
       {item.description ? (
         <Card className="mt-10">
           <p className="label text-muted">Description</p>
@@ -137,13 +155,13 @@ export default function RequestDetailPage({
       {canPropose ? (
         <Card className="mt-12">
           <CardHeader
-            title="Send a proposal"
+            title={canResubmit ? 'Send a revised proposal' : 'Send a proposal'}
             description="Set out the scope, the timeline, and a fee for each stage."
           />
           <ProposalForm
             requestId={item.id}
             onSubmitted={() => {
-              void proposals.reload();
+              void Promise.all([proposals.reload(), request.reload()]);
             }}
           />
         </Card>

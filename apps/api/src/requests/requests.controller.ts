@@ -18,6 +18,7 @@ import {
 import type { AuthUser } from '../auth/auth.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { ClientModeGuard } from '../auth/guards/client-mode.guard';
+import { DesignerModeGuard } from '../auth/guards/designer-mode.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { RequestsService } from './requests.service';
@@ -72,5 +73,16 @@ export class RequestsController {
   @ApiOkResponse({ description: 'Closed' })
   close(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.requestsService.close(user, id);
+  }
+
+  @Patch(':id/decline')
+  @UseGuards(JwtAuthGuard, DesignerModeGuard)
+  @ApiOperation({ summary: 'Decline a direct request (assigned designer)' })
+  @ApiOkResponse({ description: 'Declined' })
+  decline(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.requestsService.decline(user, id);
   }
 }
