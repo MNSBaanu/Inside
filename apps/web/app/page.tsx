@@ -32,6 +32,24 @@ const stats = [
   { value: '4.8', caption: 'Average rating' },
 ];
 
+const promotions = [
+  {
+    label: 'New',
+    title: 'Compare proposals side by side',
+    body:
+      "See every designer's fees, timeline and stages in one view before you accept.",
+    href: '/briefs/new',
+    cta: 'Start a brief',
+  },
+  {
+    label: 'For designers',
+    title: 'Get verified, get noticed',
+    body: 'Verified designers carry a badge and appear first when clients browse.',
+    href: '/register',
+    cta: 'Join as a designer',
+  },
+];
+
 export default function HomePage() {
   return (
     <>
@@ -166,6 +184,29 @@ export default function HomePage() {
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section aria-label="Promotions" className="shell pt-16 md:pt-20">
+        <div className="grid gap-4 md:grid-cols-2">
+          {promotions.map((promo) => (
+            <Link
+              key={promo.title}
+              href={promo.href}
+              className="group flex flex-col gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand md:p-8"
+            >
+              <div>
+                <Badge tone="highlight">{promo.label}</Badge>
+                <p className="mt-3 font-display text-xl font-semibold">
+                  {promo.title}
+                </p>
+                <p className="mt-1 text-sm text-muted">{promo.body}</p>
+              </div>
+              <span className="label link-underline self-start text-ink group-hover:text-brand">
+                {promo.cta}
+              </span>
+            </Link>
+          ))}
         </div>
       </section>
 
