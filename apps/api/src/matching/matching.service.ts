@@ -39,8 +39,8 @@ export class MatchingService {
     const portfolios = await this.prisma.portfolio.findMany({
       where: {
         isPublished: true,
-        designer: { role: Role.DESIGNER, status: 'ACTIVE' },
-        ...(blockedIds.size ? { designerId: { notIn: [...blockedIds] } } : {}),
+        designer: { role: Role.DESIGNER, status: 'ACTIVE', isAvailable: true },
+        designerId: { notIn: [user.id, ...blockedIds] },
         OR: relevant,
       },
       include: {
@@ -112,7 +112,15 @@ export class MatchingService {
       }
     }
 
-    const items = [...byDesigner.values()].sort((a, b) => b.score - a.score);
+    const ratings = await this.averageRatings([...byDesigner.keys()]);
+
+    // Ties on fit are broken by verification, then by rating.
+    const items = [...byDesigner.values()].sort(
+      (a, b) =>
+        b.score - a.score ||
+        Number(b.designer.isVerified) - Number(a.designer.isVerified) ||
+        (ratings.get(b.designer.id) ?? 0) - (ratings.get(a.designer.id) ?? 0),
+    );
 
     return {
       success: true,
@@ -120,6 +128,7 @@ export class MatchingService {
         briefId,
         items: items.map((i) => ({
           designer: i.designer,
+          rating: ratings.get(i.designer.id) ?? null,
           score: i.score,
           breakdown: i.breakdown,
           matchedPortfolios: i.matchedPortfolios.slice(0, 5),
@@ -128,10 +137,31 @@ export class MatchingService {
     };
   }
 
+  private async averageRatings(designerIds: string[]) {
+    if (designerIds.length === 0) return new Map<string, number>();
+    const rows = await this.prisma.review.groupBy({
+      by: ['designerId'],
+      where: { designerId: { in: designerIds }, isVisible: true },
+      _avg: { rating: true },
+    });
+    return new Map(
+      rows
+        .filter((row) => row._avg.rating !== null)
+        .map((row) => [row.designerId, Number(row._avg.rating)]),
+    );
+  }
+
+  /** Reads "400000-500000", "LKR 100k–200k", "1,000,000" or "2.5m". */
   private parseBudgetMid(range: string | null): number | null {
     if (!range) return null;
-    const nums = range.match(/\d+/g)?.map(Number);
-    if (!nums?.length) return null;
+    const multipliers: Record<string, number> = { k: 1_000, m: 1_000_000 };
+    const nums = [
+      ...range.replace(/,/g, '').matchAll(/(\d+(?:\.\d+)?)\s*([km])?\b/gi),
+    ].map(([, value, unit]) => {
+      const multiplier = unit ? multipliers[unit.toLowerCase()] : 1;
+      return Number(value) * multiplier;
+    });
+    if (!nums.length) return null;
     if (nums.length === 1) return nums[0];
     return (nums[0] + nums[1]) / 2;
   }

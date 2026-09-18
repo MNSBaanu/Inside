@@ -8,6 +8,7 @@ describe('MatchingService', () => {
   const prisma = {
     brief: { findUnique: jest.fn() },
     portfolio: { findMany: jest.fn() },
+    review: { groupBy: jest.fn().mockResolvedValue([]) },
   };
   const blocks = {
     listBlockedCounterpartIds: jest.fn(),
@@ -77,7 +78,7 @@ describe('MatchingService', () => {
     expect(prisma.portfolio.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          designerId: { notIn: ['d9'] },
+          designerId: { notIn: ['c1', 'd9'] },
         }),
       }),
     );
