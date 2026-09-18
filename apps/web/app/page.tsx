@@ -3,7 +3,14 @@ import Link from 'next/link';
 import { Reveal } from '@/components/reveal';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
-import { featuredWork, heroImage, spotlightImage } from '@/lib/images';
+import { RoomHotspots } from '@/components/room-hotspots';
+import {
+  featuredWork,
+  heroHotspots,
+  heroImage,
+  heroImageAspect,
+  spotlightImage,
+} from '@/lib/images';
 
 const steps = [
   {
@@ -84,16 +91,12 @@ export default function HomePage() {
 
       <Reveal>
         <div className="shell">
-          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-card shadow-lift md:aspect-[21/9]">
-            <Image
-              src={heroImage}
-              alt="A finished interior project"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
-          </div>
+          <RoomHotspots
+            src={heroImage}
+            alt="A bright living room with arched windows, a painted brick fireplace and layered seating"
+            imageAspect={heroImageAspect}
+            hotspots={heroHotspots}
+          />
         </div>
       </Reveal>
 

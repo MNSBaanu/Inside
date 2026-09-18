@@ -15,6 +15,41 @@ const unsplash = (id: string, width: number, height: number) =>
   `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${width}&h=${height}&q=80`;
 
 export const heroImage = unsplash('1600210491892-03d54c0aaf87', 2400, 1100);
+export const heroImageAspect = 2400 / 1100;
+
+// Points on the hero photo (percent of the full image) with a design tip for each.
+export const heroHotspots = [
+  {
+    x: 48,
+    y: 12,
+    title: 'Statement lighting',
+    body: 'One sculptural pendant anchors the room. Add lamps and wall lights on separate switches so evenings feel warm, not flat.',
+  },
+  {
+    x: 19,
+    y: 35,
+    title: 'Frame the view',
+    body: 'Tall arched windows pull in daylight. Keep window treatments light so the garden becomes part of the room.',
+  },
+  {
+    x: 37,
+    y: 41,
+    title: 'Style in threes',
+    body: 'Groups of three, like the clock, lanterns and plant on this mantel, look natural. Vary the heights to lead the eye.',
+  },
+  {
+    x: 52,
+    y: 72,
+    title: 'A textured focal point',
+    body: 'Painted brick adds texture without darkening the space. Arrange seating to face the fireplace for easy conversation.',
+  },
+  {
+    x: 80,
+    y: 84,
+    title: 'Layer soft textures',
+    body: 'Mix knits, linen and patterned cushions within one palette. The room feels cosy while staying calm.',
+  },
+];
 
 export const featuredWork = [
   {
