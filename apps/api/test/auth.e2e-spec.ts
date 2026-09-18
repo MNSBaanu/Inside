@@ -61,7 +61,7 @@ describe('AuthController (e2e)', () => {
       .expect(200);
 
     expect(me.body.data.user.email).toBe(email);
-    expect(me.body.data.user.isVerified).toBe(true);
+    expect(me.body.data.user.emailVerified).toBe(true);
   });
 
   it('logs in and refreshes tokens', async () => {
