@@ -22,6 +22,7 @@ describe('ProposalsService', () => {
     proposal: {
       update: jest.fn(),
       updateMany: jest.fn(),
+      findMany: jest.fn().mockResolvedValue([]),
     },
     projectRequest: { updateMany: jest.fn() },
     project: { create: jest.fn() },

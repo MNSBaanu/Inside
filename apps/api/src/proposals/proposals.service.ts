@@ -74,6 +74,14 @@ export class ProposalsService {
         include: proposalInclude,
       });
 
+      await this.notifications.notify({
+        userId: request.clientId,
+        type: NotificationType.PROPOSAL,
+        title: 'New proposal',
+        message: `${user.name} sent a proposal for "${request.title}"`,
+        metadata: { requestId, proposalId: proposal.id },
+      });
+
       return {
         success: true,
         data: { proposal: this.serialize(proposal) },
@@ -125,6 +133,14 @@ export class ProposalsService {
       include: proposalInclude,
     });
 
+    await this.notifications.notify({
+      userId: proposal.request.clientId,
+      type: NotificationType.PROPOSAL,
+      title: 'Proposal withdrawn',
+      message: `${user.name} withdrew their proposal for "${proposal.request.title}"`,
+      metadata: { requestId: proposal.requestId, proposalId: id },
+    });
+
     return { success: true, data: { proposal: this.serialize(updated) } };
   }
 
@@ -138,6 +154,14 @@ export class ProposalsService {
       where: { id },
       data: { status: ProposalStatus.REJECTED },
       include: proposalInclude,
+    });
+
+    await this.notifications.notify({
+      userId: proposal.designerId,
+      type: NotificationType.PROPOSAL,
+      title: 'Proposal declined',
+      message: `Your proposal for "${proposal.request.title}" was declined`,
+      metadata: { requestId: proposal.requestId, proposalId: id },
     });
 
     return { success: true, data: { proposal: this.serialize(updated) } };
@@ -170,6 +194,7 @@ export class ProposalsService {
     const stageFees = this.parseStageFees(proposal.stageFees);
     const feeMap = new Map(stageFees.map((s) => [s.name, s.fee]));
 
+    let declinedDesignerIds: string[] = [];
     const project = await this.prisma.$transaction(async (tx) => {
       const claimed = await tx.proposal.updateMany({
         where: { id, status: ProposalStatus.PENDING },
@@ -190,6 +215,16 @@ export class ProposalsService {
           'This proposal or request has already been decided',
         );
       }
+
+      const others = await tx.proposal.findMany({
+        where: {
+          requestId: proposal.requestId,
+          id: { not: id },
+          status: ProposalStatus.PENDING,
+        },
+        select: { designerId: true },
+      });
+      declinedDesignerIds = others.map((p) => p.designerId);
 
       await tx.proposal.updateMany({
         where: {
@@ -233,6 +268,18 @@ export class ProposalsService {
       message: `Your proposal for "${proposal.request.title}" was accepted`,
       metadata: { projectId: project.id, proposalId: proposal.id },
     });
+
+    await Promise.all(
+      declinedDesignerIds.map((designerId) =>
+        this.notifications.notify({
+          userId: designerId,
+          type: NotificationType.PROPOSAL,
+          title: 'Proposal declined',
+          message: `The client chose another proposal for "${proposal.request.title}"`,
+          metadata: { requestId: proposal.requestId },
+        }),
+      ),
+    );
 
     return {
       success: true,
@@ -295,7 +342,10 @@ export class ProposalsService {
   private async requireDesignerProposal(id: string, designerId: string) {
     const proposal = await this.prisma.proposal.findUnique({
       where: { id },
-      include: proposalInclude,
+      include: {
+        ...proposalInclude,
+        request: { select: { clientId: true, title: true } },
+      },
     });
     if (!proposal) {
       throw new NotFoundException('Proposal not found');

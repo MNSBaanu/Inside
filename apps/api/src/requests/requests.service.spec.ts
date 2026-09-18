@@ -2,6 +2,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { RequestStatus, RequestType, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { BlocksService } from '../blocks/blocks.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RequestsService } from './requests.service';
 
@@ -18,6 +19,7 @@ describe('RequestsService', () => {
   };
 
   const blocks = { assertNotBlocked: jest.fn() };
+  const notifications = { notify: jest.fn() };
 
   const client = {
     id: 'c1',
@@ -39,6 +41,7 @@ describe('RequestsService', () => {
     service = new RequestsService(
       prisma as unknown as PrismaService,
       blocks as unknown as BlocksService,
+      notifications as unknown as NotificationsService,
     );
   });
 

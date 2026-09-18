@@ -4,9 +4,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { RequestStatus, RequestType, Role } from '@inside/database';
+import {
+  NotificationType,
+  RequestStatus,
+  RequestType,
+  Role,
+} from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { BlocksService } from '../blocks/blocks.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRequestDto } from './dto/create-request.dto';
 
@@ -30,6 +36,7 @@ export class RequestsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly blocks: BlocksService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async create(user: AuthUser, dto: CreateRequestDto) {
@@ -82,6 +89,16 @@ export class RequestsService {
       },
       include: requestInclude,
     });
+
+    if (request.designerId) {
+      await this.notifications.notify({
+        userId: request.designerId,
+        type: NotificationType.REQUEST,
+        title: 'New project request',
+        message: `${user.name} sent you a request: "${request.title}"`,
+        metadata: { requestId: request.id },
+      });
+    }
 
     return { success: true, data: { request: this.serialize(request) } };
   }
