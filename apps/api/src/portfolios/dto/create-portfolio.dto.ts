@@ -5,12 +5,14 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  Max,
   MaxLength,
   Min,
   MinLength,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { MAX_AMOUNT } from '../../common/money';
 
 export class CreatePortfolioImageDto {
   @ApiProperty({ example: 'https://picsum.photos/seed/room/1200/800' })
@@ -59,8 +61,9 @@ export class CreatePortfolioDto {
   @ApiPropertyOptional({ example: 450000 })
   @IsOptional()
   @Type(() => Number)
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
+  @Max(MAX_AMOUNT)
   budget?: number;
 
   @ApiPropertyOptional({ default: true })

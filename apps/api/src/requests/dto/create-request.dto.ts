@@ -6,10 +6,13 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Max,
   MaxLength,
+  Min,
   MinLength,
   ValidateIf,
 } from 'class-validator';
+import { MAX_AMOUNT } from '../../common/money';
 
 export class CreateRequestDto {
   @ApiProperty({ example: 'Living room refresh' })
@@ -40,6 +43,8 @@ export class CreateRequestDto {
 
   @ApiPropertyOptional({ example: 500000 })
   @IsOptional()
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(MAX_AMOUNT)
   budget?: number;
 }

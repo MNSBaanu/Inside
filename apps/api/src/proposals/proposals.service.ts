@@ -59,7 +59,16 @@ export class ProposalsService {
 
     this.assertCanPropose(user, request);
 
-    const totalAmount = dto.stageFees.reduce((sum, s) => sum + s.fee, 0);
+    const stageNames = new Set(dto.stageFees.map((s) => s.name));
+    if (stageNames.size !== dto.stageFees.length) {
+      throw new BadRequestException('Each stage can only have one fee');
+    }
+
+    const totalCents = dto.stageFees.reduce(
+      (sum, s) => sum + Math.round(s.fee * 100),
+      0,
+    );
+    const totalAmount = totalCents / 100;
     const terms = {
       scope: dto.scope,
       timeline: dto.timeline,
