@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { NewsletterForm } from '@/components/newsletter-form';
 
 const columns = [
   {
@@ -36,6 +37,7 @@ export function SiteFooter() {
           <p className="mt-4 text-sm text-muted">
             Interior design, from first brief to final handover.
           </p>
+          <NewsletterForm />
         </div>
 
         {columns.map((column) => (

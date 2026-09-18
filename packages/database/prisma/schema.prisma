@@ -543,3 +543,9 @@ model ActivityLog {
   @@index([userId])
   @@index([action])
 }
+
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
