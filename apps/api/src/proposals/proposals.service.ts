@@ -100,8 +100,9 @@ export class ProposalsService {
     }
     this.assertCanViewProposals(user, request);
 
+    const isClient = request.clientId === user.id;
     const items = await this.prisma.proposal.findMany({
-      where: { requestId },
+      where: { requestId, ...(isClient ? {} : { designerId: user.id }) },
       orderBy: { submittedAt: 'desc' },
       include: proposalInclude,
     });
