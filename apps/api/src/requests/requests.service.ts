@@ -93,7 +93,11 @@ export class RequestsService {
         : {
             OR: [
               { type: RequestType.DIRECT, designerId: user.id },
-              { type: RequestType.OPEN, status: RequestStatus.OPEN },
+              {
+                type: RequestType.OPEN,
+                status: RequestStatus.OPEN,
+                clientId: { not: user.id },
+              },
             ],
           };
 

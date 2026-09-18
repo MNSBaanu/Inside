@@ -153,6 +153,9 @@ export class ProposalsService {
     if (proposal.request.clientId !== user.id) {
       throw new ForbiddenException('You do not own this request');
     }
+    if (proposal.designerId === user.id) {
+      throw new ForbiddenException('You cannot accept your own proposal');
+    }
     if (proposal.status !== ProposalStatus.PENDING) {
       throw new BadRequestException('Only pending proposals can be accepted');
     }
@@ -232,11 +235,16 @@ export class ProposalsService {
   private assertCanPropose(
     user: AuthUser,
     request: {
+      clientId: string;
       type: RequestType;
       status: RequestStatus;
       designerId: string | null;
     },
   ) {
+    if (request.clientId === user.id) {
+      throw new ForbiddenException('You cannot propose on your own request');
+    }
+
     if (request.type === RequestType.DIRECT) {
       if (request.designerId !== user.id) {
         throw new ForbiddenException(

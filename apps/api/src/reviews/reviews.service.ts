@@ -46,6 +46,9 @@ export class ReviewsService {
     if (project.clientId !== user.id) {
       throw new ForbiddenException('Only the client can review this project');
     }
+    if (project.designerId === user.id) {
+      throw new ForbiddenException('You cannot review your own work');
+    }
     if (project.status !== ProjectStatus.COMPLETED) {
       throw new BadRequestException('Only completed projects can be reviewed');
     }

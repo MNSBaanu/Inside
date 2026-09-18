@@ -134,7 +134,11 @@ describe('RequestsService', () => {
         where: {
           OR: [
             { type: RequestType.DIRECT, designerId: 'd1' },
-            { type: RequestType.OPEN, status: RequestStatus.OPEN },
+            {
+              type: RequestType.OPEN,
+              status: RequestStatus.OPEN,
+              clientId: { not: 'd1' },
+            },
           ],
         },
       }),
