@@ -232,10 +232,8 @@ export class ProposalsService {
     const stageDays = this.stageDays(proposal.timeline);
     let declinedDesignerIds: string[] = [];
     const project = await this.prisma.$transaction(async (tx) => {
-      const claimed = await tx.proposal.updateMany({
-        where: { id, status: ProposalStatus.PENDING },
-        data: { status: ProposalStatus.ACCEPTED },
-      });
+      // Claim the request row first: a concurrent accept then waits here and
+      // fails cleanly, instead of deadlocking on the proposal rows.
       const requestClaimed = await tx.projectRequest.updateMany({
         where: {
           id: proposal.requestId,
@@ -245,6 +243,10 @@ export class ProposalsService {
           status: RequestStatus.ACCEPTED,
           designerId: proposal.designerId,
         },
+      });
+      const claimed = await tx.proposal.updateMany({
+        where: { id, status: ProposalStatus.PENDING },
+        data: { status: ProposalStatus.ACCEPTED },
       });
       if (claimed.count === 0 || requestClaimed.count === 0) {
         throw new ConflictException(

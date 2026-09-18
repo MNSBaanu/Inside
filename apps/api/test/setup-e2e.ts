@@ -13,3 +13,7 @@ process.env.JWT_SECRET =
 process.env.JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? '1h';
 process.env.EXPOSE_DEV_AUTH_TOKENS = 'true';
 process.env.THROTTLE_DISABLED = 'true';
+
+// Upload signing is computed locally, so a fake account is enough for tests.
+process.env.CLOUDINARY_URL =
+  process.env.CLOUDINARY_URL ?? 'cloudinary://e2e-key:e2e-secret@e2e-cloud';
