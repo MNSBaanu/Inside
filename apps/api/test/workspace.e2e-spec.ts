@@ -297,6 +297,17 @@ describe('Workspace flow (e2e)', () => {
       .expect(201);
     expect(review.body.data.review.rating).toBe(5);
 
+    const beforeApproval = await request(app.getHttpServer())
+      .get(`/designers/${designerId}/reviews`)
+      .expect(200);
+    expect(beforeApproval.body.data.summary.count).toBe(0);
+
+    await request(app.getHttpServer())
+      .patch(`/admin/reviews/${review.body.data.review.id}/visibility`)
+      .set(authHeader(adminToken))
+      .send({ isVisible: true })
+      .expect(200);
+
     const reviewsForDesigner = await request(app.getHttpServer())
       .get(`/designers/${designerId}/reviews`)
       .expect(200);

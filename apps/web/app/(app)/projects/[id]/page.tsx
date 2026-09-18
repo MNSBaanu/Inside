@@ -176,7 +176,10 @@ export default function ProjectWorkspacePage({
           ) : !isClient ? (
             <ReviewList designerId={item.designerId} />
           ) : reviewed ? (
-            <ReviewList designerId={item.designerId} />
+            <EmptyState
+              title="Thanks for your review."
+              description="It will appear on the designer's profile once an admin approves it."
+            />
           ) : (
             <ReviewForm
               projectId={params.id}
