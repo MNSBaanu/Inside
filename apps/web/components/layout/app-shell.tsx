@@ -2,13 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { createContext, useContext, useEffect, useRef } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/feedback';
 import { cn } from '@/lib/cn';
 import { useApi } from '@/lib/use-api';
 import type { Notification, ProjectListItem, Role } from '@/lib/types';
+
+const SignOutContext = createContext<() => Promise<void>>(async () => undefined);
+
+export function useSignOut() {
+  return useContext(SignOutContext);
+}
 
 type NavItem = { href: string; label: string; roles?: Role[] };
 
@@ -33,6 +39,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const authed = status === 'authenticated';
+  const signingOut = useRef(false);
 
   const notifications = useApi<{ items: Notification[] }>(
     authed ? '/notifications' : null,
@@ -58,7 +65,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (status === 'unauthenticated' && !signingOut.current) {
       router.replace(`/login?next=${encodeURIComponent(pathname)}`);
     }
   }, [status, router, pathname]);
@@ -77,6 +84,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   async function onSignOut() {
+    signingOut.current = true;
     await logout();
     router.push('/');
   }
@@ -146,7 +154,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
         )}
-        {children}
+        <SignOutContext.Provider value={onSignOut}>{children}</SignOutContext.Provider>
       </div>
     </div>
   );

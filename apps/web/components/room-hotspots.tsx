@@ -158,7 +158,9 @@ export function RoomHotspots({
                   if (byMouse) show(index);
                   else setOpen(isOpen ? null : index);
                 }}
-                onFocus={() => show(index)}
+                onFocus={(event) => {
+                  if (event.currentTarget.matches(':focus-visible')) show(index);
+                }}
                 onBlur={(event) => {
                   const next = event.relatedTarget as Element | null;
                   if (!next?.closest(`[data-hotspot="${index}"]`)) {

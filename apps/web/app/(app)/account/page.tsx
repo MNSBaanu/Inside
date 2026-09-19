@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useSignOut } from '@/components/layout/app-shell';
 import { useSession } from '@/components/providers/session-provider';
 import { PasswordForm } from '@/components/account/password-form';
 import { RoleSwitch } from '@/components/account/role-switch';
@@ -15,8 +15,8 @@ import type { User } from '@/lib/types';
 import { FileUpload } from '@/components/ui/file-upload';
 
 export default function AccountPage() {
-  const { user, refreshUser, logout } = useSession();
-  const router = useRouter();
+  const { user, refreshUser } = useSession();
+  const onSignOut = useSignOut();
 
   const [form, setForm] = useState({
     name: '',
@@ -63,11 +63,6 @@ export default function AccountPage() {
     } finally {
       setSaving(false);
     }
-  }
-
-  async function onSignOut() {
-    await logout();
-    router.push('/');
   }
 
   const isDesigner = user?.role === 'DESIGNER';
