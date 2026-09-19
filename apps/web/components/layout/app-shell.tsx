@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef } from 'react';
 import { useSession } from '@/components/providers/session-provider';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/feedback';
 import { cn } from '@/lib/cn';
@@ -72,7 +73,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (status !== 'authenticated' || !user) {
     return (
-      <div className="shell py-32 md:py-40">
+      <div className="shell pb-32 pt-28 md:pb-40 md:pt-32">
         <Skeleton className="h-12 w-64" />
         <Skeleton className="mt-8 h-72 w-full" />
       </div>
@@ -90,13 +91,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="shell grid gap-12 py-32 md:py-40 lg:grid-cols-[240px_1fr]">
-      <aside className="h-fit lg:sticky lg:top-28">
-        <p className="label text-muted">Signed in as</p>
+    <div className="shell grid gap-12 pb-32 pt-28 md:pb-40 md:pt-32 lg:grid-cols-[240px_1fr]">
+      <aside className="h-fit rounded-card bg-sand p-6 lg:sticky lg:top-28 lg:max-h-[calc(100dvh-8rem)] lg:self-start lg:overflow-y-auto">
+        <p className="label text-ink/70">Signed in as</p>
         <p className="mt-2 font-display text-xl font-semibold">{user.name}</p>
-        <p className="text-sm text-muted">{user.activeRole.toLowerCase()}</p>
+        <Badge tone="brand" className="mt-3">
+          {user.activeRole.toLowerCase()}
+        </Badge>
 
-        <nav className="mt-8 flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+        <nav className="mt-8 flex gap-2 overflow-x-auto lg:-mx-4 lg:flex-col lg:overflow-visible">
           {items.map((item) => {
             const active =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -110,7 +113,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   'flex items-center gap-2 whitespace-nowrap rounded-pill px-4 py-2.5 text-label font-semibold uppercase transition-colors duration-300',
                   active
                     ? 'bg-brand text-canvas'
-                    : 'text-ink/70 hover:bg-sand hover:text-ink',
+                    : 'text-ink/70 hover:bg-canvas hover:text-ink',
                 )}
               >
                 {item.label}

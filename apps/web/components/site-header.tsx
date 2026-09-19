@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ButtonLink } from '@/components/ui/button';
 import { Avatar } from '@/components/ui/avatar';
@@ -18,6 +18,8 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const { user, status } = useSession();
+  const segment = useSelectedLayoutSegment();
+  const designerWorkspace = segment === '(app)' && user?.activeRole === 'DESIGNER';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -68,26 +70,28 @@ export function SiteHeader() {
           Inside<span className="text-brand">.</span>
         </Link>
 
-        <nav className="hidden items-center gap-10 md:flex">
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="label text-ink/70 transition-colors duration-300 hover:text-brand"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        {designerWorkspace ? null : (
+          <nav className="hidden items-center gap-10 md:flex">
+            {navigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="label text-ink/70 transition-colors duration-300 hover:text-brand"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         <div className="flex items-center gap-5">
           {status === 'authenticated' && user ? (
             <>
               <Link
-                href="/dashboard"
+                href={designerWorkspace ? `/designers/${user.id}` : '/dashboard'}
                 className="label hidden text-ink/70 transition-colors duration-300 hover:text-brand sm:block"
               >
-                Dashboard
+                {designerWorkspace ? 'Public profile' : 'Dashboard'}
               </Link>
               <Link
                 href="/account"
@@ -140,17 +144,19 @@ export function SiteHeader() {
         hidden={!menuOpen}
         className="h-[calc(100dvh-4rem)] overflow-y-auto bg-canvas md:hidden"
       >
-        <nav className="shell flex flex-col pt-8">
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="border-b border-hairline py-6 font-display text-3xl font-semibold tracking-tight"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        {designerWorkspace ? null : (
+          <nav className="shell flex flex-col pt-8">
+            {navigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="border-b border-hairline py-6 font-display text-3xl font-semibold tracking-tight"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         <div className="shell mt-10 flex flex-col gap-4 pb-12">
           {status === 'authenticated' ? (
