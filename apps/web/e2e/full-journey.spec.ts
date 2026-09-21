@@ -67,7 +67,6 @@ test('a new client goes from the landing page to a completed, reviewed project',
   await test.step('client finds and saves a designer', async () => {
     await page.goto('/designers');
     await page.getByLabel('Search').fill('Ravi');
-    await page.getByRole('button', { name: 'Apply' }).click();
     await page.getByRole('link', { name: /Ravi Designer/ }).first().click();
     await expect(page.getByRole('heading', { name: 'Ravi Designer' })).toBeVisible();
     await page.getByRole('button', { name: 'Save designer' }).click();

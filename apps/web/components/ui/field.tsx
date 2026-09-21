@@ -1,7 +1,6 @@
 import type {
   InputHTMLAttributes,
   ReactNode,
-  SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from 'react';
 import { cn } from '@/lib/cn';
@@ -51,11 +50,4 @@ export function Textarea({
   return (
     <textarea {...props} className={cn(control, 'min-h-32', className)} />
   );
-}
-
-export function Select({
-  className,
-  ...props
-}: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select {...props} className={cn(control, className)} />;
 }

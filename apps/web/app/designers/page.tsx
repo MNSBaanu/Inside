@@ -1,18 +1,59 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DesignerCard } from '@/components/designers/designer-card';
+import { LocationCombobox } from '@/components/designers/location-combobox';
 import { Button } from '@/components/ui/button';
-import { Field, Input, Select } from '@/components/ui/field';
+import { Field, Input } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
+import { Select } from '@/components/ui/select';
 import { buildQuery, useApi } from '@/lib/use-api';
 import type { DesignerSummary, Paginated } from '@/lib/types';
 
 const PAGE_SIZE = 12;
 
-export default function DesignersPage() {
-  const [filters, setFilters] = useState({ q: '', location: '', verified: '' });
+const LOCATIONS = [
+  'Ampara',
+  'Anuradhapura',
+  'Badulla',
+  'Batticaloa',
+  'Colombo',
+  'Galle',
+  'Gampaha',
+  'Hambantota',
+  'Jaffna',
+  'Kalutara',
+  'Kandy',
+  'Kegalle',
+  'Kilinochchi',
+  'Kurunegala',
+  'Mannar',
+  'Matale',
+  'Matara',
+  'Monaragala',
+  'Mullaitivu',
+  'Negombo',
+  'Nuwara Eliya',
+  'Polonnaruwa',
+  'Puttalam',
+  'Ratnapura',
+  'Trincomalee',
+  'Vavuniya',
+];
+
+const EMPTY_FILTERS = { q: '', location: '', verified: '' };
+
+export default function DesignersPage({
+  searchParams,
+}: {
+  searchParams: { q?: string; location?: string };
+}) {
+  const [filters, setFilters] = useState({
+    q: searchParams.q ?? '',
+    location: searchParams.location ?? '',
+    verified: '',
+  });
   const [applied, setApplied] = useState(filters);
   const [page, setPage] = useState(1);
 
@@ -28,10 +69,16 @@ export default function DesignersPage() {
     `/designers${query}`,
   );
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1);
+      setApplied(filters);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [filters]);
+
   function onSubmit(event: React.FormEvent) {
     event.preventDefault();
-    setPage(1);
-    setApplied(filters);
   }
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
@@ -56,15 +103,15 @@ export default function DesignersPage() {
               setFilters({ ...filters, q: event.target.value })
             }
             placeholder="Name or keyword"
+            autoComplete="off"
           />
         </Field>
         <Field label="Location" htmlFor="location">
-          <Input
+          <LocationCombobox
             id="location"
             value={filters.location}
-            onChange={(event) =>
-              setFilters({ ...filters, location: event.target.value })
-            }
+            options={LOCATIONS}
+            onChange={(location) => setFilters({ ...filters, location })}
             placeholder="Colombo"
           />
         </Field>
@@ -72,16 +119,20 @@ export default function DesignersPage() {
           <Select
             id="verified"
             value={filters.verified}
-            onChange={(event) =>
-              setFilters({ ...filters, verified: event.target.value })
-            }
-          >
-            <option value="">All designers</option>
-            <option value="verified">Verified only</option>
-          </Select>
+            options={[
+              { value: '', label: 'All designers' },
+              { value: 'verified', label: 'Verified only' },
+            ]}
+            onChange={(verified) => setFilters({ ...filters, verified })}
+          />
         </Field>
-        <Button type="submit" size="lg">
-          Apply
+        <Button
+          type="button"
+          size="lg"
+          variant="outline"
+          onClick={() => setFilters(EMPTY_FILTERS)}
+        >
+          Clear
         </Button>
       </form>
 
