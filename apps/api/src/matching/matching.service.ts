@@ -3,6 +3,16 @@ import { Prisma, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { BlocksService } from '../blocks/blocks.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { similarities } from './text-similarity';
+
+const WEIGHTS = { style: 35, room: 30, budget: 20, description: 15 };
+
+type Breakdown = {
+  style: number;
+  room: number;
+  budget: number;
+  description: number | null;
+};
 
 @Injectable()
 export class MatchingService {
@@ -63,7 +73,7 @@ export class MatchingService {
       {
         designer: (typeof portfolios)[0]['designer'];
         score: number;
-        breakdown: { style: number; room: number; budget: number };
+        breakdown: Breakdown;
         matchedPortfolios: {
           id: string;
           title: string;
@@ -73,22 +83,40 @@ export class MatchingService {
       }
     >();
 
-    for (const p of portfolios) {
+    // A cosine similarity of 0.5 or more between the brief description and the
+    // portfolio text earns the full description weight.
+    const descriptionSimilarity = brief.description?.trim()
+      ? similarities(
+          brief.description,
+          portfolios.map((p) => `${p.title} ${p.description ?? ''}`),
+        )
+      : null;
+
+    for (const [index, p] of portfolios.entries()) {
       const styleHit = brief.styles.some(
         (s) => s.toLowerCase() === p.style.toLowerCase(),
       );
       const roomHit = brief.rooms.some(
         (r) => r.toLowerCase() === p.roomType.toLowerCase(),
       );
-      const style = styleHit ? 40 : 0;
-      const room = roomHit ? 35 : 0;
-      let budgetScore = 10;
+      const style = styleHit ? WEIGHTS.style : 0;
+      const room = roomHit ? WEIGHTS.room : 0;
+      let budgetScore = 8;
       if (budget !== null && p.budget !== null) {
         const pb = Number(p.budget);
         const diff = Math.abs(pb - budget) / Math.max(budget, 1);
-        budgetScore = diff <= 0.25 ? 25 : diff <= 0.5 ? 15 : 5;
+        budgetScore = diff <= 0.25 ? WEIGHTS.budget : diff <= 0.5 ? 12 : 4;
       }
-      const score = style + room + budgetScore;
+      const description = descriptionSimilarity
+        ? Math.round(
+            WEIGHTS.description * Math.min(1, descriptionSimilarity[index] * 2),
+          )
+        : null;
+      // Without a brief description, score against the other factors only.
+      const possible = description === null ? 100 - WEIGHTS.description : 100;
+      const score = Math.round(
+        ((style + room + budgetScore + (description ?? 0)) / possible) * 100,
+      );
       if (score < 15) continue;
 
       const existing = byDesigner.get(p.designerId);
@@ -102,7 +130,7 @@ export class MatchingService {
         byDesigner.set(p.designerId, {
           designer: p.designer,
           score,
-          breakdown: { style, room, budget: budgetScore },
+          breakdown: { style, room, budget: budgetScore, description },
           matchedPortfolios: existing
             ? [...existing.matchedPortfolios, entry]
             : [entry],
@@ -131,10 +159,44 @@ export class MatchingService {
           rating: ratings.get(i.designer.id) ?? null,
           score: i.score,
           breakdown: i.breakdown,
+          factors: this.factors(i.breakdown),
           matchedPortfolios: i.matchedPortfolios.slice(0, 5),
         })),
       },
     };
+  }
+
+  private factors(breakdown: Breakdown) {
+    return [
+      {
+        key: 'style',
+        label: 'Style',
+        points: breakdown.style,
+        max: WEIGHTS.style,
+      },
+      {
+        key: 'room',
+        label: 'Room type',
+        points: breakdown.room,
+        max: WEIGHTS.room,
+      },
+      {
+        key: 'budget',
+        label: 'Budget',
+        points: breakdown.budget,
+        max: WEIGHTS.budget,
+      },
+      ...(breakdown.description !== null
+        ? [
+            {
+              key: 'description',
+              label: 'Description',
+              points: breakdown.description,
+              max: WEIGHTS.description,
+            },
+          ]
+        : []),
+    ];
   }
 
   private async averageRatings(designerIds: string[]) {

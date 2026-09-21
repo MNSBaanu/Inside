@@ -8,14 +8,18 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
+import { Rating } from '@/components/ui/rating';
+import { FavouriteButton } from '@/components/designers/favourite-button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { formatDate } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
 import type { Brief, PartySummary } from '@/lib/types';
 
 type Match = {
-  designer: PartySummary;
+  designer: PartySummary & { isAvailable?: boolean };
+  rating: number | null;
   score: number;
+  factors: { key: string; label: string; points: number; max: number }[];
   matchedPortfolios: { id: string; title: string }[];
 };
 
@@ -127,51 +131,97 @@ export default function BriefDetailPage({
           Designers matched to this brief
         </h2>
         <p className="mt-2 text-muted">
-          Ranked by how closely their published work matches your styles, rooms
-          and budget.
+          Ranked by how closely their published work matches your styles, rooms,
+          budget and description. These are suggestions only: you decide who to
+          hire.
         </p>
 
         <div className="mt-8">
           {matches.loading ? (
             <Skeleton className="h-40" />
           ) : matches.error ? (
-            <ErrorNotice message={matches.error} />
+            <div className="flex flex-col items-start gap-3">
+              <ErrorNotice message={matches.error} />
+              <Button variant="outline" onClick={() => void matches.reload()}>
+                Try again
+              </Button>
+            </div>
           ) : matches.data && matches.data.items.length > 0 ? (
             <ul className="flex flex-col gap-4">
               {matches.data.items.map((match) => (
                 <li
                   key={match.designer.id}
-                  className="flex flex-wrap items-center justify-between gap-6 rounded-card border border-hairline bg-surface p-6"
+                  className="rounded-card border border-hairline bg-surface p-6"
                 >
-                  <Link
-                    href={`/designers/${match.designer.id}`}
-                    className="flex items-center gap-4"
-                  >
-                    <Avatar
-                      name={match.designer.name}
-                      src={match.designer.avatarUrl}
-                      size={56}
-                    />
-                    <span>
-                      <span className="block font-display text-xl font-semibold">
-                        {match.designer.name}
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <Link
+                      href={`/designers/${match.designer.id}`}
+                      className="flex items-center gap-4"
+                    >
+                      <Avatar
+                        name={match.designer.name}
+                        src={match.designer.avatarUrl}
+                        size={56}
+                      />
+                      <span>
+                        <span className="block font-display text-xl font-semibold">
+                          {match.designer.name}
+                        </span>
+                        <span className="block text-sm text-muted">
+                          {match.matchedPortfolios.length} matching{' '}
+                          {match.matchedPortfolios.length === 1
+                            ? 'project'
+                            : 'projects'}
+                          {match.designer.location
+                            ? ` · ${match.designer.location}`
+                            : ''}
+                        </span>
                       </span>
-                      <span className="block text-sm text-muted">
-                        {match.matchedPortfolios.length} matching{' '}
-                        {match.matchedPortfolios.length === 1
-                          ? 'project'
-                          : 'projects'}
-                      </span>
-                    </span>
-                  </Link>
-
-                  <div className="flex items-center gap-4">
+                    </Link>
                     <Badge tone="highlight">{match.score}% match</Badge>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    {match.designer.isVerified ? (
+                      <Badge tone="support">Verified</Badge>
+                    ) : null}
+                    {match.designer.isAvailable ? (
+                      <Badge>Available</Badge>
+                    ) : null}
+                    <Rating value={match.rating} />
+                  </div>
+
+                  <dl className="mt-6 grid gap-3 sm:grid-cols-2">
+                    {match.factors.map((factor) => (
+                      <div key={factor.key}>
+                        <div className="flex justify-between text-sm">
+                          <dt className="text-muted">{factor.label}</dt>
+                          <dd className="font-semibold">
+                            {factor.points}/{factor.max}
+                          </dd>
+                        </div>
+                        <div
+                          className="mt-1 h-1.5 rounded-pill bg-sand"
+                          aria-hidden
+                        >
+                          <div
+                            className="h-full rounded-pill bg-brand"
+                            style={{
+                              width: `${(factor.points / factor.max) * 100}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </dl>
+
+                  <div className="mt-6 flex flex-wrap items-center gap-3">
                     <ButtonLink
                       href={`/requests/new?designerId=${match.designer.id}&briefId=${item.id}`}
                     >
                       Request
                     </ButtonLink>
+                    <FavouriteButton designerId={match.designer.id} />
                   </div>
                 </li>
               ))}

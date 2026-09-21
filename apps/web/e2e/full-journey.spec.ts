@@ -90,6 +90,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
 
     const match = page.getByRole('listitem').filter({ hasText: 'Ravi Designer' });
     await expect(match.getByText(/% match/)).toBeVisible();
+    await expect(match.getByText('Description', { exact: true })).toBeVisible();
     await match.getByRole('link', { name: 'Request', exact: true }).click();
     await expect(page).toHaveURL(/\/requests\/new\?designerId=.+&briefId=/);
 
