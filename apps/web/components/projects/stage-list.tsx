@@ -358,6 +358,25 @@ function StageTasks({
     }
   }
 
+  async function toggle(taskId: string, isDone: boolean) {
+    const setDone = (value: boolean) =>
+      setItems((current) =>
+        current
+          ? current.map((task) =>
+              task.id === taskId ? { ...task, isDone: value } : task,
+            )
+          : current,
+      );
+    setError(null);
+    setDone(isDone);
+    try {
+      await api.patch(`/tasks/${taskId}`, { isDone });
+    } catch (cause) {
+      setDone(!isDone);
+      setError(errorMessage(cause));
+    }
+  }
+
   const done = items?.filter((task) => task.isDone).length ?? 0;
 
   return (
@@ -396,11 +415,10 @@ function StageTasks({
                 <input
                   type="checkbox"
                   checked={task.isDone}
-                  disabled={!canEdit || busy}
-                  onChange={(event) => {
-                    const isDone = event.target.checked;
-                    void run(() => api.patch(`/tasks/${task.id}`, { isDone }));
-                  }}
+                  disabled={!canEdit}
+                  onChange={(event) =>
+                    void toggle(task.id, event.target.checked)
+                  }
                   className="h-4 w-4 accent-brand"
                 />
                 <span
