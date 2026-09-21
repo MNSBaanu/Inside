@@ -1,8 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/reveal';
+import { DesignerCard } from '@/components/designers/designer-card';
 import { Badge } from '@/components/ui/badge';
-import { ButtonLink } from '@/components/ui/button';
+import { Button, ButtonLink } from '@/components/ui/button';
+import { Input } from '@/components/ui/field';
 import { RoomHotspots } from '@/components/room-hotspots';
 import {
   featuredWork,
@@ -11,6 +13,72 @@ import {
   heroImageAspect,
   spotlightImage,
 } from '@/lib/images';
+import { fetchPublic } from '@/lib/server-api';
+import type { DesignerSummary, Paginated } from '@/lib/types';
+
+const styles = [
+  'Minimalist',
+  'Japandi',
+  'Tropical Modern',
+  'Scandinavian',
+  'Bohemian',
+  'Contemporary',
+];
+
+const rooms = [
+  { name: 'Living Room', tone: 'bg-brand-soft' },
+  { name: 'Bedroom', tone: 'bg-highlight-soft' },
+  { name: 'Kitchen', tone: 'bg-support-soft' },
+  { name: 'Dining Room', tone: 'bg-sand' },
+  { name: 'Home Office', tone: 'bg-support-soft' },
+  { name: 'Bathroom', tone: 'bg-sand' },
+  { name: 'Kids Room', tone: 'bg-brand-soft' },
+  { name: 'Balcony', tone: 'bg-highlight-soft' },
+];
+
+const testimonials = [
+  {
+    quote:
+      'Three proposals arrived within a week, and seeing them side by side made the choice obvious.',
+    name: 'Nadeesha P.',
+    detail: 'Living room, Colombo',
+  },
+  {
+    quote:
+      'Paying per stage meant I never worried about money going out before the work was done.',
+    name: 'Ruwan S.',
+    detail: 'Kitchen, Kandy',
+  },
+  {
+    quote:
+      'Every drawing, message and approval was in one place instead of scattered across chats.',
+    name: 'Amaya F.',
+    detail: 'Bedroom, Galle',
+  },
+];
+
+const faqs = [
+  {
+    question: 'How much does it cost to post a brief?',
+    answer:
+      'Posting a brief is free. You only pay once you accept a proposal, and payments are split across the agreed stages.',
+  },
+  {
+    question: 'How are designers verified?',
+    answer:
+      'Designers submit proof of qualification and past work. An admin reviews it before the verified badge appears on their profile.',
+  },
+  {
+    question: 'When is my payment released?',
+    answer:
+      'Each milestone payment is released only after you approve the deliverables for that stage.',
+  },
+  {
+    question: 'Can I talk to a designer before accepting a proposal?',
+    answer:
+      'Yes. You can message designers from their profile or proposal to clarify scope, timeline and cost first.',
+  },
+];
 
 const steps = [
   {
@@ -57,7 +125,12 @@ const promotions = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const designers = await fetchPublic<Paginated<DesignerSummary>>(
+    '/designers?verifiedOnly=true&pageSize=3',
+  );
+  const featuredDesigners = designers?.items ?? [];
+
   return (
     <>
       <section className="shell pb-20 pt-36 md:pb-28 md:pt-44">
@@ -87,6 +160,39 @@ export default function HomePage() {
             </div>
           </div>
         </Reveal>
+        <Reveal delay={240}>
+          <form
+            action="/designers"
+            className="mt-12 grid gap-3 rounded-card border border-hairline bg-surface p-3 sm:grid-cols-[2fr_1fr_auto]"
+          >
+            <Input
+              name="q"
+              type="search"
+              aria-label="Search designers"
+              placeholder="Designer name or keyword"
+            />
+            <Input
+              name="location"
+              aria-label="Location"
+              placeholder="Location, e.g. Colombo"
+            />
+            <Button type="submit" size="lg">
+              Search
+            </Button>
+          </form>
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <span className="label mr-2 text-muted">Popular styles</span>
+            {styles.map((style) => (
+              <Link
+                key={style}
+                href={`/portfolios?style=${encodeURIComponent(style)}`}
+                className="rounded-full border border-hairline px-4 py-1.5 text-sm transition-colors duration-300 hover:border-brand hover:text-brand"
+              >
+                {style}
+              </Link>
+            ))}
+          </div>
+        </Reveal>
       </section>
 
       <Reveal>
@@ -110,6 +216,32 @@ export default function HomePage() {
               <p className="mt-3 text-label font-semibold uppercase text-canvas/75">
                 {stat.caption}
               </p>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      <section className="shell pb-24 md:pb-32">
+        <Reveal>
+          <Badge tone="brand">Browse by room</Badge>
+        </Reveal>
+        <Reveal delay={60}>
+          <h2 className="mt-6 max-w-xl font-display text-section font-semibold">
+            Start with the space you have.
+          </h2>
+        </Reveal>
+        <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
+          {rooms.map((room, index) => (
+            <Reveal key={room.name} delay={(index % 4) * 80}>
+              <Link
+                href={`/portfolios?roomType=${encodeURIComponent(room.name)}`}
+                className={`group flex h-full min-h-32 flex-col justify-between rounded-card ${room.tone} p-6 transition-transform duration-500 ease-editorial hover:-translate-y-1`}
+              >
+                <span className="font-display text-xl font-semibold transition-colors duration-300 group-hover:text-brand">
+                  {room.name}
+                </span>
+                <span className="label mt-6 text-muted">View work</span>
+              </Link>
             </Reveal>
           ))}
         </div>
@@ -190,6 +322,33 @@ export default function HomePage() {
         </div>
       </section>
 
+      {featuredDesigners.length > 0 ? (
+        <section className="shell py-24 md:py-32">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <Reveal>
+              <div>
+                <Badge tone="support">Featured designers</Badge>
+                <h2 className="mt-6 max-w-xl font-display text-section font-semibold">
+                  Verified and ready for your brief.
+                </h2>
+              </div>
+            </Reveal>
+            <Reveal delay={80}>
+              <Link href="/designers" className="label link-underline text-ink">
+                Browse all designers
+              </Link>
+            </Reveal>
+          </div>
+          <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredDesigners.map((designer, index) => (
+              <Reveal key={designer.id} delay={index * 100}>
+                <DesignerCard designer={designer} />
+              </Reveal>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <section aria-label="Promotions" className="shell pt-16 md:pt-20">
         <div className="grid gap-4 md:grid-cols-2">
           {promotions.map((promo) => (
@@ -244,6 +403,61 @@ export default function HomePage() {
             </Link>
           </div>
         </Reveal>
+      </section>
+
+      <section className="bg-sand py-24 md:py-32">
+        <div className="shell">
+          <Reveal>
+            <Badge className="bg-canvas">Client stories</Badge>
+          </Reveal>
+          <Reveal delay={60}>
+            <h2 className="mt-6 max-w-2xl font-display text-section font-semibold">
+              What clients say after handover.
+            </h2>
+          </Reveal>
+          <div className="mt-14 grid gap-6 md:grid-cols-3">
+            {testimonials.map((item, index) => (
+              <Reveal key={item.name} delay={index * 100}>
+                <figure className="flex h-full flex-col rounded-card bg-canvas p-8">
+                  <blockquote className="font-display text-xl">
+                    &ldquo;{item.quote}&rdquo;
+                  </blockquote>
+                  <figcaption className="mt-auto pt-8">
+                    <p className="font-semibold">{item.name}</p>
+                    <p className="text-sm text-muted">{item.detail}</p>
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="shell grid gap-10 py-24 md:grid-cols-[1fr_2fr] md:py-32">
+        <Reveal>
+          <div>
+            <Badge tone="brand">FAQ</Badge>
+            <h2 className="mt-6 font-display text-section font-semibold">
+              Questions, answered.
+            </h2>
+          </div>
+        </Reveal>
+        <div className="divide-y divide-hairline border-y border-hairline">
+          {faqs.map((faq) => (
+            <details key={faq.question} className="group py-6">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 font-display text-xl font-semibold">
+                {faq.question}
+                <span
+                  aria-hidden
+                  className="text-2xl text-brand transition-transform duration-300 group-open:rotate-45"
+                >
+                  +
+                </span>
+              </summary>
+              <p className="mt-4 max-w-2xl text-muted">{faq.answer}</p>
+            </details>
+          ))}
+        </div>
       </section>
 
       <section className="shell pb-28 md:pb-36">

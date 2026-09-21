@@ -11,12 +11,16 @@ import type { Paginated, Portfolio } from '@/lib/types';
 
 const PAGE_SIZE = 12;
 
-export default function PortfoliosPage() {
+export default function PortfoliosPage({
+  searchParams,
+}: {
+  searchParams: { style?: string; roomType?: string };
+}) {
   const [filters, setFilters] = useState({
     q: '',
     location: '',
-    style: '',
-    roomType: '',
+    style: searchParams.style ?? '',
+    roomType: searchParams.roomType ?? '',
     maxBudget: '',
   });
   const [applied, setApplied] = useState(filters);
