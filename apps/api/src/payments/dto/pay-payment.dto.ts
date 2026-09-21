@@ -1,10 +1,10 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class PayPaymentDto {
-  @ApiPropertyOptional({ description: 'Stripe payment intent id (stub)' })
-  @IsOptional()
+  @ApiProperty({ description: 'Stripe Checkout session id' })
   @IsString()
+  @IsNotEmpty()
   @MaxLength(200)
-  stripeIntentId?: string;
+  sessionId!: string;
 }

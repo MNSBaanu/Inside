@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -23,10 +24,33 @@ export function PaymentList({
   const [actionError, setActionError] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnedPayment = searchParams.get('payment');
+  const sessionId = searchParams.get('session_id');
+  const confirming = useRef(false);
+
+  useEffect(() => {
+    if (!returnedPayment || !sessionId || confirming.current) return;
+    confirming.current = true;
+    api
+      .patch(`/payments/${returnedPayment}/pay`, { sessionId })
+      .then(() => reload())
+      .catch((cause) => setActionError(errorMessage(cause)))
+      .finally(() => router.replace(`/projects/${projectId}`));
+  }, [returnedPayment, sessionId, projectId, reload, router]);
+
   async function act(paymentId: string, action: 'pay' | 'release') {
     setActionError(null);
     setPending(paymentId);
     try {
+      if (action === 'pay') {
+        const { url } = await api.post<{ url: string }>(
+          `/payments/${paymentId}/checkout`,
+        );
+        window.location.assign(url);
+        return;
+      }
       await api.patch(`/payments/${paymentId}/${action}`, {});
       await reload();
     } catch (cause) {
@@ -50,6 +74,11 @@ export function PaymentList({
   return (
     <div>
       {actionError ? <ErrorNotice message={actionError} /> : null}
+      {returnedPayment && sessionId ? (
+        <p role="status" className="text-sm text-muted">
+          Confirming your payment…
+        </p>
+      ) : null}
 
       <ul className="mt-4 flex flex-col gap-4">
         {data.items.map((payment) => (

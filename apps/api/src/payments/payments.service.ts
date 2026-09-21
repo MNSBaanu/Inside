@@ -2,9 +2,12 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   NotificationType,
   PaymentStatus,
@@ -15,7 +18,9 @@ import type { AuthUser } from '../auth/auth.service';
 import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
+import Stripe from 'stripe';
 import { PayPaymentDto } from './dto/pay-payment.dto';
+import { STRIPE } from './stripe.provider';
 
 @Injectable()
 export class PaymentsService {
@@ -23,6 +28,8 @@ export class PaymentsService {
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
     private readonly activity: ActivityService,
+    private readonly config: ConfigService,
+    @Inject(STRIPE) private readonly stripe: Stripe | null,
   ) {}
 
   async listByProject(user: AuthUser, projectId: string) {
@@ -37,14 +44,50 @@ export class PaymentsService {
     };
   }
 
+  async createCheckout(user: AuthUser, id: string) {
+    const payment = await this.requirePendingForClient(user, id);
+    const stripe = this.requireStripe();
+    const projectUrl = `${this.config.get<string>('CORS_ORIGIN') ?? 'http://localhost:3000'}/projects/${payment.projectId}`;
+
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: 'lkr',
+            unit_amount: Math.round(Number(payment.amount) * 100),
+            product_data: { name: `${payment.project.title} milestone` },
+          },
+        },
+      ],
+      metadata: { paymentId: id },
+      success_url: `${projectUrl}?payment=${id}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: projectUrl,
+    });
+
+    return { success: true, data: { url: session.url } };
+  }
+
   async markPaid(user: AuthUser, id: string, dto: PayPaymentDto) {
-    const payment = await this.requirePayment(id);
-    if (payment.project.clientId !== user.id) {
-      throw new ForbiddenException('Only the client can pay this milestone');
+    const payment = await this.requirePendingForClient(user, id);
+    const stripe = this.requireStripe();
+
+    const session = await stripe.checkout.sessions
+      .retrieve(dto.sessionId)
+      .catch(() => {
+        throw new BadRequestException('Invalid checkout session');
+      });
+    if (
+      session.metadata?.paymentId !== id ||
+      session.payment_status !== 'paid'
+    ) {
+      throw new BadRequestException('Payment has not been completed');
     }
-    if (payment.status !== PaymentStatus.PENDING) {
-      throw new BadRequestException('Payment is not pending');
-    }
+    const intentId =
+      typeof session.payment_intent === 'string'
+        ? session.payment_intent
+        : (session.payment_intent?.id ?? session.id);
 
     try {
       const updated = await this.prisma.milestonePayment.update({
@@ -52,7 +95,7 @@ export class PaymentsService {
         data: {
           status: PaymentStatus.PAID,
           paidAt: new Date(),
-          stripeIntentId: dto.stripeIntentId,
+          stripeIntentId: intentId,
         },
       });
 
@@ -77,7 +120,7 @@ export class PaymentsService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new ConflictException('stripeIntentId already used');
+        throw new ConflictException('This payment was already recorded');
       }
       throw error;
     }
@@ -115,6 +158,24 @@ export class PaymentsService {
     });
 
     return { success: true, data: { payment: this.serialize(updated) } };
+  }
+
+  private async requirePendingForClient(user: AuthUser, id: string) {
+    const payment = await this.requirePayment(id);
+    if (payment.project.clientId !== user.id) {
+      throw new ForbiddenException('Only the client can pay this milestone');
+    }
+    if (payment.status !== PaymentStatus.PENDING) {
+      throw new BadRequestException('Payment is not pending');
+    }
+    return payment;
+  }
+
+  private requireStripe() {
+    if (!this.stripe) {
+      throw new ServiceUnavailableException('Payments are not configured');
+    }
+    return this.stripe;
   }
 
   private async requirePayment(id: string) {

@@ -5,6 +5,7 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -36,8 +37,18 @@ export class PaymentsController {
     return this.payments.listByProject(user, projectId);
   }
 
+  @Post('payments/:id/checkout')
+  @ApiOperation({ summary: 'Client starts a Stripe Checkout for a milestone' })
+  @ApiOkResponse({ description: 'Checkout URL' })
+  checkout(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.payments.createCheckout(user, id);
+  }
+
   @Patch('payments/:id/pay')
-  @ApiOperation({ summary: 'Client marks a milestone paid (stub, no Stripe)' })
+  @ApiOperation({ summary: 'Confirm a completed Stripe Checkout session' })
   @ApiOkResponse({ description: 'Paid' })
   pay(
     @CurrentUser() user: AuthUser,

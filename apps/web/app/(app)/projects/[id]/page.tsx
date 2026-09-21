@@ -1,5 +1,6 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { MessageThread } from '@/components/projects/message-thread';
@@ -33,7 +34,10 @@ export default function ProjectWorkspacePage({
     `/projects/${params.id}/stages`,
   );
 
-  const [tab, setTab] = useState<Tab>('Stages');
+  const searchParams = useSearchParams();
+  const [tab, setTab] = useState<Tab>(
+    searchParams.has('payment') ? 'Payments' : 'Stages',
+  );
   const [reviewed, setReviewed] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);

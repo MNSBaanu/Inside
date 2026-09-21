@@ -1,6 +1,8 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PaymentStatus, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
+import type { ConfigService } from '@nestjs/config';
+import type Stripe from 'stripe';
 import { ActivityService } from '../activity/activity.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -18,6 +20,10 @@ describe('PaymentsService', () => {
 
   const notifications = { notify: jest.fn() };
   const activity = { log: jest.fn() };
+  const config = { get: jest.fn() };
+  const stripe = {
+    checkout: { sessions: { create: jest.fn(), retrieve: jest.fn() } },
+  };
 
   const client = {
     id: 'c1',
@@ -53,27 +59,66 @@ describe('PaymentsService', () => {
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
       activity as unknown as ActivityService,
+      config as unknown as ConfigService,
+      stripe as unknown as Stripe,
     );
   });
 
-  it('client marks payment paid', async () => {
+  it('creates a checkout session for the client', async () => {
     prisma.milestonePayment.findUnique.mockResolvedValue(pendingPayment);
+    stripe.checkout.sessions.create.mockResolvedValue({
+      url: 'https://checkout.stripe.com/c/cs_1',
+    });
+    const result = await service.createCheckout(client, 'pay1');
+    expect(result.data.url).toBe('https://checkout.stripe.com/c/cs_1');
+    expect(stripe.checkout.sessions.create).toHaveBeenCalledWith(
+      expect.objectContaining({ metadata: { paymentId: 'pay1' } }),
+    );
+  });
+
+  it('client marks payment paid after Stripe confirms', async () => {
+    prisma.milestonePayment.findUnique.mockResolvedValue(pendingPayment);
+    stripe.checkout.sessions.retrieve.mockResolvedValue({
+      id: 'cs_1',
+      metadata: { paymentId: 'pay1' },
+      payment_status: 'paid',
+      payment_intent: 'pi_1',
+    });
     prisma.milestonePayment.update.mockResolvedValue({
       ...pendingPayment,
       status: PaymentStatus.PAID,
       paidAt: new Date(),
     });
     const result = await service.markPaid(client, 'pay1', {
-      stripeIntentId: 'pi_1',
+      sessionId: 'cs_1',
     });
     expect(result.data.payment.status).toBe(PaymentStatus.PAID);
+    expect(prisma.milestonePayment.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ stripeIntentId: 'pi_1' }),
+      }),
+    );
+  });
+
+  it('rejects an unpaid checkout session', async () => {
+    prisma.milestonePayment.findUnique.mockResolvedValue(pendingPayment);
+    stripe.checkout.sessions.retrieve.mockResolvedValue({
+      id: 'cs_1',
+      metadata: { paymentId: 'pay1' },
+      payment_status: 'unpaid',
+      payment_intent: null,
+    });
+    await expect(
+      service.markPaid(client, 'pay1', { sessionId: 'cs_1' }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(prisma.milestonePayment.update).not.toHaveBeenCalled();
   });
 
   it('rejects pay by designer', async () => {
     prisma.milestonePayment.findUnique.mockResolvedValue(pendingPayment);
-    await expect(service.markPaid(designer, 'pay1', {})).rejects.toBeInstanceOf(
-      ForbiddenException,
-    );
+    await expect(
+      service.markPaid(designer, 'pay1', { sessionId: 'cs_1' }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
   });
 
   it('rejects release on pending payment', async () => {

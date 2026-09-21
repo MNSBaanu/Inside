@@ -13,6 +13,7 @@ import * as bcrypt from 'bcryptjs';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
+import { STRIPE } from '../src/payments/stripe.provider';
 import { PrismaService } from '../src/prisma/prisma.service';
 
 const password = 'Password123!';
@@ -53,7 +54,22 @@ describe('Workspace flow (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(STRIPE)
+      .useValue({
+        checkout: {
+          sessions: {
+            retrieve: (sessionId: string) =>
+              Promise.resolve({
+                id: sessionId,
+                metadata: { paymentId: sessionId.replace('cs_test_', '') },
+                payment_status: 'paid',
+                payment_intent: `pi_${sessionId}`,
+              }),
+          },
+        },
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
@@ -263,7 +279,7 @@ describe('Workspace flow (e2e)', () => {
       const paid = await request(app.getHttpServer())
         .patch(`/payments/${pending.id}/pay`)
         .set(authHeader(clientToken))
-        .send({ stripeIntentId: `pi_test_${i}` })
+        .send({ sessionId: `cs_test_${pending.id}` })
         .expect(200);
       expect(paid.body.data.payment.status).toBe(PaymentStatus.PAID);
     }
