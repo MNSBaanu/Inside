@@ -8,9 +8,11 @@ import { RoleSwitch } from '@/components/account/role-switch';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
+import { Combobox } from '@/components/ui/combobox';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api';
+import { LOCATIONS } from '@/lib/options';
 import type { User } from '@/lib/types';
 import { FileUpload } from '@/components/ui/file-upload';
 
@@ -116,12 +118,11 @@ export default function AccountPage() {
 
           <div className="grid gap-6 sm:grid-cols-2">
             <Field label="Location" htmlFor="location">
-              <Input
+              <Combobox
                 id="location"
                 value={form.location}
-                onChange={(event) =>
-                  setForm({ ...form, location: event.target.value })
-                }
+                options={LOCATIONS}
+                onChange={(location) => setForm({ ...form, location })}
                 placeholder="Colombo"
               />
             </Field>

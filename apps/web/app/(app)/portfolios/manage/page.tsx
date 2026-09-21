@@ -6,11 +6,13 @@ import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
+import { Combobox } from '@/components/ui/combobox';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { FileUpload } from '@/components/ui/file-upload';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api';
 import { formatMoney } from '@/lib/format';
+import { ROOM_TYPES, STYLES } from '@/lib/options';
 import { useApi } from '@/lib/use-api';
 import type { Portfolio } from '@/lib/types';
 import { isOptimizableImage } from '@/lib/images';
@@ -110,22 +112,20 @@ export default function ManagePortfoliosPage() {
 
           <div className="grid gap-6 sm:grid-cols-2">
             <Field label="Style" htmlFor="style">
-              <Input
+              <Combobox
                 id="style"
                 value={form.style}
-                onChange={(event) =>
-                  setForm({ ...form, style: event.target.value })
-                }
+                options={STYLES}
+                onChange={(style) => setForm({ ...form, style })}
                 placeholder="Tropical Modern"
               />
             </Field>
             <Field label="Room type" htmlFor="roomType">
-              <Input
+              <Combobox
                 id="roomType"
                 value={form.roomType}
-                onChange={(event) =>
-                  setForm({ ...form, roomType: event.target.value })
-                }
+                options={ROOM_TYPES}
+                onChange={(roomType) => setForm({ ...form, roomType })}
                 placeholder="Living Room"
               />
             </Field>

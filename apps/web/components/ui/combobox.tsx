@@ -4,18 +4,22 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/field';
 import { cn } from '@/lib/cn';
 
-export function LocationCombobox({
+export function Combobox({
   id,
+  name,
   value,
   options,
   onChange,
   placeholder,
+  ariaLabel,
 }: {
   id: string;
+  name?: string;
   value: string;
   options: string[];
   onChange: (value: string) => void;
   placeholder?: string;
+  ariaLabel?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -62,6 +66,7 @@ export function LocationCombobox({
     <div className="relative">
       <Input
         id={id}
+        name={name}
         value={value}
         onChange={(event) => {
           onChange(event.target.value);
@@ -72,6 +77,7 @@ export function LocationCombobox({
         onBlur={() => setOpen(false)}
         onKeyDown={onKeyDown}
         placeholder={placeholder}
+        aria-label={ariaLabel}
         autoComplete="off"
         role="combobox"
         aria-expanded={visible.length > 0}

@@ -1,15 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PortfolioCard } from '@/components/portfolios/portfolio-card';
 import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/ui/combobox';
 import { Field, Input } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
+import { LOCATIONS, ROOM_TYPES, STYLES } from '@/lib/options';
 import { buildQuery, useApi } from '@/lib/use-api';
 import type { Paginated, Portfolio } from '@/lib/types';
 
 const PAGE_SIZE = 12;
+
+const EMPTY_FILTERS = {
+  q: '',
+  location: '',
+  style: '',
+  roomType: '',
+  maxBudget: '',
+};
 
 export default function PortfoliosPage({
   searchParams,
@@ -40,10 +50,16 @@ export default function PortfoliosPage({
     `/portfolios${query}`,
   );
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1);
+      setApplied(filters);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [filters]);
+
   function onSubmit(event: React.FormEvent) {
     event.preventDefault();
-    setPage(1);
-    setApplied(filters);
   }
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
@@ -69,35 +85,33 @@ export default function PortfoliosPage({
               setFilters({ ...filters, q: event.target.value })
             }
             placeholder="Oak, courtyard, designer"
+            autoComplete="off"
           />
         </Field>
         <Field label="Location" htmlFor="location">
-          <Input
+          <Combobox
             id="location"
             value={filters.location}
-            onChange={(event) =>
-              setFilters({ ...filters, location: event.target.value })
-            }
+            options={LOCATIONS}
+            onChange={(location) => setFilters({ ...filters, location })}
             placeholder="Colombo"
           />
         </Field>
         <Field label="Style" htmlFor="style">
-          <Input
+          <Combobox
             id="style"
             value={filters.style}
-            onChange={(event) =>
-              setFilters({ ...filters, style: event.target.value })
-            }
+            options={STYLES}
+            onChange={(style) => setFilters({ ...filters, style })}
             placeholder="Scandinavian"
           />
         </Field>
         <Field label="Room type" htmlFor="roomType">
-          <Input
+          <Combobox
             id="roomType"
             value={filters.roomType}
-            onChange={(event) =>
-              setFilters({ ...filters, roomType: event.target.value })
-            }
+            options={ROOM_TYPES}
+            onChange={(roomType) => setFilters({ ...filters, roomType })}
             placeholder="Living room"
           />
         </Field>
@@ -111,10 +125,16 @@ export default function PortfoliosPage({
               setFilters({ ...filters, maxBudget: event.target.value })
             }
             placeholder="800000"
+            autoComplete="off"
           />
         </Field>
-        <Button type="submit" size="lg">
-          Apply
+        <Button
+          type="button"
+          size="lg"
+          variant="outline"
+          onClick={() => setFilters(EMPTY_FILTERS)}
+        >
+          Clear
         </Button>
       </form>
 

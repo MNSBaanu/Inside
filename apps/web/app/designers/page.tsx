@@ -2,45 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import { DesignerCard } from '@/components/designers/designer-card';
-import { LocationCombobox } from '@/components/designers/location-combobox';
 import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/ui/combobox';
 import { Field, Input } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { Select } from '@/components/ui/select';
+import { LOCATIONS } from '@/lib/options';
 import { buildQuery, useApi } from '@/lib/use-api';
 import type { DesignerSummary, Paginated } from '@/lib/types';
 
 const PAGE_SIZE = 12;
-
-const LOCATIONS = [
-  'Ampara',
-  'Anuradhapura',
-  'Badulla',
-  'Batticaloa',
-  'Colombo',
-  'Galle',
-  'Gampaha',
-  'Hambantota',
-  'Jaffna',
-  'Kalutara',
-  'Kandy',
-  'Kegalle',
-  'Kilinochchi',
-  'Kurunegala',
-  'Mannar',
-  'Matale',
-  'Matara',
-  'Monaragala',
-  'Mullaitivu',
-  'Negombo',
-  'Nuwara Eliya',
-  'Polonnaruwa',
-  'Puttalam',
-  'Ratnapura',
-  'Trincomalee',
-  'Vavuniya',
-];
 
 const EMPTY_FILTERS = { q: '', location: '', verified: '' };
 
@@ -107,7 +79,7 @@ export default function DesignersPage({
           />
         </Field>
         <Field label="Location" htmlFor="location">
-          <LocationCombobox
+          <Combobox
             id="location"
             value={filters.location}
             options={LOCATIONS}

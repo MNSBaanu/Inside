@@ -2,9 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/reveal';
 import { DesignerCard } from '@/components/designers/designer-card';
+import { HeroSearch } from '@/components/hero-search';
 import { Badge } from '@/components/ui/badge';
-import { Button, ButtonLink } from '@/components/ui/button';
-import { Input } from '@/components/ui/field';
+import { ButtonLink } from '@/components/ui/button';
 import { RoomHotspots } from '@/components/room-hotspots';
 import {
   featuredWork,
@@ -161,25 +161,7 @@ export default async function HomePage() {
           </div>
         </Reveal>
         <Reveal delay={240}>
-          <form
-            action="/designers"
-            className="mt-12 grid gap-3 rounded-card border border-hairline bg-surface p-3 sm:grid-cols-[2fr_1fr_auto]"
-          >
-            <Input
-              name="q"
-              type="search"
-              aria-label="Search designers"
-              placeholder="Designer name or keyword"
-            />
-            <Input
-              name="location"
-              aria-label="Location"
-              placeholder="Location, e.g. Colombo"
-            />
-            <Button type="submit" size="lg">
-              Search
-            </Button>
-          </form>
+          <HeroSearch />
           <div className="mt-5 flex flex-wrap items-center gap-2">
             <span className="label mr-2 text-muted">Popular styles</span>
             {styles.map((style) => (
