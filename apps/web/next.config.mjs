@@ -19,7 +19,7 @@ const contentSecurityPolicy = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  distDir: process.env.NEXT_DIST_DIR || '.next',
+  distDir: process.env.NEXT_DIST_DIR || (isDev ? '.next-dev' : '.next'),
   images: {
     // Only our own upload host and the stock-photo host go through the optimizer.
     remotePatterns: [
