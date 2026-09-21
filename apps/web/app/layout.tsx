@@ -3,6 +3,7 @@ import { DM_Sans, Fraunces } from 'next/font/google';
 import './globals.css';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import { FooterGate } from '@/components/layout/footer-gate';
 import { SessionProvider } from '@/components/providers/session-provider';
 
 const dmSans = DM_Sans({
@@ -40,7 +41,9 @@ export default function RootLayout({
           </a>
           <SiteHeader />
           <main id="main">{children}</main>
-          <SiteFooter />
+          <FooterGate>
+            <SiteFooter />
+          </FooterGate>
         </SessionProvider>
       </body>
     </html>

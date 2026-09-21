@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ButtonLink } from '@/components/ui/button';
-import { Avatar } from '@/components/ui/avatar';
+import { AccountMenu } from '@/components/layout/account-menu';
 import { useSession } from '@/components/providers/session-provider';
 
 const navigation = [
@@ -19,7 +19,8 @@ export function SiteHeader() {
   const pathname = usePathname();
   const { user, status } = useSession();
   const segment = useSelectedLayoutSegment();
-  const designerWorkspace = segment === '(app)' && user?.activeRole === 'DESIGNER';
+  const workspace = segment === '(app)';
+  const designerWorkspace = workspace && user?.activeRole === 'DESIGNER';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -70,7 +71,7 @@ export function SiteHeader() {
           Inside<span className="text-brand">.</span>
         </Link>
 
-        {designerWorkspace ? null : (
+        {workspace ? null : (
           <nav className="hidden items-center gap-10 md:flex">
             {navigation.map((item) => (
               <Link
@@ -87,19 +88,15 @@ export function SiteHeader() {
         <div className="flex items-center gap-5">
           {status === 'authenticated' && user ? (
             <>
-              <Link
-                href={designerWorkspace ? `/designers/${user.id}` : '/dashboard'}
-                className="label hidden text-ink/70 transition-colors duration-300 hover:text-brand sm:block"
-              >
-                {designerWorkspace ? 'Public profile' : 'Dashboard'}
-              </Link>
-              <Link
-                href="/account"
-                aria-label={`Account - ${user.name}`}
-                className="hidden sm:block"
-              >
-                <Avatar name={user.name} src={user.avatarUrl} size={40} />
-              </Link>
+              {workspace && !designerWorkspace ? null : (
+                <Link
+                  href={designerWorkspace ? `/designers/${user.id}` : '/dashboard'}
+                  className="label hidden text-ink/70 transition-colors duration-300 hover:text-brand sm:block"
+                >
+                  {designerWorkspace ? 'Public profile' : 'Dashboard'}
+                </Link>
+              )}
+              <AccountMenu user={user} />
             </>
           ) : (
             <>
@@ -144,7 +141,7 @@ export function SiteHeader() {
         hidden={!menuOpen}
         className="h-[calc(100dvh-4rem)] overflow-y-auto bg-canvas md:hidden"
       >
-        {designerWorkspace ? null : (
+        {workspace ? null : (
           <nav className="shell flex flex-col pt-8">
             {navigation.map((item) => (
               <Link

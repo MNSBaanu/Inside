@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { createContext, useContext, useEffect, useRef } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/feedback';
+import { api } from '@/lib/api';
 import { cn } from '@/lib/cn';
-import { useApi } from '@/lib/use-api';
-import type { Notification, ProjectListItem, Role } from '@/lib/types';
+import type { Role } from '@/lib/types';
 
 const SignOutContext = createContext<() => Promise<void>>(async () => undefined);
 
@@ -26,8 +26,6 @@ const navigation: NavItem[] = [
   { href: '/favourites', label: 'Saved', roles: ['CLIENT'] },
   { href: '/requests', label: 'Requests' },
   { href: '/projects', label: 'Projects' },
-  { href: '/messages', label: 'Messages' },
-  { href: '/notifications', label: 'Alerts' },
   { href: '/portfolios/manage', label: 'My work', roles: ['DESIGNER'] },
   { href: '/verification', label: 'Verification', roles: ['DESIGNER'] },
   { href: '/admin', label: 'Admin', roles: ['ADMIN'] },
@@ -39,31 +37,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, status, logout } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const authed = status === 'authenticated';
   const signingOut = useRef(false);
-
-  const notifications = useApi<{ items: Notification[] }>(
-    authed ? '/notifications' : null,
-  );
-  const projects = useApi<{ items: ProjectListItem[] }>(
-    authed ? '/projects' : null,
-  );
-  const reloadNotifications = notifications.reload;
-  const reloadProjects = projects.reload;
-
-  useEffect(() => {
-    void reloadNotifications();
-    void reloadProjects();
-  }, [pathname, reloadNotifications, reloadProjects]);
-
-  const unreadAlerts =
-    notifications.data?.items.filter((item) => item.readAt === null).length ?? 0;
-  const unreadMessages =
-    projects.data?.items.reduce((sum, item) => sum + item.unreadCount, 0) ?? 0;
-  const counts: Record<string, number> = {
-    '/notifications': unreadAlerts,
-    '/messages': unreadMessages,
-  };
 
   useEffect(() => {
     if (status === 'unauthenticated' && !signingOut.current) {
@@ -91,19 +65,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="shell grid gap-12 pb-32 pt-28 md:pb-40 md:pt-32 lg:grid-cols-[240px_1fr]">
-      <aside className="h-fit rounded-card bg-sand p-6 lg:sticky lg:top-28 lg:max-h-[calc(100dvh-8rem)] lg:self-start lg:overflow-y-auto">
+    <div className="shell grid gap-12 pb-32 pt-28 md:pb-40 md:pt-32 lg:h-dvh lg:grid-cols-[240px_1fr] lg:overflow-hidden lg:pb-8 lg:pt-24">
+      <aside className="h-fit rounded-card bg-sand p-6 [scrollbar-width:none] lg:h-full lg:overflow-y-auto [&::-webkit-scrollbar]:hidden">
         <p className="label text-ink/70">Signed in as</p>
         <p className="mt-2 font-display text-xl font-semibold">{user.name}</p>
-        <Badge tone="brand" className="mt-3">
-          {user.activeRole.toLowerCase()}
-        </Badge>
+        {user.role === 'DESIGNER' ? (
+          <RoleToggle activeRole={user.activeRole} />
+        ) : (
+          <Badge tone="brand" className="mt-3">
+            {user.activeRole.toLowerCase()}
+          </Badge>
+        )}
 
         <nav className="mt-8 flex gap-2 overflow-x-auto lg:-mx-4 lg:flex-col lg:overflow-visible">
           {items.map((item) => {
             const active =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
-            const count = counts[item.href] ?? 0;
             return (
               <Link
                 key={item.href}
@@ -112,22 +89,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 className={cn(
                   'flex items-center gap-2 whitespace-nowrap rounded-pill px-4 py-2.5 text-label font-semibold uppercase transition-colors duration-300',
                   active
-                    ? 'bg-brand text-canvas'
+                    ? 'bg-surface text-ink'
                     : 'text-ink/70 hover:bg-canvas hover:text-ink',
                 )}
               >
                 {item.label}
-                {count > 0 ? (
-                  <span
-                    aria-label={`${count} unread`}
-                    className={cn(
-                      'inline-flex min-w-5 justify-center rounded-pill px-1.5 py-0.5 text-xs',
-                      active ? 'bg-canvas text-brand-deep' : 'bg-brand text-canvas',
-                    )}
-                  >
-                    {count}
-                  </span>
-                ) : null}
               </Link>
             );
           })}
@@ -143,7 +109,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </Button>
       </aside>
 
-      <div className="min-w-0">
+      <div className="min-w-0 [scrollbar-width:none] lg:h-full lg:overflow-y-auto lg:pb-16 [&::-webkit-scrollbar]:hidden">
         {user.emailVerified ? null : (
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-card bg-highlight-soft px-6 py-4">
             <p className="text-sm text-warning">
@@ -159,6 +125,50 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
         <SignOutContext.Provider value={onSignOut}>{children}</SignOutContext.Provider>
       </div>
+    </div>
+  );
+}
+
+function RoleToggle({ activeRole }: { activeRole: Role }) {
+  const { refreshUser } = useSession();
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+
+  async function switchTo(role: Role) {
+    if (role === activeRole) return;
+    setBusy(true);
+    try {
+      await api.patch('/users/me/active-role', { activeRole: role });
+      await refreshUser();
+      router.push('/dashboard');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div
+      role="group"
+      aria-label="Working as"
+      className="mt-3 grid grid-cols-2 rounded-pill bg-canvas p-1"
+    >
+      {(['CLIENT', 'DESIGNER'] as const).map((role) => (
+        <button
+          key={role}
+          type="button"
+          disabled={busy}
+          onClick={() => switchTo(role)}
+          aria-pressed={activeRole === role}
+          className={cn(
+            'rounded-pill px-3 py-1.5 text-label font-semibold uppercase transition-colors duration-300 disabled:opacity-60',
+            activeRole === role
+              ? 'bg-ink text-canvas'
+              : 'text-ink/70 hover:text-ink',
+          )}
+        >
+          {role === 'CLIENT' ? 'Client' : 'Designer'}
+        </button>
+      ))}
     </div>
   );
 }
