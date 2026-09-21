@@ -10,6 +10,19 @@ import {
 } from 'class-validator';
 
 export class ListPortfoliosQueryDto {
+  @ApiPropertyOptional({ description: 'Search title, description or designer' })
+  @IsOptional()
+  @IsString()
+  q?: string;
+
+  @ApiPropertyOptional({
+    example: 'Colombo',
+    description: "Designer's location",
+  })
+  @IsOptional()
+  @IsString()
+  location?: string;
+
   @ApiPropertyOptional({ example: 'Scandinavian' })
   @IsOptional()
   @IsString()

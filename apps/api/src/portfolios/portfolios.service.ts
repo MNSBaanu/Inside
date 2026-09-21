@@ -33,7 +33,25 @@ export class PortfoliosService {
     const pageSize = Math.min(query.pageSize ?? 20, 50);
     const where: Prisma.PortfolioWhereInput = {
       isPublished: true,
-      designer: { status: AccountStatus.ACTIVE },
+      designer: {
+        status: AccountStatus.ACTIVE,
+        ...(query.location
+          ? { location: { contains: query.location, mode: 'insensitive' } }
+          : {}),
+      },
+      ...(query.q
+        ? {
+            OR: [
+              { title: { contains: query.q, mode: 'insensitive' } },
+              { description: { contains: query.q, mode: 'insensitive' } },
+              {
+                designer: {
+                  name: { contains: query.q, mode: 'insensitive' },
+                },
+              },
+            ],
+          }
+        : {}),
       ...(query.style
         ? { style: { equals: query.style, mode: 'insensitive' } }
         : {}),

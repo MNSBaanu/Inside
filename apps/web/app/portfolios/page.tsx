@@ -13,6 +13,8 @@ const PAGE_SIZE = 12;
 
 export default function PortfoliosPage() {
   const [filters, setFilters] = useState({
+    q: '',
+    location: '',
     style: '',
     roomType: '',
     maxBudget: '',
@@ -21,6 +23,8 @@ export default function PortfoliosPage() {
   const [page, setPage] = useState(1);
 
   const query = buildQuery({
+    q: applied.q,
+    location: applied.location,
     style: applied.style,
     roomType: applied.roomType,
     maxBudget: applied.maxBudget,
@@ -50,8 +54,29 @@ export default function PortfoliosPage() {
 
       <form
         onSubmit={onSubmit}
-        className="mt-12 grid gap-4 rounded-card border border-hairline bg-surface p-6 md:grid-cols-[1fr_1fr_1fr_auto] md:items-end"
+        className="mt-12 grid gap-4 rounded-card border border-hairline bg-surface p-6 sm:grid-cols-2 lg:grid-cols-[repeat(5,minmax(0,1fr))_auto] lg:items-end"
       >
+        <Field label="Search" htmlFor="q">
+          <Input
+            id="q"
+            type="search"
+            value={filters.q}
+            onChange={(event) =>
+              setFilters({ ...filters, q: event.target.value })
+            }
+            placeholder="Oak, courtyard, designer"
+          />
+        </Field>
+        <Field label="Location" htmlFor="location">
+          <Input
+            id="location"
+            value={filters.location}
+            onChange={(event) =>
+              setFilters({ ...filters, location: event.target.value })
+            }
+            placeholder="Colombo"
+          />
+        </Field>
         <Field label="Style" htmlFor="style">
           <Input
             id="style"
@@ -131,7 +156,7 @@ export default function PortfoliosPage() {
         ) : !error ? (
           <EmptyState
             title="No projects match those filters."
-            description="Try a different style, room type or budget."
+            description="Try a different search, location, style, room type or budget."
           />
         ) : null}
       </div>

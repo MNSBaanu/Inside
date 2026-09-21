@@ -66,6 +66,25 @@ describe('PortfoliosService', () => {
     expect(result.data.items[0].budget).toBe(100);
   });
 
+  it('filters by keyword and designer location', async () => {
+    prisma.$transaction.mockResolvedValue([0, []]);
+
+    await service.listPublic({ q: 'oak', location: 'Kandy' });
+
+    expect(prisma.portfolio.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          designer: expect.objectContaining({
+            location: { contains: 'Kandy', mode: 'insensitive' },
+          }),
+          OR: expect.arrayContaining([
+            { title: { contains: 'oak', mode: 'insensitive' } },
+          ]),
+        }),
+      }),
+    );
+  });
+
   it('hides unpublished portfolios from non-owners', async () => {
     prisma.portfolio.findUnique.mockResolvedValue({
       id: 'p1',
