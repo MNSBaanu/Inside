@@ -1,6 +1,6 @@
 import { authStorage } from './auth-storage';
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 type ApiSuccess<T> = { success: true; data: T };
 type ApiFailure = {

@@ -1,6 +1,6 @@
 const isDev = process.env.NODE_ENV !== 'production';
 const apiOrigin = new URL(
-  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001',
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
 ).origin;
 
 const contentSecurityPolicy = [
