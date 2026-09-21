@@ -156,6 +156,57 @@ export class RequestsService {
     };
   }
 
+  async listOpen(query: PaginationQueryDto) {
+    const { page, pageSize, skip, take } = paginate(query);
+    const where = {
+      type: RequestType.OPEN,
+      status: RequestStatus.OPEN,
+      client: { status: AccountStatus.ACTIVE },
+    };
+
+    const [total, items] = await Promise.all([
+      this.prisma.projectRequest.count({ where }),
+      this.prisma.projectRequest.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          timeline: true,
+          budget: true,
+          createdAt: true,
+          brief: { select: { styles: true, rooms: true } },
+          client: { select: { location: true } },
+          _count: { select: { proposals: true } },
+        },
+        skip,
+        take,
+      }),
+    ]);
+
+    return {
+      success: true,
+      data: {
+        items: items.map((request) => ({
+          id: request.id,
+          title: request.title,
+          description: request.description,
+          timeline: request.timeline,
+          budget: request.budget !== null ? Number(request.budget) : null,
+          createdAt: request.createdAt,
+          styles: request.brief?.styles ?? [],
+          rooms: request.brief?.rooms ?? [],
+          location: request.client.location,
+          proposalCount: request._count.proposals,
+        })),
+        page,
+        pageSize,
+        total,
+      },
+    };
+  }
+
   async getById(user: AuthUser, id: string) {
     const request = await this.requirePartyAccess(id, user);
     return { success: true, data: { request: this.serialize(request) } };

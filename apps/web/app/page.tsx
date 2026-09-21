@@ -117,11 +117,18 @@ const promotions = [
     cta: 'Start a brief',
   },
   {
+    label: 'Open projects',
+    title: 'Post a project, let designers come to you',
+    body: 'Describe the space and budget once. Designers reply with proposals you can compare.',
+    href: '/requests/new',
+    cta: 'Post a project',
+  },
+  {
     label: 'For designers',
-    title: 'Get verified, get noticed',
-    body: 'Verified designers carry a badge and appear first when clients browse.',
-    href: '/register',
-    cta: 'Join as a designer',
+    title: 'Find your next project',
+    body: 'Browse open projects from clients and send a proposal with your scope and fees.',
+    href: '/open-projects',
+    cta: 'See open projects',
   },
 ];
 
@@ -332,7 +339,7 @@ export default async function HomePage() {
       ) : null}
 
       <section aria-label="Promotions" className="shell pt-16 md:pt-20">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
           {promotions.map((promo) => (
             <Link
               key={promo.title}

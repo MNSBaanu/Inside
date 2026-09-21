@@ -125,6 +125,19 @@ export type DesignerProfile = {
   rating: Rating;
 };
 
+export type OpenRequest = {
+  id: string;
+  title: string;
+  description: string | null;
+  timeline: string | null;
+  budget: number | null;
+  createdAt: string;
+  styles: string[];
+  rooms: string[];
+  location: string | null;
+  proposalCount: number;
+};
+
 export type Paginated<T> = {
   items: T[];
   page: number;

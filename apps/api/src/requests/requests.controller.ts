@@ -47,6 +47,13 @@ export class RequestsController {
     return this.requestsService.listMine(user, query);
   }
 
+  @Get('open')
+  @ApiOperation({ summary: 'List open requests publicly (no client details)' })
+  @ApiOkResponse({ description: 'Open requests' })
+  listOpen(@Query() query: PaginationQueryDto) {
+    return this.requestsService.listOpen(query);
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get request by id (party access)' })
