@@ -2,14 +2,15 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Field, Textarea } from '@/components/ui/field';
-import { ErrorNotice } from '@/components/ui/feedback';
+import { Field, Input, Textarea } from '@/components/ui/field';
+import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { FileUpload } from '@/components/ui/file-upload';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api';
+import { cn } from '@/lib/cn';
 import { formatDate, formatMoney, titleCase } from '@/lib/format';
 import { safeHref } from '@/lib/url';
-import type { Deliverable, ProjectStage } from '@/lib/types';
+import type { Deliverable, ProjectStage, Task } from '@/lib/types';
 
 type StageAction = 'start' | 'submit' | 'approve' | 'reject';
 
@@ -137,6 +138,11 @@ export function StageList({
                   {openStage === stage.id ? 'Hide files' : 'Files'}
                 </Button>
               </div>
+
+              <StageTasks
+                stageId={stage.id}
+                canEdit={isDesigner && stage.status !== 'APPROVED'}
+              />
 
               {rejecting === stage.id && stage.status === 'SUBMITTED' ? (
                 <form
@@ -307,6 +313,151 @@ function StageDeliverables({
               {busy ? 'Adding…' : 'Add deliverable'}
             </Button>
           </div>
+        </form>
+      ) : null}
+    </div>
+  );
+}
+
+function StageTasks({
+  stageId,
+  canEdit,
+}: {
+  stageId: string;
+  canEdit: boolean;
+}) {
+  const [items, setItems] = useState<Task[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [title, setTitle] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    setError(null);
+    try {
+      const data = await api.get<{ items: Task[] }>(`/stages/${stageId}/tasks`);
+      setItems(data.items);
+    } catch (cause) {
+      setError(errorMessage(cause));
+    }
+  }, [stageId]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  async function run(action: () => Promise<unknown>) {
+    setError(null);
+    setBusy(true);
+    try {
+      await action();
+      await load();
+    } catch (cause) {
+      setError(errorMessage(cause));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const done = items?.filter((task) => task.isDone).length ?? 0;
+
+  return (
+    <div className="mt-6 border-t border-hairline pt-6">
+      <p className="label text-muted">
+        Tasks
+        {items && items.length > 0 ? ` · ${done}/${items.length} done` : ''}
+      </p>
+
+      {error ? (
+        <div className="mt-3 flex flex-col items-start gap-3">
+          <ErrorNotice message={error} />
+          {items === null ? (
+            <Button size="sm" variant="outline" onClick={() => void load()}>
+              Try again
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
+
+      {items === null && !error ? <Skeleton className="mt-3 h-12" /> : null}
+
+      {items && items.length === 0 ? (
+        <p className="mt-3 text-sm text-muted">
+          {canEdit
+            ? 'Add the steps you will work through in this stage.'
+            : 'No tasks for this stage yet.'}
+        </p>
+      ) : null}
+
+      {items && items.length > 0 ? (
+        <ul className="mt-3 flex flex-col gap-1">
+          {items.map((task) => (
+            <li key={task.id} className="flex items-center justify-between gap-3">
+              <label className="flex min-h-11 flex-1 items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={task.isDone}
+                  disabled={!canEdit || busy}
+                  onChange={(event) => {
+                    const isDone = event.target.checked;
+                    void run(() => api.patch(`/tasks/${task.id}`, { isDone }));
+                  }}
+                  className="h-4 w-4 accent-brand"
+                />
+                <span
+                  className={cn(
+                    'text-sm',
+                    task.isDone && 'text-muted line-through',
+                  )}
+                >
+                  {task.title}
+                </span>
+              </label>
+              {canEdit ? (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={busy}
+                  aria-label={`Delete task: ${task.title}`}
+                  onClick={() => void run(() => api.delete(`/tasks/${task.id}`))}
+                >
+                  Delete
+                </Button>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      {canEdit ? (
+        <form
+          className="mt-4 flex flex-wrap items-end gap-3"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void run(async () => {
+              await api.post(`/stages/${stageId}/tasks`, {
+                title: title.trim(),
+              });
+              setTitle('');
+            });
+          }}
+        >
+          <div className="min-w-0 flex-1">
+            <Field label="New task" htmlFor={`task-${stageId}`}>
+              <Input
+                id={`task-${stageId}`}
+                value={title}
+                maxLength={200}
+                onChange={(event) => setTitle(event.target.value)}
+              />
+            </Field>
+          </div>
+          <Button
+            type="submit"
+            size="sm"
+            disabled={busy || title.trim().length < 2}
+          >
+            Add task
+          </Button>
         </form>
       ) : null}
     </div>

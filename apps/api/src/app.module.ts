@@ -24,6 +24,7 @@ import { ReportsModule } from './reports/reports.module';
 import { RequestsModule } from './requests/requests.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { StagesModule } from './stages/stages.module';
+import { TasksModule } from './tasks/tasks.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { UsersModule } from './users/users.module';
 import { VerificationsModule } from './verifications/verifications.module';
@@ -52,6 +53,7 @@ import { VerificationsModule } from './verifications/verifications.module';
     NotificationsModule,
     ProjectsModule,
     StagesModule,
+    TasksModule,
     DeliverablesModule,
     MessagesModule,
     PaymentsModule,

@@ -365,11 +365,25 @@ model ProjectStage {
   project      Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
   deliverables Deliverable[]
   payments     MilestonePayment[]
+  tasks        Task[]
 
   @@unique([projectId, stageOrder])
   @@index([projectId])
   @@index([status])
   @@index([dueDate])
+}
+
+model Task {
+  id        String   @id @default(uuid())
+  stageId   String
+  title     String
+  isDone    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stage ProjectStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@index([stageId])
 }
 
 model Deliverable {
