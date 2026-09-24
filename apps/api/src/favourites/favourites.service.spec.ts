@@ -3,7 +3,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma, Role } from '@inside/database';
+import { AccountStatus, Prisma, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { BlocksService } from '../blocks/blocks.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -43,6 +43,7 @@ describe('FavouritesService', () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'd1',
       role: Role.DESIGNER,
+      status: AccountStatus.ACTIVE,
     });
     prisma.favourite.create.mockResolvedValue({
       id: 'f1',
@@ -69,6 +70,7 @@ describe('FavouritesService', () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'd1',
       role: Role.DESIGNER,
+      status: AccountStatus.ACTIVE,
     });
     blocks.assertNotBlocked.mockRejectedValue(
       new ForbiddenException('You cannot interact with this user'),
@@ -83,6 +85,7 @@ describe('FavouritesService', () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'd1',
       role: Role.DESIGNER,
+      status: AccountStatus.ACTIVE,
     });
     const err = new Prisma.PrismaClientKnownRequestError('Unique', {
       code: 'P2002',
@@ -93,6 +96,18 @@ describe('FavouritesService', () => {
     await expect(
       service.create(client, { designerId: 'd1' }),
     ).rejects.toBeInstanceOf(ConflictException);
+  });
+
+  it('rejects favouriting a suspended designer', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'd1',
+      role: Role.DESIGNER,
+      status: AccountStatus.SUSPENDED,
+    });
+
+    await expect(
+      service.create(client, { designerId: 'd1' }),
+    ).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('rejects favouriting a non-designer', async () => {

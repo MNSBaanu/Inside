@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma, Role } from '@inside/database';
+import { AccountStatus, Prisma, Role } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { BlocksService } from '../blocks/blocks.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -29,7 +29,11 @@ export class FavouritesService {
 
   async listMine(user: AuthUser) {
     const items = await this.prisma.favourite.findMany({
-      where: { clientId: user.id },
+      // Suspended designers drop out of the list until they are reactivated.
+      where: {
+        clientId: user.id,
+        designer: { status: AccountStatus.ACTIVE },
+      },
       orderBy: { createdAt: 'desc' },
       include: { designer: { select: designerSelect } },
     });
@@ -49,7 +53,11 @@ export class FavouritesService {
     const designer = await this.prisma.user.findUnique({
       where: { id: dto.designerId },
     });
-    if (!designer || designer.role !== Role.DESIGNER) {
+    if (
+      !designer ||
+      designer.role !== Role.DESIGNER ||
+      designer.status !== AccountStatus.ACTIVE
+    ) {
       throw new NotFoundException('Designer not found');
     }
 

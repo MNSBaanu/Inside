@@ -1,7 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { Role } from '@inside/database';
+import { AccountStatus, Role } from '@inside/database';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
@@ -98,6 +98,43 @@ describe('FavouritesController (e2e)', () => {
       .set('Authorization', `Bearer ${clientToken}`)
       .send({ designerId })
       .expect(409);
+
+    await request(app.getHttpServer())
+      .delete(`/favourites/${designerId}`)
+      .set('Authorization', `Bearer ${clientToken}`)
+      .expect(200);
+  });
+
+  it('hides a suspended designer until they are reactivated', async () => {
+    await request(app.getHttpServer())
+      .post('/favourites')
+      .set('Authorization', `Bearer ${clientToken}`)
+      .send({ designerId })
+      .expect(201);
+
+    const listed = async () => {
+      const list = await request(app.getHttpServer())
+        .get('/favourites')
+        .set('Authorization', `Bearer ${clientToken}`)
+        .expect(200);
+      return list.body.data.items.some(
+        (i: { designerId: string }) => i.designerId === designerId,
+      );
+    };
+
+    await prisma.user.update({
+      where: { id: designerId },
+      data: { status: AccountStatus.SUSPENDED },
+    });
+    try {
+      expect(await listed()).toBe(false);
+    } finally {
+      await prisma.user.update({
+        where: { id: designerId },
+        data: { status: AccountStatus.ACTIVE },
+      });
+    }
+    expect(await listed()).toBe(true);
 
     await request(app.getHttpServer())
       .delete(`/favourites/${designerId}`)
