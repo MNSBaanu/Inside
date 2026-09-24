@@ -1,4 +1,8 @@
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+} from '@nestjs/common';
 import {
   PaymentStatus,
   ProjectStatus,
@@ -28,6 +32,8 @@ describe('StagesService', () => {
     projectStage: {
       findUnique: jest.fn(),
       update: jest.fn(),
+      updateMany: jest.fn(),
+      findUniqueOrThrow: jest.fn(),
       findMany: jest.fn(),
     },
     deliverable: {
@@ -205,12 +211,30 @@ describe('StagesService', () => {
       ...baseStage,
       status: StageStatus.SUBMITTED,
     });
-    prisma.projectStage.update.mockResolvedValue({
+    prisma.projectStage.updateMany.mockResolvedValue({ count: 1 });
+    prisma.projectStage.findUniqueOrThrow.mockResolvedValue({
       ...baseStage,
       status: StageStatus.REJECTED,
     });
 
     const result = await service.reject(client, 's1', 'try again');
     expect(result.data.stage.status).toBe(StageStatus.REJECTED);
+    expect(prisma.projectStage.updateMany).toHaveBeenCalledWith({
+      where: { id: 's1', status: StageStatus.SUBMITTED },
+      data: { status: StageStatus.REJECTED },
+    });
+  });
+
+  it('refuses a reject when the stage was reviewed meanwhile', async () => {
+    prisma.projectStage.findUnique.mockResolvedValue({
+      ...baseStage,
+      status: StageStatus.SUBMITTED,
+    });
+    prisma.projectStage.updateMany.mockResolvedValue({ count: 0 });
+
+    await expect(
+      service.reject(client, 's1', 'try again'),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(notifications.notify).not.toHaveBeenCalled();
   });
 });

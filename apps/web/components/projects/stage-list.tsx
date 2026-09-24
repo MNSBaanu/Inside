@@ -16,11 +16,16 @@ type StageAction = 'start' | 'submit' | 'approve' | 'reject';
 
 export function StageList({
   stages,
+  currentStage,
+  projectActive,
   isClient,
   isDesigner,
   onChanged,
 }: {
   stages: ProjectStage[];
+  currentStage: ProjectStage['name'];
+  /** Stage work is only possible while the project is active. */
+  projectActive: boolean;
   isClient: boolean;
   isDesigner: boolean;
   onChanged: () => void;
@@ -30,6 +35,8 @@ export function StageList({
   const [openStage, setOpenStage] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [reason, setReason] = useState('');
+  const designerCanAct = isDesigner && projectActive;
+  const clientCanAct = isClient && projectActive;
 
   async function act(
     stageId: string,
@@ -82,7 +89,9 @@ export function StageList({
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
-                {isDesigner && stage.status === 'PENDING' ? (
+                {designerCanAct &&
+                stage.status === 'PENDING' &&
+                stage.name === currentStage ? (
                   <Button
                     size="sm"
                     disabled={busy}
@@ -92,7 +101,7 @@ export function StageList({
                   </Button>
                 ) : null}
 
-                {isDesigner &&
+                {designerCanAct &&
                 (stage.status === 'IN_PROGRESS' ||
                   stage.status === 'REJECTED') ? (
                   <Button
@@ -106,7 +115,7 @@ export function StageList({
                   </Button>
                 ) : null}
 
-                {isClient && stage.status === 'SUBMITTED' ? (
+                {clientCanAct && stage.status === 'SUBMITTED' ? (
                   <>
                     <Button
                       size="sm"
@@ -141,10 +150,12 @@ export function StageList({
 
               <StageTasks
                 stageId={stage.id}
-                canEdit={isDesigner && stage.status !== 'APPROVED'}
+                canEdit={designerCanAct && stage.status !== 'APPROVED'}
               />
 
-              {rejecting === stage.id && stage.status === 'SUBMITTED' ? (
+              {clientCanAct &&
+              rejecting === stage.id &&
+              stage.status === 'SUBMITTED' ? (
                 <form
                   className="mt-4 flex flex-col gap-3"
                   onSubmit={(event) => {
@@ -180,7 +191,11 @@ export function StageList({
               {openStage === stage.id ? (
                 <StageDeliverables
                   stageId={stage.id}
-                  canUpload={isDesigner}
+                  canUpload={
+                    designerCanAct &&
+                    (stage.status === 'IN_PROGRESS' ||
+                      stage.status === 'REJECTED')
+                  }
                   canGiveFeedback={isClient}
                 />
               ) : null}

@@ -112,6 +112,8 @@ export default function ProjectScreen() {
             ) : stages.data ? (
               <StageList
                 stages={stages.data.items}
+                currentStage={item.currentStage}
+                projectActive={item.status === 'ACTIVE'}
                 isClient={isClient}
                 isDesigner={isDesigner}
                 onChanged={() => {

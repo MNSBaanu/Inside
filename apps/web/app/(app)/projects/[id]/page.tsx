@@ -194,6 +194,8 @@ export default function ProjectWorkspacePage({
           ) : (
             <StageList
               stages={stages.data?.items ?? []}
+              currentStage={item.currentStage}
+              projectActive={item.status === 'ACTIVE'}
               isClient={isClient}
               isDesigner={isDesigner}
               onChanged={() => {

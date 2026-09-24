@@ -308,9 +308,15 @@ export class StagesService {
       throw new BadRequestException('Only submitted stages can be rejected');
     }
 
-    const updated = await this.prisma.projectStage.update({
-      where: { id: stageId },
+    const claimed = await this.prisma.projectStage.updateMany({
+      where: { id: stageId, status: StageStatus.SUBMITTED },
       data: { status: StageStatus.REJECTED },
+    });
+    if (claimed.count === 0) {
+      throw new ConflictException('Stage has already been reviewed');
+    }
+    const updated = await this.prisma.projectStage.findUniqueOrThrow({
+      where: { id: stageId },
     });
 
     await this.notifications.notify({

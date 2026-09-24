@@ -20,11 +20,16 @@ type StageAction = 'start' | 'submit' | 'approve' | 'reject';
 
 export function StageList({
   stages,
+  currentStage,
+  projectActive,
   isClient,
   isDesigner,
   onChanged,
 }: {
   stages: ProjectStage[];
+  currentStage: ProjectStage['name'];
+  /** Stage work is only possible while the project is active. */
+  projectActive: boolean;
   isClient: boolean;
   isDesigner: boolean;
   onChanged: () => void;
@@ -34,6 +39,8 @@ export function StageList({
   const [openStage, setOpenStage] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [reason, setReason] = useState('');
+  const designerCanAct = isDesigner && projectActive;
+  const clientCanAct = isClient && projectActive;
 
   async function act(
     stageId: string,
@@ -63,7 +70,7 @@ export function StageList({
       {stages.map((stage) => {
         const busy = pending === stage.id;
         const canSubmit =
-          isDesigner &&
+          designerCanAct &&
           (stage.status === 'IN_PROGRESS' || stage.status === 'REJECTED');
         return (
           <Card key={stage.id}>
@@ -78,7 +85,9 @@ export function StageList({
             </Text>
 
             <View style={styles.actions}>
-              {isDesigner && stage.status === 'PENDING' ? (
+              {designerCanAct &&
+              stage.status === 'PENDING' &&
+              stage.name === currentStage ? (
                 <Button
                   label="Start stage"
                   busy={busy}
@@ -96,7 +105,7 @@ export function StageList({
                   onPress={() => void act(stage.id, 'submit')}
                 />
               ) : null}
-              {isClient && stage.status === 'SUBMITTED' ? (
+              {clientCanAct && stage.status === 'SUBMITTED' ? (
                 <>
                   <Button
                     label="Approve"
@@ -122,7 +131,9 @@ export function StageList({
               />
             </View>
 
-            {rejecting === stage.id && stage.status === 'SUBMITTED' ? (
+            {clientCanAct &&
+            rejecting === stage.id &&
+            stage.status === 'SUBMITTED' ? (
               <View style={styles.form}>
                 <Field
                   label="What needs to change?"
