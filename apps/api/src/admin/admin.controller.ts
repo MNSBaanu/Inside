@@ -19,6 +19,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ListAdminReviewsQueryDto } from './dto/list-admin-reviews-query.dto';
 import { SetReviewVisibilityDto } from './dto/set-review-visibility.dto';
 import { AdminService } from './admin.service';
 
@@ -106,8 +107,8 @@ export class AdminController {
   @Get('reviews')
   @ApiOperation({ summary: 'List reviews for moderation' })
   @ApiOkResponse({ description: 'Reviews' })
-  reviews() {
-    return this.admin.listReviews();
+  reviews(@Query() query: ListAdminReviewsQueryDto) {
+    return this.admin.listReviews(query);
   }
 
   @Patch('reviews/:id/visibility')

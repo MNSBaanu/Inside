@@ -16,6 +16,7 @@ import {
   paginate,
 } from '../common/dto/pagination-query.dto';
 import { NotificationsService } from '../notifications/notifications.service';
+import { ListAdminReviewsQueryDto } from './dto/list-admin-reviews-query.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -254,18 +255,32 @@ export class AdminService {
     return { success: true, data: { report: this.serializeReport(updated) } };
   }
 
-  async listReviews() {
-    const items = await this.prisma.review.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 100,
-      include: {
-        reviewer: { select: { id: true, name: true, avatarUrl: true } },
-        designer: { select: { id: true, name: true, email: true } },
-      },
-    });
+  /** Reviews waiting for approval come first. */
+  async listReviews(query: ListAdminReviewsQueryDto) {
+    const { page, pageSize, skip, take } = paginate(query, 100);
+    const where =
+      query.visibility === undefined
+        ? {}
+        : { isVisible: query.visibility === 'visible' };
+    const [total, items] = await Promise.all([
+      this.prisma.review.count({ where }),
+      this.prisma.review.findMany({
+        where,
+        orderBy: [{ isVisible: 'asc' }, { createdAt: 'desc' }],
+        skip,
+        take,
+        include: {
+          reviewer: { select: { id: true, name: true, avatarUrl: true } },
+          designer: { select: { id: true, name: true, email: true } },
+        },
+      }),
+    ]);
     return {
       success: true,
       data: {
+        page,
+        pageSize,
+        total,
         items: items.map((r) => ({
           id: r.id,
           projectId: r.projectId,

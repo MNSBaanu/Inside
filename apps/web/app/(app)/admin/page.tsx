@@ -62,6 +62,13 @@ const tabs = [
 ] as const;
 type Tab = (typeof tabs)[number];
 
+const reviewFilters = [
+  { value: 'all', label: 'All' },
+  { value: 'hidden', label: 'Waiting or hidden' },
+  { value: 'visible', label: 'Visible' },
+] as const;
+type ReviewFilter = (typeof reviewFilters)[number]['value'];
+
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>('Users');
   const [actionError, setActionError] = useState<string | null>(null);
@@ -79,8 +86,11 @@ export default function AdminPage() {
   const reports = useApi<{ items: AdminReport[] }>(
     isAdmin ? '/admin/reports' : null,
   );
-  const reviews = useApi<{ items: AdminReview[] }>(
-    isAdmin ? '/admin/reviews' : null,
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('all');
+  const reviews = useApi<{ items: AdminReview[]; total: number }>(
+    isAdmin
+      ? `/admin/reviews${reviewFilter === 'all' ? '' : `?visibility=${reviewFilter}`}`
+      : null,
   );
   const activity = useApi<{ items: ActivityEntry[] }>(
     isAdmin ? '/admin/activity' : null,
@@ -389,6 +399,26 @@ export default function AdminPage() {
         ) : null}
 
         {tab === 'Reviews' ? (
+          <div
+            role="group"
+            aria-label="Filter reviews"
+            className="mb-6 flex flex-wrap gap-2"
+          >
+            {reviewFilters.map((filter) => (
+              <Button
+                key={filter.value}
+                size="sm"
+                variant={reviewFilter === filter.value ? 'primary' : 'outline'}
+                aria-pressed={reviewFilter === filter.value}
+                onClick={() => setReviewFilter(filter.value)}
+              >
+                {filter.label}
+              </Button>
+            ))}
+          </div>
+        ) : null}
+
+        {tab === 'Reviews' ? (
           reviews.loading ? (
             <Skeleton className="h-48" />
           ) : reviews.error ? (
@@ -440,9 +470,23 @@ export default function AdminPage() {
                   </div>
                 </li>
               ))}
+              {reviews.data.total > reviews.data.items.length ? (
+                <li className="text-sm text-muted">
+                  Showing the first {reviews.data.items.length} of{' '}
+                  {reviews.data.total} reviews.
+                </li>
+              ) : null}
             </ul>
           ) : (
-            <EmptyState title="No reviews yet." />
+            <EmptyState
+              title={
+                reviewFilter === 'hidden'
+                  ? 'No reviews waiting or hidden.'
+                  : reviewFilter === 'visible'
+                    ? 'No visible reviews.'
+                    : 'No reviews yet.'
+              }
+            />
           )
         ) : null}
 

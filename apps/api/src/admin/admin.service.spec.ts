@@ -24,6 +24,10 @@ describe('AdminService', () => {
       update: jest.fn(),
     },
     session: { updateMany: jest.fn() },
+    review: {
+      count: jest.fn().mockResolvedValue(0),
+      findMany: jest.fn().mockResolvedValue([]),
+    },
     report: {
       findMany: jest.fn(),
       findUnique: jest.fn(),
@@ -101,5 +105,32 @@ describe('AdminService', () => {
     const result = await service.resolveReport(admin, 'r1');
     expect(result.data.report.status).toBe(ReportStatus.RESOLVED);
     expect(result.data.report.resolvedById).toBe('a1');
+  });
+
+  it('lists reviews waiting for approval first, filtered and paged', async () => {
+    prisma.review.count.mockResolvedValue(3);
+
+    const result = await service.listReviews({
+      visibility: 'hidden',
+      page: 2,
+      pageSize: 1,
+    });
+
+    expect(prisma.review.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { isVisible: false },
+        orderBy: [{ isVisible: 'asc' }, { createdAt: 'desc' }],
+        skip: 1,
+        take: 1,
+      }),
+    );
+    expect(result.data).toMatchObject({ page: 2, pageSize: 1, total: 3 });
+  });
+
+  it('lists every review when no visibility is given', async () => {
+    await service.listReviews({});
+    expect(prisma.review.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: {}, take: 100 }),
+    );
   });
 });
