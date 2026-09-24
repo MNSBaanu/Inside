@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
@@ -14,21 +14,25 @@ export function FavouriteButton({ designerId }: { designerId: string }) {
 
   const isClient = status === 'authenticated' && user?.activeRole === 'CLIENT';
 
-  const load = useCallback(async () => {
-    if (!isClient) return;
-    try {
-      const data = await api.get<{ items: Favourite[] }>('/favourites');
-      setSaved(data.items.some((item) => item.designerId === designerId));
-    } catch {
-      // A failed lookup just leaves the button in its unsaved state.
-    } finally {
-      setReady(true);
-    }
-  }, [designerId, isClient]);
-
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (!isClient) return;
+    let active = true;
+    api
+      .get<{ items: Favourite[] }>('/favourites')
+      .then((data) => {
+        if (active)
+          setSaved(data.items.some((item) => item.designerId === designerId));
+      })
+      .catch(() => {
+        // A failed lookup just leaves the button in its unsaved state.
+      })
+      .finally(() => {
+        if (active) setReady(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [designerId, isClient]);
 
   if (!isClient) return null;
 
@@ -43,7 +47,7 @@ export function FavouriteButton({ designerId }: { designerId: string }) {
         setSaved(true);
       }
     } catch {
-      // Keep the current state; the next load corrects it.
+      // Keep the current state; the next page load corrects it.
     } finally {
       setBusy(false);
     }

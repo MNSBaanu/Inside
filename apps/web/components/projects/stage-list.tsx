@@ -208,16 +208,14 @@ function StageDeliverables({
   const [notes, setNotes] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const load = useCallback(async () => {
-    try {
-      const data = await api.get<{ items: Deliverable[] }>(
-        `/stages/${stageId}/deliverables`,
-      );
-      setItems(data.items);
-    } catch (cause) {
-      setError(errorMessage(cause));
-    }
-  }, [stageId]);
+  const load = useCallback(
+    () =>
+      api.get<{ items: Deliverable[] }>(`/stages/${stageId}/deliverables`).then(
+        (data) => setItems(data.items),
+        (cause: unknown) => setError(errorMessage(cause)),
+      ),
+    [stageId],
+  );
 
   useEffect(() => {
     void load();
@@ -331,15 +329,17 @@ function StageTasks({
   const [title, setTitle] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const load = useCallback(async () => {
-    setError(null);
-    try {
-      const data = await api.get<{ items: Task[] }>(`/stages/${stageId}/tasks`);
-      setItems(data.items);
-    } catch (cause) {
-      setError(errorMessage(cause));
-    }
-  }, [stageId]);
+  const load = useCallback(
+    () =>
+      api.get<{ items: Task[] }>(`/stages/${stageId}/tasks`).then(
+        (data) => {
+          setError(null);
+          setItems(data.items);
+        },
+        (cause: unknown) => setError(errorMessage(cause)),
+      ),
+    [stageId],
+  );
 
   useEffect(() => {
     void load();
@@ -410,7 +410,10 @@ function StageTasks({
       {items && items.length > 0 ? (
         <ul className="mt-3 flex flex-col gap-1">
           {items.map((task) => (
-            <li key={task.id} className="flex items-center justify-between gap-3">
+            <li
+              key={task.id}
+              className="flex items-center justify-between gap-3"
+            >
               <label className="flex min-h-11 flex-1 items-center gap-3">
                 <input
                   type="checkbox"
@@ -436,7 +439,9 @@ function StageTasks({
                   variant="ghost"
                   disabled={busy}
                   aria-label={`Delete task: ${task.title}`}
-                  onClick={() => void run(() => api.delete(`/tasks/${task.id}`))}
+                  onClick={() =>
+                    void run(() => api.delete(`/tasks/${task.id}`))
+                  }
                 >
                   Delete
                 </Button>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
@@ -14,21 +14,25 @@ export function BlockButton({ userId }: { userId: string }) {
 
   const enabled = status === 'authenticated' && user?.id !== userId;
 
-  const load = useCallback(async () => {
-    if (!enabled) return;
-    try {
-      const data = await api.get<{ items: Block[] }>('/blocks');
-      setBlocked(data.items.some((item) => item.blockedId === userId));
-    } catch {
-      // Leave the button in its unblocked state if the lookup fails.
-    } finally {
-      setReady(true);
-    }
-  }, [enabled, userId]);
-
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (!enabled) return;
+    let active = true;
+    api
+      .get<{ items: Block[] }>('/blocks')
+      .then((data) => {
+        if (active)
+          setBlocked(data.items.some((item) => item.blockedId === userId));
+      })
+      .catch(() => {
+        // Leave the button in its unblocked state if the lookup fails.
+      })
+      .finally(() => {
+        if (active) setReady(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [enabled, userId]);
 
   if (!enabled) return null;
 
@@ -43,7 +47,7 @@ export function BlockButton({ userId }: { userId: string }) {
         setBlocked(true);
       }
     } catch {
-      // Next load reconciles the real state.
+      // The next page load reconciles the real state.
     } finally {
       setBusy(false);
     }

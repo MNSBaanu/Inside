@@ -30,9 +30,12 @@ export function SiteHeader() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
+  // Navigating closes the menu.
+  const [menuPath, setMenuPath] = useState(pathname);
+  if (pathname !== menuPath) {
+    setMenuPath(pathname);
     setMenuOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -91,7 +94,9 @@ export function SiteHeader() {
             <>
               {workspace && !designerWorkspace ? null : (
                 <Link
-                  href={designerWorkspace ? `/designers/${user.id}` : '/dashboard'}
+                  href={
+                    designerWorkspace ? `/designers/${user.id}` : '/dashboard'
+                  }
                   className="label hidden text-ink/70 transition-colors duration-300 hover:text-brand sm:block"
                 >
                   {designerWorkspace ? 'Public profile' : 'Dashboard'}
@@ -162,12 +167,7 @@ export function SiteHeader() {
               <ButtonLink href="/dashboard" size="lg" fullWidth>
                 Dashboard
               </ButtonLink>
-              <ButtonLink
-                href="/account"
-                size="lg"
-                variant="outline"
-                fullWidth
-              >
+              <ButtonLink href="/account" size="lg" variant="outline" fullWidth>
                 Account
               </ButtonLink>
             </>

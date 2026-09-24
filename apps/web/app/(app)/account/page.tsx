@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSignOut } from '@/components/layout/app-shell';
 import { useSession } from '@/components/providers/session-provider';
 import { PasswordForm } from '@/components/account/password-form';
@@ -32,8 +32,10 @@ export default function AccountPage() {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
+  // Fill the form whenever the session user (re)loads.
+  const [formUser, setFormUser] = useState<typeof user>(null);
+  if (user && user !== formUser) {
+    setFormUser(user);
     setForm({
       name: user.name,
       bio: user.bio ?? '',
@@ -42,7 +44,7 @@ export default function AccountPage() {
       avatarUrl: user.avatarUrl ?? '',
     });
     setIsAvailable(user.isAvailable);
-  }, [user]);
+  }
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -111,7 +113,9 @@ export default function AccountPage() {
               id="bio"
               maxLength={1000}
               value={form.bio}
-              onChange={(event) => setForm({ ...form, bio: event.target.value })}
+              onChange={(event) =>
+                setForm({ ...form, bio: event.target.value })
+              }
               placeholder="How you work, what you specialise in."
             />
           </Field>

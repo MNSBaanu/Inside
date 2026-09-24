@@ -56,6 +56,7 @@ export function Select({
       <button
         id={id}
         type="button"
+        role="combobox"
         onClick={toggle}
         onBlur={() => setOpen(false)}
         onKeyDown={onKeyDown}

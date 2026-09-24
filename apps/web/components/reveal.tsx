@@ -18,14 +18,6 @@ export function Reveal({
     const node = ref.current;
     if (!node) return;
 
-    const reduceMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches;
-    if (reduceMotion) {
-      setVisible(true);
-      return;
-    }
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -44,7 +36,8 @@ export function Reveal({
     <div
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-700 ease-editorial ${
+      // Reduced motion shows the content at once, with no transition.
+      className={`transition-all duration-700 ease-editorial motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none ${
         visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'
       } ${className}`}
     >

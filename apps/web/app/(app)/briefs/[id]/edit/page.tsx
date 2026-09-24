@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
@@ -12,11 +12,7 @@ import { api, errorMessage } from '@/lib/api';
 import { useApi } from '@/lib/use-api';
 import type { Brief } from '@/lib/types';
 
-export default function EditBriefPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function EditBriefPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { data, error, loading } = useApi<{ brief: Brief }>(
     `/briefs/${params.id}`,
@@ -29,13 +25,15 @@ export default function EditBriefPage({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!data) return;
+  // Fill the form once the brief loads.
+  const [formData, setFormData] = useState<typeof data>(null);
+  if (data && data !== formData) {
+    setFormData(data);
     setStyles(data.brief.styles);
     setRooms(data.brief.rooms);
     setBudgetRange(data.brief.budgetRange ?? '');
     setDescription(data.brief.description ?? '');
-  }, [data]);
+  }
 
   if (loading) return <Skeleton className="h-64" />;
   if (error || !data) {

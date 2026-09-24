@@ -30,32 +30,41 @@ type SessionValue = {
 
 const SessionContext = createContext<SessionValue | null>(null);
 
+/** The signed-in user, or null when there is no valid session. */
+async function fetchSessionUser(): Promise<User | null> {
+  if (!authStorage.getAccessToken()) return null;
+  try {
+    const data = await api.get<{ user: User }>('/users/me');
+    authStorage.markActive();
+    return data.user;
+  } catch {
+    authStorage.clear();
+    return null;
+  }
+}
+
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<SessionStatus>('loading');
 
-  const loadUser = useCallback(async () => {
-    if (!authStorage.getAccessToken()) {
-      setUser(null);
-      setStatus('unauthenticated');
-      return;
-    }
-
-    try {
-      const data = await api.get<{ user: User }>('/users/me');
-      authStorage.markActive();
-      setUser(data.user);
-      setStatus('authenticated');
-    } catch {
-      authStorage.clear();
-      setUser(null);
-      setStatus('unauthenticated');
-    }
+  const applyUser = useCallback((next: User | null) => {
+    setUser(next);
+    setStatus(next ? 'authenticated' : 'unauthenticated');
   }, []);
 
+  const loadUser = useCallback(async () => {
+    applyUser(await fetchSessionUser());
+  }, [applyUser]);
+
   useEffect(() => {
-    void loadUser();
-  }, [loadUser]);
+    let active = true;
+    void fetchSessionUser().then((next) => {
+      if (active) applyUser(next);
+    });
+    return () => {
+      active = false;
+    };
+  }, [applyUser]);
 
   useEffect(() => {
     setSessionExpiredHandler(() => {

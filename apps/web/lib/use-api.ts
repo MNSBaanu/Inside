@@ -7,35 +7,51 @@ export function useApi<T>(path: string | null) {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(path !== null);
+  const [currentPath, setCurrentPath] = useState(path);
   const latest = useRef(0);
 
-  const load = useCallback(async () => {
-    // Only the most recent request may update state.
-    const request = ++latest.current;
-    if (path === null) {
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
+  // A new path starts loading in the same render, not after an effect.
+  if (path !== currentPath) {
+    setCurrentPath(path);
+    setLoading(path !== null);
     setError(null);
-    try {
-      const result = await api.get<T>(path);
-      if (request === latest.current) setData(result);
-    } catch (cause) {
-      if (request === latest.current) setError(errorMessage(cause));
-    } finally {
-      if (request === latest.current) setLoading(false);
-    }
+  }
+
+  // State is only set in the promise callbacks, and only by the latest request.
+  const fetchPath = useCallback((): Promise<void> => {
+    const request = ++latest.current;
+    if (path === null) return Promise.resolve();
+    return api.get<T>(path).then(
+      (result) => {
+        if (request !== latest.current) return;
+        setData(result);
+        setLoading(false);
+      },
+      (cause: unknown) => {
+        if (request !== latest.current) return;
+        setError(errorMessage(cause));
+        setLoading(false);
+      },
+    );
   }, [path]);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    void fetchPath();
+  }, [fetchPath]);
 
-  return { data, error, loading, reload: load };
+  const reload = useCallback(async () => {
+    if (path === null) return;
+    setLoading(true);
+    setError(null);
+    await fetchPath();
+  }, [path, fetchPath]);
+
+  return { data, error, loading, reload };
 }
 
-export function buildQuery(params: Record<string, string | number | undefined>) {
+export function buildQuery(
+  params: Record<string, string | number | undefined>,
+) {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     if (value !== undefined && value !== '') {
