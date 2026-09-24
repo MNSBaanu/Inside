@@ -207,6 +207,8 @@ export type Project = {
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Set on a single on-hold project: only this person can resume it. */
+  pausedById?: string | null;
   client?: PartySummary;
   designer?: PartySummary;
 };

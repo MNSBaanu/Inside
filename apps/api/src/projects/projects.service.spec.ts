@@ -17,6 +17,7 @@ describe('ProjectsService', () => {
       findMany: jest.fn().mockResolvedValue([]),
       groupBy: jest.fn().mockResolvedValue([]),
     },
+    activityLog: { findFirst: jest.fn() },
   };
 
   const client = {
@@ -75,6 +76,29 @@ describe('ProjectsService', () => {
   it('forbids non-party from getById', async () => {
     prisma.project.findUnique.mockResolvedValue(activeProject);
     await expect(service.getById(stranger, 'p1')).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+  });
+
+  it('getById says who put an on-hold project on hold', async () => {
+    prisma.project.findUnique.mockResolvedValue({
+      ...activeProject,
+      status: ProjectStatus.ON_HOLD,
+    });
+    prisma.activityLog.findFirst.mockResolvedValue({ userId: 'd1' });
+
+    const result = await service.getById(client, 'p1');
+    expect(result.data.project.pausedById).toBe('d1');
+  });
+
+  it('only the person who paused a project can resume it', async () => {
+    prisma.project.findUnique.mockResolvedValue({
+      ...activeProject,
+      status: ProjectStatus.ON_HOLD,
+    });
+    prisma.activityLog.findFirst.mockResolvedValue({ userId: 'd1' });
+
+    await expect(service.resume(client, 'p1')).rejects.toBeInstanceOf(
       ForbiddenException,
     );
   });

@@ -91,6 +91,18 @@ export class ReviewsService {
     }
   }
 
+  /** Includes reviews still waiting for admin approval. */
+  async findMine(user: AuthUser, projectId: string) {
+    const review = await this.prisma.review.findUnique({
+      where: { projectId_reviewerId: { projectId, reviewerId: user.id } },
+      include: { reviewer: { select: reviewerSelect } },
+    });
+    return {
+      success: true,
+      data: { review: review ? this.serialize(review) : null },
+    };
+  }
+
   async listByDesigner(designerId: string, query: PaginationQueryDto) {
     const { page, pageSize, skip, take } = paginate(query);
     const designer = await this.prisma.user.findUnique({

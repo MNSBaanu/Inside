@@ -35,6 +35,7 @@ export function StageList({
   const [openStage, setOpenStage] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [reason, setReason] = useState('');
+  const [editingDue, setEditingDue] = useState<string | null>(null);
   const designerCanAct = isDesigner && projectActive;
   const clientCanAct = isClient && projectActive;
 
@@ -137,6 +138,20 @@ export function StageList({
                   </>
                 ) : null}
 
+                {(isClient || isDesigner) &&
+                projectActive &&
+                stage.status !== 'APPROVED' ? (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() =>
+                      setEditingDue(editingDue === stage.id ? null : stage.id)
+                    }
+                  >
+                    Change due date
+                  </Button>
+                ) : null}
+
                 <Button
                   size="sm"
                   variant="ghost"
@@ -147,6 +162,16 @@ export function StageList({
                   {openStage === stage.id ? 'Hide files' : 'Files'}
                 </Button>
               </div>
+
+              {editingDue === stage.id ? (
+                <StageDueDate
+                  stage={stage}
+                  onSaved={() => {
+                    setEditingDue(null);
+                    onChanged();
+                  }}
+                />
+              ) : null}
 
               <StageTasks
                 stageId={stage.id}
@@ -204,6 +229,60 @@ export function StageList({
         })}
       </ol>
     </div>
+  );
+}
+
+/** Either party can move a stage's due date until it is approved. */
+function StageDueDate({
+  stage,
+  onSaved,
+}: {
+  stage: ProjectStage;
+  onSaved: () => void;
+}) {
+  const [value, setValue] = useState(stage.dueDate?.slice(0, 10) ?? '');
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function onSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    setError(null);
+    setBusy(true);
+    try {
+      await api.patch(`/stages/${stage.id}/due-date`, {
+        // Midday UTC keeps the chosen calendar day in every time zone.
+        dueDate: value ? `${value}T12:00:00.000Z` : null,
+      });
+      onSaved();
+    } catch (cause) {
+      setError(errorMessage(cause));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form
+      className="mt-4 flex flex-wrap items-end gap-3"
+      onSubmit={(event) => void onSubmit(event)}
+    >
+      <Field
+        label="Due date"
+        htmlFor={`due-${stage.id}`}
+        hint="Leave empty to clear it. The other party is notified."
+      >
+        <Input
+          id={`due-${stage.id}`}
+          type="date"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+        />
+      </Field>
+      <Button type="submit" size="sm" disabled={busy}>
+        Save date
+      </Button>
+      {error ? <ErrorNotice message={error} /> : null}
+    </form>
   );
 }
 

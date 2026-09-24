@@ -127,7 +127,12 @@ export class ProjectsService {
 
   async getById(user: AuthUser, id: string) {
     const project = await this.requirePartyAccess(id, user);
-    return { success: true, data: { project: this.serialize(project) } };
+    const pausedById =
+      project.status === ProjectStatus.ON_HOLD ? await this.pausedBy(id) : null;
+    return {
+      success: true,
+      data: { project: { ...this.serialize(project), pausedById } },
+    };
   }
 
   async cancel(user: AuthUser, id: string, reason: string) {
@@ -201,12 +206,8 @@ export class ProjectsService {
     if (project.status !== ProjectStatus.ON_HOLD) {
       throw new BadRequestException('Only on-hold projects can be resumed');
     }
-    const pausedBy = await this.prisma.activityLog.findFirst({
-      where: { projectId: id, action: 'PROJECT_ON_HOLD' },
-      orderBy: { createdAt: 'desc' },
-      select: { userId: true },
-    });
-    if (pausedBy?.userId && pausedBy.userId !== user.id) {
+    const pausedById = await this.pausedBy(id);
+    if (pausedById && pausedById !== user.id) {
       throw new ForbiddenException(
         'Only the person who put the project on hold can resume it',
       );
@@ -241,6 +242,16 @@ export class ProjectsService {
     await this.requirePartyAccess(id, user);
     const items = await this.activity.listByProject(id);
     return { success: true, data: { items } };
+  }
+
+  /** Who last put the project on hold; only they may resume it. */
+  private async pausedBy(projectId: string) {
+    const entry = await this.prisma.activityLog.findFirst({
+      where: { projectId, action: 'PROJECT_ON_HOLD' },
+      orderBy: { createdAt: 'desc' },
+      select: { userId: true },
+    });
+    return entry?.userId ?? null;
   }
 
   async requirePartyAccess(

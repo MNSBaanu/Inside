@@ -46,7 +46,7 @@ export function ReviewForm({
     <Card>
       <CardHeader
         title="Leave a review"
-        description="Your rating appears on the designer's public profile."
+        description="Your rating appears on the designer's public profile once an admin approves it."
       />
 
       <form onSubmit={onSubmit} className="flex flex-col gap-6">

@@ -194,6 +194,12 @@ test('a new client goes from the landing page to a completed, reviewed project',
     await page.getByLabel('Comment').fill(reviewText);
     await page.getByRole('button', { name: 'Publish review' }).click();
     await expect(page.getByText('Thanks for your review.')).toBeVisible();
+
+    // Coming back later shows the review, not the form again.
+    await page.reload();
+    await page.getByRole('tab', { name: 'Review' }).click();
+    await expect(page.getByText('Thanks for your review.')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Publish review' })).toHaveCount(0);
   });
 
   await test.step('admin approves the review and it shows on the profile', async () => {

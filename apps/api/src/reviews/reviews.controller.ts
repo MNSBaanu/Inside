@@ -41,6 +41,18 @@ export class ReviewsController {
     return this.reviews.create(user, projectId, dto);
   }
 
+  @Get('projects/:projectId/reviews/mine')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "The current user's review of a project, if any" })
+  @ApiOkResponse({ description: 'The review, or null' })
+  mine(
+    @CurrentUser() user: AuthUser,
+    @Param('projectId', ParseUUIDPipe) projectId: string,
+  ) {
+    return this.reviews.findMine(user, projectId);
+  }
+
   @Get('designers/:designerId/reviews')
   @ApiOperation({ summary: 'Public reviews for a designer' })
   @ApiOkResponse({ description: 'Reviews with summary' })

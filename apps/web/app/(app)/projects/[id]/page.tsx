@@ -18,7 +18,7 @@ import { api, errorMessage } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { formatDate, titleCase } from '@/lib/format';
 import { useApi } from '@/lib/use-api';
-import type { Project, ProjectStage } from '@/lib/types';
+import type { Project, ProjectStage, Review } from '@/lib/types';
 
 const tabs = ['Stages', 'Payments', 'Messages', 'History', 'Review'] as const;
 type Tab = (typeof tabs)[number];
@@ -30,6 +30,12 @@ export default function ProjectWorkspacePage({
 }) {
   const { user } = useSession();
   const project = useApi<{ project: Project }>(`/projects/${params.id}`);
+  const loaded = project.data?.project;
+  const myReview = useApi<{ review: Review | null }>(
+    loaded?.status === 'COMPLETED' && loaded.clientId === user?.id
+      ? `/projects/${params.id}/reviews/mine`
+      : null,
+  );
   const stages = useApi<{ items: ProjectStage[] }>(
     `/projects/${params.id}/stages`,
   );
@@ -38,7 +44,6 @@ export default function ProjectWorkspacePage({
   const [tab, setTab] = useState<Tab>(
     searchParams.has('payment') ? 'Payments' : 'Stages',
   );
-  const [reviewed, setReviewed] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [cancelling, setCancelling] = useState(false);
@@ -52,6 +57,11 @@ export default function ProjectWorkspacePage({
   const item = project.data.project;
   const isClient = user?.id === item.clientId;
   const isDesigner = user?.id === item.designerId;
+  const isParty = isClient || isDesigner;
+  const isOpen = item.status === 'ACTIVE' || item.status === 'ON_HOLD';
+  const canResume =
+    item.status === 'ON_HOLD' &&
+    (!item.pausedById || item.pausedById === user?.id);
 
   async function changeStatus(
     action: 'cancel' | 'on-hold' | 'resume',
@@ -94,7 +104,14 @@ export default function ProjectWorkspacePage({
         </div>
       ) : null}
 
-      {isClient && item.status !== 'COMPLETED' ? (
+      {isParty && item.status === 'ON_HOLD' && !canResume ? (
+        <p className="mt-8 text-sm text-muted">
+          The {isClient ? 'designer' : 'client'} put this project on hold. Only
+          they can resume it.
+        </p>
+      ) : null}
+
+      {isParty && isOpen ? (
         <div className="mt-8 flex flex-wrap gap-3">
           {item.status === 'ACTIVE' ? (
             <Button
@@ -106,7 +123,7 @@ export default function ProjectWorkspacePage({
               Put on hold
             </Button>
           ) : null}
-          {item.status === 'ON_HOLD' ? (
+          {canResume ? (
             <Button
               size="sm"
               disabled={busy}
@@ -115,20 +132,18 @@ export default function ProjectWorkspacePage({
               Resume
             </Button>
           ) : null}
-          {item.status !== 'CANCELLED' ? (
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={busy}
-              onClick={() => setCancelling(!cancelling)}
-            >
-              Cancel project
-            </Button>
-          ) : null}
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={busy}
+            onClick={() => setCancelling(!cancelling)}
+          >
+            Cancel project
+          </Button>
         </div>
       ) : null}
 
-      {isClient && cancelling && item.status !== 'CANCELLED' ? (
+      {isParty && cancelling && isOpen ? (
         <form
           className="mt-4 flex max-w-xl flex-col gap-3"
           onSubmit={(event) => {
@@ -139,7 +154,7 @@ export default function ProjectWorkspacePage({
           <Field
             label="Why are you cancelling?"
             htmlFor="cancel-reason"
-            hint="The designer sees this reason in the project history."
+            hint={`The ${isClient ? 'designer' : 'client'} sees this reason in the project history.`}
           >
             <Textarea
               id="cancel-reason"
@@ -224,15 +239,27 @@ export default function ProjectWorkspacePage({
             />
           ) : !isClient ? (
             <ReviewList designerId={item.designerId} />
-          ) : reviewed ? (
+          ) : myReview.loading ? (
+            <Skeleton className="h-40" />
+          ) : myReview.error ? (
+            <ErrorNotice message={myReview.error} />
+          ) : myReview.data?.review ? (
             <EmptyState
-              title="Thanks for your review."
-              description="It will appear on the designer's profile once an admin approves it."
+              title={
+                myReview.data.review.isVisible
+                  ? 'Your review is on the designer’s profile.'
+                  : 'Thanks for your review.'
+              }
+              description={
+                myReview.data.review.isVisible
+                  ? `You rated this project ${myReview.data.review.rating} out of 5.`
+                  : `You rated this project ${myReview.data.review.rating} out of 5. It will appear on the designer’s profile once an admin approves it.`
+              }
             />
           ) : (
             <ReviewForm
               projectId={params.id}
-              onSubmitted={() => setReviewed(true)}
+              onSubmitted={() => void myReview.reload()}
             />
           )
         ) : null}

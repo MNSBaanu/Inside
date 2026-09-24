@@ -17,6 +17,7 @@ describe('ReviewsService', () => {
     review: {
       create: jest.fn(),
       findMany: jest.fn(),
+      findUnique: jest.fn(),
       aggregate: jest.fn(),
     },
   };
@@ -109,5 +110,35 @@ describe('ReviewsService', () => {
     await expect(service.listByDesigner('x', {})).rejects.toBeInstanceOf(
       NotFoundException,
     );
+  });
+
+  it("findMine returns the caller's review, even before approval", async () => {
+    prisma.review.findUnique.mockResolvedValue({
+      id: 'r1',
+      projectId: 'p1',
+      reviewerId: 'c1',
+      designerId: 'd1',
+      rating: 4,
+      comment: null,
+      isVisible: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      reviewer: { id: 'c1', name: 'Client', avatarUrl: null },
+    });
+
+    const result = await service.findMine(client, 'p1');
+
+    expect(prisma.review.findUnique).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { projectId_reviewerId: { projectId: 'p1', reviewerId: 'c1' } },
+      }),
+    );
+    expect(result.data.review).toMatchObject({ rating: 4, isVisible: false });
+  });
+
+  it('findMine returns null when there is no review', async () => {
+    prisma.review.findUnique.mockResolvedValue(null);
+    const result = await service.findMine(client, 'p1');
+    expect(result.data.review).toBeNull();
   });
 });
