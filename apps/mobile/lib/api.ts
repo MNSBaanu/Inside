@@ -1,7 +1,7 @@
 import { authStorage } from './auth-storage';
 
 // Android emulators reach the host machine at 10.0.2.2; phones need the computer's LAN IP.
-export const baseUrl = process.env.EXPO_PUBLIC_API_URL ?? 'http://10.0.2.2:3001';
+export const baseUrl = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3001';
 
 type ApiSuccess<T> = { success: true; data: T };
 type ApiFailure = {
