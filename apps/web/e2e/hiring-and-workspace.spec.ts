@@ -27,7 +27,7 @@ test.describe('Hiring and the project workspace', () => {
     await signIn(page, accounts.ravi);
     await openFromList(page, '/requests', 'Dining room lighting plan');
     await page.getByRole('button', { name: 'Decline request' }).click();
-    await expect(page.getByText('rejected', { exact: true })).toBeVisible();
+    await expect(page.getByText('Rejected', { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Decline request' })).toBeHidden();
   });
 
@@ -45,7 +45,7 @@ test.describe('Hiring and the project workspace', () => {
     const reason = 'Please try a warmer oak for the shelving.';
     await concept.getByLabel('What needs to change?').fill(reason);
     await send.click();
-    await expect(concept.getByText('rejected', { exact: true })).toBeVisible();
+    await expect(concept.getByText('Rejected', { exact: true })).toBeVisible();
 
     await page.getByRole('tab', { name: 'History' }).click();
     await expect(page.getByText(reason)).toBeVisible();
@@ -59,7 +59,7 @@ test.describe('Hiring and the project workspace', () => {
     await openFromList(page, '/projects', 'Master bedroom makeover');
     const design = page.getByRole('listitem').filter({ hasText: /^3\s*design/i });
     await design.getByRole('button', { name: 'Resubmit for review' }).click();
-    await expect(design.getByText('submitted', { exact: true })).toBeVisible();
+    await expect(design.getByText('Submitted', { exact: true })).toBeVisible();
 
     const clientContext = await browser.newContext();
     const clientPage = await clientContext.newPage();
@@ -69,7 +69,7 @@ test.describe('Hiring and the project workspace', () => {
       .getByRole('listitem')
       .filter({ hasText: /^3\s*design/i });
     await clientDesign.getByRole('button', { name: 'Approve' }).click();
-    await expect(clientDesign.getByText('approved', { exact: true })).toBeVisible();
+    await expect(clientDesign.getByText('Approved', { exact: true })).toBeVisible();
     await clientContext.close();
   });
 

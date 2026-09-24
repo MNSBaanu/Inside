@@ -43,7 +43,7 @@ export function FileUpload({
 
   return (
     <div className={cn('flex flex-col gap-2', className)}>
-      <label htmlFor={inputId} className="label text-ink/70">
+      <label htmlFor={inputId} className="ui-label text-ink/70">
         {label}
       </label>
       <input

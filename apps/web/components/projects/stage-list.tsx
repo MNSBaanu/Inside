@@ -275,7 +275,7 @@ function StageDeliverables({
               ) : null}
               {deliverable.feedback ? (
                 <p className="mt-3 rounded-card bg-canvas px-4 py-3 text-sm">
-                  <span className="label text-muted">Feedback</span>
+                  <span className="ui-label text-muted">Feedback</span>
                   <span className="mt-1 block">{deliverable.feedback}</span>
                 </p>
               ) : canGiveFeedback ? (
@@ -381,7 +381,7 @@ function StageTasks({
 
   return (
     <div className="mt-6 border-t border-hairline pt-6">
-      <p className="label text-muted">
+      <p className="ui-label text-muted">
         Tasks
         {items && items.length > 0 ? ` · ${done}/${items.length} done` : ''}
       </p>

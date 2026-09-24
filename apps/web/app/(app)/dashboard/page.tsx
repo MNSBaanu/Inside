@@ -67,7 +67,7 @@ export default function DashboardPage() {
       <section className="mt-16">
         <div className="flex items-center justify-between gap-4">
           <h2 className="font-display text-2xl font-semibold">Your projects</h2>
-          <Link href="/projects" className="label link-underline text-ink">
+          <Link href="/projects" className="ui-label link-underline text-ink">
             View all
           </Link>
         </div>
@@ -164,7 +164,7 @@ function StatTile({
 }) {
   return (
     <div className="rounded-card bg-sand p-8">
-      <p className="label text-ink/70">{label}</p>
+      <p className="ui-label text-ink/70">{label}</p>
       {loading ? (
         <Skeleton className="mt-4 h-12 w-16 bg-canvas" />
       ) : (

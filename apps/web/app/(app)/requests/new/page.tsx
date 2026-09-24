@@ -61,7 +61,7 @@ function NewRequestForm() {
       {error ? <ErrorNotice message={error} /> : null}
 
       <fieldset>
-        <legend className="label mb-4 text-ink/70">Request type</legend>
+        <legend className="ui-label mb-4 text-ink/70">Request type</legend>
         <div className="grid gap-3 sm:grid-cols-2">
           <button
             type="button"

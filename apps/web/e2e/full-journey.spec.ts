@@ -162,7 +162,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
       await expect(card.getByRole('link', { name: `${name}.pdf` })).toBeVisible();
 
       await submit.click();
-      await expect(card.getByText('submitted', { exact: true })).toBeVisible();
+      await expect(card.getByText('Submitted', { exact: true })).toBeVisible();
     });
 
     await test.step(`client approves the ${name} stage`, async () => {
@@ -170,7 +170,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
       const card = stageCard(page, index);
       await expect(card.getByText('1/1 done')).toBeVisible();
       await card.getByRole('button', { name: 'Approve' }).click();
-      await expect(card.getByText('approved', { exact: true })).toBeVisible();
+      await expect(card.getByText('Approved', { exact: true })).toBeVisible();
     });
 
     if (index === 1) {
@@ -188,7 +188,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
 
   await test.step('client reviews the completed project', async () => {
     await page.reload();
-    await expect(page.getByText('completed', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('Completed', { exact: true }).first()).toBeVisible();
     await page.getByRole('tab', { name: 'Review' }).click();
     await page.getByRole('button', { name: '5 stars' }).click();
     await page.getByLabel('Comment').fill(reviewText);

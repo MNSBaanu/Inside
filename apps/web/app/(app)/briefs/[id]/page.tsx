@@ -91,7 +91,7 @@ export default function BriefDetailPage({
 
         <dl className="grid gap-8 sm:grid-cols-2">
           <div>
-            <dt className="label text-muted">Rooms</dt>
+            <dt className="ui-label text-muted">Rooms</dt>
             <dd className="mt-3 flex flex-wrap gap-2">
               {item.rooms.map((room) => (
                 <Badge key={room}>{room}</Badge>
@@ -99,7 +99,7 @@ export default function BriefDetailPage({
             </dd>
           </div>
           <div>
-            <dt className="label text-muted">Styles</dt>
+            <dt className="ui-label text-muted">Styles</dt>
             <dd className="mt-3 flex flex-wrap gap-2">
               {item.styles.length > 0 ? (
                 item.styles.map((style) => <Badge key={style}>{style}</Badge>)
@@ -109,7 +109,7 @@ export default function BriefDetailPage({
             </dd>
           </div>
           <div>
-            <dt className="label text-muted">Budget range</dt>
+            <dt className="ui-label text-muted">Budget range</dt>
             <dd className="mt-3 text-lg">
               {item.budgetRange ?? 'Not specified'}
             </dd>
@@ -118,7 +118,7 @@ export default function BriefDetailPage({
 
         {item.description ? (
           <div className="mt-8">
-            <p className="label text-muted">Description</p>
+            <p className="ui-label text-muted">Description</p>
             <p className="mt-3 whitespace-pre-line text-muted">
               {item.description}
             </p>

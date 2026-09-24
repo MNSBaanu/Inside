@@ -33,6 +33,10 @@
     @apply text-label font-semibold uppercase;
   }
 
+  .ui-label {
+    @apply text-sm font-semibold;
+  }
+
   .link-underline {
     @apply underline decoration-brand decoration-2 underline-offset-[6px] transition-colors duration-300 hover:text-brand;
   }
