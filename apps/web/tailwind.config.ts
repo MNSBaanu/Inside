@@ -27,6 +27,18 @@ const config: Config = {
         success: '#3F7A52',
         warning: '#B07D20',
         error: '#B3402F',
+        status: {
+          action: '#7A5410',
+          'action-soft': '#FBEDD2',
+          progress: '#1F4A7A',
+          'progress-soft': '#E3EBF5',
+          done: '#063F29',
+          'done-soft': '#D9EAE0',
+          problem: '#8E2F21',
+          'problem-soft': '#F6DFD9',
+          closed: '#3E4643',
+          'closed-soft': '#EDE7DC',
+        },
       },
       fontFamily: {
         sans: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],

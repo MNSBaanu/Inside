@@ -23,7 +23,7 @@ export function Field({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={htmlFor} className="label text-ink/70">
+      <label htmlFor={htmlFor} className="ui-label text-ink/70">
         {label}
       </label>
       {children}

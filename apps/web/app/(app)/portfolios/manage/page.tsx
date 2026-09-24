@@ -198,7 +198,7 @@ export default function ManagePortfoliosPage() {
                         className="object-cover"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-label font-semibold uppercase text-muted">
+                      <div className="flex h-full items-center justify-center ui-label text-muted">
                         No images
                       </div>
                     )}
@@ -222,7 +222,7 @@ export default function ManagePortfoliosPage() {
                     <div className="mt-6 flex flex-wrap gap-3">
                       <Link
                         href={`/portfolios/${portfolio.id}`}
-                        className="label link-underline text-ink"
+                        className="ui-label link-underline text-ink"
                       >
                         View
                       </Link>

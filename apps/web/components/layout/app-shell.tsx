@@ -67,7 +67,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="shell grid gap-12 pb-32 pt-28 md:pb-40 md:pt-32 lg:h-dvh lg:grid-cols-[240px_1fr] lg:overflow-hidden lg:pb-8 lg:pt-24">
       <aside className="h-fit rounded-card bg-sand p-6 [scrollbar-width:none] lg:h-full lg:overflow-y-auto [&::-webkit-scrollbar]:hidden">
-        <p className="label text-ink/70">Signed in as</p>
+        <p className="ui-label text-ink/70">Signed in as</p>
         <p className="mt-2 font-display text-xl font-semibold">{user.name}</p>
         {user.role === 'DESIGNER' ? (
           <RoleToggle activeRole={user.activeRole} />
@@ -87,10 +87,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'flex items-center gap-2 whitespace-nowrap rounded-pill px-4 py-2.5 text-label font-semibold uppercase transition-colors duration-300',
+                  'flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-[0.9375rem] transition-colors duration-300',
                   active
-                    ? 'bg-surface text-ink'
-                    : 'text-ink/70 hover:bg-canvas hover:text-ink',
+                    ? 'bg-surface font-semibold text-ink shadow-sm'
+                    : 'font-medium text-ink/80 hover:bg-canvas hover:text-ink',
                 )}
               >
                 {item.label}
@@ -112,12 +112,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="min-w-0 [scrollbar-width:none] lg:h-full lg:overflow-y-auto lg:pb-16 [&::-webkit-scrollbar]:hidden">
         {user.emailVerified ? null : (
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-card bg-highlight-soft px-6 py-4">
-            <p className="text-sm text-warning">
+            <p className="text-sm text-status-action">
               Your email isn&apos;t verified yet.
             </p>
             <Link
               href="/verify-email"
-              className="link-underline text-label font-semibold uppercase text-warning"
+              className="ui-label link-underline text-status-action"
             >
               Verify now
             </Link>
@@ -160,7 +160,7 @@ function RoleToggle({ activeRole }: { activeRole: Role }) {
           onClick={() => switchTo(role)}
           aria-pressed={activeRole === role}
           className={cn(
-            'rounded-pill px-3 py-1.5 text-label font-semibold uppercase transition-colors duration-300 disabled:opacity-60',
+            'min-h-9 rounded-pill px-3 py-1.5 text-sm font-semibold transition-colors duration-300 disabled:opacity-60',
             activeRole === role
               ? 'bg-ink text-canvas'
               : 'text-ink/70 hover:text-ink',

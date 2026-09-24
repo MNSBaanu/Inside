@@ -144,7 +144,7 @@ export default function RequestDetailPage({
 
       {item.description ? (
         <Card className="mt-10">
-          <p className="label text-muted">Description</p>
+          <p className="ui-label text-muted">Description</p>
           <p className="mt-3 whitespace-pre-line text-muted">
             {item.description}
           </p>
@@ -218,11 +218,11 @@ export default function RequestDetailPage({
 
                     <dl className="mt-6 flex flex-wrap gap-8">
                       <div>
-                        <dt className="label text-muted">Timeline</dt>
+                        <dt className="ui-label text-muted">Timeline</dt>
                         <dd className="mt-2 text-lg">{proposal.timeline}</dd>
                       </div>
                       <div>
-                        <dt className="label text-muted">Total</dt>
+                        <dt className="ui-label text-muted">Total</dt>
                         <dd className="mt-2 font-display text-2xl font-semibold text-brand">
                           {formatMoney(proposal.totalAmount)}
                         </dd>

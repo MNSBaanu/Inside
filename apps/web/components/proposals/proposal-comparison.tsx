@@ -32,7 +32,7 @@ export function ProposalComparison({ proposals }: { proposals: Proposal[] }) {
         <caption className="sr-only">Proposals side by side</caption>
         <thead>
           <tr className="border-b border-hairline">
-            <th scope="col" className="label p-4 text-muted">
+            <th scope="col" className="ui-label p-4 text-muted">
               Compare
             </th>
             {proposals.map((p) => (

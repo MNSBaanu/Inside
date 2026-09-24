@@ -53,7 +53,7 @@ export function ReviewForm({
         {error ? <ErrorNotice message={error} /> : null}
 
         <div>
-          <p className="label mb-3 text-ink/70">Rating</p>
+          <p className="ui-label mb-3 text-ink/70">Rating</p>
           <RatingInput value={rating} onChange={setRating} />
         </div>
 

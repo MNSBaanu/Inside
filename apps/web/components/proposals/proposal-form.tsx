@@ -93,7 +93,7 @@ export function ProposalForm({
       </Field>
 
       <fieldset>
-        <legend className="label mb-4 text-ink/70">Stage fees</legend>
+        <legend className="ui-label mb-4 text-ink/70">Stage fees</legend>
         <div className="grid gap-4 sm:grid-cols-2">
           {billableStages.map((stage) => (
             <Field
