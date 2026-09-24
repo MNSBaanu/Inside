@@ -96,6 +96,24 @@ describe('PortfoliosController (e2e)', () => {
       .expect(200);
   });
 
+  it('rejects images that are not https', async () => {
+    for (const imageUrl of [
+      'http://example.com/room.jpg',
+      'https://localhost/room.jpg',
+    ]) {
+      await request(app.getHttpServer())
+        .post('/portfolios')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          title: 'Insecure image',
+          style: 'Coastal',
+          roomType: 'Bedroom',
+          images: [{ imageUrl }],
+        })
+        .expect(400);
+    }
+  });
+
   it('rejects portfolio create for clients', async () => {
     const clientEmail = `portfolio-client-${suffix}@inside.test`;
     const client = await request(app.getHttpServer())

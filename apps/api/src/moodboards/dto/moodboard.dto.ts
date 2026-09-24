@@ -16,7 +16,7 @@ export const MAX_MOODBOARD_ITEMS = 100;
 
 export class MoodboardItemDto {
   @ApiProperty({ example: 'https://picsum.photos/seed/inspo/800/600' })
-  @IsUrl({ require_tld: false })
+  @IsUrl({ protocols: ['https'], require_protocol: true })
   imageUrl!: string;
 
   @ApiPropertyOptional({ example: 'Warm neutrals' })

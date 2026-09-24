@@ -16,7 +16,7 @@ import { MAX_AMOUNT } from '../../common/money';
 
 export class CreatePortfolioImageDto {
   @ApiProperty({ example: 'https://picsum.photos/seed/room/1200/800' })
-  @IsUrl({ require_tld: false })
+  @IsUrl({ protocols: ['https'], require_protocol: true })
   imageUrl!: string;
 
   @ApiPropertyOptional()

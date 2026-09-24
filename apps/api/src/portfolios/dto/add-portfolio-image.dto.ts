@@ -11,7 +11,7 @@ import {
 
 export class AddPortfolioImageDto {
   @ApiProperty({ example: 'https://picsum.photos/seed/detail/1200/800' })
-  @IsUrl({ require_tld: false })
+  @IsUrl({ protocols: ['https'], require_protocol: true })
   imageUrl!: string;
 
   @ApiPropertyOptional()
