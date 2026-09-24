@@ -212,13 +212,73 @@ describe('ProposalsService', () => {
     expect(tx.projectRequest.updateMany).toHaveBeenCalledWith({
       where: {
         id: 'r1',
-        status: { in: [RequestStatus.OPEN, RequestStatus.PENDING] },
+        status: {
+          in: [RequestStatus.OPEN, RequestStatus.PENDING, RequestStatus.CLOSED],
+        },
       },
       data: {
         status: RequestStatus.ACCEPTED,
         designerId: 'd1',
       },
     });
+  });
+
+  it('still accepts a proposal after the request is closed', async () => {
+    prisma.proposal.findUnique.mockResolvedValue({
+      id: 'p1',
+      requestId: 'r1',
+      designerId: 'd1',
+      stageFees: [],
+      timeline: '5 weeks',
+      request: {
+        id: 'r1',
+        clientId: 'c1',
+        title: 'Kitchen',
+        status: RequestStatus.CLOSED,
+      },
+      designer: { status: AccountStatus.ACTIVE },
+      status: ProposalStatus.PENDING,
+    });
+    tx.proposal.updateMany.mockResolvedValue({ count: 1 });
+    tx.projectRequest.updateMany.mockResolvedValue({ count: 1 });
+    tx.project.create.mockResolvedValue({
+      id: 'proj1',
+      proposalId: 'p1',
+      clientId: 'c1',
+      designerId: 'd1',
+      title: 'Kitchen',
+      currentStage: StageName.PROPOSAL,
+      status: ProjectStatus.ACTIVE,
+      startedAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      stages: [],
+    });
+
+    const result = await service.accept(client, 'p1');
+
+    expect(result.data.project.id).toBe('proj1');
+  });
+
+  it('refuses to accept on a cancelled request', async () => {
+    prisma.proposal.findUnique.mockResolvedValue({
+      id: 'p1',
+      requestId: 'r1',
+      designerId: 'd1',
+      stageFees: [],
+      request: {
+        id: 'r1',
+        clientId: 'c1',
+        title: 'Kitchen',
+        status: RequestStatus.CANCELLED,
+      },
+      designer: { status: AccountStatus.ACTIVE },
+      status: ProposalStatus.PENDING,
+    });
+
+    await expect(service.accept(client, 'p1')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
   });
 
   it('rejects accept from non-owner client', async () => {

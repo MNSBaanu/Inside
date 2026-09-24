@@ -131,6 +131,11 @@ export class RequestsService {
                 status: RequestStatus.OPEN,
                 clientId: { notIn: [user.id, ...hidden] },
               },
+              // Requests they proposed on stay listed after they close.
+              {
+                type: RequestType.OPEN,
+                proposals: { some: { designerId: user.id } },
+              },
             ],
           };
 
@@ -224,11 +229,33 @@ export class RequestsService {
       throw new BadRequestException('Request is already closed or cancelled');
     }
 
-    const updated = await this.prisma.projectRequest.update({
-      where: { id },
-      data: { status: RequestStatus.CANCELLED },
-      include: requestInclude,
+    const pending = await this.prisma.proposal.findMany({
+      where: { requestId: id, status: ProposalStatus.PENDING },
+      select: { designerId: true },
     });
+    const [updated] = await this.prisma.$transaction([
+      this.prisma.projectRequest.update({
+        where: { id },
+        data: { status: RequestStatus.CANCELLED },
+        include: requestInclude,
+      }),
+      this.prisma.proposal.updateMany({
+        where: { requestId: id, status: ProposalStatus.PENDING },
+        data: { status: ProposalStatus.REJECTED },
+      }),
+    ]);
+
+    await Promise.all(
+      pending.map(({ designerId }) =>
+        this.notifications.notify({
+          userId: designerId,
+          type: NotificationType.PROPOSAL,
+          title: 'Request cancelled',
+          message: `The client cancelled "${request.title}"`,
+          metadata: { requestId: id },
+        }),
+      ),
+    );
 
     return { success: true, data: { request: this.serialize(updated) } };
   }
@@ -324,8 +351,21 @@ export class RequestsService {
       user.activeRole === Role.DESIGNER &&
       request.type === RequestType.OPEN &&
       request.status === RequestStatus.OPEN;
+    const hasProposed =
+      user.activeRole === Role.DESIGNER &&
+      !isClient &&
+      !isAssignedDesigner &&
+      !isOpenForDesigners &&
+      (await this.prisma.proposal.count({
+        where: { requestId: id, designerId: user.id },
+      })) > 0;
 
-    if (!isClient && !isAssignedDesigner && !isOpenForDesigners) {
+    if (
+      !isClient &&
+      !isAssignedDesigner &&
+      !isOpenForDesigners &&
+      !hasProposed
+    ) {
       throw new ForbiddenException('You do not have access to this request');
     }
 

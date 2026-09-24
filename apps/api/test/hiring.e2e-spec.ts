@@ -158,4 +158,67 @@ describe('Hiring flow (e2e)', () => {
     });
     expect(dbRequest!.status).toBe('ACCEPTED');
   });
+
+  async function openRequestWithProposal(title: string) {
+    const created = await request(app.getHttpServer())
+      .post('/requests')
+      .set('Authorization', `Bearer ${clientToken}`)
+      .send({ title, type: 'OPEN', budget: 300000 })
+      .expect(201);
+    const id = created.body.data.request.id as string;
+
+    const proposal = await request(app.getHttpServer())
+      .post(`/requests/${id}/proposals`)
+      .set('Authorization', `Bearer ${designerToken}`)
+      .send({
+        scope: 'Layout and finishes',
+        timeline: '5 weeks',
+        stageFees: [{ name: StageName.CONCEPT, fee: 100000 }],
+      })
+      .expect(201);
+
+    return { id, proposalId: proposal.body.data.proposal.id as string };
+  }
+
+  it('client can still accept a proposal after closing the request', async () => {
+    const { id, proposalId: closedProposalId } =
+      await openRequestWithProposal('Closed kitchen');
+
+    await request(app.getHttpServer())
+      .patch(`/requests/${id}/close`)
+      .set('Authorization', `Bearer ${clientToken}`)
+      .expect(200);
+
+    // The designer who proposed can still follow the request.
+    await request(app.getHttpServer())
+      .get(`/requests/${id}`)
+      .set('Authorization', `Bearer ${designerToken}`)
+      .expect(200);
+
+    const accepted = await request(app.getHttpServer())
+      .patch(`/proposals/${closedProposalId}/accept`)
+      .set('Authorization', `Bearer ${clientToken}`)
+      .expect(200);
+    expect(accepted.body.data.project.title).toBe('Closed kitchen');
+  });
+
+  it('cancelling a request declines its pending proposals', async () => {
+    const { id, proposalId: cancelledProposalId } =
+      await openRequestWithProposal('Cancelled bedroom');
+
+    await request(app.getHttpServer())
+      .patch(`/requests/${id}/cancel`)
+      .set('Authorization', `Bearer ${clientToken}`)
+      .expect(200);
+
+    const proposal = await prisma.proposal.findUnique({
+      where: { id: cancelledProposalId },
+    });
+    expect(proposal!.status).toBe('REJECTED');
+
+    await request(app.getHttpServer())
+      .patch(`/proposals/${cancelledProposalId}/accept`)
+      .set('Authorization', `Bearer ${clientToken}`)
+      .expect(400);
+  });
 });

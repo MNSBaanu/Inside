@@ -31,6 +31,13 @@ const STAGE_ORDER: StageName[] = [
   StageName.COMPLETION,
 ];
 
+/** Closing a request stops new proposals, but the client can still pick one. */
+const DECIDABLE_REQUEST_STATUSES: RequestStatus[] = [
+  RequestStatus.OPEN,
+  RequestStatus.PENDING,
+  RequestStatus.CLOSED,
+];
+
 const proposalInclude = {
   designer: {
     select: {
@@ -219,10 +226,7 @@ export class ProposalsService {
       throw new BadRequestException('This designer is no longer available');
     }
     await this.blocks.assertNotBlocked(user.id, proposal.designerId);
-    if (
-      proposal.request.status !== RequestStatus.OPEN &&
-      proposal.request.status !== RequestStatus.PENDING
-    ) {
+    if (!DECIDABLE_REQUEST_STATUSES.includes(proposal.request.status)) {
       throw new BadRequestException('Request is not accepting proposals');
     }
 
@@ -237,7 +241,7 @@ export class ProposalsService {
       const requestClaimed = await tx.projectRequest.updateMany({
         where: {
           id: proposal.requestId,
-          status: { in: [RequestStatus.OPEN, RequestStatus.PENDING] },
+          status: { in: DECIDABLE_REQUEST_STATUSES },
         },
         data: {
           status: RequestStatus.ACCEPTED,
@@ -373,11 +377,9 @@ export class ProposalsService {
   ) {
     const isClient = request.clientId === user.id;
     const isAssignedDesigner = request.designerId === user.id;
+    // Designers only ever see their own proposals, so any status is safe.
     const isOpenDesigner =
-      user.activeRole === Role.DESIGNER &&
-      request.type === RequestType.OPEN &&
-      (request.status === RequestStatus.OPEN ||
-        request.status === RequestStatus.ACCEPTED);
+      user.activeRole === Role.DESIGNER && request.type === RequestType.OPEN;
 
     if (!isClient && !isAssignedDesigner && !isOpenDesigner) {
       throw new ForbiddenException('You do not have access to these proposals');

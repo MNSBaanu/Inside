@@ -1,6 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   AccountStatus,
+  ProposalStatus,
   RequestStatus,
   RequestType,
   Role,
@@ -22,6 +23,11 @@ describe('RequestsService', () => {
       findUnique: jest.fn(),
       update: jest.fn(),
     },
+    proposal: {
+      findMany: jest.fn().mockResolvedValue([]),
+      updateMany: jest.fn(),
+    },
+    $transaction: jest.fn((ops: Promise<unknown>[]) => Promise.all(ops)),
   };
 
   const blocks = {
@@ -152,6 +158,10 @@ describe('RequestsService', () => {
               status: RequestStatus.OPEN,
               clientId: { notIn: ['d1'] },
             },
+            {
+              type: RequestType.OPEN,
+              proposals: { some: { designerId: 'd1' } },
+            },
           ],
         },
       }),
@@ -196,6 +206,45 @@ describe('RequestsService', () => {
 
     const result = await service.close(client, 'r1');
     expect(result.data.request.status).toBe(RequestStatus.CLOSED);
+  });
+
+  it('cancelling declines pending proposals and tells their designers', async () => {
+    const request = {
+      id: 'r1',
+      clientId: 'c1',
+      designerId: null,
+      briefId: null,
+      title: 'Kitchen',
+      description: null,
+      timeline: null,
+      type: RequestType.OPEN,
+      status: RequestStatus.OPEN,
+      budget: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    prisma.projectRequest.findUnique.mockResolvedValue(request);
+    prisma.proposal.findMany.mockResolvedValue([
+      { designerId: 'd1' },
+      { designerId: 'd2' },
+    ]);
+    prisma.projectRequest.update.mockResolvedValue({
+      ...request,
+      status: RequestStatus.CANCELLED,
+    });
+    prisma.proposal.updateMany.mockResolvedValue({ count: 2 });
+
+    const result = await service.cancel(client, 'r1');
+
+    expect(result.data.request.status).toBe(RequestStatus.CANCELLED);
+    expect(prisma.proposal.updateMany).toHaveBeenCalledWith({
+      where: { requestId: 'r1', status: ProposalStatus.PENDING },
+      data: { status: ProposalStatus.REJECTED },
+    });
+    expect(notifications.notify).toHaveBeenCalledTimes(2);
+    expect(notifications.notify).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 'd2', title: 'Request cancelled' }),
+    );
   });
 
   it('rejects close on non-existent request', async () => {

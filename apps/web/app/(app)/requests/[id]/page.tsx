@@ -115,14 +115,16 @@ export default function RequestDetailPage({
           >
             Cancel request
           </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            disabled={pendingId === item.id}
-            onClick={() => changeRequest('close')}
-          >
-            Close to new proposals
-          </Button>
+          {item.type === 'OPEN' && item.status === 'OPEN' ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              disabled={pendingId === item.id}
+              onClick={() => changeRequest('close')}
+            >
+              Close to new proposals
+            </Button>
+          ) : null}
         </div>
       ) : null}
 
