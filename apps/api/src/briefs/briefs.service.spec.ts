@@ -18,6 +18,7 @@ describe('BriefsService', () => {
       delete: jest.fn(),
     },
     moodboard: { findUnique: jest.fn() },
+    portfolio: { findMany: jest.fn().mockResolvedValue([]) },
   };
 
   const client = {
@@ -85,6 +86,61 @@ describe('BriefsService', () => {
 
     const result = await service.generateFromMoodboard(client, 'm1', {});
     expect(result.data.brief.description).toContain('Soft blues');
+  });
+
+  it('takes styles and rooms from portfolios saved on the moodboard', async () => {
+    prisma.moodboard.findUnique.mockResolvedValue({
+      id: 'm1',
+      clientId: 'c1',
+      name: 'Board',
+      savedItems: [
+        { imageUrl: 'https://x.test/1.jpg', portfolioId: 'p1' },
+        { imageUrl: 'https://x.test/2.jpg', portfolioId: 'p2' },
+        { imageUrl: 'https://x.test/3.jpg', portfolioId: 'p3' },
+        { imageUrl: 'https://x.test/4.jpg' },
+      ],
+    });
+    prisma.portfolio.findMany.mockResolvedValue([
+      { id: 'p1', style: 'Japandi', roomType: 'Bedroom' },
+      { id: 'p2', style: 'Coastal', roomType: 'Kitchen' },
+      { id: 'p3', style: 'coastal', roomType: 'Bedroom' },
+    ]);
+    prisma.brief.create.mockImplementation(({ data }) => ({
+      id: 'b3',
+      budgetRange: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      moodboard: { id: 'm1', name: 'Board' },
+      ...data,
+    }));
+
+    const result = await service.generateFromMoodboard(client, 'm1', {});
+
+    expect(result.data.brief.styles).toEqual(['Coastal', 'Japandi']);
+    expect(result.data.brief.rooms).toEqual(['Bedroom', 'Kitchen']);
+  });
+
+  it('falls back to Mixed / General with no saved portfolios', async () => {
+    prisma.moodboard.findUnique.mockResolvedValue({
+      id: 'm1',
+      clientId: 'c1',
+      name: 'Board',
+      savedItems: [{ imageUrl: 'https://x.test/1.jpg' }],
+    });
+    prisma.brief.create.mockImplementation(({ data }) => ({
+      id: 'b4',
+      budgetRange: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      moodboard: { id: 'm1', name: 'Board' },
+      ...data,
+    }));
+
+    const result = await service.generateFromMoodboard(client, 'm1', {});
+
+    expect(prisma.portfolio.findMany).not.toHaveBeenCalled();
+    expect(result.data.brief.styles).toEqual(['Mixed']);
+    expect(result.data.brief.rooms).toEqual(['General']);
   });
 
   it('forbids access to another client brief', async () => {

@@ -67,8 +67,17 @@ export class BriefsService {
   ) {
     const moodboard = await this.requireMoodboardOwned(moodboardId, user.id);
     const notes = this.extractNotes(moodboard.savedItems);
-    const styles = dto.styles?.length ? dto.styles : ['Mixed'];
-    const rooms = dto.rooms?.length ? dto.rooms : ['General'];
+    const saved = await this.savedPortfolioTags(moodboard.savedItems);
+    const styles = dto.styles?.length
+      ? dto.styles
+      : saved.styles.length
+        ? saved.styles
+        : ['Mixed'];
+    const rooms = dto.rooms?.length
+      ? dto.rooms
+      : saved.rooms.length
+        ? saved.rooms
+        : ['General'];
     const description =
       dto.description ??
       (notes.length
@@ -154,6 +163,54 @@ export class BriefsService {
       throw new ForbiddenException('You do not own this moodboard');
     }
     return moodboard;
+  }
+
+  /**
+   * Styles and room types of the portfolios saved on a moodboard, most
+   * frequent first, so a generated brief can be matched against designers.
+   */
+  private async savedPortfolioTags(savedItems: unknown) {
+    const ids = Array.isArray(savedItems)
+      ? savedItems
+          .map((item: unknown) =>
+            item &&
+            typeof item === 'object' &&
+            typeof (item as { portfolioId?: unknown }).portfolioId === 'string'
+              ? (item as { portfolioId: string }).portfolioId
+              : null,
+          )
+          .filter((id): id is string => id !== null)
+      : [];
+    if (!ids.length) {
+      return { styles: [], rooms: [] };
+    }
+
+    const portfolios = await this.prisma.portfolio.findMany({
+      where: { id: { in: [...new Set(ids)] } },
+      select: { id: true, style: true, roomType: true },
+    });
+    const byId = new Map(portfolios.map((p) => [p.id, p]));
+    const saved = ids.flatMap((id) => byId.get(id) ?? []);
+
+    return {
+      styles: this.byFrequency(saved.map((p) => p.style)),
+      rooms: this.byFrequency(saved.map((p) => p.roomType)),
+    };
+  }
+
+  /** Distinct values (case-insensitive), most frequent first. */
+  private byFrequency(values: string[]) {
+    const counts = new Map<string, { value: string; count: number }>();
+    for (const value of values) {
+      const key = value.trim().toLowerCase();
+      if (!key) continue;
+      const entry = counts.get(key) ?? { value: value.trim(), count: 0 };
+      entry.count += 1;
+      counts.set(key, entry);
+    }
+    return [...counts.values()]
+      .sort((a, b) => b.count - a.count)
+      .map((entry) => entry.value);
   }
 
   private extractNotes(savedItems: unknown): string[] {

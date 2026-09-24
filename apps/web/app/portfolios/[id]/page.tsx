@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { SaveToMoodboard } from '@/components/moodboards/save-to-moodboard';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
@@ -148,6 +149,14 @@ export default function PortfolioDetailPage({
           >
             Request this designer
           </ButtonLink>
+
+          {cover ? (
+            <SaveToMoodboard
+              portfolioId={portfolio.id}
+              imageUrl={cover.imageUrl}
+              title={portfolio.title}
+            />
+          ) : null}
         </aside>
       </section>
     </div>
