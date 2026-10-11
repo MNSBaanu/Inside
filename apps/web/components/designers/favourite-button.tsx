@@ -1,39 +1,39 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
-import { api } from '@/lib/api';
+import { ErrorNotice } from '@/components/ui/feedback';
+import { api, errorMessage } from '@/lib/api';
+import { useApi } from '@/lib/use-api';
 import type { Favourite } from '@/lib/types';
 
 export function FavouriteButton({ designerId }: { designerId: string }) {
   const { user, status } = useSession();
-  const [saved, setSaved] = useState(false);
+  if (status !== 'authenticated' || user?.activeRole !== 'CLIENT') return null;
+  return (
+    <ClientFavouriteButton
+      key={`${user.id}:${designerId}`}
+      designerId={designerId}
+    />
+  );
+}
+
+function ClientFavouriteButton({ designerId }: { designerId: string }) {
+  const { data, error, loading, reload } = useApi<{ items: Favourite[] }>(
+    '/favourites',
+  );
+  const [savedOverride, setSaved] = useState<boolean | null>(null);
+  const saved =
+    savedOverride ??
+    data?.items.some((item) => item.designerId === designerId) ??
+    false;
   const [busy, setBusy] = useState(false);
-  const [ready, setReady] = useState(false);
-
-  const isClient = status === 'authenticated' && user?.activeRole === 'CLIENT';
-
-  const load = useCallback(async () => {
-    if (!isClient) return;
-    try {
-      const data = await api.get<{ items: Favourite[] }>('/favourites');
-      setSaved(data.items.some((item) => item.designerId === designerId));
-    } catch {
-      // A failed lookup just leaves the button in its unsaved state.
-    } finally {
-      setReady(true);
-    }
-  }, [designerId, isClient]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  if (!isClient) return null;
+  const [actionError, setActionError] = useState<string | null>(null);
 
   async function toggle() {
     setBusy(true);
+    setActionError(null);
     try {
       if (saved) {
         await api.delete(`/favourites/${designerId}`);
@@ -42,22 +42,33 @@ export function FavouriteButton({ designerId }: { designerId: string }) {
         await api.post('/favourites', { designerId });
         setSaved(true);
       }
-    } catch {
-      // Keep the current state; the next load corrects it.
+    } catch (cause) {
+      setActionError(errorMessage(cause));
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <Button
-      variant="outline"
-      size="lg"
-      onClick={toggle}
-      disabled={busy || !ready}
-      aria-pressed={saved}
-    >
-      {saved ? 'Saved' : 'Save designer'}
-    </Button>
+    <div>
+      {error || actionError ? (
+        <ErrorNotice message={error ?? actionError!} />
+      ) : null}
+      {error ? (
+        <Button variant="outline" onClick={() => void reload()}>
+          Retry saved designers
+        </Button>
+      ) : (
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={toggle}
+          disabled={busy || loading || !data}
+          aria-pressed={saved}
+        >
+          {saved ? 'Saved' : 'Save designer'}
+        </Button>
+      )}
+    </div>
   );
 }

@@ -8,11 +8,11 @@ import { AppModule } from './app.module';
 import { ApiExceptionFilter } from './common/filters/api-exception.filter';
 
 async function bootstrap() {
-  // Locally, prefer apps/api/.env over a shell/system DATABASE_URL (e.g. Neon).
-  // In production, platform-provided variables always win.
+  // Explicit development mode may prefer .env over shell/system values.
+  // Tests and production preserve their supplied database and configuration.
   loadEnv({
     path: resolve(process.cwd(), '.env'),
-    override: process.env.NODE_ENV !== 'production',
+    override: process.env.NODE_ENV === 'development',
   });
 
   const app = await NestFactory.create(AppModule);

@@ -114,6 +114,22 @@ describe('AuthService', () => {
     ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
+  it('rejects refresh for a suspended account without creating a session', async () => {
+    prisma.session.findUnique.mockResolvedValue({
+      id: 's1',
+      revokedAt: null,
+      expiresAt: new Date(Date.now() + 60_000),
+      user: { id: 'u1', status: AccountStatus.SUSPENDED },
+    });
+
+    await expect(service.refresh('refresh-token')).rejects.toBeInstanceOf(
+      UnauthorizedException,
+    );
+    expect(prisma.session.updateMany).not.toHaveBeenCalled();
+    expect(prisma.session.create).not.toHaveBeenCalled();
+    expect(jwt.signAsync).not.toHaveBeenCalled();
+  });
+
   it('omits emailVerificationToken in production', async () => {
     config.get.mockImplementation((key: string): string | undefined => {
       if (key === 'JWT_REFRESH_DAYS') return '30';

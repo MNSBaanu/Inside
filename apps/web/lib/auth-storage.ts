@@ -1,6 +1,7 @@
 const ACCESS_KEY = 'inside.accessToken';
 const REFRESH_KEY = 'inside.refreshToken';
 const SESSION_COOKIE = 'inside.session';
+const SESSION_EVENT = 'inside:session-changed';
 
 function read(key: string) {
   try {
@@ -33,6 +34,15 @@ function writeSessionCookie(present: boolean) {
 }
 
 export const authStorage = {
+  subscribe(onChange: () => void) {
+    window.addEventListener(SESSION_EVENT, onChange);
+    window.addEventListener('storage', onChange);
+    return () => {
+      window.removeEventListener(SESSION_EVENT, onChange);
+      window.removeEventListener('storage', onChange);
+    };
+  },
+  hasSession: () => Boolean(read(ACCESS_KEY) || read(REFRESH_KEY)),
   refreshKey: REFRESH_KEY,
   getAccessToken: () => read(ACCESS_KEY),
   markActive: () => writeSessionCookie(true),
@@ -41,10 +51,12 @@ export const authStorage = {
     write(ACCESS_KEY, accessToken);
     write(REFRESH_KEY, refreshToken);
     writeSessionCookie(true);
+    window.dispatchEvent(new Event(SESSION_EVENT));
   },
   clear() {
     write(ACCESS_KEY, null);
     write(REFRESH_KEY, null);
     writeSessionCookie(false);
+    window.dispatchEvent(new Event(SESSION_EVENT));
   },
 };

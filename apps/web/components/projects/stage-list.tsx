@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
@@ -10,6 +10,7 @@ import { api, errorMessage } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { formatDate, formatMoney, titleCase } from '@/lib/format';
 import { safeHref } from '@/lib/url';
+import { useApi } from '@/lib/use-api';
 import type { Deliverable, ProjectStage, Task } from '@/lib/types';
 
 type StageAction = 'start' | 'submit' | 'approve' | 'reject';
@@ -201,27 +202,18 @@ function StageDeliverables({
   canUpload: boolean;
   canGiveFeedback: boolean;
 }) {
-  const [items, setItems] = useState<Deliverable[] | null>(null);
+  const {
+    data,
+    error: loadError,
+    loading,
+    reload: load,
+  } = useApi<{ items: Deliverable[] }>(`/stages/${stageId}/deliverables`);
+  const items = data?.items ?? null;
   const [error, setError] = useState<string | null>(null);
   const [fileUrl, setFileUrl] = useState('');
   const [fileName, setFileName] = useState('');
   const [notes, setNotes] = useState('');
   const [busy, setBusy] = useState(false);
-
-  const load = useCallback(async () => {
-    try {
-      const data = await api.get<{ items: Deliverable[] }>(
-        `/stages/${stageId}/deliverables`,
-      );
-      setItems(data.items);
-    } catch (cause) {
-      setError(errorMessage(cause));
-    }
-  }, [stageId]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
 
   async function onUpload(event: React.FormEvent) {
     event.preventDefault();
@@ -256,9 +248,13 @@ function StageDeliverables({
 
   return (
     <div className="mt-6 border-t border-hairline pt-6">
-      {error ? <ErrorNotice message={error} /> : null}
+      {error || loadError ? (
+        <ErrorNotice message={error ?? loadError!} />
+      ) : null}
 
-      {items && items.length > 0 ? (
+      {loading && !items ? (
+        <Skeleton className="h-24" />
+      ) : items && items.length > 0 ? (
         <ul className="flex flex-col gap-4">
           {items.map((deliverable) => (
             <li key={deliverable.id} className="rounded-card bg-sand p-5">
@@ -286,6 +282,10 @@ function StageDeliverables({
             </li>
           ))}
         </ul>
+      ) : loadError ? (
+        <Button size="sm" variant="outline" onClick={() => void load()}>
+          Try again
+        </Button>
       ) : (
         <p className="text-sm text-muted">No files for this stage yet.</p>
       )}
@@ -326,24 +326,20 @@ function StageTasks({
   stageId: string;
   canEdit: boolean;
 }) {
-  const [items, setItems] = useState<Task[] | null>(null);
+  const {
+    data,
+    error: loadError,
+    reload: load,
+  } = useApi<{ items: Task[] }>(`/stages/${stageId}/tasks`);
+  const [overrides, setOverrides] = useState<Record<string, boolean>>({});
+  const items =
+    data?.items.map((task) => ({
+      ...task,
+      isDone: overrides[task.id] ?? task.isDone,
+    })) ?? null;
   const [error, setError] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [busy, setBusy] = useState(false);
-
-  const load = useCallback(async () => {
-    setError(null);
-    try {
-      const data = await api.get<{ items: Task[] }>(`/stages/${stageId}/tasks`);
-      setItems(data.items);
-    } catch (cause) {
-      setError(errorMessage(cause));
-    }
-  }, [stageId]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
 
   async function run(action: () => Promise<unknown>) {
     setError(null);
@@ -359,21 +355,21 @@ function StageTasks({
   }
 
   async function toggle(taskId: string, isDone: boolean) {
-    const setDone = (value: boolean) =>
-      setItems((current) =>
-        current
-          ? current.map((task) =>
-              task.id === taskId ? { ...task, isDone: value } : task,
-            )
-          : current,
-      );
     setError(null);
-    setDone(isDone);
+    setBusy(true);
+    setOverrides((current) => ({ ...current, [taskId]: isDone }));
     try {
       await api.patch(`/tasks/${taskId}`, { isDone });
+      await load();
     } catch (cause) {
-      setDone(!isDone);
       setError(errorMessage(cause));
+    } finally {
+      setOverrides((current) => {
+        const next = { ...current };
+        delete next[taskId];
+        return next;
+      });
+      setBusy(false);
     }
   }
 
@@ -386,9 +382,9 @@ function StageTasks({
         {items && items.length > 0 ? ` · ${done}/${items.length} done` : ''}
       </p>
 
-      {error ? (
+      {error || loadError ? (
         <div className="mt-3 flex flex-col items-start gap-3">
-          <ErrorNotice message={error} />
+          <ErrorNotice message={error ?? loadError!} />
           {items === null ? (
             <Button size="sm" variant="outline" onClick={() => void load()}>
               Try again
@@ -397,7 +393,9 @@ function StageTasks({
         </div>
       ) : null}
 
-      {items === null && !error ? <Skeleton className="mt-3 h-12" /> : null}
+      {items === null && !error && !loadError ? (
+        <Skeleton className="mt-3 h-12" />
+      ) : null}
 
       {items && items.length === 0 ? (
         <p className="mt-3 text-sm text-muted">
@@ -410,12 +408,15 @@ function StageTasks({
       {items && items.length > 0 ? (
         <ul className="mt-3 flex flex-col gap-1">
           {items.map((task) => (
-            <li key={task.id} className="flex items-center justify-between gap-3">
+            <li
+              key={task.id}
+              className="flex items-center justify-between gap-3"
+            >
               <label className="flex min-h-11 flex-1 items-center gap-3">
                 <input
                   type="checkbox"
                   checked={task.isDone}
-                  disabled={!canEdit}
+                  disabled={!canEdit || busy}
                   onChange={(event) =>
                     void toggle(task.id, event.target.checked)
                   }
@@ -436,7 +437,9 @@ function StageTasks({
                   variant="ghost"
                   disabled={busy}
                   aria-label={`Delete task: ${task.title}`}
-                  onClick={() => void run(() => api.delete(`/tasks/${task.id}`))}
+                  onClick={() =>
+                    void run(() => api.delete(`/tasks/${task.id}`))
+                  }
                 >
                   Delete
                 </Button>

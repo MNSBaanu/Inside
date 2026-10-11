@@ -1,39 +1,36 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
-import { api } from '@/lib/api';
+import { ErrorNotice } from '@/components/ui/feedback';
+import { api, errorMessage } from '@/lib/api';
+import { useApi } from '@/lib/use-api';
 import type { Block } from '@/lib/types';
 
 export function BlockButton({ userId }: { userId: string }) {
   const { user, status } = useSession();
-  const [blocked, setBlocked] = useState(false);
+  if (status !== 'authenticated' || !user || user.id === userId) return null;
+  return (
+    <AuthenticatedBlockButton key={`${user.id}:${userId}`} userId={userId} />
+  );
+}
+
+function AuthenticatedBlockButton({ userId }: { userId: string }) {
+  const { data, error, loading, reload } = useApi<{ items: Block[] }>(
+    '/blocks',
+  );
+  const [blockedOverride, setBlocked] = useState<boolean | null>(null);
+  const blocked =
+    blockedOverride ??
+    data?.items.some((item) => item.blockedId === userId) ??
+    false;
   const [busy, setBusy] = useState(false);
-  const [ready, setReady] = useState(false);
-
-  const enabled = status === 'authenticated' && user?.id !== userId;
-
-  const load = useCallback(async () => {
-    if (!enabled) return;
-    try {
-      const data = await api.get<{ items: Block[] }>('/blocks');
-      setBlocked(data.items.some((item) => item.blockedId === userId));
-    } catch {
-      // Leave the button in its unblocked state if the lookup fails.
-    } finally {
-      setReady(true);
-    }
-  }, [enabled, userId]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  if (!enabled) return null;
+  const [actionError, setActionError] = useState<string | null>(null);
 
   async function toggle() {
     setBusy(true);
+    setActionError(null);
     try {
       if (blocked) {
         await api.delete(`/blocks/${userId}`);
@@ -42,22 +39,33 @@ export function BlockButton({ userId }: { userId: string }) {
         await api.post('/blocks', { blockedId: userId });
         setBlocked(true);
       }
-    } catch {
-      // Next load reconciles the real state.
+    } catch (cause) {
+      setActionError(errorMessage(cause));
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={toggle}
-      disabled={busy || !ready}
-      aria-pressed={blocked}
-    >
-      {blocked ? 'Unblock' : 'Block'}
-    </Button>
+    <div>
+      {error || actionError ? (
+        <ErrorNotice message={error ?? actionError!} />
+      ) : null}
+      {error ? (
+        <Button variant="outline" onClick={() => void reload()}>
+          Retry blocked users
+        </Button>
+      ) : (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggle}
+          disabled={busy || loading || !data}
+          aria-pressed={blocked}
+        >
+          {blocked ? 'Unblock' : 'Block'}
+        </Button>
+      )}
+    </div>
   );
 }

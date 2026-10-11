@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
@@ -17,30 +17,26 @@ export default function EditBriefPage({
 }: {
   params: { id: string };
 }) {
-  const router = useRouter();
   const { data, error, loading } = useApi<{ brief: Brief }>(
     `/briefs/${params.id}`,
   );
-
-  const [styles, setStyles] = useState<string[]>([]);
-  const [rooms, setRooms] = useState<string[]>([]);
-  const [budgetRange, setBudgetRange] = useState('');
-  const [description, setDescription] = useState('');
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (!data) return;
-    setStyles(data.brief.styles);
-    setRooms(data.brief.rooms);
-    setBudgetRange(data.brief.budgetRange ?? '');
-    setDescription(data.brief.description ?? '');
-  }, [data]);
 
   if (loading) return <Skeleton className="h-64" />;
   if (error || !data) {
     return <ErrorNotice message={error ?? 'Brief not found'} />;
   }
+
+  return <BriefForm key={data.brief.id} brief={data.brief} />;
+}
+
+function BriefForm({ brief }: { brief: Brief }) {
+  const router = useRouter();
+  const [styles, setStyles] = useState(brief.styles);
+  const [rooms, setRooms] = useState(brief.rooms);
+  const [budgetRange, setBudgetRange] = useState(brief.budgetRange ?? '');
+  const [description, setDescription] = useState(brief.description ?? '');
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -53,13 +49,13 @@ export default function EditBriefPage({
 
     setSaving(true);
     try {
-      await api.patch(`/briefs/${params.id}`, {
+      await api.patch(`/briefs/${brief.id}`, {
         styles,
         rooms,
         budgetRange: budgetRange || undefined,
         description: description || undefined,
       });
-      router.push(`/briefs/${params.id}`);
+      router.push(`/briefs/${brief.id}`);
     } catch (cause) {
       setSaveError(errorMessage(cause));
       setSaving(false);
@@ -113,7 +109,7 @@ export default function EditBriefPage({
               type="button"
               variant="outline"
               size="lg"
-              onClick={() => router.push(`/briefs/${params.id}`)}
+              onClick={() => router.push(`/briefs/${brief.id}`)}
             >
               Cancel
             </Button>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { ButtonLink } from '@/components/ui/button';
 import { AccountMenu } from '@/components/layout/account-menu';
 import { useSession } from '@/components/providers/session-provider';
@@ -15,24 +15,26 @@ const navigation = [
 ];
 
 export function SiteHeader() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  return <HeaderContent key={pathname} />;
+}
+
+function subscribeScroll(onChange: () => void) {
+  window.addEventListener('scroll', onChange, { passive: true });
+  return () => window.removeEventListener('scroll', onChange);
+}
+
+function HeaderContent() {
+  const scrolled = useSyncExternalStore(
+    subscribeScroll,
+    () => window.scrollY > 24,
+    () => false,
+  );
+  const [menuOpen, setMenuOpen] = useState(false);
   const { user, status } = useSession();
   const segment = useSelectedLayoutSegment();
   const workspace = segment === '(app)';
   const designerWorkspace = workspace && user?.activeRole === 'DESIGNER';
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -91,7 +93,9 @@ export function SiteHeader() {
             <>
               {workspace && !designerWorkspace ? null : (
                 <Link
-                  href={designerWorkspace ? `/designers/${user.id}` : '/dashboard'}
+                  href={
+                    designerWorkspace ? `/designers/${user.id}` : '/dashboard'
+                  }
                   className="label hidden text-ink/70 transition-colors duration-300 hover:text-brand sm:block"
                 >
                   {designerWorkspace ? 'Public profile' : 'Dashboard'}
@@ -162,12 +166,7 @@ export function SiteHeader() {
               <ButtonLink href="/dashboard" size="lg" fullWidth>
                 Dashboard
               </ButtonLink>
-              <ButtonLink
-                href="/account"
-                size="lg"
-                variant="outline"
-                fullWidth
-              >
+              <ButtonLink href="/account" size="lg" variant="outline" fullWidth>
                 Account
               </ButtonLink>
             </>

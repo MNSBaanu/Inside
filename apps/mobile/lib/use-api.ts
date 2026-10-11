@@ -2,33 +2,59 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, errorMessage } from './api';
 
 export function useApi<T>(path: string | null) {
-  const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(path !== null);
+  const [state, setState] = useState<{
+    path: string | null;
+    data: T | null;
+    error: string | null;
+    loading: boolean;
+  }>({ path: null, data: null, error: null, loading: false });
   const latest = useRef(0);
 
-  const load = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     // Only the most recent request may update state.
     const request = ++latest.current;
-    if (path === null) {
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setError(null);
+    if (path === null) return;
     try {
       const result = await api.get<T>(path);
-      if (request === latest.current) setData(result);
+      if (request === latest.current) {
+        setState({ path, data: result, error: null, loading: false });
+      }
     } catch (cause) {
-      if (request === latest.current) setError(errorMessage(cause));
-    } finally {
-      if (request === latest.current) setLoading(false);
+      if (request === latest.current) {
+        setState((current) => ({
+          path,
+          data: current.path === path ? current.data : null,
+          error: errorMessage(cause),
+          loading: false,
+        }));
+      }
     }
   }, [path]);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    const requests = latest;
+    void fetchData();
+    return () => {
+      requests.current++;
+    };
+  }, [fetchData]);
 
-  return { data, error, loading, reload: load };
+  const reload = useCallback(async () => {
+    if (path === null) return;
+    setState((current) => ({
+      path,
+      data: current.path === path ? current.data : null,
+      error: null,
+      loading: true,
+    }));
+    await fetchData();
+  }, [path, fetchData]);
+
+  const current = path !== null && state.path === path;
+  return {
+    data: current ? state.data : null,
+    error: current ? state.error : null,
+    loading: path !== null && (!current || state.loading),
+    reload,
+  };
 }

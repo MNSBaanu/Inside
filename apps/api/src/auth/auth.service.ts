@@ -148,7 +148,12 @@ export class AuthService {
       include: { user: true },
     });
 
-    if (!session || session.revokedAt || session.expiresAt < new Date()) {
+    if (
+      !session ||
+      session.revokedAt ||
+      session.expiresAt <= new Date() ||
+      session.user.status === AccountStatus.SUSPENDED
+    ) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 

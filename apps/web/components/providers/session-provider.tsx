@@ -6,7 +6,9 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
+  useSyncExternalStore,
 } from 'react';
 import { api, setSessionExpiredHandler } from '@/lib/api';
 import { authStorage } from '@/lib/auth-storage';
@@ -33,32 +35,42 @@ const SessionContext = createContext<SessionValue | null>(null);
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<SessionStatus>('loading');
+  const latest = useRef(0);
+  const hasSession = useSyncExternalStore<boolean | null>(
+    authStorage.subscribe,
+    authStorage.hasSession,
+    () => null,
+  );
 
-  const loadUser = useCallback(async () => {
-    if (!authStorage.getAccessToken()) {
-      setUser(null);
-      setStatus('unauthenticated');
-      return;
-    }
-
-    try {
-      const data = await api.get<{ user: User }>('/users/me');
-      authStorage.markActive();
-      setUser(data.user);
-      setStatus('authenticated');
-    } catch {
-      authStorage.clear();
-      setUser(null);
-      setStatus('unauthenticated');
-    }
+  const loadUser = useCallback(() => {
+    const request = ++latest.current;
+    return api
+      .get<{ user: User }>('/users/me')
+      .then((data) => {
+        if (request !== latest.current || !authStorage.hasSession()) return;
+        authStorage.markActive();
+        setUser(data.user);
+        setStatus('authenticated');
+      })
+      .catch(() => {
+        if (request !== latest.current) return;
+        authStorage.clear();
+        setUser(null);
+        setStatus('unauthenticated');
+      });
   }, []);
 
   useEffect(() => {
-    void loadUser();
-  }, [loadUser]);
+    const requests = latest;
+    if (hasSession) void loadUser();
+    return () => {
+      requests.current++;
+    };
+  }, [hasSession, loadUser]);
 
   useEffect(() => {
     setSessionExpiredHandler(() => {
+      latest.current++;
       setUser(null);
       setStatus('unauthenticated');
     });
@@ -68,6 +80,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     function onStorage(event: StorageEvent) {
       if (event.key === authStorage.refreshKey && event.newValue === null) {
+        latest.current++;
         setUser(null);
         setStatus('unauthenticated');
       }
@@ -77,6 +90,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const adopt = useCallback((payload: AuthPayload) => {
+    latest.current++;
     authStorage.save(payload.accessToken, payload.refreshToken);
     setUser(payload.user);
     setStatus('authenticated');
@@ -106,6 +120,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(async () => {
+    latest.current++;
     const refreshToken = authStorage.getRefreshToken();
     if (refreshToken) {
       await api
@@ -118,8 +133,20 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo<SessionValue>(
-    () => ({ user, status, login, register, logout, refreshUser: loadUser }),
-    [user, status, login, register, logout, loadUser],
+    () => ({
+      user: hasSession ? user : null,
+      status:
+        hasSession === null
+          ? 'loading'
+          : hasSession
+            ? status
+            : 'unauthenticated',
+      login,
+      register,
+      logout,
+      refreshUser: loadUser,
+    }),
+    [hasSession, user, status, login, register, logout, loadUser],
   );
 
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSignOut } from '@/components/layout/app-shell';
 import { useSession } from '@/components/providers/session-provider';
 import { PasswordForm } from '@/components/account/password-form';
@@ -10,39 +10,33 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Combobox } from '@/components/ui/combobox';
 import { Field, Input, Textarea } from '@/components/ui/field';
-import { ErrorNotice } from '@/components/ui/feedback';
+import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api';
 import { LOCATIONS } from '@/lib/options';
 import type { User } from '@/lib/types';
 import { FileUpload } from '@/components/ui/file-upload';
 
 export default function AccountPage() {
-  const { user, refreshUser } = useSession();
+  const { user } = useSession();
+  if (!user) return <Skeleton className="h-64" />;
+  return <AccountForm key={user.id} user={user} />;
+}
+
+function AccountForm({ user }: { user: User }) {
+  const { refreshUser } = useSession();
   const onSignOut = useSignOut();
 
   const [form, setForm] = useState({
-    name: '',
-    bio: '',
-    phone: '',
-    location: '',
-    avatarUrl: '',
+    name: user.name,
+    bio: user.bio ?? '',
+    phone: user.phone ?? '',
+    location: user.location ?? '',
+    avatarUrl: user.avatarUrl ?? '',
   });
-  const [isAvailable, setIsAvailable] = useState(true);
+  const [isAvailable, setIsAvailable] = useState(user.isAvailable);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-    setForm({
-      name: user.name,
-      bio: user.bio ?? '',
-      phone: user.phone ?? '',
-      location: user.location ?? '',
-      avatarUrl: user.avatarUrl ?? '',
-    });
-    setIsAvailable(user.isAvailable);
-  }, [user]);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -111,7 +105,9 @@ export default function AccountPage() {
               id="bio"
               maxLength={1000}
               value={form.bio}
-              onChange={(event) => setForm({ ...form, bio: event.target.value })}
+              onChange={(event) =>
+                setForm({ ...form, bio: event.target.value })
+              }
               placeholder="How you work, what you specialise in."
             />
           </Field>
