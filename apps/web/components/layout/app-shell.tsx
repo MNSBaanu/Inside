@@ -11,7 +11,9 @@ import { api } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import type { Role } from '@/lib/types';
 
-const SignOutContext = createContext<() => Promise<void>>(async () => undefined);
+const SignOutContext = createContext<() => Promise<void>>(
+  async () => undefined,
+);
 
 export function useSignOut() {
   return useContext(SignOutContext);
@@ -65,8 +67,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="shell grid gap-12 pb-32 pt-28 md:pb-40 md:pt-32 lg:h-dvh lg:grid-cols-[240px_1fr] lg:overflow-hidden lg:pb-8 lg:pt-24">
-      <aside className="h-fit rounded-card bg-sand p-6 [scrollbar-width:none] lg:h-full lg:overflow-y-auto [&::-webkit-scrollbar]:hidden">
+    <div className="shell grid grid-cols-1 gap-12 pb-32 pt-28 md:pb-40 md:pt-32 lg:h-dvh lg:grid-cols-[240px_1fr] lg:overflow-hidden lg:pb-8 lg:pt-24">
+      <aside className="h-fit min-w-0 rounded-card bg-sand p-6 [scrollbar-width:none] lg:h-full lg:overflow-y-auto [&::-webkit-scrollbar]:hidden">
         <p className="ui-label text-ink/70">Signed in as</p>
         <p className="mt-2 font-display text-xl font-semibold">{user.name}</p>
         {user.role === 'DESIGNER' ? (
@@ -123,7 +125,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
         )}
-        <SignOutContext.Provider value={onSignOut}>{children}</SignOutContext.Provider>
+        <SignOutContext.Provider value={onSignOut}>
+          {children}
+        </SignOutContext.Provider>
       </div>
     </div>
   );

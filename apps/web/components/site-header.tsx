@@ -166,6 +166,22 @@ function HeaderContent() {
               <ButtonLink href="/dashboard" size="lg" fullWidth>
                 Dashboard
               </ButtonLink>
+              <ButtonLink
+                href="/messages"
+                size="lg"
+                variant="outline"
+                fullWidth
+              >
+                Messages
+              </ButtonLink>
+              <ButtonLink
+                href="/notifications"
+                size="lg"
+                variant="outline"
+                fullWidth
+              >
+                Notifications
+              </ButtonLink>
               <ButtonLink href="/account" size="lg" variant="outline" fullWidth>
                 Account
               </ButtonLink>
