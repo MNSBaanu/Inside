@@ -12,7 +12,7 @@
 
 ## Overview
 
-Inside is a full-stack platform that connects **clients** and **interior designers** in one workflow. Clients browse completed room projects, build moodboards, submit structured briefs, hire designers, and approve work at each stage before funds are released. Designers publish portfolios, respond to requests, deliver concepts through a stage-gated workspace, and receive milestone payments.
+Inside is a full-stack platform that connects **clients** and **interior designers** in one workflow. Clients browse completed room projects, build moodboards, submit structured briefs, hire designers, and approve work at each stage. Designers publish portfolios, respond to requests, and deliver concepts through a stage-gated workspace. Milestone payments are a Stripe test-mode demonstration; releasing a milestone records approval and does not transfer money to a designer.
 
 ---
 
@@ -24,7 +24,7 @@ Inside is a full-stack platform that connects **clients** and **interior designe
 - **Hiring** — open requests, direct invites, proposals, and side-by-side comparison
 - **Project workspace** — staged flow (Proposal → Concept → Design → Revision → Completion)
 - **Messaging & notifications** — in-app and email alerts; push on mobile
-- **Milestone payments** — Stripe escrow with per-stage client approval
+- **Milestone payment demo** — Stripe test-mode Checkout and approval records; no escrow or designer payouts
 - **Dual-role accounts** — designers can switch `activeRole` CLIENT ↔ DESIGNER
 - **Trust & admin** — verification, reviews, moderation, and platform oversight
 

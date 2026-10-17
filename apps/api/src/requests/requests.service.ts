@@ -67,6 +67,11 @@ export class RequestsService {
       ) {
         throw new NotFoundException('Designer not found');
       }
+      if (!designer.isAvailable) {
+        throw new BadRequestException(
+          'This designer is not taking new requests. Please choose an available designer.',
+        );
+      }
       await this.blocks.assertNotBlocked(user.id, dto.designerId);
     } else if (dto.designerId) {
       throw new BadRequestException(

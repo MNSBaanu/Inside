@@ -9,6 +9,10 @@ export const stripeProvider: FactoryProvider<Stripe | null> = {
   inject: [ConfigService],
   useFactory: (config: ConfigService) => {
     const key = config.get<string>('STRIPE_SECRET_KEY');
-    return key ? new Stripe(key) : null;
+    // Settlement and webhook reconciliation are not implemented yet.
+    // Fail closed for live keys so the payment demo cannot collect real money.
+    return key?.startsWith('sk_test_') || key?.startsWith('rk_test_')
+      ? new Stripe(key)
+      : null;
   },
 };

@@ -58,6 +58,9 @@ jobs:
       - name: Generate Prisma client
         run: pnpm --filter @inside/database db:generate
 
+      - name: Typecheck API
+        run: pnpm --filter api exec tsc --noEmit --incremental false
+
       - name: Unit tests
         run: pnpm --filter api test
 
@@ -88,6 +91,12 @@ jobs:
 
       - name: Unit tests
         run: pnpm --filter web test
+
+      - name: Typecheck web
+        run: pnpm --filter web typecheck
+
+      - name: Lint web
+        run: pnpm --filter web exec eslint . --max-warnings 0
 
   test-web-e2e:
     name: Web browser (Playwright)

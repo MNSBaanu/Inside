@@ -29,6 +29,11 @@ export class ListDesignersQueryDto {
   @IsBooleanString()
   verifiedOnly?: string;
 
+  @ApiPropertyOptional({ example: 'true' })
+  @IsOptional()
+  @IsBooleanString()
+  availableOnly?: string;
+
   @ApiPropertyOptional({ default: 1 })
   @IsOptional()
   @Type(() => Number)

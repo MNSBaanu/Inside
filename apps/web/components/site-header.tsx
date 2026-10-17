@@ -75,7 +75,7 @@ function HeaderContent() {
         </Link>
 
         {workspace ? null : (
-          <nav className="hidden items-center gap-10 md:flex">
+          <nav className="hidden items-center gap-8 lg:flex">
             {navigation.map((item) => (
               <Link
                 key={item.href}
@@ -123,7 +123,7 @@ function HeaderContent() {
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            className="-mr-2 flex h-11 w-11 items-center justify-center md:hidden"
+            className="-mr-2 flex h-11 w-11 items-center justify-center lg:hidden"
           >
             <span className="relative block h-3 w-6">
               <span
@@ -144,7 +144,7 @@ function HeaderContent() {
       <div
         id="mobile-menu"
         hidden={!menuOpen}
-        className="h-[calc(100dvh-4rem)] overflow-y-auto bg-canvas md:hidden"
+        className="h-[calc(100dvh-4rem)] overflow-y-auto bg-canvas lg:hidden"
       >
         {workspace ? null : (
           <nav className="shell flex flex-col pt-8">

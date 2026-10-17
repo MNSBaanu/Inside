@@ -61,7 +61,7 @@ const faqs = [
   {
     question: 'How much does it cost to post a brief?',
     answer:
-      'Posting a brief is free. You only pay once you accept a proposal, and payments are split across the agreed stages.',
+      'Posting a brief is free. Milestone payments are currently a Stripe test-mode demonstration; designer payouts are not supported.',
   },
   {
     question: 'How are designers verified?',
@@ -71,7 +71,7 @@ const faqs = [
   {
     question: 'When is my payment released?',
     answer:
-      'Each milestone payment is released only after you approve the deliverables for that stage.',
+      'In this demo, release records your approval of a milestone. It does not transfer money to the designer.',
   },
   {
     question: 'Can I talk to a designer before accepting a proposal?',
@@ -96,7 +96,7 @@ const steps = [
   {
     number: '03',
     title: 'Work in one place',
-    body: 'Track stages, approve deliverables and release milestone payments as the work actually completes.',
+    body: 'Track stages, approve deliverables and try milestone payments in Stripe test mode. Designer payouts are not yet supported.',
     tone: 'bg-brand-soft',
   },
 ];

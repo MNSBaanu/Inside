@@ -48,10 +48,14 @@ export function DesignerCard({ designer }: { designer: DesignerSummary }) {
         ) : null}
 
         <div className="mt-auto flex flex-wrap items-center gap-2 pt-6">
+          <Badge tone={designer.isAvailable ? 'brand' : 'neutral'}>
+            {designer.isAvailable ? 'Available' : 'Not taking work'}
+          </Badge>
           {designer.isVerified ? <Badge tone="support">Verified</Badge> : null}
           {designer.rating.count > 0 ? (
             <Badge tone="highlight">
-              {designer.rating.average?.toFixed(1)} ({designer.rating.count})
+              {designer.rating.average?.toFixed(1)} from {designer.rating.count}{' '}
+              {designer.rating.count === 1 ? 'review' : 'reviews'}
             </Badge>
           ) : null}
           <Badge>

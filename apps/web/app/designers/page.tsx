@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { DesignerCard } from '@/components/designers/designer-card';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
@@ -8,111 +9,110 @@ import { Field, Input } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { Select } from '@/components/ui/select';
-import { LOCATIONS } from '@/lib/options';
+import { LOCATIONS, STYLES } from '@/lib/options';
 import { buildQuery, useApi } from '@/lib/use-api';
 import type { DesignerSummary, Paginated } from '@/lib/types';
 
 const PAGE_SIZE = 12;
+type SearchParams = Record<string, string | string[] | undefined>;
+type Filters = {
+  q: string;
+  location: string;
+  style: string;
+  verifiedOnly: string;
+  availableOnly: string;
+};
 
-const EMPTY_FILTERS = { q: '', location: '', verified: '' };
+function single(value: string | string[] | undefined) {
+  return typeof value === 'string' ? value : '';
+}
+
+function directoryUrl(filters: Filters, page = 1) {
+  return `/designers${buildQuery({
+    ...filters,
+    q: filters.q.trim(),
+    location: filters.location.trim(),
+    page: page > 1 ? page : undefined,
+  })}`;
+}
 
 export default function DesignersPage({
   searchParams,
 }: {
-  searchParams: { q?: string; location?: string };
+  searchParams: SearchParams;
 }) {
-  const [filters, setFilters] = useState({
-    q: searchParams.q ?? '',
-    location: searchParams.location ?? '',
-    verified: '',
-  });
-  const [applied, setApplied] = useState(filters);
-  const [page, setPage] = useState(1);
-
-  const query = buildQuery({
-    q: applied.q,
-    location: applied.location,
-    verifiedOnly: applied.verified === 'verified' ? 'true' : undefined,
-    page,
-    pageSize: PAGE_SIZE,
-  });
-
+  const router = useRouter();
+  const filters: Filters = {
+    q: single(searchParams.q),
+    location: single(searchParams.location),
+    style: single(searchParams.style),
+    verifiedOnly: single(searchParams.verifiedOnly) === 'true' ? 'true' : '',
+    availableOnly: single(searchParams.availableOnly) === 'true' ? 'true' : '',
+  };
+  const requestedPage = Number(single(searchParams.page));
+  const page =
+    Number.isSafeInteger(requestedPage) && requestedPage > 0
+      ? requestedPage
+      : 1;
+  const query = buildQuery({ ...filters, page, pageSize: PAGE_SIZE });
   const { data, error, loading } = useApi<Paginated<DesignerSummary>>(
     `/designers${query}`,
   );
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPage(1);
-      setApplied(filters);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [filters]);
-
-  function onSubmit(event: React.FormEvent) {
-    event.preventDefault();
-  }
-
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
+  const activeFilters = [
+    filters.q && `Search: ${filters.q}`,
+    filters.location && `Location: ${filters.location}`,
+    filters.style && `Style: ${filters.style}`,
+    filters.verifiedOnly && 'Verified only',
+    filters.availableOnly && 'Available now',
+  ].filter(Boolean);
 
   return (
-    <div className="shell py-32 md:py-40">
+    <div className="shell pb-24 pt-28 md:pb-32 md:pt-32">
       <PageHeader
         eyebrow="Designers"
         title="Find the designer for your space."
-        description="Browse verified interior designers, see their work, and start a conversation."
+        description="Browse interior designers, see their work, and start a conversation."
       />
 
-      <form
-        onSubmit={onSubmit}
-        className="mt-12 grid gap-4 rounded-card border border-hairline bg-surface p-6 md:grid-cols-[2fr_1fr_1fr_auto] md:items-end"
+      <DirectoryFilters key={directoryUrl(filters, page)} initial={filters} />
+
+      {activeFilters.length > 0 ? (
+        <ul aria-label="Active filters" className="mt-5 flex flex-wrap gap-2">
+          {activeFilters.map((label) => (
+            <li
+              key={String(label)}
+              className="rounded-pill bg-sand px-3 py-1 text-sm text-ink"
+            >
+              {label}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      <p
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="mt-8 text-sm text-muted"
       >
-        <Field label="Search" htmlFor="q">
-          <Input
-            id="q"
-            value={filters.q}
-            onChange={(event) =>
-              setFilters({ ...filters, q: event.target.value })
-            }
-            placeholder="Name or keyword"
-            autoComplete="off"
-          />
-        </Field>
-        <Field label="Location" htmlFor="location">
-          <Combobox
-            id="location"
-            value={filters.location}
-            options={LOCATIONS}
-            onChange={(location) => setFilters({ ...filters, location })}
-            placeholder="Colombo"
-          />
-        </Field>
-        <Field label="Status" htmlFor="verified">
-          <Select
-            id="verified"
-            value={filters.verified}
-            options={[
-              { value: '', label: 'All designers' },
-              { value: 'verified', label: 'Verified only' },
-            ]}
-            onChange={(verified) => setFilters({ ...filters, verified })}
-          />
-        </Field>
-        <Button
-          type="button"
-          size="lg"
-          variant="outline"
-          onClick={() => setFilters(EMPTY_FILTERS)}
-        >
-          Clear
-        </Button>
-      </form>
-
-      <div className="mt-12">
+        {loading
+          ? 'Finding designers…'
+          : error
+            ? 'Could not load designers.'
+            : `${data?.total ?? 0} ${(data?.total ?? 0) === 1 ? 'designer' : 'designers'} found`}
+      </p>
+      <section
+        aria-label="Designer results"
+        aria-busy={loading}
+        className="mt-4"
+      >
         {error ? <ErrorNotice message={error} /> : null}
-
         {loading ? (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            aria-hidden="true"
+            className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+          >
             {Array.from({ length: 6 }).map((_, index) => (
               <Skeleton key={index} className="h-96" />
             ))}
@@ -124,36 +124,148 @@ export default function DesignersPage({
                 <DesignerCard key={designer.id} designer={designer} />
               ))}
             </div>
-
             {totalPages > 1 ? (
-              <div className="mt-16 flex items-center justify-center gap-4">
+              <nav
+                aria-label="Designer pagination"
+                className="mt-12 flex items-center justify-center gap-4"
+              >
                 <Button
                   variant="outline"
                   disabled={page === 1}
-                  onClick={() => setPage((current) => current - 1)}
+                  onClick={() =>
+                    router.push(directoryUrl(filters, page - 1), {
+                      scroll: false,
+                    })
+                  }
                 >
                   Previous
                 </Button>
-                <span className="label text-muted">
+                <span className="text-sm text-muted">
                   Page {page} of {totalPages}
                 </span>
                 <Button
                   variant="outline"
                   disabled={page >= totalPages}
-                  onClick={() => setPage((current) => current + 1)}
+                  onClick={() =>
+                    router.push(directoryUrl(filters, page + 1), {
+                      scroll: false,
+                    })
+                  }
                 >
                   Next
                 </Button>
-              </div>
+              </nav>
             ) : null}
           </>
         ) : !error ? (
           <EmptyState
             title="No designers match that search."
             description="Try widening your filters, or clear the search to see everyone."
+            action={
+              <Button
+                variant="outline"
+                onClick={() => router.push('/designers', { scroll: false })}
+              >
+                Clear filters
+              </Button>
+            }
           />
         ) : null}
-      </div>
+      </section>
     </div>
+  );
+}
+
+function DirectoryFilters({ initial }: { initial: Filters }) {
+  const router = useRouter();
+  const [filters, setFilters] = useState(initial);
+
+  function onSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    router.push(directoryUrl(filters), { scroll: false });
+  }
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="mt-8 grid gap-4 rounded-card border border-hairline bg-surface p-5 sm:grid-cols-2 xl:grid-cols-3"
+    >
+      <Field label="Search" htmlFor="q">
+        <Input
+          id="q"
+          value={filters.q}
+          onChange={(event) =>
+            setFilters({ ...filters, q: event.target.value })
+          }
+          placeholder="Name or keyword"
+          autoComplete="off"
+        />
+      </Field>
+      <Field label="Location" htmlFor="location">
+        <Combobox
+          id="location"
+          value={filters.location}
+          options={LOCATIONS}
+          onChange={(location) => setFilters({ ...filters, location })}
+          placeholder="Any location"
+        />
+      </Field>
+      <Field label="Style" htmlFor="style">
+        <Select
+          id="style"
+          value={filters.style}
+          options={[
+            { value: '', label: 'All styles' },
+            ...STYLES.map((style) => ({ value: style, label: style })),
+          ]}
+          onChange={(style) => setFilters({ ...filters, style })}
+        />
+      </Field>
+      <Field label="Verification" htmlFor="verified">
+        <Select
+          id="verified"
+          value={filters.verifiedOnly}
+          options={[
+            { value: '', label: 'All designers' },
+            { value: 'true', label: 'Verified only' },
+          ]}
+          onChange={(verifiedOnly) => setFilters({ ...filters, verifiedOnly })}
+        />
+      </Field>
+      <Field label="Availability" htmlFor="available">
+        <Select
+          id="available"
+          value={filters.availableOnly}
+          options={[
+            { value: '', label: 'Any availability' },
+            { value: 'true', label: 'Available now' },
+          ]}
+          onChange={(availableOnly) =>
+            setFilters({ ...filters, availableOnly })
+          }
+        />
+      </Field>
+      <div className="flex flex-wrap items-end gap-3">
+        <Button type="submit" size="lg">
+          Apply filters
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            setFilters({
+              q: '',
+              location: '',
+              style: '',
+              verifiedOnly: '',
+              availableOnly: '',
+            });
+            router.push('/designers', { scroll: false });
+          }}
+        >
+          Clear
+        </Button>
+      </div>
+    </form>
   );
 }

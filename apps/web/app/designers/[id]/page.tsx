@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { ButtonLink } from '@/components/ui/button';
+import { Button, ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { ReviewList } from '@/components/reviews/review-list';
 import { FavouriteButton } from '@/components/designers/favourite-button';
@@ -97,12 +97,18 @@ export default function DesignerProfilePage({
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <ButtonLink
-                href={`/requests/new?designerId=${designer.id}`}
-                size="lg"
-              >
-                Request this designer
-              </ButtonLink>
+              {designer.isAvailable ? (
+                <ButtonLink
+                  href={`/requests/new?designerId=${designer.id}`}
+                  size="lg"
+                >
+                  Request this designer
+                </ButtonLink>
+              ) : (
+                <Button disabled size="lg">
+                  Not taking new requests
+                </Button>
+              )}
               <FavouriteButton designerId={designer.id} />
             </div>
           </div>
@@ -151,7 +157,9 @@ export default function DesignerProfilePage({
                   {portfolio.images[0] ? (
                     <Image
                       src={portfolio.images[0].imageUrl}
-                      unoptimized={!isOptimizableImage(portfolio.images[0].imageUrl)}
+                      unoptimized={
+                        !isOptimizableImage(portfolio.images[0].imageUrl)
+                      }
                       alt={portfolio.title}
                       fill
                       sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"

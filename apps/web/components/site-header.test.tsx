@@ -31,10 +31,10 @@ describe('Mobile navigation', () => {
     render(<SiteHeader />);
     fireEvent.click(screen.getByRole('button', { name: 'Open menu' }));
     expect(
-      screen.getByRole('link', { name: 'Messages', exact: true }),
+      screen.getByRole('link', { name: 'Messages' }),
     ).toHaveAttribute('href', '/messages');
     expect(
-      screen.getByRole('link', { name: 'Notifications', exact: true }),
+      screen.getByRole('link', { name: 'Notifications' }),
     ).toHaveAttribute('href', '/notifications');
   });
   it('closes on route changes and releases the body scroll lock', () => {

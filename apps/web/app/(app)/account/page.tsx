@@ -74,6 +74,14 @@ function AccountForm({ user }: { user: User }) {
         Inside.
       </p>
 
+      {isDesigner ? (
+        <p className="mt-4 max-w-xl text-sm text-muted">
+          Your profile appears in the designer directory once you publish a
+          project or receive verification. Availability controls whether clients
+          can send you new direct requests.
+        </p>
+      ) : null}
+
       <Card className="mt-12">
         <CardHeader
           title="Profile details"

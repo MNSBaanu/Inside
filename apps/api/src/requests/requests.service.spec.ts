@@ -94,6 +94,7 @@ describe('RequestsService', () => {
       id: 'd1',
       role: Role.DESIGNER,
       status: AccountStatus.ACTIVE,
+      isAvailable: true,
     });
     prisma.projectRequest.create.mockResolvedValue({
       id: 'r2',
@@ -135,6 +136,24 @@ describe('RequestsService', () => {
         type: RequestType.DIRECT,
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('rejects a new direct request to an unavailable designer', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'd1',
+      role: Role.DESIGNER,
+      status: AccountStatus.ACTIVE,
+      isAvailable: false,
+    });
+
+    await expect(
+      service.create(client, {
+        title: 'Bedroom',
+        type: RequestType.DIRECT,
+        designerId: 'd1',
+      }),
+    ).rejects.toThrow('This designer is not taking new requests');
+    expect(prisma.projectRequest.create).not.toHaveBeenCalled();
   });
 
   it('lists designer-visible OPEN requests', async () => {

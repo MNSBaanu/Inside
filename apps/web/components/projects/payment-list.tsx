@@ -73,6 +73,10 @@ export function PaymentList({
 
   return (
     <div>
+      <p className="rounded-card bg-sand p-4 text-sm text-ink">
+        Payment demo: use Stripe test mode only. Releasing a milestone records
+        approval in Inside; it does not transfer money to the designer.
+      </p>
       {actionError ? <ErrorNotice message={actionError} /> : null}
       {returnedPayment && sessionId ? (
         <p role="status" className="text-sm text-muted">
@@ -108,7 +112,7 @@ export function PaymentList({
                   disabled={pending === payment.id}
                   onClick={() => act(payment.id, 'pay')}
                 >
-                  Pay
+                  Test payment
                 </Button>
               ) : null}
               {isClient && payment.status === 'PAID' ? (
@@ -118,7 +122,7 @@ export function PaymentList({
                   disabled={pending === payment.id}
                   onClick={() => act(payment.id, 'release')}
                 >
-                  Release
+                  Record release
                 </Button>
               ) : null}
             </div>

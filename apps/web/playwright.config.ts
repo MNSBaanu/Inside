@@ -31,7 +31,7 @@ export default defineConfig({
     {
       name: 'mobile',
       use: { ...devices['Pixel 7'] },
-      testMatch: /(home|auth)\.spec\.ts/,
+      testMatch: /(home|auth|designers)\.spec\.ts/,
     },
   ],
   webServer: [

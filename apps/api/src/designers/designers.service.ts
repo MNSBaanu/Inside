@@ -25,7 +25,18 @@ export class DesignersService {
     const where: Prisma.UserWhereInput = {
       role: Role.DESIGNER,
       status: AccountStatus.ACTIVE,
+      // Keep incomplete signup/QA accounts out of discovery. A published
+      // portfolio gives new designers a route in without requiring verification.
+      AND: [
+        {
+          OR: [
+            { isVerified: true },
+            { portfolios: { some: { isPublished: true } } },
+          ],
+        },
+      ],
       ...(query.verifiedOnly === 'true' ? { isVerified: true } : {}),
+      ...(query.availableOnly === 'true' ? { isAvailable: true } : {}),
       ...(query.location
         ? { location: { contains: query.location, mode: 'insensitive' } }
         : {}),

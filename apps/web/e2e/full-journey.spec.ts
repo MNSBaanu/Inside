@@ -67,6 +67,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
   await test.step('client finds and saves a designer', async () => {
     await page.goto('/designers');
     await page.getByLabel('Search').fill('Ravi');
+    await page.getByRole('button', { name: 'Apply filters' }).click();
     await page.getByRole('link', { name: /Ravi Designer/ }).first().click();
     await expect(page.getByRole('heading', { name: 'Ravi Designer' })).toBeVisible();
     await page.getByRole('button', { name: 'Save designer' }).click();
@@ -176,9 +177,9 @@ test('a new client goes from the landing page to a completed, reviewed project',
     if (index === 1) {
       await test.step('client tries to pay the first milestone', async () => {
         await page.getByRole('tab', { name: 'Payments' }).click();
-        await page.getByRole('button', { name: 'Pay' }).first().click();
+        await page.getByRole('button', { name: 'Test payment' }).first().click();
         // The UI test servers run without a Stripe key.
-        await expect(page.getByText('Payments are not configured')).toBeVisible();
+        await expect(page.getByText('Demo payments require a Stripe test-mode key. Live payments are not supported.')).toBeVisible();
         await page.getByRole('tab', { name: 'Stages' }).click();
       });
     }
