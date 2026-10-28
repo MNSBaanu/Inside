@@ -41,8 +41,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-fraunces)', 'Georgia', 'serif'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-inter)', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         label: ['0.6875rem', { lineHeight: '1', letterSpacing: '0.14em' }],

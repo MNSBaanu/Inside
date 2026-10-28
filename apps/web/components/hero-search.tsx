@@ -12,7 +12,7 @@ export function HeroSearch() {
   return (
     <form
       action="/designers"
-      className="mt-12 grid gap-3 rounded-card border border-hairline bg-surface p-3 sm:grid-cols-[2fr_1fr_auto]"
+      className="mt-4 grid gap-3 rounded-card border border-hairline bg-surface p-3 sm:grid-cols-[2fr_1fr_auto]"
     >
       <Input
         name="q"

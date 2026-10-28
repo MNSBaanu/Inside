@@ -5,12 +5,9 @@ import { DesignerCard } from '@/components/designers/designer-card';
 import { HeroSearch } from '@/components/hero-search';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
-import { RoomHotspots } from '@/components/room-hotspots';
 import {
   featuredWork,
-  heroHotspots,
   heroImage,
-  heroImageAspect,
   spotlightImage,
 } from '@/lib/images';
 import { fetchPublic } from '@/lib/server-api';
@@ -140,34 +137,52 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="shell pb-20 pt-36 md:pb-28 md:pt-44">
-        <Reveal>
-          <Badge tone="brand">Interior design marketplace</Badge>
-        </Reveal>
-        <Reveal delay={80}>
-          <h1 className="mt-8 max-w-5xl font-display text-display font-semibold">
-            Design the home you
-            <span className="text-brand"> keep imagining.</span>
-          </h1>
-        </Reveal>
-        <Reveal delay={160}>
-          <div className="mt-12 flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
-            <p className="max-w-lg text-lg text-muted">
-              Brief your project once, compare proposals from verified
-              designers, and manage the work through to handover - without
-              losing the thread across a dozen conversations.
+      <section aria-labelledby="home-hero-title" className="shell pb-6 pt-24 md:pt-28">
+        <div className="grid overflow-hidden rounded-2xl md:rounded-3xl border border-hairline bg-sand lg:grid-cols-[1fr_1.1fr]">
+          <div className="flex flex-col justify-center px-5 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-12">
+            <p className="label text-brand">Your space. Your next chapter.</p>
+            <h1 id="home-hero-title" className="mt-5 max-w-xl text-[clamp(2rem,4.2vw,3.75rem)] font-semibold leading-[1.06] tracking-[-0.045em]">
+              A home that
+              <span className="block text-brand">feels like you.</span>
+            </h1>
+            <p className="mt-4 max-w-md text-base leading-relaxed text-muted">
+              Discover spaces you love, find your designer, and bring it all
+              together in one place.
             </p>
-            <div className="flex flex-wrap items-center gap-4">
-              <ButtonLink href="/briefs/new" size="lg">
-                Start a brief
-              </ButtonLink>
-              <ButtonLink href="/designers" size="lg" variant="outline">
-                Browse designers
-              </ButtonLink>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <ButtonLink href="/portfolios" size="lg">Explore spaces</ButtonLink>
+              <ButtonLink href="/designers" size="lg" variant="outline">Find a designer</ButtonLink>
+            </div>
+            <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-ink/10 pt-4 text-sm">
+              <span className="text-muted">Ready to make it happen?</span>
+              <Link href="/briefs/new" className="font-semibold text-brand underline decoration-brand/30 underline-offset-4 hover:decoration-brand">
+                Start your project <span aria-hidden="true">&rarr;</span>
+              </Link>
             </div>
           </div>
-        </Reveal>
-        <Reveal delay={240}>
+          <div className="relative h-[240px] bg-hairline sm:h-[300px] lg:h-auto lg:min-h-[440px]">
+            <Image
+              src={heroImage}
+              alt="A bright living room with arched windows, layered seating and warm natural textures"
+              fill
+              priority
+              sizes="(min-width: 1024px) 55vw, 100vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-6 pb-7 pt-24 sm:px-8">
+              <p className="label text-white/80">A little inspiration</p>
+              <p className="mt-3 text-2xl font-medium tracking-tight text-white">Room to imagine more.</p>
+              <Link href="/portfolios?roomType=Living%20Room" className="mt-3 inline-flex items-center gap-3 text-sm font-semibold text-white underline underline-offset-4 hover:text-white/80">
+                Explore living rooms <span aria-hidden="true">&rarr;</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+        <div className="mt-8">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <h2 className="text-lg font-semibold tracking-tight">Find the right designer for your space</h2>
+            <Link href="/projects" className="text-sm font-medium text-brand underline underline-offset-4">Go to my projects <span aria-hidden="true">&rarr;</span></Link>
+          </div>
           <HeroSearch />
           <div className="mt-5 flex flex-wrap items-center gap-2">
             <span className="label mr-2 text-muted">Popular styles</span>
@@ -181,28 +196,17 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
-        </Reveal>
+        </div>
       </section>
 
-      <Reveal>
-        <div className="shell">
-          <RoomHotspots
-            src={heroImage}
-            alt="A bright living room with arched windows, a painted brick fireplace and layered seating"
-            imageAspect={heroImageAspect}
-            hotspots={heroHotspots}
-          />
-        </div>
-      </Reveal>
-
-      <section className="shell py-20 md:py-28">
-        <div className="grid gap-10 rounded-card bg-brand px-8 py-12 text-canvas sm:grid-cols-3 md:px-16 md:py-16">
+      <section className="shell py-10 md:py-14">
+        <div className="grid grid-cols-3 gap-3 rounded-card bg-brand px-4 py-6 text-canvas sm:gap-6 md:px-8 md:py-8">
           {stats.map((stat, index) => (
             <Reveal key={stat.caption} delay={index * 100}>
-              <p className="font-display text-5xl font-semibold md:text-6xl">
+              <p className="font-display text-2xl font-semibold sm:text-3xl md:text-4xl">
                 {stat.value}
               </p>
-              <p className="mt-3 text-label font-semibold uppercase text-canvas/75">
+              <p className="mt-2 text-xs font-medium leading-relaxed text-canvas/80 sm:text-sm">
                 {stat.caption}
               </p>
             </Reveal>
@@ -210,23 +214,23 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="shell pb-24 md:pb-32">
+      <section className="shell pb-12 md:pb-16">
         <Reveal>
           <Badge tone="brand">Browse by room</Badge>
         </Reveal>
         <Reveal delay={60}>
-          <h2 className="mt-6 max-w-xl font-display text-section font-semibold">
+          <h2 className="mt-4 max-w-xl font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-tight tracking-tight font-semibold">
             Start with the space you have.
           </h2>
         </Reveal>
-        <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {rooms.map((room, index) => (
             <Reveal key={room.name} delay={(index % 4) * 80}>
               <Link
                 href={`/portfolios?roomType=${encodeURIComponent(room.name)}`}
-                className={`group flex h-full min-h-32 flex-col justify-between rounded-card ${room.tone} p-6 transition-transform duration-500 ease-editorial hover:-translate-y-1`}
+                className={`group flex h-full min-h-28 flex-col justify-between rounded-card ${room.tone} p-4 sm:p-5 transition-transform duration-500 ease-editorial hover:-translate-y-1`}
               >
-                <span className="font-display text-xl font-semibold transition-colors duration-300 group-hover:text-brand">
+                <span className="font-display text-base font-semibold sm:text-lg transition-colors duration-300 group-hover:text-brand">
                   {room.name}
                 </span>
                 <span className="label mt-6 text-muted">View work</span>
@@ -236,12 +240,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="shell pb-24 md:pb-32">
+      <section className="shell pb-12 md:pb-16">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <Reveal>
             <div>
               <Badge tone="brand">Selected work</Badge>
-              <h2 className="mt-6 max-w-xl font-display text-section font-semibold">
+              <h2 className="mt-4 max-w-xl font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-tight tracking-tight font-semibold">
                 Rooms that earned their brief.
               </h2>
             </div>
@@ -253,54 +257,54 @@ export default async function HomePage() {
           </Reveal>
         </div>
 
-        <div className="mt-14 grid gap-8 md:mt-20 md:grid-cols-12">
-          <Reveal className="md:col-span-7">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2">
+          <Reveal className="min-w-0">
             <WorkCard
               work={featuredWork[0]}
-              sizes="(min-width: 768px) 58vw, 100vw"
+              sizes="(min-width: 640px) 45vw, 100vw"
             />
           </Reveal>
-          <Reveal delay={120} className="md:col-span-5 md:pt-16">
+          <Reveal delay={120} className="min-w-0">
             <WorkCard
               work={featuredWork[1]}
-              sizes="(min-width: 768px) 40vw, 100vw"
+              sizes="(min-width: 640px) 45vw, 100vw"
             />
           </Reveal>
-          <Reveal className="md:col-span-5">
+          <Reveal className="min-w-0">
             <WorkCard
               work={featuredWork[2]}
-              sizes="(min-width: 768px) 40vw, 100vw"
+              sizes="(min-width: 640px) 45vw, 100vw"
             />
           </Reveal>
-          <Reveal delay={120} className="md:col-span-7 md:pt-16">
+          <Reveal delay={120} className="min-w-0">
             <WorkCard
               work={featuredWork[3]}
-              sizes="(min-width: 768px) 58vw, 100vw"
+              sizes="(min-width: 640px) 45vw, 100vw"
             />
           </Reveal>
         </div>
       </section>
 
-      <section className="bg-sand py-24 md:py-32">
+      <section className="bg-sand py-12 md:py-16">
         <div className="shell">
           <Reveal>
             <Badge className="bg-canvas">How it works</Badge>
           </Reveal>
           <Reveal delay={60}>
-            <h2 className="mt-6 max-w-2xl font-display text-section font-semibold">
+            <h2 className="mt-4 max-w-2xl font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-tight tracking-tight font-semibold">
               Three steps, start to handover.
             </h2>
           </Reveal>
-          <div className="mt-14 grid gap-6 md:mt-20 md:grid-cols-3">
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
             {steps.map((step, index) => (
               <Reveal key={step.number} delay={index * 100}>
                 <div
-                  className={`h-full rounded-card ${step.tone} p-8 transition-transform duration-500 ease-editorial hover:-translate-y-1 md:p-10`}
+                  className={`h-full rounded-card ${step.tone} p-6 transition-transform duration-500 ease-editorial hover:-translate-y-1 md:p-7`}
                 >
-                  <p className="font-display text-5xl font-semibold text-brand">
+                  <p className="font-display text-3xl font-semibold text-brand">
                     {step.number}
                   </p>
-                  <h3 className="mt-8 font-display text-2xl font-semibold">
+                  <h3 className="mt-4 font-display text-xl font-semibold">
                     {step.title}
                   </h3>
                   <p className="mt-4 text-muted">{step.body}</p>
@@ -312,12 +316,12 @@ export default async function HomePage() {
       </section>
 
       {featuredDesigners.length > 0 ? (
-        <section className="shell py-24 md:py-32">
+        <section className="shell py-12 md:py-16">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <Reveal>
               <div>
                 <Badge tone="support">Featured designers</Badge>
-                <h2 className="mt-6 max-w-xl font-display text-section font-semibold">
+                <h2 className="mt-4 max-w-xl font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-tight tracking-tight font-semibold">
                   Verified and ready for your brief.
                 </h2>
               </div>
@@ -328,7 +332,7 @@ export default async function HomePage() {
               </Link>
             </Reveal>
           </div>
-          <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {featuredDesigners.map((designer, index) => (
               <Reveal key={designer.id} delay={index * 100}>
                 <DesignerCard designer={designer} />
@@ -338,7 +342,7 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      <section aria-label="Promotions" className="shell pt-16 md:pt-20">
+      <section aria-label="Promotions" className="shell pt-10 md:pt-14">
         <div className="grid gap-4 md:grid-cols-3">
           {promotions.map((promo) => (
             <Link
@@ -361,9 +365,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="shell grid items-center gap-14 py-24 md:grid-cols-2 md:py-32">
+      <section className="shell grid items-center gap-8 py-12 md:grid-cols-2 md:py-16">
         <Reveal>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-card shadow-card">
+          <div className="relative h-[260px] sm:h-[320px] lg:h-[400px] overflow-hidden rounded-card shadow-card">
             <Image
               src={spotlightImage}
               alt="A designer reviewing material samples"
@@ -376,17 +380,17 @@ export default async function HomePage() {
         <Reveal delay={120}>
           <div className="md:pl-6">
             <Badge tone="support">Verified designers</Badge>
-            <h2 className="mt-6 font-display text-section font-semibold">
+            <h2 className="mt-4 font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-tight tracking-tight font-semibold">
               Credentials checked before the first message.
             </h2>
-            <p className="mt-8 max-w-md text-lg text-muted">
+            <p className="mt-5 max-w-md text-base text-muted">
               Every designer submits proof of qualification and past work for
               review. Payments sit against approved milestones, so money moves
               only when a stage is genuinely signed off.
             </p>
             <Link
               href="/how-it-works"
-              className="label link-underline mt-10 inline-block text-ink"
+              className="label link-underline mt-6 inline-block text-ink"
             >
               How verification works
             </Link>
@@ -394,21 +398,21 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      <section className="bg-sand py-24 md:py-32">
+      <section className="bg-sand py-12 md:py-16">
         <div className="shell">
           <Reveal>
             <Badge className="bg-canvas">Client stories</Badge>
           </Reveal>
           <Reveal delay={60}>
-            <h2 className="mt-6 max-w-2xl font-display text-section font-semibold">
+            <h2 className="mt-4 max-w-2xl font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-tight tracking-tight font-semibold">
               What clients say after handover.
             </h2>
           </Reveal>
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
             {testimonials.map((item, index) => (
               <Reveal key={item.name} delay={index * 100}>
-                <figure className="flex h-full flex-col rounded-card bg-canvas p-8">
-                  <blockquote className="font-display text-xl">
+                <figure className="flex h-full flex-col rounded-card bg-canvas p-6">
+                  <blockquote className="font-display text-base leading-relaxed sm:text-lg">
                     &ldquo;{item.quote}&rdquo;
                   </blockquote>
                   <figcaption className="mt-auto pt-8">
@@ -422,11 +426,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="shell grid gap-10 py-24 md:grid-cols-[1fr_2fr] md:py-32">
+      <section className="shell grid gap-6 py-12 lg:grid-cols-[1fr_2fr] md:py-16">
         <Reveal>
           <div>
             <Badge tone="brand">FAQ</Badge>
-            <h2 className="mt-6 font-display text-section font-semibold">
+            <h2 className="mt-4 font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-tight tracking-tight font-semibold">
               Questions, answered.
             </h2>
           </div>
@@ -434,7 +438,7 @@ export default async function HomePage() {
         <div className="divide-y divide-hairline border-y border-hairline">
           {faqs.map((faq) => (
             <details key={faq.question} className="group py-6">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 font-display text-xl font-semibold">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-display text-base font-semibold sm:text-lg">
                 {faq.question}
                 <span
                   aria-hidden
@@ -449,15 +453,15 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="shell pb-28 md:pb-36">
-        <div className="rounded-card bg-ink px-8 py-20 text-center text-canvas md:px-16 md:py-28">
+      <section className="shell pb-12 md:pb-16">
+        <div className="rounded-card bg-ink px-5 py-10 text-center text-canvas md:px-10 md:py-14">
           <Reveal>
-            <h2 className="mx-auto max-w-3xl font-display text-section font-semibold">
+            <h2 className="mx-auto max-w-3xl font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-tight tracking-tight font-semibold">
               Start with the room you keep rearranging.
             </h2>
           </Reveal>
           <Reveal delay={100}>
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-4">
               <ButtonLink href="/briefs/new" size="lg">
                 Start a brief
               </ButtonLink>
@@ -481,7 +485,7 @@ function WorkCard({
 }) {
   return (
     <Link href="/portfolios" className="group block">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-sand shadow-card">
+      <div className="relative aspect-[3/2] overflow-hidden rounded-card bg-sand shadow-card">
         <Image
           src={work.src}
           alt={work.title}
@@ -490,12 +494,12 @@ function WorkCard({
           className="object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.04]"
         />
       </div>
-      <div className="mt-5 flex items-baseline justify-between gap-4">
+      <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2">
         <div>
-          <h3 className="font-display text-2xl font-semibold transition-colors duration-300 group-hover:text-brand">
+          <h3 className="font-display text-lg font-semibold sm:text-xl transition-colors duration-300 group-hover:text-brand">
             {work.title}
           </h3>
-          <p className="mt-1 text-muted">Illustrative project</p>
+          <p className="mt-1 text-sm text-muted">Illustrative project</p>
         </div>
         <Badge className="whitespace-nowrap">{work.style}</Badge>
       </div>
