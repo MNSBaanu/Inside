@@ -27,18 +27,18 @@ export function NewsletterForm() {
 
   if (done) {
     return (
-      <p role="status" className="mt-8 text-sm text-ink">
+      <p role="status" className="text-sm text-ink">
         Thanks, you&apos;re on the list for Inside updates.
       </p>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-8">
-      <label htmlFor="newsletter-email" className="label">
-        Get updates
+    <form onSubmit={onSubmit}>
+      <label htmlFor="newsletter-email" className="text-sm font-semibold text-ink">
+        A little inspiration in your inbox
       </label>
-      <div className="mt-3 flex gap-2">
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row">
         <Input
           id="newsletter-email"
           type="email"
