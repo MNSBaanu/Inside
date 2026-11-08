@@ -7,7 +7,6 @@ import { Combobox } from '@/components/ui/combobox';
 import { BareInput } from '@/components/ui/field';
 import { FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { PageHeader } from '@/components/ui/page-header';
 import { LOCATIONS, ROOM_TYPES, STYLES } from '@/lib/utils/options';
 import { buildQuery, useApi } from '@/lib/api/use-api';
 import type { Paginated, Portfolio } from '@/lib/types';
@@ -22,16 +21,18 @@ const EMPTY_FILTERS = {
   maxBudget: '',
 };
 
-export default function PortfoliosPage({
-  searchParams,
+export function ProjectsExplorer({
+  style,
+  roomType,
 }: {
-  searchParams: { style?: string; roomType?: string };
+  style?: string;
+  roomType?: string;
 }) {
   const [filters, setFilters] = useState({
     q: '',
     location: '',
-    style: searchParams.style ?? '',
-    roomType: searchParams.roomType ?? '',
+    style: style ?? '',
+    roomType: roomType ?? '',
     maxBudget: '',
   });
   const [applied, setApplied] = useState(filters);
@@ -66,14 +67,8 @@ export default function PortfoliosPage({
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
   return (
-    <div className="shell py-32 md:py-40">
-      <PageHeader
-        eyebrow="Work"
-        title="Rooms that earned their brief."
-        description="Published projects from designers across the platform."
-      />
-
-      <FilterBar onSubmit={onSubmit} className="mt-12">
+    <div>
+      <FilterBar onSubmit={onSubmit}>
         <FilterField label="Search" htmlFor="q">
           <BareInput
             id="q"
@@ -131,7 +126,7 @@ export default function PortfoliosPage({
         </FilterField>
       </FilterBar>
 
-      <div className="mt-12">
+      <div className="mt-10">
         {error ? <ErrorNotice message={error} /> : null}
 
         {loading ? (

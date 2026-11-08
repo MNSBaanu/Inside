@@ -8,7 +8,6 @@ import { Combobox } from '@/components/ui/combobox';
 import { BareInput } from '@/components/ui/field';
 import { FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { PageHeader } from '@/components/ui/page-header';
 import { Select } from '@/components/ui/select';
 import { LOCATIONS, STYLES } from '@/lib/utils/options';
 import { buildQuery, useApi } from '@/lib/api/use-api';
@@ -29,7 +28,8 @@ function single(value: string | string[] | undefined) {
 }
 
 function directoryUrl(filters: Filters, page = 1) {
-  return `/designers${buildQuery({
+  return `/explore${buildQuery({
+    tab: 'designers',
     ...filters,
     q: filters.q.trim(),
     location: filters.location.trim(),
@@ -37,7 +37,7 @@ function directoryUrl(filters: Filters, page = 1) {
   })}`;
 }
 
-export default function DesignersPage({
+export function DesignersExplorer({
   searchParams,
 }: {
   searchParams: SearchParams;
@@ -69,13 +69,7 @@ export default function DesignersPage({
   ].filter(Boolean);
 
   return (
-    <div className="shell pb-24 pt-28 md:pb-32 md:pt-32">
-      <PageHeader
-        eyebrow="Designers"
-        title="Find the designer for your space."
-        description="Browse interior designers, see their work, and start a conversation."
-      />
-
+    <div>
       <DirectoryFilters initial={filters} />
 
       {activeFilters.length > 0 ? (
@@ -165,7 +159,7 @@ export default function DesignersPage({
             action={
               <Button
                 variant="outline"
-                onClick={() => router.push('/designers', { scroll: false })}
+                onClick={() => router.push('/explore?tab=designers', { scroll: false })}
               >
                 Clear filters
               </Button>
@@ -219,7 +213,7 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
   }
 
   return (
-    <FilterBar onSubmit={(event) => event.preventDefault()} className="mt-8">
+    <FilterBar onSubmit={(event) => event.preventDefault()}>
       <FilterField label="Search" htmlFor="q">
         <BareInput
           id="q"

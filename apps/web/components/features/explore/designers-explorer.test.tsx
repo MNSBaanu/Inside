@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import DesignersPage from './page';
+import { DesignersExplorer } from './designers-explorer';
 
 const mocks = vi.hoisted(() => ({ push: vi.fn(), useApi: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: mocks.push }) }));
@@ -25,7 +25,7 @@ afterEach(() => {
 describe('Designer discovery URLs', () => {
   it('restores every filter from a shared URL and announces the count', () => {
     render(
-      <DesignersPage
+      <DesignersExplorer
         searchParams={{
           q: 'Ravi',
           location: 'Kandy',
@@ -55,7 +55,7 @@ describe('Designer discovery URLs', () => {
 
   it('applies typed search automatically after a short pause and resets pagination', () => {
     vi.useFakeTimers();
-    render(<DesignersPage searchParams={{ page: '3', style: 'Coastal' }} />);
+    render(<DesignersExplorer searchParams={{ page: '3', style: 'Coastal' }} />);
     fireEvent.change(screen.getByLabelText('Search'), {
       target: { value: ' Ravi ' },
     });
@@ -64,42 +64,42 @@ describe('Designer discovery URLs', () => {
       vi.advanceTimersByTime(400);
     });
     expect(mocks.push).toHaveBeenCalledTimes(1);
-    expect(mocks.push).toHaveBeenCalledWith('/designers?q=Ravi&style=Coastal', {
+    expect(mocks.push).toHaveBeenCalledWith('/explore?tab=designers&q=Ravi&style=Coastal', {
       scroll: false,
     });
   });
 
   it('applies a dropdown choice immediately', () => {
-    render(<DesignersPage searchParams={{}} />);
+    render(<DesignersExplorer searchParams={{}} />);
     fireEvent.click(screen.getByRole('combobox', { name: 'Availability' }));
     fireEvent.click(screen.getByRole('option', { name: 'Available now' }));
-    expect(mocks.push).toHaveBeenCalledWith('/designers?availableOnly=true', {
+    expect(mocks.push).toHaveBeenCalledWith('/explore?tab=designers&availableOnly=true', {
       scroll: false,
     });
   });
 
   it('removes a filter when its selected option is clicked again', () => {
-    render(<DesignersPage searchParams={{ style: 'Coastal' }} />);
+    render(<DesignersExplorer searchParams={{ style: 'Coastal' }} />);
     fireEvent.click(screen.getByRole('combobox', { name: 'Style' }));
     fireEvent.click(screen.getByRole('option', { name: 'Coastal' }));
-    expect(mocks.push).toHaveBeenCalledWith('/designers', { scroll: false });
+    expect(mocks.push).toHaveBeenCalledWith('/explore?tab=designers', { scroll: false });
   });
 
   it('has no Apply or Clear buttons in the filter bar', () => {
-    render(<DesignersPage searchParams={{}} />);
+    render(<DesignersExplorer searchParams={{}} />);
     expect(screen.queryByRole('button', { name: 'Apply filters' })).toBeNull();
     expect(screen.queryByRole('button', { name: /^Clear$/ })).toBeNull();
   });
 
   it('restores form fields when URL navigation returns to an earlier search', () => {
-    const { rerender } = render(<DesignersPage searchParams={{ q: 'Ravi' }} />);
+    const { rerender } = render(<DesignersExplorer searchParams={{ q: 'Ravi' }} />);
     fireEvent.change(screen.getByLabelText('Search'), {
       target: { value: 'draft' },
     });
-    rerender(<DesignersPage searchParams={{ location: 'Colombo' }} />);
+    rerender(<DesignersExplorer searchParams={{ location: 'Colombo' }} />);
     expect(screen.getByLabelText('Search')).toHaveValue('');
     expect(screen.getByLabelText('Location')).toHaveValue('Colombo');
-    rerender(<DesignersPage searchParams={{ q: 'Ravi' }} />);
+    rerender(<DesignersExplorer searchParams={{ q: 'Ravi' }} />);
     expect(screen.getByLabelText('Search')).toHaveValue('Ravi');
     expect(screen.getByLabelText('Location')).toHaveValue('');
   });
@@ -107,7 +107,7 @@ describe('Designer discovery URLs', () => {
   it('rejects invalid page parameters and exposes loading to assistive technology', () => {
     mocks.useApi.mockReturnValue({ data: null, loading: true, error: null });
     render(
-      <DesignersPage searchParams={{ page: '-5', verifiedOnly: 'false' }} />,
+      <DesignersExplorer searchParams={{ page: '-5', verifiedOnly: 'false' }} />,
     );
     expect(mocks.useApi).toHaveBeenCalledWith('/designers?page=1&pageSize=12');
     expect(

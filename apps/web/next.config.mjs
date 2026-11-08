@@ -27,6 +27,12 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
+  async redirects() {
+    return [
+      { source: '/designers', destination: '/explore?tab=designers', permanent: true },
+      { source: '/portfolios', destination: '/explore', permanent: true },
+    ];
+  },
   async headers() {
     return [
       {
