@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { BriefAssistant } from '@/components/features/briefs/brief-assistant';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
@@ -70,6 +71,15 @@ export default function NewBriefPage() {
         eyebrow="New brief"
         title="Tell us about the space."
         description="The more specific you are, the closer the proposals will be to what you actually want."
+      />
+
+      <BriefAssistant
+        onSuggest={(suggestion) => {
+          if (suggestion.rooms.length > 0) setRooms(suggestion.rooms);
+          if (suggestion.styles.length > 0) setStyles(suggestion.styles);
+          if (suggestion.budgetRange) setBudgetRange(suggestion.budgetRange);
+          if (suggestion.description) setDescription(suggestion.description);
+        }}
       />
 
       <Card className="mt-12">
