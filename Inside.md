@@ -33,7 +33,7 @@ pnpm --filter web exec playwright test
 ```
 
 ## Folder structure
-`apps/api` (27 modules) · `apps/web` (31 routes) · `apps/mobile` (companion) · `packages/database` (Prisma schema, 7 migrations, seed) · `packages/eslint-config` · `docs/` · `docker/postgres/init`.
+Restructured 2026-11-08 (ST-01, branch `final/submission`, uncommitted): `apps/api/src/modules/{identity,discovery,hiring,delivery,trust,platform}/<module>` plus `src/database` (Prisma module) and `src/common`; `apps/web` (31 routes) with `components/{ui,layout,features,providers}` and `lib/{api,auth,utils}`; `apps/mobile` with `components/features` and `lib/{api,auth,utils}`; `packages/database` (Prisma schema, 7 migrations, seed) · `packages/eslint-config` · `docker/postgres/init`. Dockerfile and compose stay at the root until Render's setup is confirmed.
 
 ## How it works
 Moodboard → brief → weighted matching (style 35, room 30, budget 20, description 15) → request → proposal with per-stage fees → accepted proposal creates a project with 5 stages → client approval creates a milestone payment → Stripe Checkout → release (approval record only, no payout). Details: see the audit file and, once rebuilt, docs/architecture.md.
@@ -51,8 +51,12 @@ Web appears to be on Vercel; API on Render (confirmed by owner 2026-11-08). Root
 - [ ] API e2e and Playwright not run in the 2026-11-08 audit (E1)
 - [ ] README overclaims email and push (A1)
 - [ ] Shared API types duplicated in web and mobile (D5)
+- [x] Folder structure refactor (ST-01) done 2026-11-08
+- [ ] API e2e and Playwright not run since the move (need Postgres): run in IN-02
+- [ ] `docs/` folder (audit, plan) went missing from disk on 2026-11-08; recreate or restore
+- [ ] Hosted site: seed password Password123! must not exist on hosted accounts; migrations not applied by bonto-start (D1)
 - [ ] Tokens in localStorage: accepted, to document (C1)
-- [ ] Product never walked by hand end to end: QA-01 to QA-09 in the plan
+- [ ] Product never walked by hand end to end: feature tasks F1 to F9 in the plan
 - [ ] Stripe test account and CLI not set up (IN-02)
 
 ## Log
@@ -60,4 +64,8 @@ Web appears to be on Vercel; API on Render (confirmed by owner 2026-11-08). Root
 - 2026-11-08: Re-planned to real availability (weekdays 3.5 h, Sat 6, Sun 10 = 47.5 h): 15 scheduled tasks, 44.5 h, 3 h slack, freeze end of Sun 2026-11-15. Postman, extra email types and file-splitting cut or made optional.
 - 2026-11-08: Plan rebuilt around a screen-by-screen QA and fix loop (31 routes, 9 QA tasks, 4 fix batches, security pass). 25 scheduled tasks, 47 h, freeze end of Tue 2026-11-17. Nothing run yet.
 - 2026-11-08: UI decision: foundation first (UI-01 direction, UI-02 shared components and mobile layout, Tue-Wed), screen-level changes in fix batches after QA. Priorities: mobile layout, spacing polish. Plan now 27 tasks, 47.5 h, no slack.
+- 2026-11-08: Plan restructured to one task per feature (F1 to F10: build, UI, QA, security, fixes and tests together) plus foundation and documents. 22 tasks, 47.5 h.
+- 2026-11-08: Plan was local-only; added hosted work: D1 hosted setup (Sat 14), hosted checks per feature, D2 real-phone smoke test and demo rehearsal on the hosted site (Wed 18). Findings: API URL baked into CSP at build time, shared seed password Password123! (admin included), no migrate step in bonto-start. Still 22 tasks, 47.5 h.
+- 2026-11-08: Added ST-01 project structure refactor (Tue-Wed, 4.5 h) before UI and feature work. Plan now 23 tasks, 52 h, needs top-of-range hours (55 h; 47.5 h at the bottom). Audit file updated (S1 finding, target tree, finding map).
+- 2026-11-08: ST-01 executed: 196 files moved as git renames, 502 imports rewritten in 269 files, 0 unresolved. Matches the baseline: API typecheck (src + test), 120 API unit tests, API lint and build, 50 web tests, web typecheck, lint and build (31 routes), mobile typecheck. Not run: API e2e, Playwright (need Postgres). Remaining plan 47.5 h.
 - 2026-11-08: Previous commit removed the 2026-10-17 audit and completion plan; findings carried into docs/02.
