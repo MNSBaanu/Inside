@@ -31,7 +31,8 @@ export function Select({
   }
 
   function select(index: number) {
-    onChange(options[index].value);
+    const chosen = options[index].value;
+    onChange(chosen !== '' && chosen === value ? '' : chosen);
     setOpen(false);
   }
 

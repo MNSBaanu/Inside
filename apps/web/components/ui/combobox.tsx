@@ -29,7 +29,8 @@ export function Combobox({
   const [active, setActive] = useState(0);
 
   const term = value.trim().toLowerCase();
-  const matches = term
+  const exact = options.some((option) => option.toLowerCase() === term);
+  const matches = term && !exact
     ? [
         ...options.filter((option) => option.toLowerCase().startsWith(term)),
         ...options.filter(
@@ -39,14 +40,11 @@ export function Combobox({
         ),
       ]
     : options;
-  const visible =
-    open && matches.length > 0 && matches[0].toLowerCase() !== term
-      ? matches
-      : [];
+  const visible = open && matches.length > 0 ? matches : [];
   const listId = `${id}-options`;
 
   function select(option: string) {
-    onChange(option);
+    onChange(option === value ? '' : option);
     setOpen(false);
   }
 
@@ -113,6 +111,7 @@ export function Combobox({
               className={cn(
                 'cursor-pointer rounded-card px-4 py-2.5 text-ink transition-colors duration-150',
                 index === active && 'bg-brand-soft text-brand',
+                option === value && 'font-semibold',
               )}
             >
               {option}
