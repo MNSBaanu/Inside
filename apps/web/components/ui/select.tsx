@@ -9,11 +9,13 @@ export function Select({
   value,
   options,
   onChange,
+  bare = false,
 }: {
   id: string;
   value: string;
   options: { value: string; label: string }[];
   onChange: (value: string) => void;
+  bare?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const selectedIndex = Math.max(
@@ -65,7 +67,11 @@ export function Select({
         aria-expanded={open}
         aria-controls={listId}
         aria-activedescendant={open ? `${listId}-${active}` : undefined}
-        className={cn(cardSurface, 'flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-base text-ink transition-colors duration-200 focus:border-brand focus:outline-none')}
+        className={
+          bare
+            ? 'flex w-full items-center justify-between gap-3 bg-transparent p-0 text-left text-base font-medium text-ink focus:outline-none'
+            : cn(cardSurface, 'flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-base text-ink transition-colors duration-200 focus:border-brand focus:outline-none')
+        }
       >
         <span className="truncate">{options[selectedIndex]?.label}</span>
         <svg
@@ -91,7 +97,11 @@ export function Select({
           id={listId}
           role="listbox"
           aria-labelledby={id}
-          className={cn(cardSurface, 'absolute left-0 right-0 z-20 mt-2 max-h-64 overflow-y-auto p-1 shadow-lift')}
+          className={cn(
+            cardSurface,
+            'absolute left-0 right-0 z-20 max-h-64 overflow-y-auto p-1 shadow-lift',
+            bare ? 'mt-5' : 'mt-2',
+          )}
         >
           {options.map((option, index) => (
             <li

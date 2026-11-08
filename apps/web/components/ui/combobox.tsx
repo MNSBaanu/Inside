@@ -2,7 +2,7 @@
 
 import { cardSurface } from '@/components/ui/card';
 import { useState } from 'react';
-import { Input } from '@/components/ui/field';
+import { BareInput, Input } from '@/components/ui/field';
 import { cn } from '@/lib/utils/cn';
 
 export function Combobox({
@@ -13,6 +13,7 @@ export function Combobox({
   onChange,
   placeholder,
   ariaLabel,
+  bare = false,
 }: {
   id: string;
   name?: string;
@@ -21,7 +22,9 @@ export function Combobox({
   onChange: (value: string) => void;
   placeholder?: string;
   ariaLabel?: string;
+  bare?: boolean;
 }) {
+  const Control = bare ? BareInput : Input;
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
 
@@ -65,7 +68,7 @@ export function Combobox({
 
   return (
     <div className="relative">
-      <Input
+      <Control
         id={id}
         name={name}
         value={value}
@@ -92,7 +95,11 @@ export function Combobox({
         <ul
           id={listId}
           role="listbox"
-          className={cn(cardSurface, 'absolute left-0 right-0 z-20 mt-2 max-h-64 overflow-y-auto p-1 shadow-lift')}
+          className={cn(
+            cardSurface,
+            'absolute left-0 right-0 z-20 max-h-64 overflow-y-auto p-1 shadow-lift',
+            bare ? 'mt-5' : 'mt-2',
+          )}
         >
           {visible.map((option, index) => (
             <li

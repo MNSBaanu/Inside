@@ -43,6 +43,16 @@ export function Input({
   return <input {...props} className={cn(control, className)} />;
 }
 
+const bareControl =
+  'w-full truncate bg-transparent p-0 text-base font-medium text-ink placeholder:font-normal placeholder:text-muted/60 focus:outline-none';
+
+export function BareInput({
+  className,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement>) {
+  return <input {...props} className={cn(bareControl, className)} />;
+}
+
 export function Textarea({
   className,
   ...props
