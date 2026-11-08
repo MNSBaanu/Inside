@@ -6,7 +6,7 @@ test.describe('Designer directory', () => {
   }) => {
     await page.goto('/designers');
     await page.getByLabel('Search').fill('Ravi');
-    await expect(page).toHaveURL(/\/designers\?q=Ravi$/);
+    await expect(page).toHaveURL(/\/explore\?tab=designers&q=Ravi$/);
     await page.reload();
     await expect(page.getByLabel('Search')).toHaveValue('Ravi');
     await expect(page.getByRole('status')).toHaveText('1 designer found');
