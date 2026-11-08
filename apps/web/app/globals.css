@@ -12,6 +12,7 @@
     @apply bg-canvas text-ink font-sans;
     font-size: 16px;
     line-height: 1.65;
+    word-spacing: 0.12em;
   }
 
   ::selection {

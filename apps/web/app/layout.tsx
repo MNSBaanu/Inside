@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter_Tight } from 'next/font/google';
 import './globals.css';
 import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { FooterGate } from '@/components/layout/footer-gate';
 import { SessionProvider } from '@/components/providers/session-provider';
 
-const inter = Inter({
+const brand = Inter_Tight({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-brand',
   display: 'swap',
 });
 
@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={brand.variable}>
       <body>
         <SessionProvider>
           <a href="#main" className="skip-link">

@@ -143,7 +143,7 @@ export default async function HomePage() {
         <div className="grid overflow-hidden rounded-2xl md:rounded-3xl border border-hairline bg-sand lg:grid-cols-[1fr_1.1fr]">
           <div className="flex flex-col justify-center px-5 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-12">
             <p className="label text-brand">Your space. Your next chapter.</p>
-            <h1 id="home-hero-title" className="mt-5 max-w-xl text-[clamp(2rem,4.2vw,3.75rem)] font-semibold leading-[1.06] tracking-[-0.045em]">
+            <h1 id="home-hero-title" className="mt-5 max-w-xl text-[clamp(2rem,4.2vw,3.75rem)] font-semibold leading-[1.06] tracking-[-0.02em]">
               A home that
               <span className="block text-brand">feels like you.</span>
             </h1>

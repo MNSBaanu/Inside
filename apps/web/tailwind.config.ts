@@ -41,18 +41,22 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-brand)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-brand)', 'system-ui', 'sans-serif'],
+      },
+      letterSpacing: {
+        tight: '-0.01em',
+        tighter: '-0.02em',
       },
       fontSize: {
-        label: ['0.6875rem', { lineHeight: '1', letterSpacing: '0.14em' }],
+        label: ['0.8125rem', { lineHeight: '1', letterSpacing: '0.03em' }],
         display: [
           'clamp(3rem, 7.5vw, 6rem)',
-          { lineHeight: '0.98', letterSpacing: '-0.025em' },
+          { lineHeight: '0.98', letterSpacing: '-0.01em' },
         ],
         section: [
           'clamp(2.25rem, 4.5vw, 3.75rem)',
-          { lineHeight: '1.04', letterSpacing: '-0.02em' },
+          { lineHeight: '1.04', letterSpacing: '-0.005em' },
         ],
       },
       borderRadius: {
