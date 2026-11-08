@@ -1,13 +1,12 @@
 'use client';
 
-import { cn } from '@/lib/utils/cn';
-import { cardSurface } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { DesignerCard } from '@/components/features/designers/designer-card';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
-import { Field, Input } from '@/components/ui/field';
+import { BareInput } from '@/components/ui/field';
+import { FilterAction, FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { Select } from '@/components/ui/select';
@@ -188,12 +187,9 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className={cn(cardSurface, 'mt-8 grid gap-4 p-5 sm:grid-cols-2 xl:grid-cols-3')}
-    >
-      <Field label="Search" htmlFor="q">
-        <Input
+    <FilterBar onSubmit={onSubmit} className="mt-8">
+      <FilterField label="Search" htmlFor="q">
+        <BareInput
           id="q"
           value={filters.q}
           onChange={(event) =>
@@ -202,18 +198,20 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
           placeholder="Name or keyword"
           autoComplete="off"
         />
-      </Field>
-      <Field label="Location" htmlFor="location">
+      </FilterField>
+      <FilterField label="Location" htmlFor="location">
         <Combobox
+          bare
           id="location"
           value={filters.location}
           options={LOCATIONS}
           onChange={(location) => setFilters({ ...filters, location })}
           placeholder="Any location"
         />
-      </Field>
-      <Field label="Style" htmlFor="style">
+      </FilterField>
+      <FilterField label="Style" htmlFor="style">
         <Select
+          bare
           id="style"
           value={filters.style}
           options={[
@@ -222,9 +220,10 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
           ]}
           onChange={(style) => setFilters({ ...filters, style })}
         />
-      </Field>
-      <Field label="Verification" htmlFor="verified">
+      </FilterField>
+      <FilterField label="Verification" htmlFor="verified">
         <Select
+          bare
           id="verified"
           value={filters.verifiedOnly}
           options={[
@@ -233,9 +232,10 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
           ]}
           onChange={(verifiedOnly) => setFilters({ ...filters, verifiedOnly })}
         />
-      </Field>
-      <Field label="Availability" htmlFor="available">
+      </FilterField>
+      <FilterField label="Availability" htmlFor="available">
         <Select
+          bare
           id="available"
           value={filters.availableOnly}
           options={[
@@ -246,14 +246,12 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
             setFilters({ ...filters, availableOnly })
           }
         />
-      </Field>
-      <div className="flex flex-wrap items-end gap-3">
-        <Button type="submit" size="lg">
-          Apply filters
-        </Button>
+      </FilterField>
+      <FilterAction>
         <Button
           type="button"
-          variant="outline"
+          size="sm"
+          variant="ghost"
           onClick={() => {
             setFilters({
               q: '',
@@ -267,7 +265,10 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
         >
           Clear
         </Button>
-      </div>
-    </form>
+        <Button type="submit" size="sm">
+          Apply filters
+        </Button>
+      </FilterAction>
+    </FilterBar>
   );
 }

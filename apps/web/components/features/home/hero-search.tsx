@@ -1,40 +1,44 @@
 'use client';
 
-import { cn } from '@/lib/utils/cn';
-import { cardSurface } from '@/components/ui/card';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
-import { Input } from '@/components/ui/field';
+import { BareInput } from '@/components/ui/field';
+import { FilterAction, FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { LOCATIONS } from '@/lib/utils/options';
 
 export function HeroSearch() {
   const [location, setLocation] = useState('');
 
   return (
-    <form
-      action="/designers"
-      className={cn(cardSurface, 'mt-4 grid gap-3 p-3 sm:grid-cols-[2fr_1fr_auto]')}
-    >
-      <Input
-        name="q"
-        type="search"
-        aria-label="Search designers"
-        placeholder="Designer name or keyword"
-        autoComplete="off"
-      />
-      <Combobox
-        id="hero-location"
-        name="location"
-        value={location}
-        options={LOCATIONS}
-        onChange={setLocation}
-        placeholder="Location, e.g. Colombo"
-        ariaLabel="Location"
-      />
-      <Button type="submit" size="lg">
-        Search
-      </Button>
-    </form>
+    <FilterBar action="/designers" className="mt-4">
+      <FilterField label="Search" htmlFor="hero-q">
+        <BareInput
+          id="hero-q"
+          name="q"
+          type="search"
+          aria-label="Search designers"
+          placeholder="Designer name or keyword"
+          autoComplete="off"
+        />
+      </FilterField>
+      <FilterField label="Location" htmlFor="hero-location">
+        <Combobox
+          bare
+          id="hero-location"
+          name="location"
+          value={location}
+          options={LOCATIONS}
+          onChange={setLocation}
+          placeholder="Anywhere, e.g. Colombo"
+          ariaLabel="Location"
+        />
+      </FilterField>
+      <FilterAction>
+        <Button type="submit" size="md">
+          Search
+        </Button>
+      </FilterAction>
+    </FilterBar>
   );
 }

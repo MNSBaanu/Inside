@@ -1,12 +1,11 @@
 'use client';
 
-import { cn } from '@/lib/utils/cn';
-import { cardSurface } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { PortfolioCard } from '@/components/features/portfolios/portfolio-card';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
-import { Field, Input } from '@/components/ui/field';
+import { BareInput } from '@/components/ui/field';
+import { FilterAction, FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { LOCATIONS, ROOM_TYPES, STYLES } from '@/lib/utils/options';
@@ -74,12 +73,9 @@ export default function PortfoliosPage({
         description="Published projects from designers across the platform."
       />
 
-      <form
-        onSubmit={onSubmit}
-        className={cn(cardSurface, 'mt-12 grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-[repeat(5,minmax(0,1fr))_auto] lg:items-end')}
-      >
-        <Field label="Search" htmlFor="q">
-          <Input
+      <FilterBar onSubmit={onSubmit} className="mt-12">
+        <FilterField label="Search" htmlFor="q">
+          <BareInput
             id="q"
             type="search"
             value={filters.q}
@@ -89,36 +85,39 @@ export default function PortfoliosPage({
             placeholder="Oak, courtyard, designer"
             autoComplete="off"
           />
-        </Field>
-        <Field label="Location" htmlFor="location">
+        </FilterField>
+        <FilterField label="Location" htmlFor="location">
           <Combobox
+            bare
             id="location"
             value={filters.location}
             options={LOCATIONS}
             onChange={(location) => setFilters({ ...filters, location })}
-            placeholder="Colombo"
+            placeholder="Anywhere"
           />
-        </Field>
-        <Field label="Style" htmlFor="style">
+        </FilterField>
+        <FilterField label="Style" htmlFor="style">
           <Combobox
+            bare
             id="style"
             value={filters.style}
             options={STYLES}
             onChange={(style) => setFilters({ ...filters, style })}
-            placeholder="Scandinavian"
+            placeholder="Any style"
           />
-        </Field>
-        <Field label="Room type" htmlFor="roomType">
+        </FilterField>
+        <FilterField label="Room" htmlFor="roomType">
           <Combobox
+            bare
             id="roomType"
             value={filters.roomType}
             options={ROOM_TYPES}
             onChange={(roomType) => setFilters({ ...filters, roomType })}
-            placeholder="Living room"
+            placeholder="Any room"
           />
-        </Field>
-        <Field label="Max budget" htmlFor="maxBudget">
-          <Input
+        </FilterField>
+        <FilterField label="Budget up to" htmlFor="maxBudget">
+          <BareInput
             id="maxBudget"
             type="number"
             min={0}
@@ -126,19 +125,21 @@ export default function PortfoliosPage({
             onChange={(event) =>
               setFilters({ ...filters, maxBudget: event.target.value })
             }
-            placeholder="800000"
+            placeholder="Any budget"
             autoComplete="off"
           />
-        </Field>
-        <Button
-          type="button"
-          size="lg"
-          variant="outline"
-          onClick={() => setFilters(EMPTY_FILTERS)}
-        >
-          Clear
-        </Button>
-      </form>
+        </FilterField>
+        <FilterAction>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={() => setFilters(EMPTY_FILTERS)}
+          >
+            Clear all
+          </Button>
+        </FilterAction>
+      </FilterBar>
 
       <div className="mt-12">
         {error ? <ErrorNotice message={error} /> : null}
