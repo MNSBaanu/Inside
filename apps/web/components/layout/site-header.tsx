@@ -10,6 +10,7 @@ import { useSession } from '@/components/providers/session-provider';
 const navigation = [
   { href: '/designers', label: 'Designers' },
   { href: '/portfolios', label: 'Work' },
+  { href: '/shop', label: 'Shop' },
   { href: '/open-projects', label: 'Open projects' },
   { href: '/how-it-works', label: 'How it works' },
 ];
