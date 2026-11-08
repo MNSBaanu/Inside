@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils/cn';
+
+export const cardSurface = 'rounded-card border border-hairline bg-surface';
 
 export function Card({
   className,
@@ -9,14 +11,7 @@ export function Card({
   children: ReactNode;
 }) {
   return (
-    <div
-      className={cn(
-        'rounded-card border border-hairline bg-surface p-6 md:p-8',
-        className,
-      )}
-    >
-      {children}
-    </div>
+    <div className={cn(cardSurface, 'p-6 md:p-8', className)}>{children}</div>
   );
 }
 
