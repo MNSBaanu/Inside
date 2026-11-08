@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import DesignersPage from './page';
 
@@ -17,7 +17,10 @@ beforeEach(() => {
     error: null,
   });
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
 describe('Designer discovery URLs', () => {
   it('restores every filter from a shared URL and announces the count', () => {
@@ -50,16 +53,42 @@ describe('Designer discovery URLs', () => {
     expect(screen.getByRole('status')).toHaveTextContent('25 designers found');
   });
 
-  it('applies draft filters together and resets pagination', () => {
+  it('applies typed search automatically after a short pause and resets pagination', () => {
+    vi.useFakeTimers();
     render(<DesignersPage searchParams={{ page: '3', style: 'Coastal' }} />);
     fireEvent.change(screen.getByLabelText('Search'), {
       target: { value: ' Ravi ' },
     });
     expect(mocks.push).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Apply filters' }));
+    act(() => {
+      vi.advanceTimersByTime(400);
+    });
+    expect(mocks.push).toHaveBeenCalledTimes(1);
     expect(mocks.push).toHaveBeenCalledWith('/designers?q=Ravi&style=Coastal', {
       scroll: false,
     });
+  });
+
+  it('applies a dropdown choice immediately', () => {
+    render(<DesignersPage searchParams={{}} />);
+    fireEvent.click(screen.getByRole('combobox', { name: 'Availability' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Available now' }));
+    expect(mocks.push).toHaveBeenCalledWith('/designers?availableOnly=true', {
+      scroll: false,
+    });
+  });
+
+  it('removes a filter when its selected option is clicked again', () => {
+    render(<DesignersPage searchParams={{ style: 'Coastal' }} />);
+    fireEvent.click(screen.getByRole('combobox', { name: 'Style' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Coastal' }));
+    expect(mocks.push).toHaveBeenCalledWith('/designers', { scroll: false });
+  });
+
+  it('has no Apply or Clear buttons in the filter bar', () => {
+    render(<DesignersPage searchParams={{}} />);
+    expect(screen.queryByRole('button', { name: 'Apply filters' })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Clear$/ })).toBeNull();
   });
 
   it('restores form fields when URL navigation returns to an earlier search', () => {
@@ -73,16 +102,6 @@ describe('Designer discovery URLs', () => {
     rerender(<DesignersPage searchParams={{ q: 'Ravi' }} />);
     expect(screen.getByLabelText('Search')).toHaveValue('Ravi');
     expect(screen.getByLabelText('Location')).toHaveValue('');
-  });
-
-  it('clears unsaved fields even when already on the unfiltered URL', () => {
-    render(<DesignersPage searchParams={{}} />);
-    fireEvent.change(screen.getByLabelText('Search'), {
-      target: { value: 'draft' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: /^Clear$/ }));
-    expect(screen.getByLabelText('Search')).toHaveValue('');
-    expect(mocks.push).toHaveBeenCalledWith('/designers', { scroll: false });
   });
 
   it('rejects invalid page parameters and exposes loading to assistive technology', () => {

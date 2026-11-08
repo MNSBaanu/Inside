@@ -6,7 +6,6 @@ test.describe('Designer directory', () => {
   }) => {
     await page.goto('/designers');
     await page.getByLabel('Search').fill('Ravi');
-    await page.getByRole('button', { name: 'Apply filters' }).click();
     await expect(page).toHaveURL(/\/designers\?q=Ravi$/);
     await page.reload();
     await expect(page.getByLabel('Search')).toHaveValue('Ravi');
@@ -36,7 +35,6 @@ test.describe('Designer directory', () => {
     await page.goBack();
     await page.getByRole('combobox', { name: 'Availability' }).click();
     await page.getByRole('option', { name: 'Available now' }).click();
-    await page.getByRole('button', { name: 'Apply filters' }).click();
     await expect(page).toHaveURL(/availableOnly=true/);
     await expect(page.getByRole('status')).toContainText('designers found');
     await expect(page.getByRole('link', { name: /Nimal Herath/ })).toHaveCount(
