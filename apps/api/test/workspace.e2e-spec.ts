@@ -13,8 +13,8 @@ import * as bcrypt from 'bcryptjs';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
-import { STRIPE } from '../src/payments/stripe.provider';
-import { PrismaService } from '../src/prisma/prisma.service';
+import { STRIPE } from '../src/modules/delivery/payments/stripe.provider';
+import { PrismaService } from '../src/database/prisma.service';
 
 const password = 'Password123!';
 

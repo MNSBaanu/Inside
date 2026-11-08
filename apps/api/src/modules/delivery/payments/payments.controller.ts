@@ -1,0 +1,72 @@
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import type { AuthUser } from '../../identity/auth/auth.service';
+import { CurrentUser } from '../../identity/auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../../identity/auth/guards/jwt-auth.guard';
+import { PayPaymentDto } from './dto/pay-payment.dto';
+import { PaymentsService } from './payments.service';
+
+@ApiTags('payments')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@Controller()
+export class PaymentsController {
+  constructor(private readonly payments: PaymentsService) {}
+
+  @Get('projects/:projectId/payments')
+  @ApiOperation({ summary: 'List milestone payments (party access)' })
+  @ApiOkResponse({ description: 'Payments' })
+  list(
+    @CurrentUser() user: AuthUser,
+    @Param('projectId', ParseUUIDPipe) projectId: string,
+  ) {
+    return this.payments.listByProject(user, projectId);
+  }
+
+  @Post('payments/:id/checkout')
+  @ApiOperation({ summary: 'Client starts a Stripe Checkout for a milestone' })
+  @ApiOkResponse({ description: 'Checkout URL' })
+  checkout(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.payments.createCheckout(user, id);
+  }
+
+  @Patch('payments/:id/pay')
+  @ApiOperation({ summary: 'Confirm a completed Stripe Checkout session' })
+  @ApiOkResponse({ description: 'Paid' })
+  pay(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: PayPaymentDto,
+  ) {
+    return this.payments.markPaid(user, id, dto);
+  }
+
+  @Patch('payments/:id/release')
+  @ApiOperation({
+    summary: 'Release paid milestone to designer (client/admin)',
+  })
+  @ApiOkResponse({ description: 'Released' })
+  release(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.payments.release(user, id);
+  }
+}

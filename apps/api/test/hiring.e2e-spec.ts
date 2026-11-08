@@ -5,7 +5,7 @@ import { StageName } from '@inside/database';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/prisma/prisma.service';
+import { PrismaService } from '../src/database/prisma.service';
 
 describe('Hiring flow (e2e)', () => {
   let app: INestApplication<App>;
