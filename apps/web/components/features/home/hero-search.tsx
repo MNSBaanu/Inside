@@ -11,7 +11,8 @@ export function HeroSearch() {
   const [location, setLocation] = useState('');
 
   return (
-    <FilterBar action="/designers" className="mt-4">
+    <FilterBar action="/explore" className="mt-4">
+      <input type="hidden" name="tab" value="designers" />
       <FilterField label="Search" htmlFor="hero-q">
         <BareInput
           id="hero-q"

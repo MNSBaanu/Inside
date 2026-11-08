@@ -152,8 +152,8 @@ export default async function HomePage() {
               together in one place.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <ButtonLink href="/portfolios" size="lg">Explore spaces</ButtonLink>
-              <ButtonLink href="/designers" size="lg" variant="outline">Find a designer</ButtonLink>
+              <ButtonLink href="/explore" size="lg">Explore spaces</ButtonLink>
+              <ButtonLink href="/explore?tab=designers" size="lg" variant="outline">Find a designer</ButtonLink>
             </div>
             <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-ink/10 pt-4 text-sm">
               <span className="text-muted">Ready to make it happen?</span>
@@ -174,7 +174,7 @@ export default async function HomePage() {
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-6 pb-7 pt-24 sm:px-8">
               <p className="label text-white/80">A little inspiration</p>
               <p className="mt-3 text-2xl font-medium tracking-tight text-white">Room to imagine more.</p>
-              <Link href="/portfolios?roomType=Living%20Room" className="mt-3 inline-flex items-center gap-3 text-sm font-semibold text-white underline underline-offset-4 hover:text-white/80">
+              <Link href="/explore?roomType=Living%20Room" className="mt-3 inline-flex items-center gap-3 text-sm font-semibold text-white underline underline-offset-4 hover:text-white/80">
                 Explore living rooms <span aria-hidden="true">&rarr;</span>
               </Link>
             </div>
@@ -191,7 +191,7 @@ export default async function HomePage() {
             {styles.map((style) => (
               <Link
                 key={style}
-                href={`/portfolios?style=${encodeURIComponent(style)}`}
+                href={`/explore?style=${encodeURIComponent(style)}`}
                 className="rounded-full border border-hairline px-4 py-1.5 text-sm transition-colors duration-300 hover:border-brand hover:text-brand"
               >
                 {style}
@@ -229,7 +229,7 @@ export default async function HomePage() {
           {rooms.map((room, index) => (
             <Reveal key={room.name} delay={(index % 4) * 80}>
               <Link
-                href={`/portfolios?roomType=${encodeURIComponent(room.name)}`}
+                href={`/explore?roomType=${encodeURIComponent(room.name)}`}
                 className={`group flex h-full min-h-28 flex-col justify-between rounded-card ${room.tone} p-4 sm:p-5 transition-transform duration-500 ease-editorial hover:-translate-y-1`}
               >
                 <span className="font-display text-base font-semibold sm:text-lg transition-colors duration-300 group-hover:text-brand">
@@ -253,7 +253,7 @@ export default async function HomePage() {
             </div>
           </Reveal>
           <Reveal delay={80}>
-            <Link href="/portfolios" className="label link-underline text-ink">
+            <Link href="/explore" className="label link-underline text-ink">
               View all work
             </Link>
           </Reveal>
@@ -329,7 +329,7 @@ export default async function HomePage() {
               </div>
             </Reveal>
             <Reveal delay={80}>
-              <Link href="/designers" className="label link-underline text-ink">
+              <Link href="/explore?tab=designers" className="label link-underline text-ink">
                 Browse all designers
               </Link>
             </Reveal>
@@ -486,7 +486,7 @@ function WorkCard({
   sizes: string;
 }) {
   return (
-    <Link href="/portfolios" className="group block">
+    <Link href="/explore" className="group block">
       <div className="relative aspect-[3/2] overflow-hidden rounded-card bg-sand shadow-card">
         <Image
           src={work.src}

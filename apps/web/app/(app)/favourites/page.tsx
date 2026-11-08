@@ -90,7 +90,7 @@ export default function FavouritesPage() {
           <EmptyState
             title="Nothing saved yet."
             description="Save designers as you browse so you can compare them later."
-            action={<ButtonLink href="/designers">Browse designers</ButtonLink>}
+            action={<ButtonLink href="/explore?tab=designers">Browse designers</ButtonLink>}
           />
         ) : null}
       </div>

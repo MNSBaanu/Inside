@@ -121,7 +121,7 @@ export default function HowItWorksPage() {
             <ButtonLink href="/briefs/new" size="lg">
               Start a brief
             </ButtonLink>
-            <ButtonLink href="/designers" size="lg" variant="onDark">
+            <ButtonLink href="/explore?tab=designers" size="lg" variant="onDark">
               Browse designers
             </ButtonLink>
           </div>
