@@ -379,3 +379,15 @@ export type Block = {
   createdAt: string;
   blocked?: PartySummary;
 };
+
+export type Product = {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  style: string | null;
+  price: number;
+  imageUrl: string;
+  sellerName: string;
+  sellerUrl: string;
+};

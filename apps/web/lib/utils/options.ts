@@ -49,3 +49,13 @@ export const ROOM_TYPES = [
   'Kitchen',
   'Living Room',
 ];
+
+export const PRODUCT_CATEGORIES = [
+  'Bedroom',
+  'Decor',
+  'Lighting',
+  'Rugs',
+  'Seating',
+  'Storage',
+  'Tables',
+];
