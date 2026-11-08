@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, ErrorNotice, Field, text } from '@/components/ui';
-import { errorMessage } from '@/lib/api';
-import { useSession } from '@/lib/session';
+import { errorMessage } from '@/lib/api/client';
+import { useSession } from '@/lib/auth/session';
 import { colors, space } from '@/lib/theme';
 
 type AccountRole = 'CLIENT' | 'DESIGNER';

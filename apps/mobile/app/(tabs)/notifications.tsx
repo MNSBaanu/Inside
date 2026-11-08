@@ -15,11 +15,11 @@ import {
   Loading,
   text,
 } from '@/components/ui';
-import { api, errorMessage } from '@/lib/api';
-import { formatDate } from '@/lib/format';
+import { api, errorMessage } from '@/lib/api/client';
+import { formatDate } from '@/lib/utils/format';
 import { colors, radius, space } from '@/lib/theme';
 import type { Notification } from '@/lib/types';
-import { useApi } from '@/lib/use-api';
+import { useApi } from '@/lib/api/use-api';
 
 export default function NotificationsScreen() {
   const { data, error, loading, reload } = useApi<{ items: Notification[] }>(

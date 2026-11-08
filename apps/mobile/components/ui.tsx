@@ -9,7 +9,7 @@ import {
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
-import { titleCase } from '@/lib/format';
+import { titleCase } from '@/lib/utils/format';
 import { colors, radius, space } from '@/lib/theme';
 
 type ButtonVariant = 'primary' | 'outline' | 'ghost';

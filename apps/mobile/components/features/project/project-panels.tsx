@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { formatDate, formatMoney, titleCase } from '@/lib/format';
+import { formatDate, formatMoney, titleCase } from '@/lib/utils/format';
 import { space } from '@/lib/theme';
 import type { ActivityEntry, MilestonePayment } from '@/lib/types';
-import { useApi } from '@/lib/use-api';
+import { useApi } from '@/lib/api/use-api';
 import {
   Card,
   EmptyState,
@@ -10,7 +10,7 @@ import {
   Loading,
   StatusBadge,
   text,
-} from './ui';
+} from '../../ui';
 
 export function PaymentList({ projectId }: { projectId: string }) {
   const { data, error, loading } = useApi<{ items: MilestonePayment[] }>(

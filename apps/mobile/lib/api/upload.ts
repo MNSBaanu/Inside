@@ -1,5 +1,5 @@
 import * as DocumentPicker from 'expo-document-picker';
-import { api } from './api';
+import { api } from './client';
 
 export type UploadFolder = 'deliverables' | 'attachments';
 

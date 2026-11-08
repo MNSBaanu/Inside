@@ -11,15 +11,15 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MessageThread } from '@/components/message-thread';
-import { PaymentList, ProjectHistory } from '@/components/project-panels';
-import { StageList } from '@/components/stage-list';
+import { MessageThread } from '@/components/features/messages/message-thread';
+import { PaymentList, ProjectHistory } from '@/components/features/project/project-panels';
+import { StageList } from '@/components/features/project/stage-list';
 import { ErrorNotice, Loading, StatusBadge, text } from '@/components/ui';
-import { formatDate, titleCase } from '@/lib/format';
-import { useSession } from '@/lib/session';
+import { formatDate, titleCase } from '@/lib/utils/format';
+import { useSession } from '@/lib/auth/session';
 import { colors, radius, space } from '@/lib/theme';
 import type { Project, ProjectStage } from '@/lib/types';
-import { useApi } from '@/lib/use-api';
+import { useApi } from '@/lib/api/use-api';
 
 const segments = ['Stages', 'Messages', 'Payments', 'History'] as const;
 type Segment = (typeof segments)[number];

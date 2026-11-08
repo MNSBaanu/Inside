@@ -16,11 +16,11 @@ import {
   Loading,
   text,
 } from '@/components/ui';
-import { formatDate } from '@/lib/format';
-import { useSession } from '@/lib/session';
+import { formatDate } from '@/lib/utils/format';
+import { useSession } from '@/lib/auth/session';
 import { colors, space } from '@/lib/theme';
 import type { ProjectListItem } from '@/lib/types';
-import { useApi } from '@/lib/use-api';
+import { useApi } from '@/lib/api/use-api';
 
 export default function MessagesScreen() {
   const { user } = useSession();

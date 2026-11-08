@@ -8,13 +8,13 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { api, errorMessage } from '@/lib/api';
-import { formatDate } from '@/lib/format';
+import { api, errorMessage } from '@/lib/api/client';
+import { formatDate } from '@/lib/utils/format';
 import { colors, radius, space } from '@/lib/theme';
 import type { Message } from '@/lib/types';
-import { pickAndUpload, type UploadedFile } from '@/lib/upload';
-import { useApi } from '@/lib/use-api';
-import { Button, EmptyState, ErrorNotice, Loading, text } from './ui';
+import { pickAndUpload, type UploadedFile } from '@/lib/api/upload';
+import { useApi } from '@/lib/api/use-api';
+import { Button, EmptyState, ErrorNotice, Loading, text } from '../../ui';
 
 export function MessageThread({
   projectId,

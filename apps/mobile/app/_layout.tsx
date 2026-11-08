@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { SessionProvider } from '@/lib/session';
+import { SessionProvider } from '@/lib/auth/session';
 import { colors } from '@/lib/theme';
 
 export default function RootLayout() {

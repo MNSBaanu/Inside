@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
-import { api, errorMessage } from '@/lib/api';
-import { formatDate, formatMoney, titleCase } from '@/lib/format';
+import { api, errorMessage } from '@/lib/api/client';
+import { formatDate, formatMoney, titleCase } from '@/lib/utils/format';
 import { colors, space } from '@/lib/theme';
 import type { Deliverable, ProjectStage } from '@/lib/types';
-import { pickAndUpload } from '@/lib/upload';
-import { useApi } from '@/lib/use-api';
+import { pickAndUpload } from '@/lib/api/upload';
+import { useApi } from '@/lib/api/use-api';
 import {
   Button,
   Card,
@@ -14,7 +14,7 @@ import {
   Loading,
   StatusBadge,
   text,
-} from './ui';
+} from '../../ui';
 
 type StageAction = 'start' | 'submit' | 'approve' | 'reject';
 

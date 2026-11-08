@@ -1,7 +1,7 @@
 import { Redirect } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
 import { Loading } from '@/components/ui';
-import { useSession } from '@/lib/session';
+import { useSession } from '@/lib/auth/session';
 import { colors } from '@/lib/theme';
 
 export default function TabsLayout() {

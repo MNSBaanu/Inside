@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { api, errorMessage } from './api';
+import { api, errorMessage } from './client';
 
 export function useApi<T>(path: string | null) {
   const [state, setState] = useState<{

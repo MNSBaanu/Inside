@@ -7,9 +7,9 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { api, setSessionExpiredHandler } from './api';
+import { api, setSessionExpiredHandler } from '../api/client';
 import { authStorage } from './auth-storage';
-import type { AuthPayload, User } from './types';
+import type { AuthPayload, User } from '../types';
 
 type SessionStatus = 'loading' | 'authenticated' | 'unauthenticated';
 type ModeRole = 'CLIENT' | 'DESIGNER';

@@ -2,9 +2,9 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Badge, Button, Card, ErrorNotice, text } from '@/components/ui';
-import { errorMessage } from '@/lib/api';
-import { titleCase } from '@/lib/format';
-import { useSession } from '@/lib/session';
+import { errorMessage } from '@/lib/api/client';
+import { titleCase } from '@/lib/utils/format';
+import { useSession } from '@/lib/auth/session';
 import { space } from '@/lib/theme';
 
 export default function AccountScreen() {
