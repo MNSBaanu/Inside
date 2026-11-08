@@ -1,12 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DesignerCard } from '@/components/features/designers/designer-card';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { BareInput } from '@/components/ui/field';
-import { FilterAction, FilterBar, FilterField } from '@/components/ui/filter-bar';
+import { FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { Select } from '@/components/ui/select';
@@ -76,7 +76,7 @@ export default function DesignersPage({
         description="Browse interior designers, see their work, and start a conversation."
       />
 
-      <DirectoryFilters key={directoryUrl(filters, page)} initial={filters} />
+      <DirectoryFilters initial={filters} />
 
       {activeFilters.length > 0 ? (
         <ul aria-label="Active filters" className="mt-5 flex flex-wrap gap-2">
@@ -177,23 +177,55 @@ export default function DesignersPage({
   );
 }
 
+const filterKey = (f: Filters) =>
+  JSON.stringify([f.q.trim(), f.location.trim(), f.style, f.verifiedOnly, f.availableOnly]);
+
 function DirectoryFilters({ initial }: { initial: Filters }) {
   const router = useRouter();
   const [filters, setFilters] = useState(initial);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const inFlight = useRef(new Set<string>());
+  const latest = useRef(initial);
+  latest.current = initial;
+  const initialKey = filterKey(initial);
 
-  function onSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    router.push(directoryUrl(filters), { scroll: false });
+  useEffect(() => {
+    if (inFlight.current.delete(initialKey)) return;
+    setFilters((current) =>
+      filterKey(current) === initialKey ? current : latest.current,
+    );
+  }, [initialKey]);
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
+  function apply(next: Filters, delay = 0) {
+    setFilters(next);
+    if (timer.current) {
+      clearTimeout(timer.current);
+      timer.current = undefined;
+    }
+    const go = () => {
+      timer.current = undefined;
+      inFlight.current.add(filterKey(next));
+      router.push(directoryUrl(next), { scroll: false });
+    };
+    if (delay === 0) go();
+    else timer.current = setTimeout(go, delay);
   }
 
   return (
-    <FilterBar onSubmit={onSubmit} className="mt-8">
+    <FilterBar onSubmit={(event) => event.preventDefault()} className="mt-8">
       <FilterField label="Search" htmlFor="q">
         <BareInput
           id="q"
           value={filters.q}
           onChange={(event) =>
-            setFilters({ ...filters, q: event.target.value })
+            apply({ ...filters, q: event.target.value }, 400)
           }
           placeholder="Name or keyword"
           autoComplete="off"
@@ -205,7 +237,7 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
           id="location"
           value={filters.location}
           options={LOCATIONS}
-          onChange={(location) => setFilters({ ...filters, location })}
+          onChange={(location) => apply({ ...filters, location }, 400)}
           placeholder="Any location"
         />
       </FilterField>
@@ -218,7 +250,7 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
             { value: '', label: 'All styles' },
             ...STYLES.map((style) => ({ value: style, label: style })),
           ]}
-          onChange={(style) => setFilters({ ...filters, style })}
+          onChange={(style) => apply({ ...filters, style })}
         />
       </FilterField>
       <FilterField label="Verification" htmlFor="verified">
@@ -230,7 +262,7 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
             { value: '', label: 'All designers' },
             { value: 'true', label: 'Verified only' },
           ]}
-          onChange={(verifiedOnly) => setFilters({ ...filters, verifiedOnly })}
+          onChange={(verifiedOnly) => apply({ ...filters, verifiedOnly })}
         />
       </FilterField>
       <FilterField label="Availability" htmlFor="available">
@@ -242,33 +274,9 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
             { value: '', label: 'Any availability' },
             { value: 'true', label: 'Available now' },
           ]}
-          onChange={(availableOnly) =>
-            setFilters({ ...filters, availableOnly })
-          }
+          onChange={(availableOnly) => apply({ ...filters, availableOnly })}
         />
       </FilterField>
-      <FilterAction>
-        <Button
-          type="button"
-          size="sm"
-          variant="ghost"
-          onClick={() => {
-            setFilters({
-              q: '',
-              location: '',
-              style: '',
-              verifiedOnly: '',
-              availableOnly: '',
-            });
-            router.push('/designers', { scroll: false });
-          }}
-        >
-          Clear
-        </Button>
-        <Button type="submit" size="sm">
-          Apply filters
-        </Button>
-      </FilterAction>
     </FilterBar>
   );
 }

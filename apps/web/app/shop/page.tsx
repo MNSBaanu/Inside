@@ -6,11 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { BareInput } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import {
-  FilterAction,
-  FilterBar,
-  FilterField,
-} from '@/components/ui/filter-bar';
+import { FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { PageHeader } from '@/components/ui/page-header';
 import { PRODUCT_CATEGORIES, STYLES } from '@/lib/utils/options';
 import { buildQuery, useApi } from '@/lib/api/use-api';
@@ -102,16 +98,6 @@ export default function ShopPage() {
             autoComplete="off"
           />
         </FilterField>
-        <FilterAction>
-          <Button
-            type="button"
-            size="sm"
-            variant="ghost"
-            onClick={() => setFilters(EMPTY_FILTERS)}
-          >
-            Clear all
-          </Button>
-        </FilterAction>
       </FilterBar>
 
       <div className="mt-12">

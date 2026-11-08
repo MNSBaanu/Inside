@@ -5,7 +5,7 @@ import { PortfolioCard } from '@/components/features/portfolios/portfolio-card';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { BareInput } from '@/components/ui/field';
-import { FilterAction, FilterBar, FilterField } from '@/components/ui/filter-bar';
+import { FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { LOCATIONS, ROOM_TYPES, STYLES } from '@/lib/utils/options';
@@ -129,16 +129,6 @@ export default function PortfoliosPage({
             autoComplete="off"
           />
         </FilterField>
-        <FilterAction>
-          <Button
-            type="button"
-            size="sm"
-            variant="ghost"
-            onClick={() => setFilters(EMPTY_FILTERS)}
-          >
-            Clear all
-          </Button>
-        </FilterAction>
       </FilterBar>
 
       <div className="mt-12">
