@@ -80,7 +80,7 @@ function HeaderContent() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="label text-ink/70 transition-colors duration-300 hover:text-brand"
+                className="text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand"
               >
                 {item.label}
               </Link>
@@ -96,7 +96,7 @@ function HeaderContent() {
                   href={
                     designerWorkspace ? `/designers/${user.id}` : '/dashboard'
                   }
-                  className="label hidden text-ink/70 transition-colors duration-300 hover:text-brand sm:block"
+                  className="hidden text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand sm:block"
                 >
                   {designerWorkspace ? 'Public profile' : 'Dashboard'}
                 </Link>
@@ -107,7 +107,7 @@ function HeaderContent() {
             <>
               <Link
                 href="/login"
-                className="label hidden text-ink/70 transition-colors duration-300 hover:text-brand sm:block"
+                className="hidden text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand sm:block"
               >
                 Sign in
               </Link>
