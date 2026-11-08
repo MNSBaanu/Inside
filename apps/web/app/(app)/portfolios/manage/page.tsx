@@ -86,7 +86,7 @@ export default function ManagePortfoliosPage() {
         variant="app"
         eyebrow="My work"
         title="Your published projects."
-        description="Published work is what clients browse, and what the matching engine reads when ranking you against a brief."
+        description="Published work is what clients browse, and what helps match you with their briefs."
       />
 
       <Card className="mt-12">

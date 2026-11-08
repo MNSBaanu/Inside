@@ -38,7 +38,7 @@ const stages = [
   {
     number: '05',
     title: 'Pay per milestone',
-    body: 'Try milestone payments in Stripe test mode. Release records approval in Inside; designer payouts are not supported in this demo.',
+    body: 'Pay each milestone once its stage is approved, then release it to confirm you are happy with the work.',
     tone: 'bg-support-soft',
   },
 ];

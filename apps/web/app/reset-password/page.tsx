@@ -39,7 +39,7 @@ function ResetForm() {
       {error ? <ErrorNotice message={error} /> : null}
 
       <Field
-        label="Reset token"
+        label="Reset code"
         htmlFor="token"
         hint="From the reset link in your email."
       >
@@ -81,11 +81,11 @@ export default function ResetPasswordPage() {
     <AuthLayout
       eyebrow="Password help"
       title="Choose a new password."
-      description="Paste the token from your reset email and pick something new."
+      description="Paste the code from your reset email and pick something new."
       footer={
         <AuthFooterLink
           href="/forgot-password"
-          label="No token?"
+          label="No code?"
           cta="Request another"
         />
       }

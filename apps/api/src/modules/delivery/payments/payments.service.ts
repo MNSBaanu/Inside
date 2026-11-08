@@ -174,7 +174,7 @@ export class PaymentsService {
   private requireStripe() {
     if (!this.stripe) {
       throw new ServiceUnavailableException(
-        'Demo payments require a Stripe test-mode key. Live payments are not supported.',
+        'Payments are not available right now. Please try again later.',
       );
     }
     return this.stripe;

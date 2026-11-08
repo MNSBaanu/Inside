@@ -58,7 +58,7 @@ function VerifyForm() {
       {error ? <ErrorNotice message={error} /> : null}
 
       <Field
-        label="Verification token"
+        label="Verification code"
         htmlFor="token"
         hint="From the verification link in your email."
       >

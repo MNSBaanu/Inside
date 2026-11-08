@@ -177,9 +177,9 @@ test('a new client goes from the landing page to a completed, reviewed project',
     if (index === 1) {
       await test.step('client tries to pay the first milestone', async () => {
         await page.getByRole('tab', { name: 'Payments' }).click();
-        await page.getByRole('button', { name: 'Test payment' }).first().click();
-        // The UI test servers run without a Stripe key.
-        await expect(page.getByText('Demo payments require a Stripe test-mode key. Live payments are not supported.')).toBeVisible();
+        await page.getByRole('button', { name: 'Pay now' }).first().click();
+        // The UI test servers run without a payment provider key.
+        await expect(page.getByText('Payments are not available right now. Please try again later.')).toBeVisible();
         await page.getByRole('tab', { name: 'Stages' }).click();
       });
     }

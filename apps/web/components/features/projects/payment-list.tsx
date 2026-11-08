@@ -76,8 +76,8 @@ export function PaymentList({
   return (
     <div>
       <p className="rounded-card bg-sand p-4 text-sm text-ink">
-        Payment demo: use Stripe test mode only. Releasing a milestone records
-        approval in Inside; it does not transfer money to the designer.
+        Pay each milestone once its stage is approved. Releasing a milestone
+        confirms you are happy with that stage of the work.
       </p>
       {actionError ? <ErrorNotice message={actionError} /> : null}
       {returnedPayment && sessionId ? (
@@ -114,7 +114,7 @@ export function PaymentList({
                   disabled={pending === payment.id}
                   onClick={() => act(payment.id, 'pay')}
                 >
-                  Test payment
+                  Pay now
                 </Button>
               ) : null}
               {isClient && payment.status === 'PAID' ? (
