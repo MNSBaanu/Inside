@@ -16,6 +16,7 @@ import { NewsletterModule } from './modules/platform/newsletter/newsletter.modul
 import { NotificationsModule } from './modules/platform/notifications/notifications.module';
 import { PaymentsModule } from './modules/delivery/payments/payments.module';
 import { PortfoliosModule } from './modules/discovery/portfolios/portfolios.module';
+import { ProductsModule } from './modules/discovery/products/products.module';
 import { DesignersModule } from './modules/discovery/designers/designers.module';
 import { PrismaModule } from './database/prisma.module';
 import { ProjectsModule } from './modules/delivery/projects/projects.module';
@@ -45,6 +46,7 @@ import { VerificationsModule } from './modules/identity/verifications/verificati
     PortfoliosModule,
     DesignersModule,
     FavouritesModule,
+    ProductsModule,
     MoodboardsModule,
     BriefsModule,
     MatchingModule,
