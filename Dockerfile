@@ -10,13 +10,11 @@ FROM base AS build
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/database/package.json ./packages/database/
-COPY packages/shared/package.json ./packages/shared/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
 RUN pnpm install --frozen-lockfile
 
 COPY apps/api ./apps/api
 COPY packages/database ./packages/database
-COPY packages/shared ./packages/shared
 COPY packages/eslint-config ./packages/eslint-config
 
 RUN pnpm --filter @inside/database exec prisma generate
