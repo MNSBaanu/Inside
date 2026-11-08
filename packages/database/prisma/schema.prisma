@@ -563,3 +563,22 @@ model NewsletterSubscriber {
   email     String   @unique
   createdAt DateTime @default(now())
 }
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  category    String
+  style       String?
+  price       Decimal  @db.Decimal(12, 2)
+  imageUrl    String
+  sellerName  String
+  sellerUrl   String
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([style])
+  @@index([isPublished])
+}

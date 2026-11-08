@@ -25,6 +25,7 @@ import {
 } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { createHash } from 'crypto';
+import { PRODUCT_SEED } from './products';
 
 const prisma = new PrismaClient();
 
@@ -84,6 +85,7 @@ function stageFees(total: number) {
 }
 
 const TABLES = [
+  'Product',
   'ActivityLog',
   'Block',
   'Report',
@@ -807,6 +809,8 @@ async function main() {
       { email: 'reader.two@example.com', createdAt: daysAgo(3) },
     ],
   });
+
+  await prisma.product.createMany({ data: PRODUCT_SEED });
 
   console.log('Seed complete.');
   console.log(`All accounts use the password ${SEED_PASSWORD}`);
