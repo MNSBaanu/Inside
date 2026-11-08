@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
-import { AuthFooterLink, AuthLayout } from '@/components/auth/auth-layout';
+import { AuthFooterLink, AuthLayout } from '@/components/features/auth/auth-layout';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
-import { errorMessage } from '@/lib/api';
-import { safeRedirectPath } from '@/lib/url';
+import { errorMessage } from '@/lib/api/client';
+import { safeRedirectPath } from '@/lib/utils/url';
 
 function LoginForm() {
   const { login } = useSession();

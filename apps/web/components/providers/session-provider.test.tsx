@@ -1,7 +1,7 @@
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { api } from '@/lib/api';
-import { authStorage } from '@/lib/auth-storage';
+import { api } from '@/lib/api/client';
+import { authStorage } from '@/lib/auth/auth-storage';
 import type { User } from '@/lib/types';
 import { SessionProvider, useSession } from './session-provider';
 

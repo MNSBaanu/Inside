@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { fetchPublic } from '@/lib/server-api';
+import { fetchPublic } from '@/lib/api/server-api';
 import type { Portfolio } from '@/lib/types';
 
 export async function generateMetadata({

@@ -1,21 +1,23 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader } from '@/components/ui/card';
+import { Card, CardHeader, cardSurface } from '@/components/ui/card';
 import { Combobox } from '@/components/ui/combobox';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { FileUpload } from '@/components/ui/file-upload';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { api, errorMessage } from '@/lib/api';
-import { formatMoney } from '@/lib/format';
-import { ROOM_TYPES, STYLES } from '@/lib/options';
-import { useApi } from '@/lib/use-api';
+import { api, errorMessage } from '@/lib/api/client';
+import { formatMoney } from '@/lib/utils/format';
+import { ROOM_TYPES, STYLES } from '@/lib/utils/options';
+import { useApi } from '@/lib/api/use-api';
 import type { Portfolio } from '@/lib/types';
-import { isOptimizableImage } from '@/lib/images';
+import { isOptimizableImage } from '@/lib/utils/images';
 
 export default function ManagePortfoliosPage() {
   const { data, error, loading, reload } =
@@ -80,14 +82,12 @@ export default function ManagePortfoliosPage() {
 
   return (
     <div>
-      <Badge tone="brand">My work</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        Your published projects.
-      </h1>
-      <p className="mt-4 max-w-xl text-muted">
-        Published work is what clients browse, and what the matching engine
-        reads when ranking you against a brief.
-      </p>
+      <PageHeader
+        variant="app"
+        eyebrow="My work"
+        title="Your published projects."
+        description="Published work is what clients browse, and what the matching engine reads when ranking you against a brief."
+      />
 
       <Card className="mt-12">
         <CardHeader
@@ -185,7 +185,7 @@ export default function ManagePortfoliosPage() {
               {data.items.map((portfolio) => (
                 <li
                   key={portfolio.id}
-                  className="overflow-hidden rounded-card border border-hairline bg-surface"
+                  className={cn(cardSurface, 'overflow-hidden')}
                 >
                   <div className="relative aspect-[4/3] bg-sand">
                     {portfolio.images[0] ? (

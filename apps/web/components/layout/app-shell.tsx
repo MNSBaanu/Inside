@@ -7,8 +7,8 @@ import { useSession } from '@/components/providers/session-provider';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/feedback';
-import { api } from '@/lib/api';
-import { cn } from '@/lib/cn';
+import { api } from '@/lib/api/client';
+import { cn } from '@/lib/utils/cn';
 import type { Role } from '@/lib/types';
 
 const SignOutContext = createContext<() => Promise<void>>(

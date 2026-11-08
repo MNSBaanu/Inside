@@ -1,18 +1,20 @@
 'use client';
 
+import { cardSurface } from '@/components/ui/card';
 import { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Rating } from '@/components/ui/rating';
-import { describeActivity } from '@/components/projects/project-history';
+import { describeActivity } from '@/components/features/projects/project-history';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { api, errorMessage } from '@/lib/api';
-import { formatDate, titleCase } from '@/lib/format';
-import { safeHref } from '@/lib/url';
-import { useApi } from '@/lib/use-api';
-import { cn } from '@/lib/cn';
+import { api, errorMessage } from '@/lib/api/client';
+import { formatDate, titleCase } from '@/lib/utils/format';
+import { safeHref } from '@/lib/utils/url';
+import { useApi } from '@/lib/api/use-api';
+import { cn } from '@/lib/utils/cn';
 import type {
   AccountStatus,
   ActivityEntry,
@@ -115,14 +117,12 @@ export default function AdminPage() {
 
   return (
     <div>
-      <Badge tone="brand">Admin</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        Moderation.
-      </h1>
-      <p className="mt-4 max-w-xl text-muted">
-        Accounts, designer verification, reported content, reviews and
-        platform activity.
-      </p>
+      <PageHeader
+        variant="app"
+        eyebrow="Admin"
+        title="Moderation."
+        description="Accounts, designer verification, reported content, reviews and platform activity."
+      />
 
       {actionError ? (
         <div className="mt-8">
@@ -165,7 +165,7 @@ export default function AdminPage() {
               {users.data.items.map((user) => (
                 <li
                   key={user.id}
-                  className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6"
+                  className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6')}
                 >
                   <div className="flex items-center gap-4">
                     <Avatar name={user.name} src={user.avatarUrl} size={48} />
@@ -245,7 +245,7 @@ export default function AdminPage() {
               {verifications.data.items.map((item) => (
                 <li
                   key={item.id}
-                  className="rounded-card border border-hairline bg-surface p-6"
+                  className={cn(cardSurface, 'p-6')}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
@@ -319,7 +319,7 @@ export default function AdminPage() {
               {reports.data.items.map((report) => (
                 <li
                   key={report.id}
-                  className="rounded-card border border-hairline bg-surface p-6"
+                  className={cn(cardSurface, 'p-6')}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
@@ -398,7 +398,7 @@ export default function AdminPage() {
               {reviews.data.items.map((review) => (
                 <li
                   key={review.id}
-                  className="rounded-card border border-hairline bg-surface p-6"
+                  className={cn(cardSurface, 'p-6')}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
@@ -452,7 +452,7 @@ export default function AdminPage() {
           ) : activity.error ? (
             <ErrorNotice message={activity.error} />
           ) : activity.data && activity.data.items.length > 0 ? (
-            <ul className="flex flex-col divide-y divide-hairline rounded-card border border-hairline bg-surface">
+            <ul className={cn(cardSurface, 'flex flex-col divide-y divide-hairline')}>
               {activity.data.items.map((entry) => (
                 <li
                   key={entry.id}

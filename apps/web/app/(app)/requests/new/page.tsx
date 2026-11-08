@@ -2,13 +2,13 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { api, errorMessage } from '@/lib/api';
-import { cn } from '@/lib/cn';
+import { api, errorMessage } from '@/lib/api/client';
+import { cn } from '@/lib/utils/cn';
 import type { ProjectRequest } from '@/lib/types';
 
 function NewRequestForm() {
@@ -173,13 +173,12 @@ function NewRequestForm() {
 export default function NewRequestPage() {
   return (
     <div>
-      <Badge tone="brand">New request</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        Ask for proposals.
-      </h1>
-      <p className="mt-4 max-w-xl text-muted">
-        Send it to one designer, or open it up and compare what comes back.
-      </p>
+      <PageHeader
+        variant="app"
+        eyebrow="New request"
+        title="Ask for proposals."
+        description="Send it to one designer, or open it up and compare what comes back."
+      />
 
       <Card className="mt-12">
         <CardHeader title="Request details" />

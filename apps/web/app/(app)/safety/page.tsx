@@ -1,15 +1,17 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
+import { cardSurface } from '@/components/ui/card';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { api, errorMessage } from '@/lib/api';
-import { formatDate, titleCase } from '@/lib/format';
-import { useApi } from '@/lib/use-api';
+import { api, errorMessage } from '@/lib/api/client';
+import { formatDate, titleCase } from '@/lib/utils/format';
+import { useApi } from '@/lib/api/use-api';
 import type { Block, Report } from '@/lib/types';
 
 export default function SafetyPage() {
@@ -34,14 +36,12 @@ export default function SafetyPage() {
 
   return (
     <div>
-      <Badge tone="brand">Safety</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        Blocks and reports.
-      </h1>
-      <p className="mt-4 max-w-xl text-muted">
-        People you&apos;ve blocked stay hidden from your search and can&apos;t
-        reach you. Reports you file are reviewed by our team.
-      </p>
+      <PageHeader
+        variant="app"
+        eyebrow="Safety"
+        title="Blocks and reports."
+        description="People you&apos;ve blocked stay hidden from your search and can&apos;t reach you. Reports you file are reviewed by our team."
+      />
 
       {actionError ? (
         <div className="mt-8">
@@ -62,7 +62,7 @@ export default function SafetyPage() {
               {blocks.data.items.map((block) => (
                 <li
                   key={block.id}
-                  className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6"
+                  className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6')}
                 >
                   <div className="flex items-center gap-4">
                     <Avatar
@@ -111,7 +111,7 @@ export default function SafetyPage() {
               {reports.data.items.map((report) => (
                 <li
                   key={report.id}
-                  className="rounded-card border border-hairline bg-surface p-6"
+                  className={cn(cardSurface, 'p-6')}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>

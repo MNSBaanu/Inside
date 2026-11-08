@@ -2,13 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { AuthFooterLink, AuthLayout } from '@/components/auth/auth-layout';
+import { AuthFooterLink, AuthLayout } from '@/components/features/auth/auth-layout';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
-import { errorMessage } from '@/lib/api';
-import { cn } from '@/lib/cn';
+import { errorMessage } from '@/lib/api/client';
+import { cn } from '@/lib/utils/cn';
 
 const roles = [
   {

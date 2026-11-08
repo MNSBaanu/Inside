@@ -1,13 +1,14 @@
 'use client';
 
+import { cardSurface } from '@/components/ui/card';
 import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { api, errorMessage } from '@/lib/api';
-import { cn } from '@/lib/cn';
-import { formatDate } from '@/lib/format';
-import { useApi } from '@/lib/use-api';
+import { PageHeader } from '@/components/ui/page-header';
+import { api, errorMessage } from '@/lib/api/client';
+import { cn } from '@/lib/utils/cn';
+import { formatDate } from '@/lib/utils/format';
+import { useApi } from '@/lib/api/use-api';
 import type { Notification } from '@/lib/types';
 
 export default function NotificationsPage() {
@@ -43,19 +44,18 @@ export default function NotificationsPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <Badge tone="brand">Notifications</Badge>
-          <h1 className="mt-6 font-display text-section font-semibold">
-            What you missed.
-          </h1>
-        </div>
-        {unread.length > 0 ? (
-          <Button variant="outline" onClick={markAll} disabled={busy}>
-            Mark all read
-          </Button>
-        ) : null}
-      </div>
+      <PageHeader
+        variant="app"
+        eyebrow="Notifications"
+        title="What you missed."
+        action={
+          unread.length > 0 ? (
+            <Button variant="outline" onClick={markAll} disabled={busy}>
+              Mark all read
+            </Button>
+          ) : null
+        }
+      />
 
       <div className="mt-12">
         {error ? <ErrorNotice message={error} /> : null}
@@ -64,7 +64,7 @@ export default function NotificationsPage() {
         {loading ? (
           <Skeleton className="h-48" />
         ) : data && data.items.length > 0 ? (
-          <ul className="flex flex-col divide-y divide-hairline rounded-card border border-hairline bg-surface">
+          <ul className={cn(cardSurface, 'flex flex-col divide-y divide-hairline')}>
             {data.items.map((item) => (
               <li key={item.id} className="flex items-start gap-4 p-6">
                 <span

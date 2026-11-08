@@ -1,13 +1,15 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
+import { cardSurface } from '@/components/ui/card';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { api, errorMessage } from '@/lib/api';
-import { useApi } from '@/lib/use-api';
+import { api, errorMessage } from '@/lib/api/client';
+import { useApi } from '@/lib/api/use-api';
 import type { Favourite } from '@/lib/types';
 
 export default function FavouritesPage() {
@@ -31,13 +33,12 @@ export default function FavouritesPage() {
 
   return (
     <div>
-      <Badge tone="brand">Saved</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        Designers you saved.
-      </h1>
-      <p className="mt-4 max-w-xl text-muted">
-        A shortlist you can come back to when you are ready to send a request.
-      </p>
+      <PageHeader
+        variant="app"
+        eyebrow="Saved"
+        title="Designers you saved."
+        description="A shortlist you can come back to when you are ready to send a request."
+      />
 
       <div className="mt-12">
         {error ? <ErrorNotice message={error} /> : null}
@@ -53,7 +54,7 @@ export default function FavouritesPage() {
             {data.items.map((favourite) => (
               <li
                 key={favourite.id}
-                className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6"
+                className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6')}
               >
                 <Link
                   href={`/designers/${favourite.designerId}`}

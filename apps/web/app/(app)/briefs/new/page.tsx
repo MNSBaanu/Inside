@@ -2,13 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { TagInput } from '@/components/ui/tag-input';
-import { api, errorMessage } from '@/lib/api';
+import { api, errorMessage } from '@/lib/api/client';
 import type { Brief } from '@/lib/types';
 
 const styleSuggestions = [
@@ -65,14 +65,12 @@ export default function NewBriefPage() {
 
   return (
     <div>
-      <Badge tone="brand">New brief</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        Tell us about the space.
-      </h1>
-      <p className="mt-4 max-w-xl text-muted">
-        The more specific you are, the closer the proposals will be to what you
-        actually want.
-      </p>
+      <PageHeader
+        variant="app"
+        eyebrow="New brief"
+        title="Tell us about the space."
+        description="The more specific you are, the closer the proposals will be to what you actually want."
+      />
 
       <Card className="mt-12">
         <CardHeader

@@ -1,18 +1,20 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { api, errorMessage } from '@/lib/api';
+import { api, errorMessage } from '@/lib/api/client';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button, ButtonLink } from '@/components/ui/button';
-import { Card, CardHeader } from '@/components/ui/card';
+import { Card, CardHeader, cardSurface } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
 import { Rating } from '@/components/ui/rating';
-import { FavouriteButton } from '@/components/designers/favourite-button';
+import { FavouriteButton } from '@/components/features/designers/favourite-button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { formatDate } from '@/lib/format';
-import { useApi } from '@/lib/use-api';
+import { formatDate } from '@/lib/utils/format';
+import { useApi } from '@/lib/api/use-api';
 import type { Brief, PartySummary } from '@/lib/types';
 
 type Match = {
@@ -60,11 +62,12 @@ export default function BriefDetailPage({
 
   return (
     <div>
-      <Badge tone="brand">Brief</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        {item.rooms.join(', ') || 'Untitled brief'}
-      </h1>
-      <p className="mt-4 text-muted">Created {formatDate(item.createdAt)}</p>
+      <PageHeader
+        variant="app"
+        eyebrow="Brief"
+        title={item.rooms.join(', ') || 'Untitled brief'}
+        description={`Created ${formatDate(item.createdAt)}`}
+      />
 
       <Card className="mt-12">
         <CardHeader
@@ -151,7 +154,7 @@ export default function BriefDetailPage({
               {matches.data.items.map((match) => (
                 <li
                   key={match.designer.id}
-                  className="rounded-card border border-hairline bg-surface p-6"
+                  className={cn(cardSurface, 'p-6')}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <Link

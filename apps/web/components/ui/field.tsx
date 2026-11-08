@@ -3,7 +3,7 @@ import type {
   ReactNode,
   TextareaHTMLAttributes,
 } from 'react';
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils/cn';
 
 const control =
   'w-full rounded-card border border-hairline bg-surface px-4 py-3 text-base text-ink transition-colors duration-200 placeholder:text-muted/70 focus:border-brand focus:outline-none disabled:opacity-60';

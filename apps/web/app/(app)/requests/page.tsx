@@ -1,13 +1,15 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
+import { cardSurface } from '@/components/ui/card';
 import Link from 'next/link';
 import { useSession } from '@/components/providers/session-provider';
-import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { formatDate, formatMoney } from '@/lib/format';
-import { useApi } from '@/lib/use-api';
+import { formatDate, formatMoney } from '@/lib/utils/format';
+import { useApi } from '@/lib/api/use-api';
 import type { ProjectRequest } from '@/lib/types';
 
 export default function RequestsPage() {
@@ -18,24 +20,23 @@ export default function RequestsPage() {
 
   return (
     <div>
-      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div>
-          <Badge tone="brand">Requests</Badge>
-          <h1 className="mt-6 font-display text-section font-semibold">
-            {isClient ? 'Your requests.' : 'Work coming your way.'}
-          </h1>
-          <p className="mt-4 max-w-xl text-muted">
-            {isClient
-              ? 'Requests you have sent to designers, and open requests awaiting proposals.'
-              : 'Direct requests sent to you, plus open requests you can propose on.'}
-          </p>
-        </div>
-        {isClient ? (
-          <ButtonLink href="/requests/new" size="lg">
-            New request
-          </ButtonLink>
-        ) : null}
-      </div>
+      <PageHeader
+        variant="app"
+        eyebrow="Requests"
+        title={isClient ? 'Your requests.' : 'Work coming your way.'}
+        description={
+          isClient
+            ? 'Requests you have sent to designers, and open requests awaiting proposals.'
+            : 'Direct requests sent to you, plus open requests you can propose on.'
+        }
+        action={
+          isClient ? (
+            <ButtonLink href="/requests/new" size="lg">
+              New request
+            </ButtonLink>
+          ) : null
+        }
+      />
 
       <div className="mt-12">
         {error ? <ErrorNotice message={error} /> : null}
@@ -51,7 +52,7 @@ export default function RequestsPage() {
               <li key={request.id}>
                 <Link
                   href={`/requests/${request.id}`}
-                  className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand"
+                  className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6 transition-colors duration-300 hover:border-brand')}
                 >
                   <div className="min-w-0">
                     <p className="font-display text-xl font-semibold">

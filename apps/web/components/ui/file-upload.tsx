@@ -1,9 +1,9 @@
 'use client';
 
 import { useId, useRef, useState } from 'react';
-import { cn } from '@/lib/cn';
-import { errorMessage } from '@/lib/api';
-import { uploadFile, type UploadFolder, type UploadedFile } from '@/lib/upload';
+import { cn } from '@/lib/utils/cn';
+import { errorMessage } from '@/lib/api/client';
+import { uploadFile, type UploadFolder, type UploadedFile } from '@/lib/api/upload';
 
 export function FileUpload({
   folder,

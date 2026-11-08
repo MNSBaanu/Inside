@@ -1,16 +1,18 @@
+import { cn } from '@/lib/utils/cn';
+import { cardSurface } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Reveal } from '@/components/reveal';
-import { DesignerCard } from '@/components/designers/designer-card';
-import { HeroSearch } from '@/components/hero-search';
+import { Reveal } from '@/components/features/home/reveal';
+import { DesignerCard } from '@/components/features/designers/designer-card';
+import { HeroSearch } from '@/components/features/home/hero-search';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import {
   featuredWork,
   heroImage,
   spotlightImage,
-} from '@/lib/images';
-import { fetchPublic } from '@/lib/server-api';
+} from '@/lib/utils/images';
+import { fetchPublic } from '@/lib/api/server-api';
 import type { DesignerSummary, Paginated } from '@/lib/types';
 
 const styles = [
@@ -348,7 +350,7 @@ export default async function HomePage() {
             <Link
               key={promo.title}
               href={promo.href}
-              className="group flex flex-col gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand md:p-8"
+              className={cn(cardSurface, 'group flex flex-col gap-4 p-6 transition-colors duration-300 hover:border-brand md:p-8')}
             >
               <div>
                 <Badge tone="highlight">{promo.label}</Badge>

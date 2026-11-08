@@ -1,17 +1,18 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
 import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader } from '@/components/ui/card';
+import { Card, CardHeader, cardSurface } from '@/components/ui/card';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { api, errorMessage } from '@/lib/api';
-import { formatDate } from '@/lib/format';
-import { safeHref } from '@/lib/url';
-import { useApi } from '@/lib/use-api';
+import { api, errorMessage } from '@/lib/api/client';
+import { formatDate } from '@/lib/utils/format';
+import { safeHref } from '@/lib/utils/url';
+import { useApi } from '@/lib/api/use-api';
 import type { VerificationStatus } from '@/lib/types';
 import { FileUpload } from '@/components/ui/file-upload';
 
@@ -58,10 +59,11 @@ export default function VerificationPage() {
   if (!isDesigner) {
     return (
       <div>
-        <Badge tone="brand">Verification</Badge>
-        <h1 className="mt-6 font-display text-section font-semibold">
-          For designers.
-        </h1>
+        <PageHeader
+          variant="app"
+          eyebrow="Verification"
+          title="For designers."
+        />
         <div className="mt-10">
           <EmptyState
             title="Verification is for designer accounts."
@@ -74,14 +76,12 @@ export default function VerificationPage() {
 
   return (
     <div>
-      <Badge tone="brand">Verification</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        Get the verified badge.
-      </h1>
-      <p className="mt-4 max-w-xl text-muted">
-        Submit proof of qualification or past work. An admin reviews every
-        submission before the badge appears on your profile.
-      </p>
+      <PageHeader
+        variant="app"
+        eyebrow="Verification"
+        title="Get the verified badge."
+        description="Submit proof of qualification or past work. An admin reviews every submission before the badge appears on your profile."
+      />
 
       <Card className="mt-12">
         <CardHeader
@@ -143,7 +143,7 @@ export default function VerificationPage() {
               {data.items.map((item) => (
                 <li
                   key={item.id}
-                  className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6"
+                  className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6')}
                 >
                   <div className="min-w-0">
                     <a

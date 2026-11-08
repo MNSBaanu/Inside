@@ -1,7 +1,8 @@
 'use client';
 
+import { cardSurface } from '@/components/ui/card';
 import { useState } from 'react';
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils/cn';
 
 export function Select({
   id,
@@ -64,7 +65,7 @@ export function Select({
         aria-expanded={open}
         aria-controls={listId}
         aria-activedescendant={open ? `${listId}-${active}` : undefined}
-        className="flex w-full items-center justify-between gap-3 rounded-card border border-hairline bg-surface px-4 py-3 text-left text-base text-ink transition-colors duration-200 focus:border-brand focus:outline-none"
+        className={cn(cardSurface, 'flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-base text-ink transition-colors duration-200 focus:border-brand focus:outline-none')}
       >
         <span className="truncate">{options[selectedIndex]?.label}</span>
         <svg
@@ -90,7 +91,7 @@ export function Select({
           id={listId}
           role="listbox"
           aria-labelledby={id}
-          className="absolute left-0 right-0 z-20 mt-2 max-h-64 overflow-y-auto rounded-card border border-hairline bg-surface p-1 shadow-lift"
+          className={cn(cardSurface, 'absolute left-0 right-0 z-20 mt-2 max-h-64 overflow-y-auto p-1 shadow-lift')}
         >
           {options.map((option, index) => (
             <li

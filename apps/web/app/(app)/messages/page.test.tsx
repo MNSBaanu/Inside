@@ -41,7 +41,7 @@ const items: ProjectListItem[] = [
   },
 ];
 
-vi.mock('@/lib/use-api', () => ({
+vi.mock('@/lib/api/use-api', () => ({
   useApi: () => ({
     data: { items },
     error: null,

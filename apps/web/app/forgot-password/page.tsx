@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { AuthFooterLink, AuthLayout } from '@/components/auth/auth-layout';
+import { AuthFooterLink, AuthLayout } from '@/components/features/auth/auth-layout';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
-import { api, errorMessage } from '@/lib/api';
+import { api, errorMessage } from '@/lib/api/client';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');

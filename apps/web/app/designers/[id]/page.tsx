@@ -6,14 +6,14 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { ReviewList } from '@/components/reviews/review-list';
-import { FavouriteButton } from '@/components/designers/favourite-button';
-import { BlockButton } from '@/components/moderation/block-button';
-import { ReportDialog } from '@/components/moderation/report-dialog';
-import { formatMoney } from '@/lib/format';
-import { useApi } from '@/lib/use-api';
+import { ReviewList } from '@/components/features/reviews/review-list';
+import { FavouriteButton } from '@/components/features/designers/favourite-button';
+import { BlockButton } from '@/components/features/moderation/block-button';
+import { ReportDialog } from '@/components/features/moderation/report-dialog';
+import { formatMoney } from '@/lib/utils/format';
+import { useApi } from '@/lib/api/use-api';
 import type { DesignerProfile, PortfolioImage } from '@/lib/types';
-import { isOptimizableImage } from '@/lib/images';
+import { isOptimizableImage } from '@/lib/utils/images';
 
 type ProfilePortfolio = {
   id: string;

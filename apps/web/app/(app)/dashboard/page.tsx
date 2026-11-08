@@ -1,13 +1,15 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
+import { cardSurface } from '@/components/ui/card';
 import Link from 'next/link';
 import { useSession } from '@/components/providers/session-provider';
-import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState, Skeleton } from '@/components/ui/feedback';
+import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { formatDate, titleCase } from '@/lib/format';
-import { useApi } from '@/lib/use-api';
+import { formatDate, titleCase } from '@/lib/utils/format';
+import { useApi } from '@/lib/api/use-api';
 import type { Notification, Project, ProjectRequest } from '@/lib/types';
 
 export default function DashboardPage() {
@@ -28,23 +30,22 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div>
-          <Badge tone="brand">Overview</Badge>
-          <h1 className="mt-6 font-display text-section font-semibold">
-            Welcome back, {user?.name.split(' ')[0]}.
-          </h1>
-        </div>
-        {isClient ? (
-          <ButtonLink href="/briefs/new" size="lg">
-            Start a brief
-          </ButtonLink>
-        ) : (
-          <ButtonLink href="/requests" size="lg">
-            Find work
-          </ButtonLink>
-        )}
-      </div>
+      <PageHeader
+        variant="app"
+        eyebrow="Overview"
+        title={`Welcome back, ${user?.name.split(' ')[0]}.`}
+        action={
+          isClient ? (
+            <ButtonLink href="/briefs/new" size="lg">
+              Start a brief
+            </ButtonLink>
+          ) : (
+            <ButtonLink href="/requests" size="lg">
+              Find work
+            </ButtonLink>
+          )
+        }
+      />
 
       <div className="mt-12 grid gap-6 sm:grid-cols-3">
         <StatTile
@@ -95,7 +96,7 @@ export default function DashboardPage() {
                 <li key={project.id}>
                   <Link
                     href={`/projects/${project.id}`}
-                    className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand"
+                    className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6 transition-colors duration-300 hover:border-brand')}
                   >
                     <div>
                       <p className="font-display text-xl font-semibold">
@@ -121,7 +122,7 @@ export default function DashboardPage() {
           {notifications.loading ? (
             <Skeleton className="h-32" />
           ) : notifications.data && notifications.data.items.length > 0 ? (
-            <ul className="flex flex-col divide-y divide-hairline rounded-card border border-hairline bg-surface">
+            <ul className={cn(cardSurface, 'flex flex-col divide-y divide-hairline')}>
               {notifications.data.items.slice(0, 6).map((item) => (
                 <li key={item.id} className="flex gap-4 p-5">
                   <span

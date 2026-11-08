@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import { cn } from '@/lib/cn';
-import { isOptimizableImage } from '@/lib/images';
+import { cn } from '@/lib/utils/cn';
+import { isOptimizableImage } from '@/lib/utils/images';
 
 export function Avatar({
   name,

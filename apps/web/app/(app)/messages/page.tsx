@@ -1,12 +1,15 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
+import { cardSurface } from '@/components/ui/card';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { formatDate, titleCase } from '@/lib/format';
-import { useApi } from '@/lib/use-api';
+import { formatDate, titleCase } from '@/lib/utils/format';
+import { useApi } from '@/lib/api/use-api';
 import type { ProjectListItem } from '@/lib/types';
 
 export default function MessagesPage() {
@@ -22,14 +25,12 @@ export default function MessagesPage() {
 
   return (
     <div>
-      <Badge tone="brand">Messages</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        Conversations.
-      </h1>
-      <p className="mt-4 max-w-xl text-muted">
-        Messages live inside each project, so context never gets separated from
-        the work.
-      </p>
+      <PageHeader
+        variant="app"
+        eyebrow="Messages"
+        title="Conversations."
+        description="Messages live inside each project, so context never gets separated from the work."
+      />
 
       <div className="mt-12">
         {error ? <ErrorNotice message={error} /> : null}
@@ -45,7 +46,7 @@ export default function MessagesPage() {
               <li key={project.id}>
                 <Link
                   href={`/projects/${project.id}`}
-                  className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand"
+                  className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6 transition-colors duration-300 hover:border-brand')}
                 >
                   <div className="min-w-0">
                     <p className="font-display text-xl font-semibold">

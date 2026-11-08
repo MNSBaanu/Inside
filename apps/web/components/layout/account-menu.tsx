@@ -1,12 +1,14 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
+import { cardSurface } from '@/components/ui/card';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { Avatar } from '@/components/ui/avatar';
-import { api } from '@/lib/api';
-import { useApi } from '@/lib/use-api';
+import { api } from '@/lib/api/client';
+import { useApi } from '@/lib/api/use-api';
 import type { Notification, ProjectListItem, User } from '@/lib/types';
 
 export function AccountMenu({ user }: { user: User }) {
@@ -95,7 +97,7 @@ export function AccountMenu({ user }: { user: User }) {
         {open ? (
           <div
             role="menu"
-            className="absolute right-0 z-50 mt-3 w-56 rounded-card border border-hairline bg-surface p-1 shadow-lift"
+            className={cn(cardSurface, 'absolute right-0 z-50 mt-3 w-56 p-1 shadow-lift')}
           >
             <div className="border-b border-hairline px-4 py-3">
               <p className="truncate font-semibold">{user.name}</p>

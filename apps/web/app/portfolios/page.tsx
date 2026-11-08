@@ -1,14 +1,16 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
+import { cardSurface } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
-import { PortfolioCard } from '@/components/portfolios/portfolio-card';
+import { PortfolioCard } from '@/components/features/portfolios/portfolio-card';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { Field, Input } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
-import { LOCATIONS, ROOM_TYPES, STYLES } from '@/lib/options';
-import { buildQuery, useApi } from '@/lib/use-api';
+import { LOCATIONS, ROOM_TYPES, STYLES } from '@/lib/utils/options';
+import { buildQuery, useApi } from '@/lib/api/use-api';
 import type { Paginated, Portfolio } from '@/lib/types';
 
 const PAGE_SIZE = 12;
@@ -74,7 +76,7 @@ export default function PortfoliosPage({
 
       <form
         onSubmit={onSubmit}
-        className="mt-12 grid gap-4 rounded-card border border-hairline bg-surface p-6 sm:grid-cols-2 lg:grid-cols-[repeat(5,minmax(0,1fr))_auto] lg:items-end"
+        className={cn(cardSurface, 'mt-12 grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-[repeat(5,minmax(0,1fr))_auto] lg:items-end')}
       >
         <Field label="Search" htmlFor="q">
           <Input

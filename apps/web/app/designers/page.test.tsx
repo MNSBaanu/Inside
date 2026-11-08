@@ -4,8 +4,8 @@ import DesignersPage from './page';
 
 const mocks = vi.hoisted(() => ({ push: vi.fn(), useApi: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: mocks.push }) }));
-vi.mock('@/lib/use-api', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/use-api')>()),
+vi.mock('@/lib/api/use-api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/api/use-api')>()),
   useApi: mocks.useApi,
 }));
 

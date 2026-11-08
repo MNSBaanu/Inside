@@ -2,11 +2,11 @@
 
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { AuthFooterLink, AuthLayout } from '@/components/auth/auth-layout';
+import { AuthFooterLink, AuthLayout } from '@/components/features/auth/auth-layout';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { ErrorNotice, Skeleton, SuccessNotice } from '@/components/ui/feedback';
-import { api, errorMessage } from '@/lib/api';
+import { api, errorMessage } from '@/lib/api/client';
 
 function VerifyForm() {
   const searchParams = useSearchParams();

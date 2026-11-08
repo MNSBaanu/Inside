@@ -6,10 +6,10 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { formatMoney } from '@/lib/format';
-import { useApi } from '@/lib/use-api';
+import { formatMoney } from '@/lib/utils/format';
+import { useApi } from '@/lib/api/use-api';
 import type { Portfolio } from '@/lib/types';
-import { isOptimizableImage } from '@/lib/images';
+import { isOptimizableImage } from '@/lib/utils/images';
 
 export default function PortfolioDetailPage({
   params,

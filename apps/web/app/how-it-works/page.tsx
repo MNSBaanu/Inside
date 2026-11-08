@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/page-header';
-import { Reveal } from '@/components/reveal';
+import { Reveal } from '@/components/features/home/reveal';
 
 export const metadata: Metadata = {
   title: 'How Inside works',

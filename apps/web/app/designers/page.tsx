@@ -1,16 +1,18 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
+import { cardSurface } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { DesignerCard } from '@/components/designers/designer-card';
+import { DesignerCard } from '@/components/features/designers/designer-card';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { Field, Input } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { Select } from '@/components/ui/select';
-import { LOCATIONS, STYLES } from '@/lib/options';
-import { buildQuery, useApi } from '@/lib/use-api';
+import { LOCATIONS, STYLES } from '@/lib/utils/options';
+import { buildQuery, useApi } from '@/lib/api/use-api';
 import type { DesignerSummary, Paginated } from '@/lib/types';
 
 const PAGE_SIZE = 12;
@@ -188,7 +190,7 @@ function DirectoryFilters({ initial }: { initial: Filters }) {
   return (
     <form
       onSubmit={onSubmit}
-      className="mt-8 grid gap-4 rounded-card border border-hairline bg-surface p-5 sm:grid-cols-2 xl:grid-cols-3"
+      className={cn(cardSurface, 'mt-8 grid gap-4 p-5 sm:grid-cols-2 xl:grid-cols-3')}
     >
       <Field label="Search" htmlFor="q">
         <Input

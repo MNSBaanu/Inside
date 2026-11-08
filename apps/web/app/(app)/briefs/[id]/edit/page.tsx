@@ -2,14 +2,14 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { TagInput } from '@/components/ui/tag-input';
-import { api, errorMessage } from '@/lib/api';
-import { useApi } from '@/lib/use-api';
+import { api, errorMessage } from '@/lib/api/client';
+import { useApi } from '@/lib/api/use-api';
 import type { Brief } from '@/lib/types';
 
 export default function EditBriefPage({
@@ -64,10 +64,11 @@ function BriefForm({ brief }: { brief: Brief }) {
 
   return (
     <div>
-      <Badge tone="brand">Edit brief</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        Update your brief.
-      </h1>
+      <PageHeader
+        variant="app"
+        eyebrow="Edit brief"
+        title="Update your brief."
+      />
 
       <Card className="mt-12">
         <CardHeader title="Brief details" />

@@ -3,16 +3,16 @@
 import { useState } from 'react';
 import { useSignOut } from '@/components/layout/app-shell';
 import { useSession } from '@/components/providers/session-provider';
-import { PasswordForm } from '@/components/account/password-form';
-import { RoleSwitch } from '@/components/account/role-switch';
-import { Badge } from '@/components/ui/badge';
+import { PasswordForm } from '@/components/features/account/password-form';
+import { RoleSwitch } from '@/components/features/account/role-switch';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Combobox } from '@/components/ui/combobox';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { api, errorMessage } from '@/lib/api';
-import { LOCATIONS } from '@/lib/options';
+import { api, errorMessage } from '@/lib/api/client';
+import { LOCATIONS } from '@/lib/utils/options';
 import type { User } from '@/lib/types';
 import { FileUpload } from '@/components/ui/file-upload';
 
@@ -65,14 +65,12 @@ function AccountForm({ user }: { user: User }) {
 
   return (
     <div>
-      <Badge tone="brand">Account</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        Your profile.
-      </h1>
-      <p className="mt-4 max-w-xl text-muted">
-        This is what clients and designers see when they come across you on
-        Inside.
-      </p>
+      <PageHeader
+        variant="app"
+        eyebrow="Account"
+        title="Your profile."
+        description="This is what clients and designers see when they come across you on Inside."
+      />
 
       {isDesigner ? (
         <p className="mt-4 max-w-xl text-sm text-muted">

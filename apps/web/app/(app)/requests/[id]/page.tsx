@@ -3,18 +3,18 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
-import { ProposalForm } from '@/components/proposals/proposal-form';
+import { ProposalForm } from '@/components/features/proposals/proposal-form';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { api, errorMessage } from '@/lib/api';
-import { formatDate, formatMoney, titleCase } from '@/lib/format';
-import { useApi } from '@/lib/use-api';
+import { api, errorMessage } from '@/lib/api/client';
+import { formatDate, formatMoney, titleCase } from '@/lib/utils/format';
+import { useApi } from '@/lib/api/use-api';
 import type { Project, Proposal, ProjectRequest } from '@/lib/types';
-import { ProposalComparison } from '@/components/proposals/proposal-comparison';
+import { ProposalComparison } from '@/components/features/proposals/proposal-comparison';
 
 export default function RequestDetailPage({
   params,

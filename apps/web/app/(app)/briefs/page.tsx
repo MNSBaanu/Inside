@@ -1,11 +1,14 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
+import { cardSurface } from '@/components/ui/card';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { formatDate } from '@/lib/format';
-import { useApi } from '@/lib/use-api';
+import { PageHeader } from '@/components/ui/page-header';
+import { formatDate } from '@/lib/utils/format';
+import { useApi } from '@/lib/api/use-api';
 import type { Brief } from '@/lib/types';
 
 export default function BriefsPage() {
@@ -13,21 +16,17 @@ export default function BriefsPage() {
 
   return (
     <div>
-      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div>
-          <Badge tone="brand">Briefs</Badge>
-          <h1 className="mt-6 font-display text-section font-semibold">
-            Your briefs.
-          </h1>
-          <p className="mt-4 max-w-xl text-muted">
-            A brief describes the space you want designed. Designers read it
-            before proposing.
-          </p>
-        </div>
-        <ButtonLink href="/briefs/new" size="lg">
-          New brief
-        </ButtonLink>
-      </div>
+      <PageHeader
+        variant="app"
+        eyebrow="Briefs"
+        title="Your briefs."
+        description="A brief describes the space you want designed. Designers read it before proposing."
+        action={
+          <ButtonLink href="/briefs/new" size="lg">
+            New brief
+          </ButtonLink>
+        }
+      />
 
       <div className="mt-12">
         {error ? <ErrorNotice message={error} /> : null}
@@ -43,7 +42,7 @@ export default function BriefsPage() {
               <li key={brief.id}>
                 <Link
                   href={`/briefs/${brief.id}`}
-                  className="block rounded-card border border-hairline bg-surface p-6 transition-colors duration-300 hover:border-brand"
+                  className={cn(cardSurface, 'block p-6 transition-colors duration-300 hover:border-brand')}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>

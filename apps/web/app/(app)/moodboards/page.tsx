@@ -2,18 +2,18 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Field, Input } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { FileUpload } from '@/components/ui/file-upload';
-import { api, errorMessage } from '@/lib/api';
-import { formatDate } from '@/lib/format';
-import { useApi } from '@/lib/use-api';
+import { api, errorMessage } from '@/lib/api/client';
+import { formatDate } from '@/lib/utils/format';
+import { useApi } from '@/lib/api/use-api';
 import type { Brief, Moodboard } from '@/lib/types';
 import { useRouter } from 'next/navigation';
-import { isOptimizableImage } from '@/lib/images';
+import { isOptimizableImage } from '@/lib/utils/images';
 
 export default function MoodboardsPage() {
   const router = useRouter();
@@ -84,14 +84,12 @@ export default function MoodboardsPage() {
 
   return (
     <div>
-      <Badge tone="brand">Moodboards</Badge>
-      <h1 className="mt-6 font-display text-section font-semibold">
-        Collect what you like.
-      </h1>
-      <p className="mt-4 max-w-xl text-muted">
-        Save images that capture the feeling you want, then turn a board into a
-        brief in one step.
-      </p>
+      <PageHeader
+        variant="app"
+        eyebrow="Moodboards"
+        title="Collect what you like."
+        description="Save images that capture the feeling you want, then turn a board into a brief in one step."
+      />
 
       {actionError ? (
         <div className="mt-8">

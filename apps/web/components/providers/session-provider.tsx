@@ -10,8 +10,8 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { api, setSessionExpiredHandler } from '@/lib/api';
-import { authStorage } from '@/lib/auth-storage';
+import { api, setSessionExpiredHandler } from '@/lib/api/client';
+import { authStorage } from '@/lib/auth/auth-storage';
 import type { AuthPayload, Role, User } from '@/lib/types';
 
 type SessionStatus = 'loading' | 'authenticated' | 'unauthenticated';

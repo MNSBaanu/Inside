@@ -1,8 +1,9 @@
 'use client';
 
+import { cardSurface } from '@/components/ui/card';
 import { useState } from 'react';
 import { Input } from '@/components/ui/field';
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils/cn';
 
 export function Combobox({
   id,
@@ -91,7 +92,7 @@ export function Combobox({
         <ul
           id={listId}
           role="listbox"
-          className="absolute left-0 right-0 z-20 mt-2 max-h-64 overflow-y-auto rounded-card border border-hairline bg-surface p-1 shadow-lift"
+          className={cn(cardSurface, 'absolute left-0 right-0 z-20 mt-2 max-h-64 overflow-y-auto p-1 shadow-lift')}
         >
           {visible.map((option, index) => (
             <li

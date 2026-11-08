@@ -1,12 +1,14 @@
 'use client';
 
+import { cn } from '@/lib/utils/cn';
+import { cardSurface } from '@/components/ui/card';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
-import { formatDate, formatMoney } from '@/lib/format';
-import { buildQuery, useApi } from '@/lib/use-api';
+import { formatDate, formatMoney } from '@/lib/utils/format';
+import { buildQuery, useApi } from '@/lib/api/use-api';
 import type { OpenRequest, Paginated } from '@/lib/types';
 
 const PAGE_SIZE = 12;
@@ -86,7 +88,7 @@ function OpenRequestCard({ request }: { request: OpenRequest }) {
   const tags = [...request.rooms, ...request.styles];
 
   return (
-    <article className="flex h-full flex-col rounded-card border border-hairline bg-surface p-6 md:p-8">
+    <article className={cn(cardSurface, 'flex h-full flex-col p-6 md:p-8')}>
       <div className="flex items-start justify-between gap-4">
         <h2 className="font-display text-2xl font-semibold">{request.title}</h2>
         <span className="whitespace-nowrap text-sm text-muted">
