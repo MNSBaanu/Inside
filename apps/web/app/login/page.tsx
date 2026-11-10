@@ -7,6 +7,7 @@ import { AuthFooterLink, AuthLayout } from '@/components/features/auth/auth-layo
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
+import { PasswordInput } from '@/components/ui/password-input';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { errorMessage } from '@/lib/api/client';
 import { safeRedirectPath } from '@/lib/utils/url';
@@ -52,9 +53,8 @@ function LoginForm() {
       </Field>
 
       <Field label="Password" htmlFor="password">
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           autoComplete="current-password"
           required
           minLength={8}

@@ -6,6 +6,7 @@ import { AuthFooterLink, AuthLayout } from '@/components/features/auth/auth-layo
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
+import { PasswordInput } from '@/components/ui/password-input';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { errorMessage } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
@@ -119,9 +120,8 @@ export default function RegisterPage() {
           htmlFor="password"
           hint="At least 8 characters."
         >
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="new-password"
             required
             minLength={8}

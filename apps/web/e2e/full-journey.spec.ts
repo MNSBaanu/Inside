@@ -59,7 +59,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
     await page.getByRole('button', { name: /I have a space/ }).click();
     await page.getByLabel('Full name').fill('Journey Client');
     await page.getByLabel('Email').fill(`journey-${run}@inside.test`);
-    await page.getByLabel('Password').fill(PASSWORD);
+    await page.getByLabel('Password', { exact: true }).fill(PASSWORD);
     await page.getByRole('button', { name: 'Create account' }).click();
     await expect(page).toHaveURL(/\/dashboard/);
   });
