@@ -43,8 +43,9 @@ function LoginForm() {
       <Field label="Email" htmlFor="email">
         <Input
           id="email"
+          name="email"
           type="email"
-          autoComplete="email"
+          autoComplete="username"
           required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
@@ -55,6 +56,7 @@ function LoginForm() {
       <Field label="Password" htmlFor="password">
         <PasswordInput
           id="password"
+          name="password"
           autoComplete="current-password"
           required
           minLength={8}

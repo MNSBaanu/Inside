@@ -106,8 +106,9 @@ export default function RegisterPage() {
         <Field label="Email" htmlFor="email">
           <Input
             id="email"
+            name="email"
             type="email"
-            autoComplete="email"
+            autoComplete="username"
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -122,6 +123,7 @@ export default function RegisterPage() {
         >
           <PasswordInput
             id="password"
+            name="password"
             autoComplete="new-password"
             required
             minLength={8}
