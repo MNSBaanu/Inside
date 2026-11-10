@@ -114,7 +114,7 @@ export default function HowItWorksPage() {
 
       <section className="shell mt-24 md:mt-32">
         <div className="rounded-card bg-ink px-8 py-20 text-center text-canvas md:px-16 md:py-24">
-          <h2 className="mx-auto max-w-2xl font-display text-section font-semibold">
+          <h2 className="mx-auto font-display text-section font-semibold">
             Ready when your room is.
           </h2>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
