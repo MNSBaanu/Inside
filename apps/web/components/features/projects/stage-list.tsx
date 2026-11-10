@@ -12,7 +12,12 @@ import { cn } from '@/lib/utils/cn';
 import { formatDate, formatMoney, titleCase } from '@/lib/utils/format';
 import { safeHref } from '@/lib/utils/url';
 import { useApi } from '@/lib/api/use-api';
-import type { Deliverable, ProjectStage, Task } from '@/lib/types';
+import type {
+  Deliverable,
+  MilestonePayment,
+  ProjectStage,
+  Task,
+} from '@/lib/types';
 
 type StageAction = 'start' | 'submit' | 'approve' | 'reject';
 
@@ -32,6 +37,15 @@ export function StageList({
   const [openStage, setOpenStage] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [reason, setReason] = useState('');
+  const projectId = stages[0]?.projectId;
+  const { data: payments } = useApi<{ items: MilestonePayment[] }>(
+    projectId ? `/projects/${projectId}/payments` : null,
+  );
+  const unpaidStageIds = new Set(
+    payments?.items
+      .filter((payment) => payment.status === 'PENDING')
+      .map((payment) => payment.stageId),
+  );
 
   async function act(
     stageId: string,
@@ -61,6 +75,8 @@ export function StageList({
       <ol className="mt-4 flex flex-col gap-4">
         {stages.map((stage) => {
           const busy = pending === stage.id;
+          const awaitingPayment =
+            stage.status === 'PENDING' && unpaidStageIds.has(stage.id);
           return (
             <li
               key={stage.id}
@@ -87,11 +103,19 @@ export function StageList({
                 {isDesigner && stage.status === 'PENDING' ? (
                   <Button
                     size="sm"
-                    disabled={busy}
+                    disabled={busy || awaitingPayment}
                     onClick={() => act(stage.id, 'start')}
                   >
                     Start stage
                   </Button>
+                ) : null}
+
+                {awaitingPayment ? (
+                  <p className="self-center text-sm text-muted">
+                    {isClient
+                      ? 'Pay this milestone under Payments so the designer can start.'
+                      : "Waiting for the client's payment."}
+                  </p>
                 ) : null}
 
                 {isDesigner &&

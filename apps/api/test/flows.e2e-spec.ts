@@ -294,6 +294,14 @@ describe('Platform flows (e2e)', () => {
       await request(server())
         .patch(`/stages/${stageId}/start`)
         .set(auth(designer.token))
+        .expect(400);
+      await prisma.milestonePayment.updateMany({
+        where: { stageId },
+        data: { status: 'PAID', paidAt: new Date() },
+      });
+      await request(server())
+        .patch(`/stages/${stageId}/start`)
+        .set(auth(designer.token))
         .expect(200);
 
       await request(server())
@@ -372,8 +380,10 @@ describe('Platform flows (e2e)', () => {
         .get(`/projects/${projectId}/payments`)
         .set(auth(client.token))
         .expect(200);
-      expect(payments.body.data.items).toHaveLength(1);
-      expect(payments.body.data.items[0].status).toBe('PENDING');
+      const stagePayment = payments.body.data.items.find(
+        (item: { stageId: string }) => item.stageId === stageId,
+      );
+      expect(stagePayment.status).toBe('RELEASED');
     });
 
     it('only lets the party who paused a project resume it, and requires a cancel reason', async () => {

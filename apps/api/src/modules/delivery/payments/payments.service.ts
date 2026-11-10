@@ -8,12 +8,7 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  NotificationType,
-  PaymentStatus,
-  Prisma,
-  Role,
-} from '@inside/database';
+import { NotificationType, PaymentStatus, Prisma } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
@@ -124,40 +119,6 @@ export class PaymentsService {
       }
       throw error;
     }
-  }
-
-  async release(user: AuthUser, id: string) {
-    const payment = await this.requirePayment(id);
-    const isClient = payment.project.clientId === user.id;
-    const isAdmin = user.role === Role.ADMIN;
-    if (!isClient && !isAdmin) {
-      throw new ForbiddenException('Only the client or an admin can release');
-    }
-    if (payment.status !== PaymentStatus.PAID) {
-      throw new BadRequestException('Only paid payments can be released');
-    }
-
-    const updated = await this.prisma.milestonePayment.update({
-      where: { id },
-      data: { status: PaymentStatus.RELEASED, releasedAt: new Date() },
-    });
-
-    await this.notifications.notify({
-      userId: payment.project.designerId,
-      type: NotificationType.PAYMENT,
-      title: 'Milestone released',
-      message: `Milestone payment of ${Number(payment.amount)} was released`,
-      metadata: { projectId: payment.projectId, paymentId: id },
-    });
-
-    await this.activity.log({
-      projectId: payment.projectId,
-      userId: user.id,
-      action: 'PAYMENT_RELEASED',
-      metadata: { paymentId: id, amount: Number(payment.amount) },
-    });
-
-    return { success: true, data: { payment: this.serialize(updated) } };
   }
 
   private async requirePendingForClient(user: AuthUser, id: string) {

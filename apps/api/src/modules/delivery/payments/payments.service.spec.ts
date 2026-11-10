@@ -120,26 +120,4 @@ describe('PaymentsService', () => {
       service.markPaid(designer, 'pay1', { sessionId: 'cs_1' }),
     ).rejects.toBeInstanceOf(ForbiddenException);
   });
-
-  it('rejects release on pending payment', async () => {
-    prisma.milestonePayment.findUnique.mockResolvedValue(pendingPayment);
-    await expect(service.release(client, 'pay1')).rejects.toBeInstanceOf(
-      BadRequestException,
-    );
-  });
-
-  it('releases paid payment', async () => {
-    prisma.milestonePayment.findUnique.mockResolvedValue({
-      ...pendingPayment,
-      status: PaymentStatus.PAID,
-      paidAt: new Date(),
-    });
-    prisma.milestonePayment.update.mockResolvedValue({
-      ...pendingPayment,
-      status: PaymentStatus.RELEASED,
-      releasedAt: new Date(),
-    });
-    const result = await service.release(client, 'pay1');
-    expect(result.data.payment.status).toBe(PaymentStatus.RELEASED);
-  });
 });

@@ -20,7 +20,10 @@ describe('StagesService', () => {
       findUniqueOrThrow: jest.fn(),
       findFirst: jest.fn(),
     },
-    milestonePayment: { create: jest.fn() },
+    milestonePayment: {
+      updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+      findFirst: jest.fn().mockResolvedValue({ status: PaymentStatus.PAID }),
+    },
     project: { update: jest.fn() },
   };
 
@@ -32,6 +35,9 @@ describe('StagesService', () => {
     },
     deliverable: {
       findFirst: jest.fn().mockResolvedValue({ uploadedAt: new Date() }),
+    },
+    milestonePayment: {
+      findFirst: jest.fn().mockResolvedValue({ status: PaymentStatus.PAID }),
     },
     $transaction: jest.fn(async (fn: (t: typeof tx) => Promise<unknown>) =>
       fn(tx),
@@ -99,6 +105,20 @@ describe('StagesService', () => {
     expect(result.data.stage.status).toBe(StageStatus.IN_PROGRESS);
   });
 
+  it('rejects start until the client has paid the milestone', async () => {
+    prisma.projectStage.findUnique.mockResolvedValue({
+      ...baseStage,
+      status: StageStatus.PENDING,
+    });
+    prisma.milestonePayment.findFirst.mockResolvedValueOnce({
+      status: PaymentStatus.PENDING,
+    });
+
+    await expect(service.start(designer, 's1')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+  });
+
   it('rejects start by non-designer', async () => {
     prisma.projectStage.findUnique.mockResolvedValue({
       ...baseStage,
@@ -134,7 +154,7 @@ describe('StagesService', () => {
     expect(result.data.stage.status).toBe(StageStatus.SUBMITTED);
   });
 
-  it('client approves submitted stage, creates payment, advances next stage', async () => {
+  it('client approves submitted stage, releases payment, advances next stage', async () => {
     prisma.projectStage.findUnique.mockResolvedValue({
       ...baseStage,
       status: StageStatus.SUBMITTED,
@@ -155,12 +175,10 @@ describe('StagesService', () => {
 
     const result = await service.approve(client, 's1');
     expect(result.data.stage.status).toBe(StageStatus.APPROVED);
-    expect(tx.milestonePayment.create).toHaveBeenCalledWith(
+    expect(tx.milestonePayment.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({
-          amount: 50000,
-          status: PaymentStatus.PENDING,
-        }),
+        where: { stageId: 's1', status: PaymentStatus.PAID },
+        data: expect.objectContaining({ status: PaymentStatus.RELEASED }),
       }),
     );
     expect(tx.project.update).toHaveBeenCalledWith(

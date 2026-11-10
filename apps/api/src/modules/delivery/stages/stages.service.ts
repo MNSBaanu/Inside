@@ -109,6 +109,15 @@ export class StagesService {
     if (stage.project.currentStage !== stage.name) {
       throw new BadRequestException('Stage is not the current stage');
     }
+    const payment = await this.prisma.milestonePayment.findFirst({
+      where: { stageId },
+      select: { status: true },
+    });
+    if (payment && payment.status !== PaymentStatus.PAID) {
+      throw new BadRequestException(
+        'The client must pay for this stage before it can start',
+      );
+    }
 
     const updated = await this.prisma.projectStage.update({
       where: { id: stageId },
@@ -215,16 +224,10 @@ export class StagesService {
         where: { id: stageId },
       });
 
-      if (fee > 0) {
-        await tx.milestonePayment.create({
-          data: {
-            projectId: stage.projectId,
-            stageId: stage.id,
-            amount: fee,
-            status: PaymentStatus.PENDING,
-          },
-        });
-      }
+      const released = await tx.milestonePayment.updateMany({
+        where: { stageId, status: PaymentStatus.PAID },
+        data: { status: PaymentStatus.RELEASED, releasedAt: new Date() },
+      });
 
       const next = await tx.projectStage.findFirst({
         where: {
@@ -236,10 +239,16 @@ export class StagesService {
 
       let projectCompleted = false;
       if (next) {
-        await tx.projectStage.update({
-          where: { id: next.id },
-          data: { status: StageStatus.IN_PROGRESS },
+        const nextPayment = await tx.milestonePayment.findFirst({
+          where: { stageId: next.id },
+          select: { status: true },
         });
+        if (!nextPayment || nextPayment.status === PaymentStatus.PAID) {
+          await tx.projectStage.update({
+            where: { id: next.id },
+            data: { status: StageStatus.IN_PROGRESS },
+          });
+        }
         await tx.project.update({
           where: { id: stage.projectId },
           data: { currentStage: next.name },
@@ -255,7 +264,12 @@ export class StagesService {
         projectCompleted = true;
       }
 
-      return { approved, projectCompleted, nextName: next?.name ?? null };
+      return {
+        approved,
+        projectCompleted,
+        nextName: next?.name ?? null,
+        paymentReleased: released.count > 0,
+      };
     });
 
     await this.notifications.notify({
@@ -272,6 +286,22 @@ export class StagesService {
       action: 'STAGE_APPROVED',
       metadata: { stageId: stage.id, name: stage.name },
     });
+
+    if (result.paymentReleased) {
+      await this.notifications.notify({
+        userId: stage.project.designerId,
+        type: NotificationType.PAYMENT,
+        title: 'Milestone released',
+        message: `Milestone payment of ${fee} was released`,
+        metadata: { projectId: stage.projectId, stageId: stage.id },
+      });
+      await this.activity.log({
+        projectId: stage.projectId,
+        userId: user.id,
+        action: 'PAYMENT_RELEASED',
+        metadata: { stageId: stage.id, amount: fee },
+      });
+    }
 
     if (result.projectCompleted) {
       await this.activity.log({

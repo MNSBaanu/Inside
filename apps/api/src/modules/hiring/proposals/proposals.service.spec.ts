@@ -29,6 +29,7 @@ describe('ProposalsService', () => {
     },
     projectRequest: { updateMany: jest.fn() },
     project: { create: jest.fn() },
+    milestonePayment: { createMany: jest.fn() },
   };
 
   const prisma = {
@@ -205,6 +206,13 @@ describe('ProposalsService', () => {
     const result = await service.accept(client, 'p1');
 
     expect(result.data.project.stages).toHaveLength(5);
+    expect(tx.milestonePayment.createMany).toHaveBeenCalledWith({
+      data: stageFees.map((s, i) => ({
+        projectId: 'proj1',
+        stageId: `s${i}`,
+        amount: s.fee,
+      })),
+    });
     expect(tx.proposal.updateMany).toHaveBeenCalledWith({
       where: { id: 'p1', status: ProposalStatus.PENDING },
       data: { status: ProposalStatus.ACCEPTED },

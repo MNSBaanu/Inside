@@ -57,16 +57,4 @@ export class PaymentsController {
   ) {
     return this.payments.markPaid(user, id, dto);
   }
-
-  @Patch('payments/:id/release')
-  @ApiOperation({
-    summary: 'Release paid milestone to designer (client/admin)',
-  })
-  @ApiOkResponse({ description: 'Released' })
-  release(
-    @CurrentUser() user: AuthUser,
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
-    return this.payments.release(user, id);
-  }
 }

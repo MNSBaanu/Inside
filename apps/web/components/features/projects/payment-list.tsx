@@ -42,19 +42,14 @@ export function PaymentList({
       .finally(() => router.replace(`/projects/${projectId}`));
   }, [returnedPayment, sessionId, projectId, reload, router]);
 
-  async function act(paymentId: string, action: 'pay' | 'release') {
+  async function pay(paymentId: string) {
     setActionError(null);
     setPending(paymentId);
     try {
-      if (action === 'pay') {
-        const { url } = await api.post<{ url: string }>(
-          `/payments/${paymentId}/checkout`,
-        );
-        window.location.assign(url);
-        return;
-      }
-      await api.patch(`/payments/${paymentId}/${action}`, {});
-      await reload();
+      const { url } = await api.post<{ url: string }>(
+        `/payments/${paymentId}/checkout`,
+      );
+      window.location.assign(url);
     } catch (cause) {
       setActionError(errorMessage(cause));
     } finally {
@@ -76,8 +71,8 @@ export function PaymentList({
   return (
     <div>
       <p className="rounded-card bg-sand p-4 text-sm text-ink">
-        Pay each milestone once its stage is approved. Releasing a milestone
-        confirms you are happy with that stage of the work.
+        Pay each milestone before its stage starts. The platform holds the
+        money and releases it to the designer when you approve the stage.
       </p>
       {actionError ? <ErrorNotice message={actionError} /> : null}
       {returnedPayment && sessionId ? (
@@ -112,19 +107,9 @@ export function PaymentList({
                 <Button
                   size="sm"
                   disabled={pending === payment.id}
-                  onClick={() => act(payment.id, 'pay')}
+                  onClick={() => pay(payment.id)}
                 >
                   Pay now
-                </Button>
-              ) : null}
-              {isClient && payment.status === 'PAID' ? (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={pending === payment.id}
-                  onClick={() => act(payment.id, 'release')}
-                >
-                  Record release
                 </Button>
               ) : null}
             </div>

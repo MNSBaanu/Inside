@@ -234,7 +234,6 @@ type ProjectPlan = {
   startedDaysAgo: number;
   stages: StageStatus[];
   status?: ProjectStatus;
-  latestPayment?: PaymentStatus;
   rejection?: { reason: string; revised: boolean };
   pausedBy?: UserKey;
   cancelled?: { by: UserKey; reason: string };
@@ -247,12 +246,12 @@ const R = StageStatus.REJECTED;
 const P = StageStatus.PENDING;
 
 const PROJECTS: ProjectPlan[] = [
-  { n: 1, title: 'Living room and kitchen refresh', client: 'nadia', designer: 'ravi', total: 700000, timeline: '12 weeks', scope: 'Concept boards, 3D visuals, a furniture schedule and site supervision for two rooms.', startedDaysAgo: 24, stages: [A, S, P, P, P], latestPayment: PaymentStatus.RELEASED },
-  { n: 2, title: 'Master bedroom makeover', client: 'nadia', designer: 'tharushi', total: 600000, timeline: '10 weeks', scope: 'Bedroom layout, lighting plan, joinery and styling.', startedDaysAgo: 40, stages: [A, A, R, P, P], latestPayment: PaymentStatus.PAID, rejection: { reason: 'The wardrobe blocks the window light. Could you move it to the east wall and lighten the finish?', revised: true } },
+  { n: 1, title: 'Living room and kitchen refresh', client: 'nadia', designer: 'ravi', total: 700000, timeline: '12 weeks', scope: 'Concept boards, 3D visuals, a furniture schedule and site supervision for two rooms.', startedDaysAgo: 24, stages: [A, S, P, P, P] },
+  { n: 2, title: 'Master bedroom makeover', client: 'nadia', designer: 'tharushi', total: 600000, timeline: '10 weeks', scope: 'Bedroom layout, lighting plan, joinery and styling.', startedDaysAgo: 40, stages: [A, A, R, P, P], rejection: { reason: 'The wardrobe blocks the window light. Could you move it to the east wall and lighten the finish?', revised: true } },
   { n: 3, title: 'Studio nook makeover', client: 'sam', designer: 'ravi', total: 180000, timeline: '4 weeks', scope: 'Layout plan and furniture sourcing for a work nook.', startedDaysAgo: 60, stages: [A, A, A, A, A], status: ProjectStatus.COMPLETED },
   { n: 4, title: 'Beach house dining area', client: 'sam', designer: 'tharushi', total: 450000, timeline: '8 weeks', scope: 'Dining area redesign with outdoor flow.', startedDaysAgo: 75, stages: [A, A, A, A, A], status: ProjectStatus.COMPLETED },
-  { n: 5, title: 'Family kitchen upgrade', client: 'kasun', designer: 'nimal', total: 1400000, timeline: '16 weeks', scope: 'Full kitchen redesign with custom teak joinery.', startedDaysAgo: 35, stages: [A, A, I, P, P], status: ProjectStatus.ON_HOLD, latestPayment: PaymentStatus.PENDING, pausedBy: 'kasun' },
-  { n: 6, title: 'Home office conversion', client: 'amaya', designer: 'ravi', total: 250000, timeline: '5 weeks', scope: 'Convert a spare room into a home office.', startedDaysAgo: 30, stages: [A, I, P, P, P], status: ProjectStatus.CANCELLED, latestPayment: PaymentStatus.RELEASED, cancelled: { by: 'amaya', reason: 'We are moving house sooner than planned, so the room will not be needed.' } },
+  { n: 5, title: 'Family kitchen upgrade', client: 'kasun', designer: 'nimal', total: 1400000, timeline: '16 weeks', scope: 'Full kitchen redesign with custom teak joinery.', startedDaysAgo: 35, stages: [A, A, I, P, P], status: ProjectStatus.ON_HOLD, pausedBy: 'kasun' },
+  { n: 6, title: 'Home office conversion', client: 'amaya', designer: 'ravi', total: 250000, timeline: '5 weeks', scope: 'Convert a spare room into a home office.', startedDaysAgo: 30, stages: [A, I, P, P, P], status: ProjectStatus.CANCELLED, cancelled: { by: 'amaya', reason: 'We are moving house sooner than planned, so the room will not be needed.' } },
   { n: 7, title: 'Kids room refresh', client: 'malsha', designer: 'tharushi', total: 300000, timeline: '6 weeks', scope: 'Brighter kids room with more storage and a study desk.', startedDaysAgo: 2, stages: [I, P, P, P, P] },
   { n: 8, title: 'Apartment balcony garden', client: 'kasun', designer: 'ravi', total: 150000, timeline: '3 weeks', scope: 'Planting plan and seating for a small balcony.', startedDaysAgo: 90, stages: [A, A, A, A, A], status: ProjectStatus.COMPLETED },
   { n: 9, title: 'Reading corner', client: 'nadia', designer: 'nimal', total: 180000, timeline: '4 weeks', scope: 'Window seat with storage and lighting.', startedDaysAgo: 100, stages: [A, A, A, A, A], status: ProjectStatus.COMPLETED },
@@ -322,7 +321,6 @@ async function seedProject(plan: ProjectPlan) {
   const logs: Prisma.ActivityLogCreateManyInput[] = [
     { projectId: id, userId: client, action: 'PROPOSAL_ACCEPTED', metadata: { proposalId, requestId }, createdAt: startedAt },
   ];
-  const lastApproved = plan.stages.lastIndexOf(StageStatus.APPROVED);
 
   for (const [index, stageStatus] of plan.stages.entries()) {
     const stageId = seedId(11, plan.n * 10 + index + 1);
@@ -388,29 +386,26 @@ async function seedProject(plan: ProjectPlan) {
 
     if (stageStatus === StageStatus.APPROVED) {
       logs.push({ projectId: id, userId: client, action: 'STAGE_APPROVED', metadata: { stageId, name }, createdAt: at(index) });
-      const paymentStatus =
-        completed || index < lastApproved
-          ? PaymentStatus.RELEASED
-          : (plan.latestPayment ?? PaymentStatus.PENDING);
-      const paid = paymentStatus !== PaymentStatus.PENDING;
-      const released = paymentStatus === PaymentStatus.RELEASED;
-      await prisma.milestonePayment.create({
-        data: {
-          projectId: id,
-          stageId,
-          amount: fees[index].fee,
-          status: paymentStatus,
-          paidAt: paid ? at(index) : null,
-          releasedAt: released ? at(index) : null,
-          createdAt: at(index),
-        },
-      });
-      if (paid) {
-        logs.push({ projectId: id, userId: client, action: 'PAYMENT_PAID', metadata: { amount: fees[index].fee }, createdAt: at(index) });
-      }
-      if (released) {
-        logs.push({ projectId: id, userId: client, action: 'PAYMENT_RELEASED', metadata: { amount: fees[index].fee }, createdAt: at(index) });
-      }
+    }
+
+    const released = stageStatus === StageStatus.APPROVED;
+    const paid = touched;
+    await prisma.milestonePayment.create({
+      data: {
+        projectId: id,
+        stageId,
+        amount: fees[index].fee,
+        status: released ? PaymentStatus.RELEASED : paid ? PaymentStatus.PAID : PaymentStatus.PENDING,
+        paidAt: paid ? at(index, 3) : null,
+        releasedAt: released ? at(index) : null,
+        createdAt: startedAt,
+      },
+    });
+    if (paid) {
+      logs.push({ projectId: id, userId: client, action: 'PAYMENT_PAID', metadata: { amount: fees[index].fee }, createdAt: at(index, 3) });
+    }
+    if (released) {
+      logs.push({ projectId: id, userId: client, action: 'PAYMENT_RELEASED', metadata: { amount: fees[index].fee }, createdAt: at(index) });
     }
   }
 

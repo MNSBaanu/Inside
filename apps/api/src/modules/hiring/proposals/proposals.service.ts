@@ -273,7 +273,7 @@ export class ProposalsService {
         data: { status: ProposalStatus.REJECTED },
       });
 
-      return tx.project.create({
+      const created = await tx.project.create({
         data: {
           proposalId: proposal.id,
           clientId: proposal.request.clientId,
@@ -297,6 +297,21 @@ export class ProposalsService {
           stages: { orderBy: { stageOrder: 'asc' } },
         },
       });
+
+      const paidStages = created.stages.filter(
+        (stage) => stage.fee !== null && Number(stage.fee) > 0,
+      );
+      if (paidStages.length > 0) {
+        await tx.milestonePayment.createMany({
+          data: paidStages.map((stage) => ({
+            projectId: created.id,
+            stageId: stage.id,
+            amount: stage.fee!,
+          })),
+        });
+      }
+
+      return created;
     });
 
     await this.notifications.notify({

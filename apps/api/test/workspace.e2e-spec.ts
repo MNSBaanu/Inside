@@ -233,18 +233,38 @@ describe('Workspace flow (e2e)', () => {
       .expect(200);
     expect(projectView.body.data.project.status).toBe(ProjectStatus.ACTIVE);
 
-    // 5. Walk all five stages. First stage needs a manual start; subsequent
-    //    stages auto-advance to IN_PROGRESS when the previous stage is approved.
+    // 5. Walk all five stages. The client pays each milestone up front, the
+    //    designer starts the stage, and approval releases the held payment.
     for (let i = 0; i < stageIds.length; i++) {
       const stageId = stageIds[i];
 
-      if (i === 0) {
-        const start = await request(app.getHttpServer())
-          .patch(`/stages/${stageId}/start`)
-          .set(authHeader(designerToken))
-          .expect(200);
-        expect(start.body.data.stage.status).toBe(StageStatus.IN_PROGRESS);
-      }
+      const payments = await request(app.getHttpServer())
+        .get(`/projects/${projectId}/payments`)
+        .set(authHeader(clientToken))
+        .expect(200);
+      const pending = payments.body.data.items.find(
+        (p: { stageId: string; status: string }) =>
+          p.stageId === stageId && p.status === PaymentStatus.PENDING,
+      );
+      expect(pending).toBeDefined();
+
+      await request(app.getHttpServer())
+        .patch(`/stages/${stageId}/start`)
+        .set(authHeader(designerToken))
+        .expect(400);
+
+      const paid = await request(app.getHttpServer())
+        .patch(`/payments/${pending.id}/pay`)
+        .set(authHeader(clientToken))
+        .send({ sessionId: `cs_test_${pending.id}` })
+        .expect(200);
+      expect(paid.body.data.payment.status).toBe(PaymentStatus.PAID);
+
+      const start = await request(app.getHttpServer())
+        .patch(`/stages/${stageId}/start`)
+        .set(authHeader(designerToken))
+        .expect(200);
+      expect(start.body.data.stage.status).toBe(StageStatus.IN_PROGRESS);
 
       const deliv = await request(app.getHttpServer())
         .post(`/stages/${stageId}/deliverables`)
@@ -265,23 +285,14 @@ describe('Workspace flow (e2e)', () => {
         .expect(200);
       expect(approve.body.data.stage.status).toBe(StageStatus.APPROVED);
 
-      // Pay the milestone that approve just created
-      const payments = await request(app.getHttpServer())
+      const after = await request(app.getHttpServer())
         .get(`/projects/${projectId}/payments`)
         .set(authHeader(clientToken))
         .expect(200);
-      const pending = payments.body.data.items.find(
-        (p: { stageId: string; status: string }) =>
-          p.stageId === stageId && p.status === PaymentStatus.PENDING,
+      const released = after.body.data.items.find(
+        (p: { stageId: string }) => p.stageId === stageId,
       );
-      expect(pending).toBeDefined();
-
-      const paid = await request(app.getHttpServer())
-        .patch(`/payments/${pending.id}/pay`)
-        .set(authHeader(clientToken))
-        .send({ sessionId: `cs_test_${pending.id}` })
-        .expect(200);
-      expect(paid.body.data.payment.status).toBe(PaymentStatus.PAID);
+      expect(released.status).toBe(PaymentStatus.RELEASED);
     }
 
     // 6. Project should be COMPLETED
