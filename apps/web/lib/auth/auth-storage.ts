@@ -46,6 +46,7 @@ export const authStorage = {
   refreshKey: REFRESH_KEY,
   getAccessToken: () => read(ACCESS_KEY),
   markActive: () => writeSessionCookie(true),
+  markInactive: () => writeSessionCookie(false),
   getRefreshToken: () => read(REFRESH_KEY),
   save(accessToken: string, refreshToken: string) {
     write(ACCESS_KEY, accessToken);

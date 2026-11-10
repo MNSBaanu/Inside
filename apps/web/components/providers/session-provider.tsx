@@ -61,6 +61,10 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (hasSession === false) authStorage.markInactive();
+  }, [hasSession]);
+
+  useEffect(() => {
     const requests = latest;
     if (hasSession) void loadUser();
     return () => {
