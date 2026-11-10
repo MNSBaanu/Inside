@@ -62,15 +62,35 @@ export default function DesignerProfilePage({
   }
 
   const { designer, portfolios } = data;
+  const cover = portfolios.find((portfolio) => portfolio.images[0])?.images[0];
 
   return (
     <div className="py-32 md:py-40">
       <section className="shell">
-        <div className="rounded-card bg-sand p-8 md:p-14">
-          <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center gap-6">
-              <Avatar name={designer.name} src={designer.avatarUrl} size={96} />
-              <div>
+        <div className="overflow-hidden rounded-card bg-sand">
+          <div className="relative h-48 bg-brand-soft md:h-72">
+            {cover ? (
+              <Image
+                src={cover.imageUrl}
+                unoptimized={!isOptimizableImage(cover.imageUrl)}
+                alt=""
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover"
+              />
+            ) : null}
+          </div>
+          <div className="px-8 pb-8 md:px-14 md:pb-14">
+          <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+            <div>
+              <Avatar
+                name={designer.name}
+                src={designer.avatarUrl}
+                size={144}
+                className="-mt-20 ring-4 ring-sand"
+              />
+              <div className="mt-6">
                 <h1 className="font-display text-section font-semibold">
                   {designer.name}
                 </h1>
@@ -124,6 +144,7 @@ export default function DesignerProfilePage({
               targetId={designer.id}
               reportedUserId={designer.id}
             />
+          </div>
           </div>
         </div>
       </section>
