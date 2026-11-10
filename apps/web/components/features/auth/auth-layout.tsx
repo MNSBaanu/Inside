@@ -18,7 +18,7 @@ export function AuthLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="shell grid items-center gap-16 py-32 md:py-40 lg:grid-cols-2">
+    <div className="shell grid items-start gap-16 pb-20 pt-20 md:pb-24 md:pt-24 lg:grid-cols-2">
       <div className="mx-auto w-full max-w-md">
         <Badge tone="brand">{eyebrow}</Badge>
         <h1 className="mt-6 font-display text-section font-semibold">{title}</h1>
