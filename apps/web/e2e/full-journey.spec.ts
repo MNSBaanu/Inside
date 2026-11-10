@@ -1,8 +1,25 @@
+import { execFileSync } from 'node:child_process';
 import { expect, test, type Page } from '@playwright/test';
 import { PASSWORD, accounts, openFromList, signIn } from './helpers';
 
 const WEB_ORIGIN = 'http://localhost:3100';
 const STAGES = ['proposal', 'concept', 'design', 'revision', 'completion'];
+const DATABASE_URL =
+  process.env.UI_TEST_DATABASE_URL ??
+  'postgresql://postgres:postgres@localhost:5432/inside_ui?schema=public';
+
+/** The UI test servers have no payment provider, so the client's stage payment is recorded in the test database. */
+function payStage(projectId: string, stageOrder: number) {
+  execFileSync(
+    'pnpm',
+    ['--filter', '@inside/database', 'exec', 'prisma', 'db', 'execute', '--stdin', '--url', DATABASE_URL],
+    {
+      input: `UPDATE "MilestonePayment" SET status = 'PAID', "paidAt" = now() WHERE status = 'PENDING' AND "stageId" IN (SELECT id FROM "ProjectStage" WHERE "projectId" = '${projectId}' AND "stageOrder" = ${stageOrder});`,
+      stdio: ['pipe', 'ignore', 'inherit'],
+      shell: process.platform === 'win32',
+    },
+  );
+}
 
 /** The UI test servers have no Cloudinary account, so uploads are answered in the browser. */
 async function fakeUploads(page: Page) {
@@ -138,6 +155,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
     const name = STAGES[index];
 
     await test.step(`designer works on the ${name} stage`, async () => {
+      payStage(projectUrl.split('/').pop()!, index + 1);
       await designer.reload();
       const card = stageCard(designer, index);
       const start = card.getByRole('button', { name: 'Start stage' });

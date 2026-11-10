@@ -68,6 +68,9 @@ describe('Hiring flow (e2e)', () => {
           },
         });
         for (const project of projects) {
+          await prisma.milestonePayment.deleteMany({
+            where: { projectId: project.id },
+          });
           await prisma.projectStage.deleteMany({
             where: { projectId: project.id },
           });
