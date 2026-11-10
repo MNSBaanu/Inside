@@ -101,9 +101,10 @@ const steps = [
 ];
 
 const stats = [
-  { value: '240+', caption: 'Verified designers' },
-  { value: '1,800', caption: 'Rooms completed' },
-  { value: '4.8', caption: 'Average rating' },
+  { value: 'Verified', caption: 'Designers checked before they join' },
+  { value: 'Matched', caption: 'Briefs paired by style, room and budget' },
+  { value: 'Staged', caption: 'Projects tracked in five clear stages' },
+  { value: 'Secure', caption: 'Milestone payments through Stripe' },
 ];
 
 const promotions = [
@@ -202,7 +203,7 @@ export default async function HomePage() {
       </section>
 
       <section className="shell py-10 md:py-14">
-        <div className="grid grid-cols-3 gap-3 rounded-card bg-brand px-4 py-6 text-canvas sm:gap-6 md:px-8 md:py-8">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-6 rounded-card bg-brand px-4 py-6 text-canvas sm:gap-6 md:grid-cols-4 md:px-8 md:py-8">
           {stats.map((stat, index) => (
             <Reveal key={stat.caption} delay={index * 100}>
               <p className="font-display text-2xl font-semibold sm:text-3xl md:text-4xl">
