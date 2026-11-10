@@ -61,6 +61,13 @@ const PHOTOS = {
   retreat: '1688646953306-5ec93eab8c06',
   samples: '1637649228998-6c78a67dfa6c',
   lounge: '1613545325278-f24b0cae1224',
+  desk: '1518455027359-f3f8164ba6bd',
+  teakKitchen: '1484154218962-a197022b5858',
+  readingNook: '1519710164239-da123dc03ef4',
+  studyDesk: '1593062096033-9a26b09da705',
+  kidsCorner: '1558211583-d26f610c1eb1',
+  bohoPlants: '1502672260266-1c1ef2d93688',
+  industrialLoft: '1505873242700-f289a29e1e0f',
 } as const;
 type PhotoKey = keyof typeof PHOTOS;
 
@@ -190,26 +197,26 @@ type PortfolioSeed = {
 const PORTFOLIOS: PortfolioSeed[] = [
   { designer: 'ravi', title: 'Scandinavian Living Room', description: 'Light oak, a neutral palette and layered lighting.', style: 'Scandinavian', roomType: 'Living Room', budget: 450000, images: [['scandiLiving', 'Main view'], ['seating', 'Seating detail']], createdDaysAgo: 170 },
   { designer: 'ravi', title: 'Minimalist Kitchen Remodel', description: 'Handleless cabinetry with concealed storage.', style: 'Minimalist', roomType: 'Kitchen', budget: 780000, images: [['kitchen', 'Island']], createdDaysAgo: 150 },
-  { designer: 'ravi', title: 'Quiet Home Office', description: 'A calm corner for focused work, with built-in shelving.', style: 'Minimalist', roomType: 'Home Office', budget: 220000, images: [['shelving', 'Shelving wall'], ['neutrals', 'Desk area']], createdDaysAgo: 90 },
+  { designer: 'ravi', title: 'Quiet Home Office', description: 'A calm corner for focused work, with built-in shelving.', style: 'Minimalist', roomType: 'Home Office', budget: 220000, images: [['shelving', 'Shelving wall'], ['desk', 'Desk area']], createdDaysAgo: 90 },
 
   { designer: 'tharushi', title: 'Colombo Loft', description: 'Cross-ventilation, timber screens and a courtyard view.', style: 'Tropical Modern', roomType: 'Living Room', budget: 1200000, images: [['loft', 'Double-height lounge'], ['hero', 'Courtyard edge']], createdDaysAgo: 160 },
   { designer: 'tharushi', title: 'Kalutara Villa Bedroom', description: 'Shaded verandah bedroom with natural fibres.', style: 'Tropical Modern', roomType: 'Bedroom', budget: 650000, images: [['villa', 'Bedroom and verandah']], createdDaysAgo: 120 },
   { designer: 'tharushi', title: 'Open Dining Pavilion', description: 'An open-sided dining space for family gatherings.', style: 'Contemporary', roomType: 'Dining Room', budget: 900000, images: [['lounge', 'Dining pavilion']], createdDaysAgo: 60 },
 
-  { designer: 'nimal', title: 'Family Kitchen in Teak', description: 'Solid teak joinery with a large prep island.', style: 'Traditional', roomType: 'Kitchen', budget: 1500000, images: [['kitchen', 'Teak island'], ['samples', 'Material samples']], createdDaysAgo: 150 },
-  { designer: 'nimal', title: 'Reading Corner', description: 'Window seat with storage and warm task lighting.', style: 'Contemporary', roomType: 'Living Room', budget: 180000, images: [['seating', 'Window seat']], createdDaysAgo: 100 },
+  { designer: 'nimal', title: 'Family Kitchen in Teak', description: 'Solid teak joinery with a large prep island.', style: 'Traditional', roomType: 'Kitchen', budget: 1500000, images: [['teakKitchen', 'Teak island'], ['samples', 'Material samples']], createdDaysAgo: 150 },
+  { designer: 'nimal', title: 'Reading Corner', description: 'Window seat with storage and warm task lighting.', style: 'Contemporary', roomType: 'Living Room', budget: 180000, images: [['readingNook', 'Window seat']], createdDaysAgo: 100 },
 
   { designer: 'ayesha', title: 'Coastal Bedroom Concept', description: 'Soft blues and rattan accents for a calm sleep space.', style: 'Coastal', roomType: 'Bedroom', budget: 320000, images: [['coastalBedroom', 'Headboard wall']], createdDaysAgo: 15 },
 
   { designer: 'shenali', title: 'Japandi Apartment', description: 'Low furniture, linen and pale timber.', style: 'Japandi', roomType: 'Living Room', budget: 550000, images: [['retreat', 'Living area'], ['neutrals', 'Material palette']], createdDaysAgo: 40 },
   { designer: 'shenali', title: 'Spa Bathroom', description: 'Terrazzo, warm lighting and a walk-in shower.', style: 'Japandi', roomType: 'Bathroom', budget: 400000, images: [['townhouse', 'Vanity']], createdDaysAgo: 30 },
 
-  { designer: 'arjun', title: 'Student Studio (draft)', description: 'Work in progress for a compact studio flat.', style: 'Minimalist', roomType: 'Bedroom', budget: null, published: false, images: [['shelving', 'Study wall']], createdDaysAgo: 3 },
+  { designer: 'arjun', title: 'Student Studio (draft)', description: 'Work in progress for a compact studio flat.', style: 'Minimalist', roomType: 'Bedroom', budget: null, published: false, images: [['studyDesk', 'Study wall']], createdDaysAgo: 3 },
 
-  { designer: 'malsha', title: 'Colourful Kids Room', description: 'Bold colour, bunk beds and plenty of floor space.', style: 'Bohemian', roomType: 'Kids Room', budget: 280000, images: [['neutrals', 'Play corner']], createdDaysAgo: 130 },
-  { designer: 'malsha', title: 'Boho Balcony Garden', description: 'Planters, floor cushions and string lights.', style: 'Bohemian', roomType: 'Balcony', budget: 150000, images: [['villa', 'Balcony view']], createdDaysAgo: 110 },
+  { designer: 'malsha', title: 'Colourful Kids Room', description: 'Bold colour, bunk beds and plenty of floor space.', style: 'Bohemian', roomType: 'Kids Room', budget: 280000, images: [['kidsCorner', 'Play corner']], createdDaysAgo: 130 },
+  { designer: 'malsha', title: 'Boho Balcony Garden', description: 'Planters, floor cushions and string lights.', style: 'Bohemian', roomType: 'Balcony', budget: 150000, images: [['bohoPlants', 'Planters and seating']], createdDaysAgo: 110 },
 
-  { designer: 'chaminda', title: 'Industrial Loft', description: 'Exposed brick and steel shelving.', style: 'Industrial', roomType: 'Living Room', budget: 700000, images: [['loft', 'Loft']], createdDaysAgo: 65 },
+  { designer: 'chaminda', title: 'Industrial Loft', description: 'Exposed brick and steel shelving.', style: 'Industrial', roomType: 'Living Room', budget: 700000, images: [['industrialLoft', 'Loft']], createdDaysAgo: 65 },
 ];
 
 // ---------------------------------------------------------------------------
