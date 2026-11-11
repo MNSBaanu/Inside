@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Avatar } from '@/components/ui/avatar';
+import { BackLink } from '@/components/ui/back-link';
 import { Badge } from '@/components/ui/badge';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice } from '@/components/ui/feedback';
@@ -52,7 +53,8 @@ export default async function DesignerProfilePage({
     <div className="py-32 md:py-40">
       <AutoRefresh />
       <section className="shell">
-        <div className="overflow-hidden rounded-card bg-sand">
+        <BackLink fallback="/explore?tab=designers" />
+        <div className="mt-4 overflow-hidden rounded-card bg-sand">
           <div className="relative h-28 bg-brand-soft md:h-40">
             {cover ? (
               <Image
@@ -133,30 +135,30 @@ export default async function DesignerProfilePage({
         </div>
       </section>
 
-      <section className="shell mt-20">
-        <h2 className="font-display text-section font-semibold">Reviews</h2>
-        <div className="mt-10">
+      <section className="shell mt-12">
+        <h2 className="font-display text-2xl font-semibold">Reviews</h2>
+        <div className="mt-6">
           <ReviewList designerId={designer.id} />
         </div>
       </section>
 
-      <section className="shell mt-20">
-        <h2 className="font-display text-section font-semibold">Work</h2>
+      <section className="shell mt-12">
+        <h2 className="font-display text-2xl font-semibold">Work</h2>
 
         {portfolios.length === 0 ? (
-          <div className="mt-10">
+          <div className="mt-6">
             <EmptyState
               title="No published work yet."
               description="This designer has not published any projects so far."
             />
           </div>
         ) : (
-          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2">
             {portfolios.map((portfolio) => (
               <Link
                 key={portfolio.id}
                 href={`/portfolios/${portfolio.id}`}
-                className="group block"
+                className="group block w-[85%] shrink-0 snap-start sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]"
               >
                 <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-canvas shadow-card">
                   {portfolio.images[0] ? (
@@ -178,7 +180,7 @@ export default async function DesignerProfilePage({
                 </div>
                 <div className="mt-5 flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <h3 className="truncate font-display text-2xl font-semibold transition-colors duration-300 group-hover:text-brand">
+                    <h3 className="truncate font-display text-lg font-semibold transition-colors duration-300 group-hover:text-brand">
                       {portfolio.title}
                     </h3>
                     {portfolio.budget !== null ? (
