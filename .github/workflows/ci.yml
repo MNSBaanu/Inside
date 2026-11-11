@@ -3,7 +3,12 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore: ['**/*.md']
   pull_request:
+    paths-ignore: ['**/*.md']
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -100,6 +105,7 @@ jobs:
 
   test-web-e2e:
     name: Web browser (Playwright)
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
 
     services:
@@ -138,8 +144,20 @@ jobs:
       - name: Generate Prisma client
         run: pnpm --filter @inside/database db:generate
 
+      - name: Cache Playwright browser
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
       - name: Install Playwright browser
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm --filter web exec playwright install --with-deps chromium
+
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm --filter web exec playwright install-deps chromium
 
       - name: Browser tests
         run: pnpm --filter web exec playwright test
