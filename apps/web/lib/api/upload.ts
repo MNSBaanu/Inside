@@ -4,7 +4,8 @@ export type UploadFolder =
   | 'portfolios'
   | 'moodboards'
   | 'deliverables'
-  | 'attachments';
+  | 'attachments'
+  | 'avatars';
 
 type SignedUpload = {
   cloudName: string;

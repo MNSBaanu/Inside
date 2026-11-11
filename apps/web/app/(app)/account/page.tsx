@@ -6,6 +6,7 @@ import { useSession } from '@/components/providers/session-provider';
 import { PasswordForm } from '@/components/features/account/password-form';
 import { RoleSwitch } from '@/components/features/account/role-switch';
 import { PageHeader } from '@/components/ui/page-header';
+import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Combobox } from '@/components/ui/combobox';
@@ -49,7 +50,7 @@ function AccountForm({ user }: { user: User }) {
         bio: form.bio || undefined,
         phone: form.phone || undefined,
         location: form.location || undefined,
-        avatarUrl: form.avatarUrl || undefined,
+        avatarUrl: form.avatarUrl || null,
         isAvailable,
       });
       await refreshUser();
@@ -140,28 +141,34 @@ function AccountForm({ user }: { user: User }) {
             </Field>
           </div>
 
-          <Field
-            label="Avatar URL"
-            htmlFor="avatarUrl"
-            hint="Upload a photo or paste an https link."
-          >
-            <Input
-              id="avatarUrl"
-              type="url"
-              value={form.avatarUrl}
-              onChange={(event) =>
-                setForm({ ...form, avatarUrl: event.target.value })
-              }
-              placeholder="https://…"
-            />
-            <FileUpload
-              folder="attachments"
-              label="Upload a photo"
-              onUploaded={(file) =>
-                setForm((current) => ({ ...current, avatarUrl: file.url }))
-              }
-            />
-          </Field>
+          <div>
+            <p className="text-sm font-semibold">Profile photo</p>
+            <div className="mt-3 flex flex-wrap items-center gap-5">
+              <Avatar name={form.name || user.name} src={form.avatarUrl} size={72} />
+              <div className="flex flex-col items-start gap-2">
+                <FileUpload
+                  folder="avatars"
+                  label={form.avatarUrl ? 'Change photo' : 'Upload photo'}
+                  onUploaded={(file) =>
+                    setForm((current) => ({ ...current, avatarUrl: file.url }))
+                  }
+                />
+                {form.avatarUrl ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setForm({ ...form, avatarUrl: '' })}
+                  >
+                    Remove photo
+                  </Button>
+                ) : null}
+                <p className="text-sm text-muted">
+                  JPG, PNG or WebP. Saved when you press Save.
+                </p>
+              </div>
+            </div>
+          </div>
 
           {isDesigner ? (
             <label className="flex items-center gap-3 rounded-card bg-sand px-5 py-4">

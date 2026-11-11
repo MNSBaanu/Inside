@@ -6,6 +6,7 @@ export enum UploadFolder {
   MOODBOARDS = 'moodboards',
   DELIVERABLES = 'deliverables',
   ATTACHMENTS = 'attachments',
+  AVATARS = 'avatars',
 }
 
 export class SignUploadDto {
