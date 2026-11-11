@@ -2,21 +2,67 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { PortfolioCard } from '@/components/features/portfolios/portfolio-card';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { formatMoney } from '@/lib/utils/format';
+import { Rating } from '@/components/ui/rating';
+import { formatDate, formatMoney } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
-import type { Portfolio } from '@/lib/types';
+import type { DesignerProfile, Portfolio } from '@/lib/types';
 import { isOptimizableImage } from '@/lib/utils/images';
+
+const STYLE_NOTES: Record<string, string> = {
+  Bohemian:
+    'Layered pattern, natural fibres, plants and collected pieces. Bohemian rooms feel relaxed and personal rather than matched.',
+  Coastal:
+    'Soft blues, sandy neutrals and light timber. Coastal rooms stay airy, easy to clean and cool in the heat.',
+  Contemporary:
+    'Clean shapes, a calm base palette and a few confident accents. Contemporary rooms follow current materials and lighting.',
+  Industrial:
+    'Exposed structure, steel, concrete and reclaimed timber. Industrial rooms celebrate raw materials and open layouts.',
+  Japandi:
+    'Japanese restraint meets Scandinavian warmth: low furniture, pale timber, linen and very little clutter.',
+  Minimalist:
+    'Only what is needed, with storage hidden away. Minimalist rooms rely on light, proportion and good materials.',
+  Scandinavian:
+    'Light walls, pale oak and soft textiles. Scandinavian rooms are bright, practical and comfortable to live in.',
+  Traditional:
+    'Classic proportions, rich timber and carefully chosen detail. Traditional rooms feel established and welcoming.',
+  'Tropical Modern':
+    'Cross-ventilation, deep eaves, timber screens and planting. Tropical modern homes stay cool and open to the garden.',
+};
+
+export type PortfolioExtras = {
+  designer: DesignerProfile | null;
+  moreFromDesigner: Portfolio[];
+  similar: Portfolio[];
+};
+
+function PortfolioRow({ title, items }: { title: string; items: Portfolio[] }) {
+  if (items.length === 0) return null;
+
+  return (
+    <section className="shell mt-20">
+      <h2 className="font-display text-2xl font-semibold">{title}</h2>
+      <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((item) => (
+          <PortfolioCard key={item.id} portfolio={item} />
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export function PortfolioDetail({
   id,
   initial,
+  extras = null,
 }: {
   id: string;
   initial: { portfolio: Portfolio } | null;
+  extras?: PortfolioExtras | null;
 }) {
   const fetched = useApi<{ portfolio: Portfolio }>(
     initial ? null : `/portfolios/${id}`,
@@ -43,6 +89,14 @@ export function PortfolioDetail({
 
   const { portfolio } = data;
   const [cover, ...rest] = portfolio.images;
+  const designer = extras?.designer ?? null;
+  const facts: [string, string][] = [
+    ['Style', portfolio.style ?? 'Not set'],
+    ['Room', portfolio.roomType ?? 'Not set'],
+    ['Budget', portfolio.budget !== null ? formatMoney(portfolio.budget) : 'On request'],
+    ['Published', formatDate(portfolio.createdAt)],
+    ['Photos', String(portfolio.images.length)],
+  ];
 
   return (
     <div className="py-32 md:py-40">
@@ -55,13 +109,13 @@ export function PortfolioDetail({
               ) : null}
               {portfolio.roomType ? <Badge>{portfolio.roomType}</Badge> : null}
             </div>
-            <h1 className="mt-6 max-w-3xl font-display text-section font-semibold">
+            <h1 className="mt-4 max-w-3xl font-display text-3xl font-semibold md:text-4xl">
               {portfolio.title}
             </h1>
           </div>
 
           {portfolio.budget !== null ? (
-            <p className="font-display text-3xl font-semibold text-brand">
+            <p className="font-display text-2xl font-semibold text-brand">
               {formatMoney(portfolio.budget)}
             </p>
           ) : null}
@@ -87,9 +141,32 @@ export function PortfolioDetail({
       <section className="shell mt-16 grid gap-16 lg:grid-cols-[2fr_1fr]">
         <div>
           {portfolio.description ? (
-            <p className="max-w-2xl text-lg text-muted">
+            <p className="max-w-2xl text-muted">
               {portfolio.description}
             </p>
+          ) : null}
+
+          <div className="mt-10 rounded-card border border-hairline p-6">
+            <h2 className="label text-ink/70">Project details</h2>
+            <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-4 text-sm sm:grid-cols-3">
+              {facts.map(([label, value]) => (
+                <div key={label}>
+                  <dt className="text-muted">{label}</dt>
+                  <dd className="mt-0.5 font-semibold">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          {portfolio.style && STYLE_NOTES[portfolio.style] ? (
+            <div className="mt-8">
+              <h2 className="font-display text-xl font-semibold">
+                About the {portfolio.style} style
+              </h2>
+              <p className="mt-3 max-w-2xl text-muted">
+                {STYLE_NOTES[portfolio.style]}
+              </p>
+            </div>
           ) : null}
 
           {rest.length > 0 ? (
@@ -117,43 +194,79 @@ export function PortfolioDetail({
           ) : null}
         </div>
 
-        <aside className="h-fit rounded-card bg-sand p-8">
-          <p className="label text-ink/70">Designed by</p>
-          <Link
-            href={`/designers/${portfolio.designer.id}`}
-            className="mt-5 flex items-center gap-4"
-          >
-            <Avatar
-              name={portfolio.designer.name}
-              src={portfolio.designer.avatarUrl}
-              size={56}
-            />
-            <span>
-              <span className="block font-display text-xl font-semibold">
-                {portfolio.designer.name}
+        <aside className="flex h-fit flex-col gap-6">
+          <div className="rounded-card bg-sand p-6">
+            <p className="label text-ink/70">Designed by</p>
+            <Link
+              href={`/designers/${portfolio.designer.id}`}
+              className="mt-4 flex items-center gap-4"
+            >
+              <Avatar
+                name={portfolio.designer.name}
+                src={portfolio.designer.avatarUrl}
+                size={48}
+              />
+              <span>
+                <span className="block font-display text-lg font-semibold">
+                  {portfolio.designer.name}
+                </span>
+                <span className="block text-sm text-muted">
+                  {portfolio.designer.location ?? 'Location not set'}
+                </span>
               </span>
-              <span className="block text-sm text-muted">
-                {portfolio.designer.location ?? 'Location not set'}
-              </span>
-            </span>
-          </Link>
+            </Link>
 
-          {portfolio.designer.isVerified ? (
-            <div className="mt-5">
-              <Badge tone="support">Verified designer</Badge>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {portfolio.designer.isVerified ? (
+                <Badge tone="support">Verified</Badge>
+              ) : null}
+              {designer ? (
+                designer.isAvailable ? (
+                  <Badge tone="highlight">Available</Badge>
+                ) : (
+                  <Badge>Not taking work</Badge>
+                )
+              ) : null}
             </div>
-          ) : null}
 
-          <ButtonLink
-            href={`/requests/new?designerId=${portfolio.designer.id}`}
-            size="lg"
-            fullWidth
-            className="mt-8"
-          >
-            Request this designer
-          </ButtonLink>
+            {designer ? (
+              <Rating
+                value={designer.rating.average}
+                count={designer.rating.count}
+                className="mt-4"
+              />
+            ) : null}
+
+            {designer?.bio ? (
+              <p className="mt-4 text-sm text-muted">{designer.bio}</p>
+            ) : null}
+
+            <div className="mt-6 flex flex-col gap-3">
+              {designer?.isAvailable === false ? null : (
+                <ButtonLink
+                  href={`/requests/new?designerId=${portfolio.designer.id}`}
+                  fullWidth
+                >
+                  Request this designer
+                </ButtonLink>
+              )}
+              <ButtonLink
+                href={`/designers/${portfolio.designer.id}`}
+                variant="outline"
+                fullWidth
+              >
+                View profile
+              </ButtonLink>
+            </div>
+          </div>
         </aside>
       </section>
+
+      <PortfolioRow
+        title={`More from ${portfolio.designer.name}`}
+        items={extras?.moreFromDesigner ?? []}
+      />
+      <PortfolioRow title="Similar projects" items={extras?.similar ?? []} />
     </div>
   );
 }
