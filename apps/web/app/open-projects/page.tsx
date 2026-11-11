@@ -6,7 +6,8 @@ import { MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Button, ButtonLink } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button';
+import { Pagination } from '@/components/ui/pagination';
 import { Combobox } from '@/components/ui/combobox';
 import { BareInput } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
@@ -162,27 +163,7 @@ export default function OpenProjectsPage() {
               </ul>
             </div>
 
-            {totalPages > 1 ? (
-              <div className="mt-16 flex items-center justify-center gap-4">
-                <Button
-                  variant="outline"
-                  disabled={page === 1}
-                  onClick={() => showPage(page - 1)}
-                >
-                  Previous
-                </Button>
-                <span className="label text-muted">
-                  Page {page} of {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  disabled={page >= totalPages}
-                  onClick={() => showPage(page + 1)}
-                >
-                  Next
-                </Button>
-              </div>
-            ) : null}
+            <Pagination page={page} totalPages={totalPages} onPageChange={showPage} />
           </>
         ) : !error ? (
           filtered ? (

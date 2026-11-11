@@ -2,15 +2,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { formatMoney } from '@/lib/utils/format';
-import type { Portfolio } from '@/lib/types';
+import type { Portfolio, PortfolioImage } from '@/lib/types';
+import { cn } from '@/lib/utils/cn';
 import { isOptimizableImage } from '@/lib/utils/images';
 
 export function PortfolioCard({
   portfolio,
   sizes = '(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw',
+  compact = false,
 }: {
-  portfolio: Portfolio;
+  portfolio: Pick<Portfolio, 'id' | 'title' | 'style' | 'budget'> & {
+    images: Pick<PortfolioImage, 'imageUrl'>[];
+    designer?: Pick<Portfolio['designer'], 'name'>;
+  };
   sizes?: string;
+  compact?: boolean;
 }) {
   const cover = portfolio.images[0];
 
@@ -35,10 +41,17 @@ export function PortfolioCard({
 
       <div className="mt-5 flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h3 className="truncate font-display text-2xl font-semibold transition-colors duration-300 group-hover:text-brand">
+          <h3
+            className={cn(
+              'truncate font-display font-semibold transition-colors duration-300 group-hover:text-brand',
+              compact ? 'text-lg' : 'text-2xl',
+            )}
+          >
             {portfolio.title}
           </h3>
-          <p className="mt-1 truncate text-muted">{portfolio.designer.name}</p>
+          {portfolio.designer ? (
+            <p className="mt-1 truncate text-muted">{portfolio.designer.name}</p>
+          ) : null}
         </div>
         {portfolio.style ? (
           <Badge className="whitespace-nowrap">{portfolio.style}</Badge>

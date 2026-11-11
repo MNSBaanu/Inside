@@ -1,15 +1,14 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { Avatar } from '@/components/ui/avatar';
 import { BackLink } from '@/components/ui/back-link';
 import { Badge } from '@/components/ui/badge';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice } from '@/components/ui/feedback';
+import { PortfolioCard } from '@/components/features/portfolios/portfolio-card';
 import { ReviewList } from '@/components/features/reviews/review-list';
 import { FavouriteButton } from '@/components/features/designers/favourite-button';
 import { BlockButton } from '@/components/features/moderation/block-button';
 import { ReportDialog } from '@/components/features/moderation/report-dialog';
-import { formatMoney } from '@/lib/utils/format';
 import { AutoRefresh } from '@/components/layout/auto-refresh';
 import { fetchPublic } from '@/lib/api/server-api';
 import type { DesignerProfile, PortfolioImage } from '@/lib/types';
@@ -155,47 +154,12 @@ export default async function DesignerProfilePage({
         ) : (
           <div className="mt-6 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2">
             {portfolios.map((portfolio) => (
-              <Link
+              <div
                 key={portfolio.id}
-                href={`/portfolios/${portfolio.id}`}
-                className="group block w-[85%] shrink-0 snap-start sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]"
+                className="w-[85%] shrink-0 snap-start sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]"
               >
-                <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-canvas shadow-card">
-                  {portfolio.images[0] ? (
-                    <Image
-                      src={portfolio.images[0].imageUrl}
-                      unoptimized={
-                        !isOptimizableImage(portfolio.images[0].imageUrl)
-                      }
-                      alt={portfolio.title}
-                      fill
-                      sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-                      className="object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.04]"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-label font-semibold uppercase text-muted">
-                      No images
-                    </div>
-                  )}
-                </div>
-                <div className="mt-5 flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <h3 className="truncate font-display text-lg font-semibold transition-colors duration-300 group-hover:text-brand">
-                      {portfolio.title}
-                    </h3>
-                    {portfolio.budget !== null ? (
-                      <p className="mt-1 text-sm text-muted">
-                        From {formatMoney(portfolio.budget)}
-                      </p>
-                    ) : null}
-                  </div>
-                  {portfolio.style ? (
-                    <Badge className="whitespace-nowrap">
-                      {portfolio.style}
-                    </Badge>
-                  ) : null}
-                </div>
-              </Link>
+                <PortfolioCard portfolio={portfolio} compact />
+              </div>
             ))}
           </div>
         )}

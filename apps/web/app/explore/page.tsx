@@ -3,12 +3,9 @@ import { DesignersExplorer } from '@/components/features/explore/designers-explo
 import { ProjectsExplorer } from '@/components/features/explore/projects-explorer';
 import { PageHeader } from '@/components/ui/page-header';
 import { cn } from '@/lib/utils/cn';
+import { single } from '@/lib/utils/url';
 
 type SearchParams = Record<string, string | string[] | undefined>;
-
-function single(value: string | string[] | undefined) {
-  return typeof value === 'string' ? value : '';
-}
 
 const tabs = [
   { id: 'projects', label: 'Projects', href: '/explore' },

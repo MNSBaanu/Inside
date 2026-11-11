@@ -16,3 +16,7 @@ export function safeHref(url: string): string | undefined {
     return undefined;
   }
 }
+
+export function single(value: string | string[] | undefined) {
+  return typeof value === 'string' ? value : '';
+}
