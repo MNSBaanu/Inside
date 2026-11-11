@@ -16,7 +16,11 @@ const navigation = [
 
 export function SiteHeader() {
   const pathname = usePathname();
-  return <HeaderContent key={pathname} />;
+  return <HeaderContent key={pathname} pathname={pathname} />;
+}
+
+function isActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 function subscribeScroll(onChange: () => void) {
@@ -24,7 +28,7 @@ function subscribeScroll(onChange: () => void) {
   return () => window.removeEventListener('scroll', onChange);
 }
 
-function HeaderContent() {
+function HeaderContent({ pathname }: { pathname: string }) {
   const scrolled = useSyncExternalStore(
     subscribeScroll,
     () => window.scrollY > 24,
@@ -80,7 +84,10 @@ function HeaderContent() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand"
+                aria-current={isActive(pathname, item.href) ? 'page' : undefined}
+                className={`text-[0.9375rem] font-medium uppercase tracking-[0.02em] transition-colors duration-300 hover:text-brand ${
+                  isActive(pathname, item.href) ? 'text-brand' : 'text-ink/80'
+                }`}
               >
                 {item.label}
               </Link>
@@ -152,7 +159,10 @@ function HeaderContent() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="border-b border-hairline py-6 font-display text-3xl font-semibold tracking-tight"
+                aria-current={isActive(pathname, item.href) ? 'page' : undefined}
+                className={`border-b border-hairline py-6 font-display text-3xl font-semibold tracking-tight ${
+                  isActive(pathname, item.href) ? 'text-brand' : ''
+                }`}
               >
                 {item.label}
               </Link>
