@@ -5,7 +5,7 @@ tags: [project, academic, final-year, nestjs, nextjs, expo, prisma]
 status: in development, submission 2026-11-20
 version: 0.0.1
 created: 2026-05-04
-updated: 2026-11-10
+updated: 2026-11-11
 repo: https://github.com/MNSBaanu/Inside
 author: MNS Baanu
 ---
@@ -70,3 +70,4 @@ Web appears to be on Vercel; API on Render (confirmed by owner 2026-11-08). Root
 - 2026-11-08: ST-01 executed: 196 files moved as git renames, 502 imports rewritten in 269 files, 0 unresolved. Matches the baseline: API typecheck (src + test), 120 API unit tests, API lint and build, 50 web tests, web typecheck, lint and build (31 routes), mobile typecheck. Not run: API e2e, Playwright (need Postgres). Remaining plan 47.5 h.
 - 2026-11-08: Previous commit removed the 2026-10-17 audit and completion plan; findings carried into docs/02.
 - 2026-11-10: Payments changed to escrow to match the interim report: payments created on proposal accept, stage start requires the stage paid, approval releases it; release endpoint and button removed, seed updated. Stage, payment and proposal unit tests pass; API e2e updated but not run (needs Postgres).
+- 2026-11-11: Seed expanded for a production-like demo: 26 listed designers (20 new + 8 new clients), 79 published portfolios, 53 shop products, 14 open requests, 33 completed projects with reviews. Every style, room and shop category returns results (Kids Room has 2). All Unsplash photos checked by eye and for HTTP 200; dead `neutrals` photo replaced. Ravi and Nimal stay on page 1 for the Playwright directory tests.
