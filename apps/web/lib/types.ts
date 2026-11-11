@@ -111,6 +111,8 @@ export type DesignerSummary = {
   portfolioCount: number;
   previews: DesignerPreview[];
   rating: Rating;
+  specialities: string[];
+  startingBudget: number | null;
 };
 
 export type DesignerProfile = {

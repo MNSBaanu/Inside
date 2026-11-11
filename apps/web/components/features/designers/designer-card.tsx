@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import type { DesignerSummary } from '@/lib/types';
+import { formatMoney } from '@/lib/utils/format';
 import { isOptimizableImage } from '@/lib/utils/images';
 
 export function DesignerCard({ designer }: { designer: DesignerSummary }) {
@@ -44,6 +45,33 @@ export function DesignerCard({ designer }: { designer: DesignerSummary }) {
 
         {designer.bio ? (
           <p className="mt-4 line-clamp-2 text-sm text-muted">{designer.bio}</p>
+        ) : null}
+
+        {designer.specialities.length > 0 ? (
+          <div className="mt-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+              Specialises in
+            </p>
+            <div className="mt-2 flex flex-wrap justify-center gap-1.5">
+              {designer.specialities.map((style) => (
+                <span
+                  key={style}
+                  className="rounded-pill border border-hairline px-2.5 py-0.5 text-xs"
+                >
+                  {style}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {designer.startingBudget !== null ? (
+          <p className="mt-4 text-sm">
+            Projects from{' '}
+            <span className="font-semibold">
+              {formatMoney(designer.startingBudget)}
+            </span>
+          </p>
         ) : null}
 
         <div className="mt-auto flex flex-wrap items-center justify-center gap-2 pt-6">

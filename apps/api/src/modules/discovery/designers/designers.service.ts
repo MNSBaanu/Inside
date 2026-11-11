@@ -89,7 +89,11 @@ export class DesignersService {
       }),
     ]);
 
-    const ratings = await this.ratingsFor(designers.map((d) => d.id));
+    const ids = designers.map((d) => d.id);
+    const [ratings, stats] = await Promise.all([
+      this.ratingsFor(ids),
+      this.workStatsFor(ids),
+    ]);
 
     return {
       success: true,
@@ -110,6 +114,8 @@ export class DesignersService {
             imageUrl: portfolio.images[0]?.imageUrl ?? null,
           })),
           rating: ratings.get(designer.id) ?? { average: null, count: 0 },
+          specialities: stats.get(designer.id)?.specialities ?? [],
+          startingBudget: stats.get(designer.id)?.startingBudget ?? null,
         })),
         page,
         pageSize,
@@ -158,6 +164,41 @@ export class DesignersService {
         })),
       },
     };
+  }
+
+  private async workStatsFor(designerIds: string[]) {
+    const stats = new Map<
+      string,
+      { specialities: string[]; startingBudget: number | null }
+    >();
+    if (designerIds.length === 0) return stats;
+
+    const work = await this.prisma.portfolio.findMany({
+      where: { designerId: { in: designerIds }, isPublished: true },
+      select: { designerId: true, style: true, budget: true },
+    });
+
+    for (const id of designerIds) {
+      const mine = work.filter((item) => item.designerId === id);
+      const styleCounts = new Map<string, number>();
+      for (const item of mine) {
+        if (item.style) {
+          styleCounts.set(item.style, (styleCounts.get(item.style) ?? 0) + 1);
+        }
+      }
+      const budgets = mine
+        .filter((item) => item.budget !== null)
+        .map((item) => Number(item.budget));
+
+      stats.set(id, {
+        specialities: [...styleCounts.entries()]
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([style]) => style),
+        startingBudget: budgets.length > 0 ? Math.min(...budgets) : null,
+      });
+    }
+    return stats;
   }
 
   private async ratingsFor(designerIds: string[]) {

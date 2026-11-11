@@ -35,7 +35,13 @@ describe('Designer availability', () => {
   it('shows availability and an explicit review count on cards', () => {
     render(
       <DesignerCard
-        designer={{ ...designer, portfolioCount: 1, previews: [] }}
+        designer={{
+          ...designer,
+          portfolioCount: 1,
+          previews: [],
+          specialities: [],
+          startingBudget: null,
+        }}
       />,
     );
     expect(screen.getByText('Not taking work')).toBeVisible();
