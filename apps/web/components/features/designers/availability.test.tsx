@@ -3,8 +3,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import DesignerProfilePage from '@/app/designers/[id]/page';
 import { DesignerCard } from './designer-card';
 
-const mocks = vi.hoisted(() => ({ useApi: vi.fn() }));
-vi.mock('@/lib/api/use-api', () => ({ useApi: mocks.useApi }));
+const mocks = vi.hoisted(() => ({ fetchPublic: vi.fn() }));
+vi.mock('@/lib/api/server-api', () => ({ fetchPublic: mocks.fetchPublic }));
+vi.mock('@/components/layout/auto-refresh', () => ({ AutoRefresh: () => null }));
 vi.mock('@/components/features/designers/favourite-button', () => ({
   FavouriteButton: () => null,
 }));
@@ -41,13 +42,9 @@ describe('Designer availability', () => {
     expect(screen.getByText('4.5 from 2 reviews')).toBeVisible();
   });
 
-  it('keeps an unavailable profile viewable without a request link', () => {
-    mocks.useApi.mockReturnValue({
-      data: { designer, portfolios: [] },
-      loading: false,
-      error: null,
-    });
-    render(<DesignerProfilePage params={{ id: 'd1' }} />);
+  it('keeps an unavailable profile viewable without a request link', async () => {
+    mocks.fetchPublic.mockResolvedValue({ designer, portfolios: [] });
+    render(await DesignerProfilePage({ params: { id: 'd1' } }));
     expect(screen.getByRole('heading', { name: 'Designer' })).toBeVisible();
     expect(
       screen.getByRole('button', { name: 'Not taking new requests' }),
@@ -57,13 +54,12 @@ describe('Designer availability', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('offers a direct request when the designer is available', () => {
-    mocks.useApi.mockReturnValue({
-      data: { designer: { ...designer, isAvailable: true }, portfolios: [] },
-      loading: false,
-      error: null,
+  it('offers a direct request when the designer is available', async () => {
+    mocks.fetchPublic.mockResolvedValue({
+      designer: { ...designer, isAvailable: true },
+      portfolios: [],
     });
-    render(<DesignerProfilePage params={{ id: 'd1' }} />);
+    render(await DesignerProfilePage({ params: { id: 'd1' } }));
     expect(
       screen.getByRole('link', { name: 'Request this designer' }),
     ).toHaveAttribute('href', '/requests/new?designerId=d1');
