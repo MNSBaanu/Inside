@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
@@ -15,6 +15,11 @@ const PAGE_SIZE = 12;
 
 export default function OpenProjectsPage() {
   const [page, setPage] = useState(1);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const showPage = (next: number) => {
+    setPage(next);
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   const { data, error, loading } = useApi<Paginated<OpenRequest>>(
     `/requests/open${buildQuery({ page, pageSize: PAGE_SIZE })}`,
   );
@@ -34,7 +39,7 @@ export default function OpenProjectsPage() {
         </ButtonLink>
       </div>
 
-      <div className="mt-12">
+      <div ref={resultsRef} className="mt-12 scroll-mt-28">
         {error ? <ErrorNotice message={error} /> : null}
 
         {loading ? (
@@ -56,7 +61,7 @@ export default function OpenProjectsPage() {
                 <Button
                   variant="outline"
                   disabled={page === 1}
-                  onClick={() => setPage((current) => current - 1)}
+                  onClick={() => showPage(page - 1)}
                 >
                   Previous
                 </Button>
@@ -66,7 +71,7 @@ export default function OpenProjectsPage() {
                 <Button
                   variant="outline"
                   disabled={page >= totalPages}
-                  onClick={() => setPage((current) => current + 1)}
+                  onClick={() => showPage(page + 1)}
                 >
                   Next
                 </Button>

@@ -43,6 +43,11 @@ export function DesignersExplorer({
   searchParams: SearchParams;
 }) {
   const router = useRouter();
+  const resultsRef = useRef<HTMLElement>(null);
+  const showPage = (next: number) => {
+    router.push(directoryUrl(filters, next), { scroll: false });
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   const filters: Filters = {
     q: single(searchParams.q),
     location: single(searchParams.location),
@@ -100,7 +105,8 @@ export function DesignersExplorer({
       <section
         aria-label="Designer results"
         aria-busy={loading}
-        className="mt-4"
+        ref={resultsRef}
+        className="mt-4 scroll-mt-28"
       >
         {error ? <ErrorNotice message={error} /> : null}
         {loading ? (
@@ -127,11 +133,7 @@ export function DesignersExplorer({
                 <Button
                   variant="outline"
                   disabled={page === 1}
-                  onClick={() =>
-                    router.push(directoryUrl(filters, page - 1), {
-                      scroll: false,
-                    })
-                  }
+                  onClick={() => showPage(page - 1)}
                 >
                   Previous
                 </Button>
@@ -141,11 +143,7 @@ export function DesignersExplorer({
                 <Button
                   variant="outline"
                   disabled={page >= totalPages}
-                  onClick={() =>
-                    router.push(directoryUrl(filters, page + 1), {
-                      scroll: false,
-                    })
-                  }
+                  onClick={() => showPage(page + 1)}
                 >
                   Next
                 </Button>

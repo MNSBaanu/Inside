@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PortfolioCard } from '@/components/features/portfolios/portfolio-card';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
@@ -37,6 +37,11 @@ export function ProjectsExplorer({
   });
   const [applied, setApplied] = useState(filters);
   const [page, setPage] = useState(1);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const showPage = (next: number) => {
+    setPage(next);
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const query = buildQuery({
     q: applied.q,
@@ -126,7 +131,7 @@ export function ProjectsExplorer({
         </FilterField>
       </FilterBar>
 
-      <div className="mt-10">
+      <div ref={resultsRef} className="mt-10 scroll-mt-28">
         {error ? <ErrorNotice message={error} /> : null}
 
         {loading ? (
@@ -148,7 +153,7 @@ export function ProjectsExplorer({
                 <Button
                   variant="outline"
                   disabled={page === 1}
-                  onClick={() => setPage((current) => current - 1)}
+                  onClick={() => showPage(page - 1)}
                 >
                   Previous
                 </Button>
@@ -158,7 +163,7 @@ export function ProjectsExplorer({
                 <Button
                   variant="outline"
                   disabled={page >= totalPages}
-                  onClick={() => setPage((current) => current + 1)}
+                  onClick={() => showPage(page + 1)}
                 >
                   Next
                 </Button>

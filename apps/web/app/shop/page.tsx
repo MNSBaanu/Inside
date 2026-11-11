@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ProductCard } from '@/components/features/shop/product-card';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
@@ -20,6 +20,11 @@ export default function ShopPage() {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [applied, setApplied] = useState(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const showPage = (next: number) => {
+    setPage(next);
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const query = buildQuery({
     q: applied.q,
@@ -100,7 +105,7 @@ export default function ShopPage() {
         </FilterField>
       </FilterBar>
 
-      <div className="mt-12">
+      <div ref={resultsRef} className="mt-12 scroll-mt-28">
         {error ? <ErrorNotice message={error} /> : null}
 
         {loading ? (
@@ -122,7 +127,7 @@ export default function ShopPage() {
                 <Button
                   variant="outline"
                   disabled={page === 1}
-                  onClick={() => setPage((current) => current - 1)}
+                  onClick={() => showPage(page - 1)}
                 >
                   Previous
                 </Button>
@@ -132,7 +137,7 @@ export default function ShopPage() {
                 <Button
                   variant="outline"
                   disabled={page >= totalPages}
-                  onClick={() => setPage((current) => current + 1)}
+                  onClick={() => showPage(page + 1)}
                 >
                   Next
                 </Button>
