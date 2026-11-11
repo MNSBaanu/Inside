@@ -53,7 +53,7 @@ export default async function DesignerProfilePage({
       <AutoRefresh />
       <section className="shell">
         <div className="overflow-hidden rounded-card bg-sand">
-          <div className="relative h-36 bg-brand-soft md:h-52">
+          <div className="relative h-28 bg-brand-soft md:h-40">
             {cover ? (
               <Image
                 src={cover.imageUrl}
@@ -72,17 +72,17 @@ export default async function DesignerProfilePage({
               <Avatar
                 name={designer.name}
                 src={designer.avatarUrl}
-                size={112}
-                className="-mt-14 ring-4 ring-sand"
+                size={88}
+                className="-mt-11 ring-4 ring-sand"
               />
-              <div className="mt-4">
-                <h1 className="font-display text-section font-semibold">
+              <div className="mt-3">
+                <h1 className="font-display text-3xl font-semibold md:text-4xl">
                   {designer.name}
                 </h1>
-                <p className="mt-2 text-muted">
+                <p className="mt-1 text-muted">
                   {designer.location ?? 'Location not set'}
                 </p>
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap gap-2">
                   {designer.isVerified ? (
                     <Badge tone="support">Verified</Badge>
                   ) : null}
@@ -105,12 +105,11 @@ export default async function DesignerProfilePage({
               {designer.isAvailable ? (
                 <ButtonLink
                   href={`/requests/new?designerId=${designer.id}`}
-                  size="lg"
                 >
                   Request this designer
                 </ButtonLink>
               ) : (
-                <Button disabled size="lg">
+                <Button disabled>
                   Not taking new requests
                 </Button>
               )}
@@ -119,7 +118,7 @@ export default async function DesignerProfilePage({
           </div>
 
           {designer.bio ? (
-            <p className="mt-6 max-w-3xl text-lg text-muted">{designer.bio}</p>
+            <p className="mt-4 max-w-3xl text-muted">{designer.bio}</p>
           ) : null}
 
           <div className="mt-6 flex flex-wrap items-center gap-4 empty:hidden">
