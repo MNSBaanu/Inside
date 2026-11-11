@@ -23,6 +23,7 @@ import { DesignerModeGuard } from '../../identity/auth/guards/designer-mode.guar
 import { JwtAuthGuard } from '../../identity/auth/guards/jwt-auth.guard';
 import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto';
 import { CreateRequestDto } from './dto/create-request.dto';
+import { ListOpenRequestsQueryDto } from './dto/list-open-requests-query.dto';
 import { RequestsService } from './requests.service';
 
 @ApiTags('requests')
@@ -50,7 +51,7 @@ export class RequestsController {
   @Get('open')
   @ApiOperation({ summary: 'List open requests publicly (no client details)' })
   @ApiOkResponse({ description: 'Open requests' })
-  listOpen(@Query() query: PaginationQueryDto) {
+  listOpen(@Query() query: ListOpenRequestsQueryDto) {
     return this.requestsService.listOpen(query);
   }
 

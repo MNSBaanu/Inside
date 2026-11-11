@@ -7,6 +7,7 @@ import {
 import {
   AccountStatus,
   NotificationType,
+  Prisma,
   ProposalStatus,
   RequestStatus,
   RequestType,
@@ -21,6 +22,7 @@ import {
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
 import { CreateRequestDto } from './dto/create-request.dto';
+import type { ListOpenRequestsQueryDto } from './dto/list-open-requests-query.dto';
 
 const requestInclude = {
   brief: { select: { id: true, styles: true, rooms: true } },
@@ -161,19 +163,52 @@ export class RequestsService {
     };
   }
 
-  async listOpen(query: PaginationQueryDto) {
+  async listOpen(query: ListOpenRequestsQueryDto) {
     const { page, pageSize, skip, take } = paginate(query);
-    const where = {
+    const q = query.q?.trim();
+    const location = query.location?.trim();
+    const where: Prisma.ProjectRequestWhereInput = {
       type: RequestType.OPEN,
       status: RequestStatus.OPEN,
-      client: { status: AccountStatus.ACTIVE },
+      client: {
+        status: AccountStatus.ACTIVE,
+        ...(location
+          ? { location: { contains: location, mode: 'insensitive' } }
+          : {}),
+      },
+      ...(q
+        ? {
+            OR: [
+              { title: { contains: q, mode: 'insensitive' } },
+              { description: { contains: q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+      ...(query.minBudget !== undefined || query.maxBudget !== undefined
+        ? {
+            budget: {
+              ...(query.minBudget !== undefined
+                ? { gte: query.minBudget }
+                : {}),
+              ...(query.maxBudget !== undefined
+                ? { lte: query.maxBudget }
+                : {}),
+            },
+          }
+        : {}),
     };
+    const orderBy: Prisma.ProjectRequestOrderByWithRelationInput =
+      query.sort === 'budget_high'
+        ? { budget: 'desc' }
+        : query.sort === 'budget_low'
+          ? { budget: 'asc' }
+          : { createdAt: 'desc' };
 
     const [total, items] = await Promise.all([
       this.prisma.projectRequest.count({ where }),
       this.prisma.projectRequest.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         select: {
           id: true,
           title: true,
