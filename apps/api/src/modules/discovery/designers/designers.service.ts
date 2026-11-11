@@ -119,21 +119,21 @@ export class DesignersService {
   }
 
   async getById(id: string) {
-    const designer = await this.prisma.user.findFirst({
-      where: { id, role: Role.DESIGNER, status: AccountStatus.ACTIVE },
-      select: designerSelect,
-    });
+    const [designer, portfolios, ratings] = await Promise.all([
+      this.prisma.user.findFirst({
+        where: { id, role: Role.DESIGNER, status: AccountStatus.ACTIVE },
+        select: designerSelect,
+      }),
+      this.prisma.portfolio.findMany({
+        where: { designerId: id, isPublished: true },
+        orderBy: { createdAt: 'desc' },
+        include: { images: { orderBy: { displayOrder: 'asc' } } },
+      }),
+      this.ratingsFor([id]),
+    ]);
     if (!designer) {
       throw new NotFoundException('Designer not found');
     }
-
-    const portfolios = await this.prisma.portfolio.findMany({
-      where: { designerId: id, isPublished: true },
-      orderBy: { createdAt: 'desc' },
-      include: { images: { orderBy: { displayOrder: 'asc' } } },
-    });
-
-    const ratings = await this.ratingsFor([id]);
 
     return {
       success: true,

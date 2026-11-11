@@ -1,17 +1,15 @@
-'use client';
-
 import Image from 'next/image';
 import Link from 'next/link';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button, ButtonLink } from '@/components/ui/button';
-import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { EmptyState, ErrorNotice } from '@/components/ui/feedback';
 import { ReviewList } from '@/components/features/reviews/review-list';
 import { FavouriteButton } from '@/components/features/designers/favourite-button';
 import { BlockButton } from '@/components/features/moderation/block-button';
 import { ReportDialog } from '@/components/features/moderation/report-dialog';
 import { formatMoney } from '@/lib/utils/format';
-import { useApi } from '@/lib/api/use-api';
+import { fetchPublic } from '@/lib/api/server-api';
 import type { DesignerProfile, PortfolioImage } from '@/lib/types';
 import { isOptimizableImage } from '@/lib/utils/images';
 
@@ -31,32 +29,17 @@ type ProfileResponse = {
   portfolios: ProfilePortfolio[];
 };
 
-export default function DesignerProfilePage({
+export default async function DesignerProfilePage({
   params,
 }: {
   params: { id: string };
 }) {
-  const { data, error, loading } = useApi<ProfileResponse>(
-    `/designers/${params.id}`,
-  );
+  const data = await fetchPublic<ProfileResponse>(`/designers/${params.id}`);
 
-  if (loading) {
+  if (!data) {
     return (
       <div className="shell py-32 md:py-40">
-        <Skeleton className="h-40" />
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <Skeleton key={index} className="h-80" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !data) {
-    return (
-      <div className="shell py-32 md:py-40">
-        <ErrorNotice message={error ?? 'Designer not found'} />
+        <ErrorNotice message="Designer not found" />
       </div>
     );
   }
