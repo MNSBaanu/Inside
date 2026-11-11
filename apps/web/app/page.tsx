@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Reveal } from '@/components/features/home/reveal';
 import { DesignerCard } from '@/components/features/designers/designer-card';
+import { AutoRefresh } from '@/components/layout/auto-refresh';
 import { HeroSearch } from '@/components/features/home/hero-search';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
@@ -133,6 +134,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <AutoRefresh />
       <section aria-labelledby="home-hero-title" className="shell pb-6 pt-24 md:pt-28">
         <div className="grid overflow-hidden rounded-2xl md:rounded-3xl border border-hairline bg-sand lg:grid-cols-[1fr_1.1fr]">
           <div className="flex flex-col justify-center px-5 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-12">

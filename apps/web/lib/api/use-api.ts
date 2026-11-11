@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, errorMessage } from './client';
 
+export const REFRESH_INTERVAL_MS = 30_000;
+
 export function useApi<T>(path: string | null) {
   const [state, setState] = useState<{
     path: string | null;
@@ -13,7 +15,7 @@ export function useApi<T>(path: string | null) {
   const latest = useRef(0);
 
   const fetchData = useCallback(
-    async (signal?: AbortSignal) => {
+    async (signal?: AbortSignal, silent = false) => {
       // Only the most recent request may update state.
       const request = ++latest.current;
       if (path === null) return;
@@ -24,6 +26,10 @@ export function useApi<T>(path: string | null) {
         }
       } catch (cause) {
         if (request === latest.current && !signal?.aborted) {
+          if (silent) {
+            setState((current) => ({ ...current, loading: false }));
+            return;
+          }
           setState((current) => ({
             path,
             data: current.path === path ? current.data : null,
@@ -40,7 +46,14 @@ export function useApi<T>(path: string | null) {
     const requests = latest;
     const controller = new AbortController();
     void fetchData(controller.signal);
+    const refresh = () => {
+      if (!document.hidden) void fetchData(controller.signal, true);
+    };
+    const timer = setInterval(refresh, REFRESH_INTERVAL_MS);
+    window.addEventListener('focus', refresh);
     return () => {
+      clearInterval(timer);
+      window.removeEventListener('focus', refresh);
       controller.abort();
       requests.current++;
     };

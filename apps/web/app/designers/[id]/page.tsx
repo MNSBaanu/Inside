@@ -9,6 +9,7 @@ import { FavouriteButton } from '@/components/features/designers/favourite-butto
 import { BlockButton } from '@/components/features/moderation/block-button';
 import { ReportDialog } from '@/components/features/moderation/report-dialog';
 import { formatMoney } from '@/lib/utils/format';
+import { AutoRefresh } from '@/components/layout/auto-refresh';
 import { fetchPublic } from '@/lib/api/server-api';
 import type { DesignerProfile, PortfolioImage } from '@/lib/types';
 import { isOptimizableImage } from '@/lib/utils/images';
@@ -49,6 +50,7 @@ export default async function DesignerProfilePage({
 
   return (
     <div className="py-32 md:py-40">
+      <AutoRefresh />
       <section className="shell">
         <div className="overflow-hidden rounded-card bg-sand">
           <div className="relative h-48 bg-brand-soft md:h-72">
