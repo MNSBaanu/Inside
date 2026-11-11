@@ -10,6 +10,8 @@ import { useApi } from '@/lib/api/use-api';
 import type { Product } from '@/lib/types';
 import { isOptimizableImage } from '@/lib/utils/images';
 
+const PLACEHOLDER_SELLER_URL = /^https?:\/\/(www\.)?example\.com(\/|$)/;
+
 export default function ProductDetailPage({
   params,
 }: {
@@ -80,17 +82,17 @@ export default function ProductDetailPage({
             Sold by <span className="font-semibold text-ink">{product.sellerName}</span>
           </p>
 
-          <div className="mt-10 flex flex-col gap-6 border-t border-hairline pt-8">
-            <div>
+          <div className="mt-10 flex flex-wrap items-center gap-4 border-t border-hairline pt-8">
+            {PLACEHOLDER_SELLER_URL.test(product.sellerUrl) ? null : (
               <a
                 href={product.sellerUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-pill bg-brand px-8 py-4 text-base font-semibold text-canvas transition-all duration-300 ease-editorial hover:bg-brand-deep hover:shadow-lift"
+                className="inline-flex items-center justify-center gap-2 rounded-pill bg-brand px-6 py-3 text-base font-semibold text-canvas transition-all duration-300 ease-editorial hover:bg-brand-deep hover:shadow-lift"
               >
                 Visit seller
               </a>
-            </div>
+            )}
             <SaveToMoodboard product={product} />
           </div>
         </div>
