@@ -1,5 +1,6 @@
 'use client';
 
+import { Plus, X } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from './badge';
 import { Input } from './field';
@@ -55,7 +56,10 @@ export function TagInput({
                 aria-label={`Remove ${value}`}
                 className="rounded-pill"
               >
-                <Badge tone="brand">{value} ×</Badge>
+                <Badge tone="brand">
+                  {value}
+                  <X aria-hidden className="ml-1 inline h-3 w-3" />
+                </Badge>
               </button>
             </li>
           ))}
@@ -71,9 +75,10 @@ export function TagInput({
                 <button
                   type="button"
                   onClick={() => add(suggestion)}
-                  className="rounded-pill border border-hairline px-3 py-1.5 text-label font-semibold uppercase text-muted transition-colors duration-300 hover:border-brand hover:text-brand"
+                  className="inline-flex items-center gap-1 rounded-pill border border-hairline px-3 py-1.5 text-label font-semibold uppercase text-muted transition-colors duration-300 hover:border-brand hover:text-brand"
                 >
-                  + {suggestion}
+                  <Plus aria-hidden className="h-3 w-3" />
+                  {suggestion}
                 </button>
               </li>
             ))}

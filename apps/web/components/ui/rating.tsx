@@ -1,19 +1,16 @@
 'use client';
 
+import { Star as StarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 function Star({ filled, className }: { filled: boolean; className?: string }) {
   return (
-    <svg
-      viewBox="0 0 20 20"
+    <StarIcon
       aria-hidden
       className={cn('h-5 w-5', className)}
       fill={filled ? 'currentColor' : 'none'}
-      stroke="currentColor"
-      strokeWidth={filled ? 0 : 1.5}
-    >
-      <path d="M10 1.8l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L2.2 7.5l5.4-.8L10 1.8z" />
-    </svg>
+      strokeWidth={1.5}
+    />
   );
 }
 

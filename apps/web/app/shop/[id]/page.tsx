@@ -1,5 +1,6 @@
 'use client';
 
+import { ChevronLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SaveToMoodboard } from '@/components/features/shop/save-to-moodboard';
@@ -47,8 +48,12 @@ export default function ProductDetailPage({
 
   return (
     <div className="shell py-32 md:py-40">
-      <Link href="/shop" className="text-sm text-muted hover:text-brand">
-        ← All products
+      <Link
+        href="/shop"
+        className="inline-flex items-center gap-1 text-sm text-muted hover:text-brand"
+      >
+        <ChevronLeft aria-hidden className="h-4 w-4" />
+        All products
       </Link>
 
       <div className="mt-8 grid gap-12 lg:grid-cols-2 lg:gap-16">

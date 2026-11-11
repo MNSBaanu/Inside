@@ -1,4 +1,11 @@
-import type { ReactNode } from 'react';
+import {
+  Check,
+  ChevronRight,
+  CircleAlert,
+  Clock,
+  Minus,
+  type LucideIcon,
+} from 'lucide-react';
 import type {
   PaymentStatus,
   ProjectStatus,
@@ -51,22 +58,12 @@ const styles: Record<StatusGroup, string> = {
   closed: 'bg-status-closed-soft text-status-closed',
 };
 
-const icons: Record<StatusGroup, ReactNode> = {
-  action: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 2" />
-    </>
-  ),
-  progress: <path d="M5 12h14M13 6l6 6-6 6" />,
-  done: <path d="M5 12l5 5 9-10" />,
-  problem: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 8v5M12 16.5v.5" />
-    </>
-  ),
-  closed: <path d="M6 12h12" />,
+const icons: Record<StatusGroup, LucideIcon> = {
+  action: Clock,
+  progress: ChevronRight,
+  done: Check,
+  problem: CircleAlert,
+  closed: Minus,
 };
 
 export function statusGroup(status: string): StatusGroup {
@@ -80,6 +77,7 @@ function readable(status: string) {
 
 export function StatusBadge({ status }: { status: AnyStatus | string }) {
   const group = statusGroup(status);
+  const Icon = icons[group];
 
   return (
     <span
@@ -88,19 +86,7 @@ export function StatusBadge({ status }: { status: AnyStatus | string }) {
         styles[group],
       )}
     >
-      <svg
-        aria-hidden
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {icons[group]}
-      </svg>
+      <Icon aria-hidden size={14} strokeWidth={2.2} />
       {readable(status)}
     </span>
   );

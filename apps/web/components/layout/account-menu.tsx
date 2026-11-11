@@ -1,5 +1,6 @@
 'use client';
 
+import { Bell, MessageSquare, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
 import Link from 'next/link';
@@ -74,13 +75,8 @@ export function AccountMenu({ user }: { user: User }) {
 
   return (
     <div className="hidden items-center gap-2 sm:flex">
-      <IconLink href="/messages" label="Messages" count={unreadMessages}>
-        <path d="M4 5h16v11H8l-4 4V5Z" />
-      </IconLink>
-      <IconLink href="/notifications" label="Notifications" count={unreadAlerts}>
-        <path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4l2-2Z" />
-        <path d="M10 20a2 2 0 0 0 4 0" />
-      </IconLink>
+      <IconLink href="/messages" label="Messages" count={unreadMessages} icon={MessageSquare} />
+      <IconLink href="/notifications" label="Notifications" count={unreadAlerts} icon={Bell} />
 
       <div ref={menuRef} className="relative ml-2">
         <button
@@ -103,6 +99,14 @@ export function AccountMenu({ user }: { user: User }) {
               <p className="truncate font-semibold">{user.name}</p>
               <p className="truncate text-sm text-muted">{user.email}</p>
             </div>
+            <Link
+              href="/dashboard"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className="mt-1 block rounded-card px-4 py-2.5 text-ink transition-colors duration-150 hover:bg-brand-soft hover:text-brand"
+            >
+              Dashboard
+            </Link>
             {user.role === 'DESIGNER' ? (
               <button
                 type="button"
@@ -141,12 +145,12 @@ function IconLink({
   href,
   label,
   count,
-  children,
+  icon: Icon,
 }: {
   href: string;
   label: string;
   count: number;
-  children: React.ReactNode;
+  icon: LucideIcon;
 }) {
   return (
     <Link
@@ -154,18 +158,7 @@ function IconLink({
       aria-label={count > 0 ? `${label} (${count} unread)` : label}
       className="relative flex h-10 w-10 items-center justify-center rounded-full text-ink/70 transition-colors duration-300 hover:bg-sand hover:text-brand"
     >
-      <svg
-        aria-hidden
-        viewBox="0 0 24 24"
-        className="h-5 w-5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {children}
-      </svg>
+      <Icon aria-hidden strokeWidth={1.75} className="h-5 w-5" />
       {count > 0 ? (
         <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-5 justify-center rounded-pill bg-brand px-1.5 py-0.5 text-xs text-canvas">
           {count}

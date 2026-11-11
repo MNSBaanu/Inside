@@ -1,5 +1,6 @@
 'use client';
 
+import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
 import { useEffect, useState, useSyncExternalStore } from 'react';
@@ -98,16 +99,14 @@ function HeaderContent({ pathname }: { pathname: string }) {
         <div className="flex items-center gap-5">
           {status === 'authenticated' && user ? (
             <>
-              {workspace && !designerWorkspace ? null : (
+              {designerWorkspace ? (
                 <Link
-                  href={
-                    designerWorkspace ? `/designers/${user.id}` : '/dashboard'
-                  }
+                  href={`/designers/${user.id}`}
                   className="hidden text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand sm:block"
                 >
-                  {designerWorkspace ? 'Public profile' : 'Dashboard'}
+                  Public profile
                 </Link>
-              )}
+              ) : null}
               <AccountMenu user={user} />
             </>
           ) : (
@@ -132,18 +131,11 @@ function HeaderContent({ pathname }: { pathname: string }) {
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             className="-mr-2 flex h-11 w-11 items-center justify-center lg:hidden"
           >
-            <span className="relative block h-3 w-6">
-              <span
-                className={`absolute left-0 block h-px w-6 bg-ink transition-all duration-300 ease-editorial ${
-                  menuOpen ? 'top-1.5 rotate-45' : 'top-0'
-                }`}
-              />
-              <span
-                className={`absolute left-0 block h-px w-6 bg-ink transition-all duration-300 ease-editorial ${
-                  menuOpen ? 'top-1.5 -rotate-45' : 'top-3'
-                }`}
-              />
-            </span>
+            {menuOpen ? (
+              <X aria-hidden strokeWidth={1.5} className="h-6 w-6 text-ink" />
+            ) : (
+              <Menu aria-hidden strokeWidth={1.5} className="h-6 w-6 text-ink" />
+            )}
           </button>
         </div>
       </div>

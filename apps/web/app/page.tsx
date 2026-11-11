@@ -1,3 +1,4 @@
+import { ChevronRight, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
 import Image from 'next/image';
@@ -154,7 +155,7 @@ export default async function HomePage() {
             <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-ink/10 pt-4 text-sm">
               <span className="text-muted">Ready to make it happen?</span>
               <Link href="/briefs/new" className="font-semibold text-brand underline decoration-brand/30 underline-offset-4 hover:decoration-brand">
-                Start your project <span aria-hidden="true">&rarr;</span>
+                Start your project <ChevronRight aria-hidden className="inline h-4 w-4 align-text-bottom" />
               </Link>
             </div>
           </div>
@@ -171,7 +172,7 @@ export default async function HomePage() {
               <p className="label text-white/80">A little inspiration</p>
               <p className="mt-3 text-2xl font-medium tracking-tight text-white">Room to imagine more.</p>
               <Link href="/explore?roomType=Living%20Room" className="mt-3 inline-flex items-center gap-3 text-sm font-semibold text-white underline underline-offset-4 hover:text-white/80">
-                Explore living rooms <span aria-hidden="true">&rarr;</span>
+                Explore living rooms <ChevronRight aria-hidden className="inline h-4 w-4 align-text-bottom" />
               </Link>
             </div>
           </div>
@@ -179,7 +180,7 @@ export default async function HomePage() {
         <div className="mt-8">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <h2 className="text-lg font-semibold tracking-tight">Find the right designer for your space</h2>
-            <Link href="/projects" className="text-sm font-medium text-brand underline underline-offset-4">Go to my projects <span aria-hidden="true">&rarr;</span></Link>
+            <Link href="/projects" className="text-sm font-medium text-brand underline underline-offset-4">Go to my projects <ChevronRight aria-hidden className="inline h-4 w-4 align-text-bottom" /></Link>
           </div>
           <HeroSearch />
           <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -423,12 +424,10 @@ export default async function HomePage() {
             <details key={faq.question} className="group py-6">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-display text-base font-semibold sm:text-lg">
                 {faq.question}
-                <span
+                <Plus
                   aria-hidden
-                  className="text-2xl text-brand transition-transform duration-300 group-open:rotate-45"
-                >
-                  +
-                </span>
+                  className="h-6 w-6 shrink-0 text-brand transition-transform duration-300 group-open:rotate-45"
+                />
               </summary>
               <p className="mt-4 max-w-2xl text-muted">{faq.answer}</p>
             </details>

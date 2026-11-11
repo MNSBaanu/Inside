@@ -1,6 +1,7 @@
 'use client';
 
 import { cardSurface } from '@/components/ui/card';
+import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils/cn';
 
@@ -75,23 +76,14 @@ export function Select({
         }
       >
         <span className="truncate">{options[selectedIndex]?.label}</span>
-        <svg
+        <ChevronDown
           aria-hidden
-          viewBox="0 0 20 20"
+          strokeWidth={1.75}
           className={cn(
             'h-4 w-4 shrink-0 text-muted transition-transform duration-200',
             open && 'rotate-180',
           )}
-        >
-          <path
-            d="M5 7.5 10 12.5 15 7.5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.75"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        />
       </button>
       {open ? (
         <ul
