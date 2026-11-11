@@ -53,7 +53,7 @@ export default async function DesignerProfilePage({
       <AutoRefresh />
       <section className="shell">
         <div className="overflow-hidden rounded-card bg-sand">
-          <div className="relative h-48 bg-brand-soft md:h-72">
+          <div className="relative h-36 bg-brand-soft md:h-52">
             {cover ? (
               <Image
                 src={cover.imageUrl}
@@ -66,16 +66,16 @@ export default async function DesignerProfilePage({
               />
             ) : null}
           </div>
-          <div className="px-8 pb-8 md:px-14 md:pb-14">
+          <div className="px-8 pb-6 md:px-14 md:pb-8">
           <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div>
               <Avatar
                 name={designer.name}
                 src={designer.avatarUrl}
-                size={144}
-                className="-mt-20 ring-4 ring-sand"
+                size={112}
+                className="-mt-14 ring-4 ring-sand"
               />
-              <div className="mt-6">
+              <div className="mt-4">
                 <h1 className="font-display text-section font-semibold">
                   {designer.name}
                 </h1>
@@ -119,10 +119,10 @@ export default async function DesignerProfilePage({
           </div>
 
           {designer.bio ? (
-            <p className="mt-10 max-w-3xl text-lg text-muted">{designer.bio}</p>
+            <p className="mt-6 max-w-3xl text-lg text-muted">{designer.bio}</p>
           ) : null}
 
-          <div className="mt-10 flex flex-wrap items-center gap-4">
+          <div className="mt-6 flex flex-wrap items-center gap-4 empty:hidden">
             <BlockButton userId={designer.id} />
             <ReportDialog
               targetType="USER"
