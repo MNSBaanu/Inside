@@ -31,14 +31,14 @@ export function ReviewList({ designerId }: { designerId: string }) {
       <Rating
         value={data.summary.averageRating}
         count={data.summary.count}
-        className="mb-8"
+        className="mb-4"
       />
 
-      <ul className="flex flex-col gap-4">
+      <ul className="flex flex-col gap-3">
         {data.items.map((review) => (
           <li
             key={review.id}
-            className={cn(cardSurface, 'p-6')}
+            className={cn(cardSurface, 'p-5')}
           >
             <div className="flex items-center gap-4">
               <Avatar
@@ -56,12 +56,12 @@ export function ReviewList({ designerId }: { designerId: string }) {
               </div>
             </div>
 
-            <div className="mt-4">
+            <div className="mt-3">
               <Rating value={review.rating} />
             </div>
 
             {review.comment ? (
-              <p className="mt-4 whitespace-pre-line text-muted">
+              <p className="mt-2 whitespace-pre-line text-sm text-muted">
                 {review.comment}
               </p>
             ) : null}

@@ -26,7 +26,7 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsUrl({ protocols: ['https'], require_protocol: true })
   @MaxLength(500)
-  avatarUrl?: string;
+  avatarUrl?: string | null;
 
   @ApiPropertyOptional({ example: '+94771234567' })
   @IsOptional()

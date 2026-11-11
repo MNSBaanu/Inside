@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { PortfolioCard } from '@/components/features/portfolios/portfolio-card';
 import { Avatar } from '@/components/ui/avatar';
+import { BackLink } from '@/components/ui/back-link';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
@@ -101,7 +102,8 @@ export function PortfolioDetail({
   return (
     <div className="py-32 md:py-40">
       <section className="shell">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <BackLink fallback="/explore" />
+        <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <div className="flex flex-wrap gap-2">
               {portfolio.style ? (
@@ -123,8 +125,8 @@ export function PortfolioDetail({
       </section>
 
       {cover ? (
-        <section className="shell mt-12">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-card shadow-lift">
+        <section className="shell mt-8">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-card shadow-lift md:aspect-[21/9]">
             <Image
               src={cover.imageUrl}
               unoptimized={!isOptimizableImage(cover.imageUrl)}
@@ -170,7 +172,7 @@ export function PortfolioDetail({
           ) : null}
 
           {rest.length > 0 ? (
-            <div className="mt-12 grid gap-6 sm:grid-cols-2">
+            <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-3">
               {rest.map((image) => (
                 <figure key={image.id}>
                   <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-sand">
@@ -179,7 +181,7 @@ export function PortfolioDetail({
                       unoptimized={!isOptimizableImage(image.imageUrl)}
                       alt={image.caption ?? portfolio.title}
                       fill
-                      sizes="(min-width: 640px) 40vw, 100vw"
+                      sizes="(min-width: 1024px) 20vw, 50vw"
                       className="object-cover"
                     />
                   </div>

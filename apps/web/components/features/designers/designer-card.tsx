@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
+import { Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Avatar } from '@/components/ui/avatar';
@@ -16,7 +17,7 @@ export function DesignerCard({ designer }: { designer: DesignerSummary }) {
       href={`/designers/${designer.id}`}
       className={cn(cardSurface, 'group flex h-full flex-col overflow-hidden transition-shadow duration-500 ease-editorial hover:shadow-lift')}
     >
-      <div className="relative h-28 overflow-hidden bg-sand">
+      <div className="relative h-20 overflow-hidden bg-sand">
         {cover?.imageUrl ? (
           <Image
             src={cover.imageUrl}
@@ -33,62 +34,58 @@ export function DesignerCard({ designer }: { designer: DesignerSummary }) {
         <Avatar
           name={designer.name}
           src={designer.avatarUrl}
-          size={88}
-          className="-mt-11 ring-4 ring-canvas"
+          size={72}
+          className="-mt-9 ring-4 ring-canvas"
         />
-        <p className="mt-4 max-w-full truncate font-display text-xl font-semibold transition-colors duration-300 group-hover:text-brand">
+        <p className="mt-3 max-w-full truncate font-display text-lg font-semibold transition-colors duration-300 group-hover:text-brand">
           {designer.name}
         </p>
         <p className="max-w-full truncate text-sm text-muted">
           {designer.location ?? 'Location not set'}
         </p>
-
-        {designer.bio ? (
-          <p className="mt-4 line-clamp-2 text-sm text-muted">{designer.bio}</p>
-        ) : null}
-
-        {designer.specialities.length > 0 ? (
-          <div className="mt-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted">
-              Specialises in
-            </p>
-            <div className="mt-2 flex flex-wrap justify-center gap-1.5">
-              {designer.specialities.map((style) => (
-                <span
-                  key={style}
-                  className="rounded-pill border border-hairline px-2.5 py-0.5 text-xs"
-                >
-                  {style}
-                </span>
-              ))}
-            </div>
-          </div>
-        ) : null}
-
-        {designer.startingBudget !== null ? (
-          <p className="mt-4 text-sm">
-            Projects from{' '}
-            <span className="font-semibold">
-              {formatMoney(designer.startingBudget)}
-            </span>
+        {designer.rating.count > 0 ? (
+          <p className="mt-1 inline-flex items-center gap-1 text-sm">
+            <Star aria-hidden className="h-3.5 w-3.5 fill-current text-highlight" />
+            {designer.rating.average?.toFixed(1)} from {designer.rating.count}{' '}
+            {designer.rating.count === 1 ? 'review' : 'reviews'}
           </p>
         ) : null}
 
-        <div className="mt-auto flex flex-wrap items-center justify-center gap-2 pt-6">
+        {designer.bio ? (
+          <p className="mt-2 line-clamp-2 text-sm text-muted">{designer.bio}</p>
+        ) : null}
+
+        {designer.specialities.length > 0 ? (
+          <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+            {designer.specialities.map((style) => (
+              <span
+                key={style}
+                className="rounded-pill border border-hairline px-2.5 py-0.5 text-xs"
+              >
+                {style}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        <p className="mt-3 text-sm text-muted">
+          {designer.portfolioCount}{' '}
+          {designer.portfolioCount === 1 ? 'project' : 'projects'}
+          {designer.startingBudget !== null ? (
+            <>
+              {' · from '}
+              <span className="font-semibold text-ink">
+                {formatMoney(designer.startingBudget)}
+              </span>
+            </>
+          ) : null}
+        </p>
+
+        <div className="mt-auto flex flex-wrap items-center justify-center gap-2 pt-4">
           <Badge tone={designer.isAvailable ? 'brand' : 'neutral'}>
             {designer.isAvailable ? 'Available' : 'Not taking work'}
           </Badge>
           {designer.isVerified ? <Badge tone="support">Verified</Badge> : null}
-          {designer.rating.count > 0 ? (
-            <Badge tone="highlight">
-              {designer.rating.average?.toFixed(1)} from {designer.rating.count}{' '}
-              {designer.rating.count === 1 ? 'review' : 'reviews'}
-            </Badge>
-          ) : null}
-          <Badge>
-            {designer.portfolioCount}{' '}
-            {designer.portfolioCount === 1 ? 'project' : 'projects'}
-          </Badge>
         </div>
       </div>
     </Link>

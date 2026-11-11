@@ -315,6 +315,39 @@ const USERS: UserSeed[] = [
   { key: 'zainab', email: 'client13@inside.test', name: 'Zainab Farook', role: Role.CLIENT, location: 'Trincomalee', joinedDaysAgo: 192 },
 ];
 
+const AVATARS: Partial<Record<UserKey, string>> = {
+  ravi: '1547425260-76bcadfb4f2c',
+  tharushi: '1488426862026-3ee34a7d66df',
+  nimal: '1500648767791-00dcc994a43e',
+  shenali: '1567532939604-b6b5b0db2604',
+  malsha: '1494790108377-be9c29b29330',
+  dilan: '1519085360753-af0119f7cbe7',
+  hiruni: '1580489944761-15a19d654956',
+  pradeep: '1507003211169-0a1dd7228f2d',
+  sachini: '1607746882042-944635dfe10e',
+  kavindu: '1506794778202-cad84cf45f1d',
+  nethmi: '1627161683077-e34782c24d81',
+  tharindu: '1619380061814-58f03707f082',
+  anjali: '1618835962148-cf177563c6c0',
+  ruwan: '1557862921-37829c790f19',
+  imesha: '1592621385612-4d7129426394',
+  lahiru: '1531427186611-ecfd6d936c79',
+  fathima: '1573496359142-b8d87734a5a2',
+  chathura: '1595152772835-219674b2a8a6',
+  dulani: '1605993439219-9d09d2020fa5',
+  mohamed: '1564564321837-a57b7070ac4f',
+  sanduni: '1616002411355-49593fd89721',
+  asanka: '1590031905470-a1a1feacbb0b',
+  priyanka: '1619895862022-09114b41f16f',
+  yasas: '1615109398623-88346a601842',
+  gayani: '1541101767792-f9b2b1c4f127',
+};
+
+const avatarUrl = (key: UserKey) =>
+  AVATARS[key]
+    ? `https://images.unsplash.com/photo-${AVATARS[key]}?auto=format&fit=facearea&facepad=3&w=256&h=256&q=80`
+    : null;
+
 // ---------------------------------------------------------------------------
 // Portfolios
 // ---------------------------------------------------------------------------
@@ -729,6 +762,7 @@ async function main() {
       location: user.location ?? null,
       phone: user.phone ?? null,
       bio: user.bio ?? null,
+      avatarUrl: avatarUrl(user.key),
       createdAt: daysAgo(user.joinedDaysAgo),
     })),
   });

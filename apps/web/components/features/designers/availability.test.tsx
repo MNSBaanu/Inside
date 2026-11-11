@@ -6,6 +6,7 @@ import { DesignerCard } from './designer-card';
 const mocks = vi.hoisted(() => ({ fetchPublic: vi.fn() }));
 vi.mock('@/lib/api/server-api', () => ({ fetchPublic: mocks.fetchPublic }));
 vi.mock('@/components/layout/auto-refresh', () => ({ AutoRefresh: () => null }));
+vi.mock('@/components/ui/back-link', () => ({ BackLink: () => null }));
 vi.mock('@/components/features/designers/favourite-button', () => ({
   FavouriteButton: () => null,
 }));

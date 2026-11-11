@@ -4,11 +4,13 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { DesignerCard } from '@/components/features/designers/designer-card';
 import { Button } from '@/components/ui/button';
+import { Pagination } from '@/components/ui/pagination';
 import { Combobox } from '@/components/ui/combobox';
 import { BareInput } from '@/components/ui/field';
 import { FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Select } from '@/components/ui/select';
+import { single } from '@/lib/utils/url';
 import { LOCATIONS, STYLES } from '@/lib/utils/options';
 import { buildQuery, useApi } from '@/lib/api/use-api';
 import type { DesignerSummary, Paginated } from '@/lib/types';
@@ -22,10 +24,6 @@ type Filters = {
   verifiedOnly: string;
   availableOnly: string;
 };
-
-function single(value: string | string[] | undefined) {
-  return typeof value === 'string' ? value : '';
-}
 
 function directoryUrl(filters: Filters, page = 1) {
   return `/explore${buildQuery({
@@ -125,30 +123,7 @@ export function DesignersExplorer({
                 <DesignerCard key={designer.id} designer={designer} />
               ))}
             </div>
-            {totalPages > 1 ? (
-              <nav
-                aria-label="Designer pagination"
-                className="mt-12 flex items-center justify-center gap-4"
-              >
-                <Button
-                  variant="outline"
-                  disabled={page === 1}
-                  onClick={() => showPage(page - 1)}
-                >
-                  Previous
-                </Button>
-                <span className="text-sm text-muted">
-                  Page {page} of {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  disabled={page >= totalPages}
-                  onClick={() => showPage(page + 1)}
-                >
-                  Next
-                </Button>
-              </nav>
-            ) : null}
+            <Pagination page={page} totalPages={totalPages} onPageChange={showPage} label="Designer pagination" />
           </>
         ) : !error ? (
           <EmptyState

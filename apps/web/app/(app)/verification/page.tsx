@@ -84,6 +84,42 @@ export default function VerificationPage() {
       />
 
       <Card className="mt-12">
+        <CardHeader title="How verification works" />
+        <dl className="grid gap-6 text-sm sm:grid-cols-2">
+          <div>
+            <dt className="font-semibold">What to submit</dt>
+            <dd className="mt-1 text-muted">
+              Any one of: a design degree or diploma certificate, membership of
+              a professional body such as SLIA, a business registration, or
+              photos and an invoice from a project you completed.
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold">What you get</dt>
+            <dd className="mt-1 text-muted">
+              A Verified badge on your profile and cards, a higher place in the
+              designer directory and in the designers suggested to clients.
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold">Review</dt>
+            <dd className="mt-1 text-muted">
+              An admin checks every submission. You can have one submission
+              under review at a time, and you get a notification when it is
+              decided.
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold">If it is rejected</dt>
+            <dd className="mt-1 text-muted">
+              The admin&apos;s feedback appears under Your submissions below.
+              Fix what they mention and submit again.
+            </dd>
+          </div>
+        </dl>
+      </Card>
+
+      <Card className="mt-8">
         <CardHeader
           title="Submit evidence"
           description="A link to a certificate, registration record or documented project."

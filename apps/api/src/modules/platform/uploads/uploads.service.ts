@@ -20,6 +20,7 @@ const resourceTypes: Record<UploadFolder, 'image' | 'auto'> = {
   [UploadFolder.MOODBOARDS]: 'image',
   [UploadFolder.DELIVERABLES]: 'auto',
   [UploadFolder.ATTACHMENTS]: 'auto',
+  [UploadFolder.AVATARS]: 'image',
 };
 
 const IMAGE_FORMATS = 'jpg,jpeg,png,webp,gif,avif,heic';
@@ -29,6 +30,7 @@ const allowedFormats: Record<UploadFolder, string> = {
   [UploadFolder.MOODBOARDS]: IMAGE_FORMATS,
   [UploadFolder.DELIVERABLES]: `${IMAGE_FORMATS},pdf,dwg,dxf,zip`,
   [UploadFolder.ATTACHMENTS]: `${IMAGE_FORMATS},pdf,doc,docx,xls,xlsx,zip`,
+  [UploadFolder.AVATARS]: IMAGE_FORMATS,
 };
 
 @Injectable()
@@ -73,6 +75,7 @@ export class UploadsService {
       [UploadFolder.MOODBOARDS]:
         user.role !== Role.ADMIN && user.activeRole === Role.CLIENT,
       [UploadFolder.ATTACHMENTS]: user.role !== Role.ADMIN,
+      [UploadFolder.AVATARS]: true,
     }[folder];
     if (!allowed) {
       throw new ForbiddenException(
