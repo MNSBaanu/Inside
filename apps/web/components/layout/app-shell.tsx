@@ -1,5 +1,26 @@
 'use client';
 
+import {
+  Activity,
+  BadgeCheck,
+  FileText,
+  Flag,
+  FolderKanban,
+  Heart,
+  Images,
+  Inbox,
+  LayoutDashboard,
+  LifeBuoy,
+  LogOut,
+  Palette,
+  PanelLeftClose,
+  PanelLeftOpen,
+  ShieldCheck,
+  Star,
+  UserRound,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
@@ -22,6 +43,7 @@ export function useSignOut() {
 type NavItem = {
   href: string;
   label: string;
+  icon: LucideIcon;
   roles?: Role[];
   exact?: boolean;
 };
@@ -29,29 +51,47 @@ type NavItem = {
 const members: Role[] = ['CLIENT', 'DESIGNER'];
 
 const navigation: NavItem[] = [
-  { href: '/dashboard', label: 'Overview', roles: members },
-  { href: '/briefs', label: 'Briefs', roles: ['CLIENT'] },
-  { href: '/moodboards', label: 'Moodboards', roles: ['CLIENT'] },
-  { href: '/favourites', label: 'Saved', roles: ['CLIENT'] },
-  { href: '/requests', label: 'Requests', roles: members },
-  { href: '/projects', label: 'Projects', roles: members },
-  { href: '/portfolios/manage', label: 'My work', roles: ['DESIGNER'] },
-  { href: '/verification', label: 'Verification', roles: ['DESIGNER'] },
-  { href: '/admin', label: 'Overview', roles: ['ADMIN'], exact: true },
-  { href: '/admin/users', label: 'Users', roles: ['ADMIN'] },
-  { href: '/admin/verifications', label: 'Verifications', roles: ['ADMIN'] },
-  { href: '/admin/reports', label: 'Reports', roles: ['ADMIN'] },
-  { href: '/admin/reviews', label: 'Reviews', roles: ['ADMIN'] },
-  { href: '/admin/activity', label: 'Activity', roles: ['ADMIN'] },
-  { href: '/account', label: 'Account' },
-  { href: '/safety', label: 'Safety', roles: members },
+  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, roles: members },
+  { href: '/briefs', label: 'Briefs', icon: FileText, roles: ['CLIENT'] },
+  { href: '/moodboards', label: 'Moodboards', icon: Images, roles: ['CLIENT'] },
+  { href: '/favourites', label: 'Saved', icon: Heart, roles: ['CLIENT'] },
+  { href: '/requests', label: 'Requests', icon: Inbox, roles: members },
+  { href: '/projects', label: 'Projects', icon: FolderKanban, roles: members },
+  { href: '/portfolios/manage', label: 'My work', icon: Palette, roles: ['DESIGNER'] },
+  { href: '/verification', label: 'Verification', icon: BadgeCheck, roles: ['DESIGNER'] },
+  { href: '/admin', label: 'Overview', icon: LayoutDashboard, roles: ['ADMIN'], exact: true },
+  { href: '/admin/users', label: 'Users', icon: Users, roles: ['ADMIN'] },
+  { href: '/admin/verifications', label: 'Verifications', icon: ShieldCheck, roles: ['ADMIN'] },
+  { href: '/admin/reports', label: 'Reports', icon: Flag, roles: ['ADMIN'] },
+  { href: '/admin/reviews', label: 'Reviews', icon: Star, roles: ['ADMIN'] },
+  { href: '/admin/activity', label: 'Activity', icon: Activity, roles: ['ADMIN'] },
+  { href: '/account', label: 'Account', icon: UserRound },
+  { href: '/safety', label: 'Safety', icon: LifeBuoy, roles: members },
 ];
+
+const COLLAPSED_KEY = 'inside.sidebarCollapsed';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, status, logout } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const signingOut = useRef(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    try {
+      setCollapsed(window.localStorage.getItem(COLLAPSED_KEY) === 'true');
+    } catch {}
+  }, []);
+
+  function toggleCollapsed() {
+    setCollapsed((current) => {
+      try {
+        window.localStorage.setItem(COLLAPSED_KEY, String(!current));
+      } catch {}
+      return !current;
+    });
+  }
 
   useEffect(() => {
     if (status === 'unauthenticated' && !signingOut.current) {
@@ -79,49 +119,100 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="shell grid grid-cols-1 gap-12 pb-32 pt-28 md:pb-40 md:pt-32 lg:h-dvh lg:grid-cols-[240px_1fr] lg:overflow-hidden lg:pb-8 lg:pt-24">
-      <aside className="h-fit min-w-0 rounded-card bg-sand p-6 [scrollbar-width:none] lg:h-full lg:overflow-y-auto [&::-webkit-scrollbar]:hidden">
-        <p className="ui-label text-ink/70">Signed in as</p>
-        <p className="mt-2 font-display text-xl font-semibold">{user.name}</p>
-        {user.role === 'DESIGNER' ? (
-          <RoleToggle activeRole={user.activeRole} />
-        ) : (
-          <Badge tone="brand" className="mt-3">
-            {user.activeRole.toLowerCase()}
-          </Badge>
+    <div
+      className={cn(
+        'shell grid grid-cols-1 gap-12 pb-32 pt-28 transition-[grid-template-columns] duration-300 md:pb-40 md:pt-32 lg:h-dvh lg:overflow-hidden lg:pb-8 lg:pt-24',
+        collapsed ? 'lg:grid-cols-[72px_1fr] lg:gap-8' : 'lg:grid-cols-[240px_1fr]',
+      )}
+    >
+      <aside
+        className={cn(
+          'h-fit min-w-0 rounded-card bg-sand p-6 [scrollbar-width:none] lg:flex lg:h-full lg:flex-col lg:overflow-y-auto [&::-webkit-scrollbar]:hidden',
+          collapsed && 'lg:items-center lg:px-3',
         )}
+      >
+        <div className={cn('flex items-start justify-between gap-2', collapsed && 'lg:justify-center')}>
+          <div className={cn('min-w-0', collapsed && 'lg:hidden')}>
+            <p className="ui-label text-ink/70">Signed in as</p>
+            <p className="mt-2 font-display text-xl font-semibold">{user.name}</p>
+          </div>
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? 'Expand menu' : 'Collapse menu'}
+            title={collapsed ? 'Expand menu' : 'Collapse menu'}
+            aria-expanded={!collapsed}
+            className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-xl text-ink/70 transition-colors duration-300 hover:bg-canvas hover:text-ink lg:flex"
+          >
+            {collapsed ? (
+              <PanelLeftOpen aria-hidden className="h-5 w-5" />
+            ) : (
+              <PanelLeftClose aria-hidden className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+        <div className={cn(collapsed && 'lg:hidden')}>
+          {user.role === 'DESIGNER' ? (
+            <RoleToggle activeRole={user.activeRole} />
+          ) : (
+            <Badge tone="brand" className="mt-3">
+              {user.activeRole.toLowerCase()}
+            </Badge>
+          )}
+        </div>
 
-        <nav className="mt-8 flex gap-2 overflow-x-auto lg:-mx-4 lg:flex-col lg:overflow-visible">
+        <nav
+          className={cn(
+            'mt-8 flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible',
+            collapsed ? 'lg:mt-6 lg:w-full' : 'lg:-mx-4',
+          )}
+        >
           {items.map((item) => {
             const active =
               pathname === item.href ||
               (!item.exact && pathname.startsWith(`${item.href}/`));
+            const Icon = item.icon;
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
+                title={collapsed ? item.label : undefined}
                 className={cn(
-                  'flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-[0.9375rem] transition-colors duration-300',
+                  'flex min-h-11 items-center gap-3 whitespace-nowrap rounded-xl px-4 py-2.5 text-[0.9375rem] transition-colors duration-300',
+                  collapsed && 'lg:justify-center lg:px-0',
                   active
                     ? 'bg-surface font-semibold text-ink shadow-sm'
                     : 'font-medium text-ink/80 hover:bg-canvas hover:text-ink',
                 )}
               >
-                {item.label}
+                <Icon aria-hidden className="h-[18px] w-[18px] shrink-0" />
+                <span className={cn(collapsed && 'lg:sr-only')}>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <Button
-          variant="outline"
-          size="sm"
-          className="mt-8 hidden lg:inline-flex"
-          onClick={onSignOut}
-        >
-          Sign out
-        </Button>
+        {collapsed ? (
+          <button
+            type="button"
+            onClick={onSignOut}
+            aria-label="Sign out"
+            title="Sign out"
+            className="mt-6 hidden h-11 w-11 items-center justify-center rounded-xl text-ink/70 transition-colors duration-300 hover:bg-canvas hover:text-ink lg:flex"
+          >
+            <LogOut aria-hidden className="h-[18px] w-[18px]" />
+          </button>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-8 hidden w-fit lg:inline-flex"
+            onClick={onSignOut}
+          >
+            Sign out
+          </Button>
+        )}
       </aside>
 
       <div className="min-w-0 [scrollbar-width:none] lg:h-full lg:overflow-y-auto lg:pb-16 [&::-webkit-scrollbar]:hidden">
