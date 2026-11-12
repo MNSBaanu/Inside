@@ -338,7 +338,7 @@ const USERS: UserSeed[] = [
 ];
 
 const AVATARS: Partial<Record<UserKey, string>> = {
-  ravi: '1547425260-76bcadfb4f2c',
+  ravi: '1566492031773-4f4e44671857',
   tharushi: '1488426862026-3ee34a7d66df',
   nimal: '1500648767791-00dcc994a43e',
   shenali: '1567532939604-b6b5b0db2604',
