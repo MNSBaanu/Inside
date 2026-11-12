@@ -22,7 +22,7 @@ export function useSignOut() {
 type NavItem = { href: string; label: string; roles?: Role[] };
 
 const navigation: NavItem[] = [
-  { href: '/dashboard', label: 'Overview' },
+  { href: '/dashboard', label: 'Overview', roles: ['CLIENT', 'DESIGNER'] },
   { href: '/briefs', label: 'Briefs', roles: ['CLIENT'] },
   { href: '/moodboards', label: 'Moodboards', roles: ['CLIENT'] },
   { href: '/favourites', label: 'Saved', roles: ['CLIENT'] },

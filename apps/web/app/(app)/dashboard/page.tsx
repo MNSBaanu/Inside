@@ -3,6 +3,8 @@
 import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState, Skeleton } from '@/components/ui/feedback';
@@ -14,9 +16,15 @@ import type { Notification, Project, ProjectRequest } from '@/lib/types';
 
 export default function DashboardPage() {
   const { user } = useSession();
+  const router = useRouter();
+  const isAdmin = user?.role === 'ADMIN';
   const projects = useApi<{ items: Project[] }>('/projects');
   const requests = useApi<{ items: ProjectRequest[] }>('/requests');
   const notifications = useApi<{ items: Notification[] }>('/notifications');
+
+  useEffect(() => {
+    if (isAdmin) router.replace('/admin');
+  }, [isAdmin, router]);
 
   const isClient = user?.activeRole === 'CLIENT';
   const activeProjects =
@@ -27,6 +35,8 @@ export default function DashboardPage() {
     ) ?? [];
   const unread =
     notifications.data?.items.filter((item) => item.readAt === null) ?? [];
+
+  if (isAdmin) return null;
 
   return (
     <div>

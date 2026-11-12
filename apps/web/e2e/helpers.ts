@@ -17,7 +17,7 @@ export async function signIn(page: Page, email: string, next?: string) {
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password', { exact: true }).fill(PASSWORD);
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page).toHaveURL(next ?? /\/dashboard/);
+  await expect(page).toHaveURL(next ?? /\/(dashboard|admin)/);
 }
 
 /** Opens a list page and follows the link with the given title. */
