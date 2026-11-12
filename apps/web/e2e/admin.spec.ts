@@ -4,8 +4,7 @@ import { accounts, signIn } from './helpers';
 test.describe('Admin', () => {
   test('publishes a review that was waiting for moderation', async ({ page }) => {
     await signIn(page, accounts.admin);
-    await page.goto('/admin');
-    await page.getByRole('tab', { name: 'Reviews' }).click();
+    await page.goto('/admin/reviews');
 
     const review = page
       .getByRole('listitem')
@@ -17,8 +16,7 @@ test.describe('Admin', () => {
 
   test('shows platform activity including admin actions', async ({ page }) => {
     await signIn(page, accounts.admin);
-    await page.goto('/admin');
-    await page.getByRole('tab', { name: 'Activity' }).click();
+    await page.goto('/admin/activity');
     await expect(page.getByText(/user suspended/i).first()).toBeVisible();
   });
 

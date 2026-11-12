@@ -6,8 +6,11 @@ import {
 import {
   AccountStatus,
   NotificationType,
+  ProjectStatus,
   ReportStatus,
   ReportTargetType,
+  Role,
+  VerificationStatus,
 } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
@@ -26,6 +29,47 @@ export class AdminService {
     private readonly activity: ActivityService,
   ) {}
 
+  async getStats() {
+    const [
+      users,
+      clients,
+      designers,
+      suspended,
+      pendingVerifications,
+      openReports,
+      hiddenReviews,
+      activeProjects,
+    ] = await Promise.all([
+      this.prisma.user.count(),
+      this.prisma.user.count({ where: { role: Role.CLIENT } }),
+      this.prisma.user.count({ where: { role: Role.DESIGNER } }),
+      this.prisma.user.count({ where: { status: AccountStatus.SUSPENDED } }),
+      this.prisma.verification.count({
+        where: { status: VerificationStatus.PENDING },
+      }),
+      this.prisma.report.count({
+        where: {
+          status: { in: [ReportStatus.OPEN, ReportStatus.UNDER_REVIEW] },
+        },
+      }),
+      this.prisma.review.count({ where: { isVisible: false } }),
+      this.prisma.project.count({ where: { status: ProjectStatus.ACTIVE } }),
+    ]);
+    return {
+      success: true,
+      data: {
+        users,
+        clients,
+        designers,
+        suspended,
+        pendingVerifications,
+        openReports,
+        hiddenReviews,
+        activeProjects,
+      },
+    };
+  }
+
   async listUsers(query: PaginationQueryDto) {
     const { page, pageSize, skip, take } = paginate(query, 100);
     const [total, items] = await Promise.all([
@@ -42,6 +86,7 @@ export class AdminService {
           activeRole: true,
           isVerified: true,
           status: true,
+          avatarUrl: true,
           createdAt: true,
         },
       }),

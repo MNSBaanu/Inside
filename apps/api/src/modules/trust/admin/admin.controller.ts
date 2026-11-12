@@ -29,6 +29,13 @@ import { AdminService } from './admin.service';
 export class AdminController {
   constructor(private readonly admin: AdminService) {}
 
+  @Get('stats')
+  @ApiOperation({ summary: 'Platform totals for the admin overview' })
+  @ApiOkResponse({ description: 'Counts' })
+  stats() {
+    return this.admin.getStats();
+  }
+
   @Get('users')
   @ApiOperation({ summary: 'List users' })
   @ApiOkResponse({ description: 'Users' })

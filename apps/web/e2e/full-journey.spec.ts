@@ -219,8 +219,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
     const adminContext = await browser.newContext();
     const admin = await adminContext.newPage();
     await signIn(admin, accounts.admin);
-    await admin.goto('/admin');
-    await admin.getByRole('tab', { name: 'Reviews' }).click();
+    await admin.goto('/admin/reviews');
     const review = admin.getByRole('listitem').filter({ hasText: reviewText });
     await review.getByRole('button', { name: 'Show review' }).click();
     await expect(review.getByText('Visible', { exact: true })).toBeVisible();

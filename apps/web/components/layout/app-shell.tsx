@@ -19,20 +19,32 @@ export function useSignOut() {
   return useContext(SignOutContext);
 }
 
-type NavItem = { href: string; label: string; roles?: Role[] };
+type NavItem = {
+  href: string;
+  label: string;
+  roles?: Role[];
+  exact?: boolean;
+};
+
+const members: Role[] = ['CLIENT', 'DESIGNER'];
 
 const navigation: NavItem[] = [
-  { href: '/dashboard', label: 'Overview', roles: ['CLIENT', 'DESIGNER'] },
+  { href: '/dashboard', label: 'Overview', roles: members },
   { href: '/briefs', label: 'Briefs', roles: ['CLIENT'] },
   { href: '/moodboards', label: 'Moodboards', roles: ['CLIENT'] },
   { href: '/favourites', label: 'Saved', roles: ['CLIENT'] },
-  { href: '/requests', label: 'Requests' },
-  { href: '/projects', label: 'Projects' },
+  { href: '/requests', label: 'Requests', roles: members },
+  { href: '/projects', label: 'Projects', roles: members },
   { href: '/portfolios/manage', label: 'My work', roles: ['DESIGNER'] },
   { href: '/verification', label: 'Verification', roles: ['DESIGNER'] },
-  { href: '/admin', label: 'Admin', roles: ['ADMIN'] },
+  { href: '/admin', label: 'Overview', roles: ['ADMIN'], exact: true },
+  { href: '/admin/users', label: 'Users', roles: ['ADMIN'] },
+  { href: '/admin/verifications', label: 'Verifications', roles: ['ADMIN'] },
+  { href: '/admin/reports', label: 'Reports', roles: ['ADMIN'] },
+  { href: '/admin/reviews', label: 'Reviews', roles: ['ADMIN'] },
+  { href: '/admin/activity', label: 'Activity', roles: ['ADMIN'] },
   { href: '/account', label: 'Account' },
-  { href: '/safety', label: 'Safety' },
+  { href: '/safety', label: 'Safety', roles: members },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -82,7 +94,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <nav className="mt-8 flex gap-2 overflow-x-auto lg:-mx-4 lg:flex-col lg:overflow-visible">
           {items.map((item) => {
             const active =
-              pathname === item.href || pathname.startsWith(`${item.href}/`);
+              pathname === item.href ||
+              (!item.exact && pathname.startsWith(`${item.href}/`));
             return (
               <Link
                 key={item.href}
