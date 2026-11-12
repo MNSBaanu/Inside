@@ -5,7 +5,7 @@ tags: [project, academic, final-year, nestjs, nextjs, expo, prisma]
 status: in development, submission 2026-11-20
 version: 0.0.1
 created: 2026-05-04
-updated: 2026-11-11
+updated: 2026-11-12
 repo: https://github.com/MNSBaanu/Inside
 author: MNS Baanu
 ---
@@ -71,3 +71,4 @@ Web appears to be on Vercel; API on Render (confirmed by owner 2026-11-08). Root
 - 2026-11-08: Previous commit removed the 2026-10-17 audit and completion plan; findings carried into docs/02.
 - 2026-11-10: Payments changed to escrow to match the interim report: payments created on proposal accept, stage start requires the stage paid, approval releases it; release endpoint and button removed, seed updated. Stage, payment and proposal unit tests pass; API e2e updated but not run (needs Postgres).
 - 2026-11-11: Seed expanded for a production-like demo: 26 listed designers (20 new + 8 new clients), 79 published portfolios, 53 shop products, 14 open requests, 33 completed projects with reviews. Every style, room and shop category returns results (Kids Room has 2). All Unsplash photos checked by eye and for HTTP 200; dead `neutrals` photo replaced. Ravi and Nimal stay on page 1 for the Playwright directory tests.
+- 2026-11-12: Work moved to `main` only (dev retired). Added `seed-production.yml`: on seed changes on main it applies migrations and seeds Neon with `SEED_MODE=sync`, which adds missing sample rows and updates existing ones without deleting anything; the manual run has a reset option that wipes first. Seed rows now all have fixed ids or natural keys; default local run still resets. CI jobs run only when their own code changes. `NEXT_PUBLIC_SITE_URL` set on Vercel.

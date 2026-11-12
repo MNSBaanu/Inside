@@ -1,8 +1,10 @@
 /**
  * Sample data for local development and manual testing.
  *
- * Every run RESETS all app tables and inserts the same data set, with fixed ids and
- * timestamps relative to "now", so results are predictable. Refuses to run in production.
+ * By default every run RESETS all app tables and inserts the same data set, with fixed
+ * ids and timestamps relative to "now", so results are predictable. With SEED_MODE=sync
+ * nothing is deleted: missing sample rows are added and existing ones are updated, and
+ * all other data is left alone. Refuses to run with NODE_ENV=production.
  * Accounts and scenarios are documented in docs/SEED_DATA.md.
  */
 import {
@@ -41,6 +43,26 @@ function seedId(group: number, n: number) {
     value.toString(16).padStart(length, '0');
   return `${hex(group, 8)}-0000-4000-8000-${hex(n, 12)}`;
 }
+
+const SYNC = process.env.SEED_MODE === 'sync';
+
+/** Adds each row, or updates it if a row with that id already exists. */
+async function upsertById<T extends { id: string }>(
+  upsert: (args: { where: { id: string }; create: T; update: T }) => Promise<unknown>,
+  rows: T[],
+) {
+  for (let start = 0; start < rows.length; start += 10) {
+    await Promise.all(
+      rows
+        .slice(start, start + 10)
+        .map((row) => upsert({ where: { id: row.id }, create: row, update: row })),
+    );
+  }
+}
+
+/** Gives rows without a natural id a fixed one, so a later run finds the same row. */
+const withIds = <T>(group: number, rows: T[], offset = 0) =>
+  rows.map((row, index) => ({ ...row, id: seedId(group, offset + index + 1) }));
 
 function hashToken(raw: string): string {
   return createHash('sha256').update(raw).digest('hex');
@@ -549,50 +571,59 @@ async function seedProject(plan: ProjectPlan) {
   const proposalId = seedId(9, plan.n);
   const id = projectId(plan.n);
 
-  await prisma.projectRequest.create({
-    data: {
-      id: requestId,
-      clientId: client,
-      designerId: designer,
-      title: plan.title,
-      description: plan.scope,
-      timeline: plan.timeline,
-      type: RequestType.DIRECT,
-      status: RequestStatus.ACCEPTED,
-      budget: plan.total,
-      createdAt: daysAgo(plan.startedDaysAgo + 5),
-    },
-  });
-  await prisma.proposal.create({
-    data: {
-      id: proposalId,
-      requestId,
-      designerId: designer,
-      scope: plan.scope,
-      timeline: plan.timeline,
-      stageFees: fees,
-      totalAmount: plan.total,
-      status: ProposalStatus.ACCEPTED,
-      submittedAt: daysAgo(plan.startedDaysAgo + 3),
-    },
-  });
+  await upsertById(
+    (args) => prisma.projectRequest.upsert(args),
+    [
+      {
+        id: requestId,
+        clientId: client,
+        designerId: designer,
+        title: plan.title,
+        description: plan.scope,
+        timeline: plan.timeline,
+        type: RequestType.DIRECT,
+        status: RequestStatus.ACCEPTED,
+        budget: plan.total,
+        createdAt: daysAgo(plan.startedDaysAgo + 5),
+      },
+    ],
+  );
+  await upsertById(
+    (args) => prisma.proposal.upsert(args),
+    [
+      {
+        id: proposalId,
+        requestId,
+        designerId: designer,
+        scope: plan.scope,
+        timeline: plan.timeline,
+        stageFees: fees,
+        totalAmount: plan.total,
+        status: ProposalStatus.ACCEPTED,
+        submittedAt: daysAgo(plan.startedDaysAgo + 3),
+      },
+    ],
+  );
 
   const currentIndex = plan.stages.findIndex((s) => s !== StageStatus.APPROVED);
   const completed = status === ProjectStatus.COMPLETED;
-  await prisma.project.create({
-    data: {
-      id,
-      proposalId,
-      clientId: client,
-      designerId: designer,
-      title: plan.title,
-      currentStage: STAGES[currentIndex === -1 ? STAGES.length - 1 : currentIndex],
-      status,
-      startedAt,
-      completedAt: completed ? at(STAGES.length - 1) : null,
-      createdAt: startedAt,
-    },
-  });
+  await upsertById(
+    (args) => prisma.project.upsert(args),
+    [
+      {
+        id,
+        proposalId,
+        clientId: client,
+        designerId: designer,
+        title: plan.title,
+        currentStage: STAGES[currentIndex === -1 ? STAGES.length - 1 : currentIndex],
+        status,
+        startedAt,
+        completedAt: completed ? at(STAGES.length - 1) : null,
+        createdAt: startedAt,
+      },
+    ],
+  );
 
   const logs: Prisma.ActivityLogCreateManyInput[] = [
     { projectId: id, userId: client, action: 'PROPOSAL_ACCEPTED', metadata: { proposalId, requestId }, createdAt: startedAt },
@@ -606,19 +637,22 @@ async function seedProject(plan: ProjectPlan) {
       stageStatus === StageStatus.APPROVED || stageStatus === StageStatus.REJECTED;
     const submitted = reviewed || stageStatus === StageStatus.SUBMITTED;
 
-    await prisma.projectStage.create({
-      data: {
-        id: stageId,
-        projectId: id,
-        stageOrder: index + 1,
-        name,
-        status: stageStatus,
-        fee: fees[index].fee,
-        dueDate: new Date(startedAt.getTime() + (index + 1) * 14 * DAY),
-        submittedAt: submitted ? at(index, 1) : null,
-        approvedAt: stageStatus === StageStatus.APPROVED ? at(index) : null,
-      },
-    });
+    await upsertById(
+      (args) => prisma.projectStage.upsert(args),
+      [
+        {
+          id: stageId,
+          projectId: id,
+          stageOrder: index + 1,
+          name,
+          status: stageStatus,
+          fee: fees[index].fee,
+          dueDate: new Date(startedAt.getTime() + (index + 1) * 14 * DAY),
+          submittedAt: submitted ? at(index, 1) : null,
+          approvedAt: stageStatus === StageStatus.APPROVED ? at(index) : null,
+        },
+      ],
+    );
 
     if (index === 0 && touched) {
       logs.push({ projectId: id, userId: designer, action: 'STAGE_STARTED', metadata: { stageId, name }, createdAt: startedAt });
@@ -626,17 +660,21 @@ async function seedProject(plan: ProjectPlan) {
 
     if (submitted) {
       const isImage = index % 2 === 1;
-      await prisma.deliverable.create({
-        data: {
-          stageId,
-          version: 1,
-          fileUrl: isImage ? photo('samples') : seedFile(`${name.toLowerCase()}-v1.pdf`),
-          fileName: `${name.toLowerCase()}-v1.${isImage ? 'jpg' : 'pdf'}`,
-          notes: `${name.charAt(0)}${name.slice(1).toLowerCase()} stage deliverable.`,
-          feedback: stageStatus === StageStatus.REJECTED ? plan.rejection?.reason : null,
-          uploadedAt: at(index, 2),
-        },
-      });
+      await upsertById(
+        (args) => prisma.deliverable.upsert(args),
+        [
+          {
+            id: seedId(14, plan.n * 100 + (index + 1) * 10 + 1),
+            stageId,
+            version: 1,
+            fileUrl: isImage ? photo('samples') : seedFile(`${name.toLowerCase()}-v1.pdf`),
+            fileName: `${name.toLowerCase()}-v1.${isImage ? 'jpg' : 'pdf'}`,
+            notes: `${name.charAt(0)}${name.slice(1).toLowerCase()} stage deliverable.`,
+            feedback: stageStatus === StageStatus.REJECTED ? plan.rejection?.reason : null,
+            uploadedAt: at(index, 2),
+          },
+        ],
+      );
       logs.push(
         { projectId: id, userId: designer, action: 'DELIVERABLE_UPLOADED', metadata: { stageId, version: 1 }, createdAt: at(index, 2) },
         { projectId: id, userId: designer, action: 'STAGE_SUBMITTED', metadata: { stageId, name, version: 1 }, createdAt: at(index, 1) },
@@ -646,16 +684,20 @@ async function seedProject(plan: ProjectPlan) {
     if (stageStatus === StageStatus.REJECTED && plan.rejection) {
       logs.push({ projectId: id, userId: client, action: 'STAGE_REJECTED', metadata: { stageId, name, reason: plan.rejection.reason }, createdAt: at(index) });
       if (plan.rejection.revised) {
-        await prisma.deliverable.create({
-          data: {
-            stageId,
-            version: 2,
-            fileUrl: seedFile(`${name.toLowerCase()}-v2.pdf`),
-            fileName: `${name.toLowerCase()}-v2.pdf`,
-            notes: 'Revised after client feedback.',
-            uploadedAt: daysAgo(1),
-          },
-        });
+        await upsertById(
+          (args) => prisma.deliverable.upsert(args),
+          [
+            {
+              id: seedId(14, plan.n * 100 + (index + 1) * 10 + 2),
+              stageId,
+              version: 2,
+              fileUrl: seedFile(`${name.toLowerCase()}-v2.pdf`),
+              fileName: `${name.toLowerCase()}-v2.pdf`,
+              notes: 'Revised after client feedback.',
+              uploadedAt: daysAgo(1),
+            },
+          ],
+        );
         logs.push({ projectId: id, userId: designer, action: 'DELIVERABLE_UPLOADED', metadata: { stageId, version: 2 }, createdAt: daysAgo(1) });
       }
     }
@@ -666,17 +708,21 @@ async function seedProject(plan: ProjectPlan) {
 
     const released = stageStatus === StageStatus.APPROVED;
     const paid = touched;
-    await prisma.milestonePayment.create({
-      data: {
-        projectId: id,
-        stageId,
-        amount: fees[index].fee,
-        status: released ? PaymentStatus.RELEASED : paid ? PaymentStatus.PAID : PaymentStatus.PENDING,
-        paidAt: paid ? at(index, 3) : null,
-        releasedAt: released ? at(index) : null,
-        createdAt: startedAt,
-      },
-    });
+    await upsertById(
+      (args) => prisma.milestonePayment.upsert(args),
+      [
+        {
+          id: seedId(15, plan.n * 10 + index + 1),
+          projectId: id,
+          stageId,
+          amount: fees[index].fee,
+          status: released ? PaymentStatus.RELEASED : paid ? PaymentStatus.PAID : PaymentStatus.PENDING,
+          paidAt: paid ? at(index, 3) : null,
+          releasedAt: released ? at(index) : null,
+          createdAt: startedAt,
+        },
+      ],
+    );
     if (paid) {
       logs.push({ projectId: id, userId: client, action: 'PAYMENT_PAID', metadata: { amount: fees[index].fee }, createdAt: at(index, 3) });
     }
@@ -695,7 +741,10 @@ async function seedProject(plan: ProjectPlan) {
     logs.push({ projectId: id, userId: U[plan.cancelled.by], action: 'PROJECT_CANCELLED', metadata: { reason: plan.cancelled.reason }, createdAt: daysAgo(4) });
   }
 
-  await prisma.activityLog.createMany({ data: logs });
+  await upsertById(
+    (args) => prisma.activityLog.upsert(args),
+    withIds(16, logs, plan.n * 100),
+  );
 }
 
 type Line = {
@@ -710,8 +759,9 @@ async function seedThread(n: number, lines: Line[]) {
   const plan = PROJECTS.find((p) => p.n === n);
   if (!plan) throw new Error(`No project ${n}`);
   const people = { client: U[plan.client], designer: U[plan.designer] };
-  await prisma.message.createMany({
-    data: lines.map((line) => {
+  await upsertById(
+    (args) => prisma.message.upsert(args),
+    withIds(17, lines.map((line) => {
       const sender = people[line.from];
       const receiver = line.from === 'client' ? people.designer : people.client;
       return {
@@ -725,8 +775,8 @@ async function seedThread(n: number, lines: Line[]) {
         readAt: line.unread ? null : daysAgo(Math.max(0, line.daysAgo - 0.1)),
         sentAt: daysAgo(line.daysAgo),
       };
-    }),
-  });
+    }), n * 100),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -739,16 +789,21 @@ async function main() {
   }
 
   const [{ db }] = await prisma.$queryRaw<Array<{ db: string }>>`SELECT current_database() AS db`;
-  console.log(`Resetting and seeding "${db}"...`);
-  await prisma.$executeRawUnsafe(
-    `TRUNCATE TABLE ${TABLES.map((table) => `"${table}"`).join(', ')} CASCADE`,
-  );
+  if (SYNC) {
+    console.log(`Adding and updating sample data in "${db}"...`);
+  } else {
+    console.log(`Resetting and seeding "${db}"...`);
+    await prisma.$executeRawUnsafe(
+      `TRUNCATE TABLE ${TABLES.map((table) => `"${table}"`).join(', ')} CASCADE`,
+    );
+  }
 
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
 
   // Users
-  await prisma.user.createMany({
-    data: USERS.map((user) => ({
+  await upsertById(
+    (args) => prisma.user.upsert(args),
+    USERS.map((user) => ({
       id: U[user.key],
       email: user.email,
       passwordHash,
@@ -765,47 +820,51 @@ async function main() {
       avatarUrl: avatarUrl(user.key),
       createdAt: daysAgo(user.joinedDaysAgo),
     })),
-  });
+  );
 
   // Demo auth tokens with known raw values (see docs/SEED_DATA.md), and one session.
-  await prisma.authToken.createMany({
-    data: [
+  for (const data of [
       { userId: U.ayesha, tokenHash: hashToken('seed-email-verify-pending-designer'), type: AuthTokenType.EMAIL_VERIFY, expiresAt: daysFromNow(1) },
       { userId: U.ishan, tokenHash: hashToken('seed-email-verify-new-client'), type: AuthTokenType.EMAIL_VERIFY, expiresAt: daysFromNow(1) },
       { userId: U.nadia, tokenHash: hashToken('seed-password-reset-client'), type: AuthTokenType.PASSWORD_RESET, expiresAt: new Date(NOW + 60 * 60 * 1000) },
-    ],
-  });
-  await prisma.session.create({
-    data: {
-      userId: U.nadia,
-      refreshTokenHash: hashToken('seed-client-refresh'),
-      userAgent: 'SeedBrowser/1.0',
-      ipAddress: '127.0.0.1',
-      expiresAt: daysFromNow(7),
-    },
+    ]) {
+    await prisma.authToken.upsert({ where: { tokenHash: data.tokenHash }, create: data, update: data });
+  }
+  const session = {
+    userId: U.nadia,
+    refreshTokenHash: hashToken('seed-client-refresh'),
+    userAgent: 'SeedBrowser/1.0',
+    ipAddress: '127.0.0.1',
+    expiresAt: daysFromNow(7),
+  };
+  await prisma.session.upsert({
+    where: { refreshTokenHash: session.refreshTokenHash },
+    create: session,
+    update: session,
   });
 
   // Portfolios
   for (const [index, item] of PORTFOLIOS.entries()) {
-    await prisma.portfolio.create({
-      data: {
-        id: seedId(2, index + 1),
-        designerId: U[item.designer],
-        title: item.title,
-        description: item.description,
-        style: item.style,
-        roomType: item.roomType,
-        budget: item.budget,
-        isPublished: item.published ?? true,
-        createdAt: daysAgo(item.createdDaysAgo),
-        images: {
-          create: item.images.map(([key, caption], order) => ({
-            imageUrl: photo(key),
-            caption,
-            displayOrder: order,
-          })),
-        },
-      },
+    const data = {
+      id: seedId(2, index + 1),
+      designerId: U[item.designer],
+      title: item.title,
+      description: item.description,
+      style: item.style,
+      roomType: item.roomType,
+      budget: item.budget,
+      isPublished: item.published ?? true,
+      createdAt: daysAgo(item.createdDaysAgo),
+    };
+    const images = item.images.map(([key, caption], order) => ({
+      imageUrl: photo(key),
+      caption,
+      displayOrder: order,
+    }));
+    await prisma.portfolio.upsert({
+      where: { id: data.id },
+      create: { ...data, images: { create: images } },
+      update: { ...data, images: { deleteMany: {}, create: images } },
     });
   }
 
@@ -819,9 +878,9 @@ async function main() {
     ['amaya', 'shenali'],
     ['malsha', 'tharushi'],
   ];
-  await prisma.favourite.createMany({
-    data: favourites.map(([client, designer]) => ({ clientId: U[client], designerId: U[designer] })),
-  });
+  for (const data of favourites.map(([client, designer]) => ({ clientId: U[client], designerId: U[designer] }))) {
+    await prisma.favourite.upsert({ where: { clientId_designerId: data }, create: data, update: {} });
+  }
 
   // Moodboards and briefs
   const moodboards: { n: number; client: UserKey; name: string; items: [PhotoKey, string][] }[] = [
@@ -832,14 +891,17 @@ async function main() {
     { n: 5, client: 'amaya', name: 'Townhouse Bathroom', items: [['townhouse', 'Terrazzo']] },
   ];
   for (const board of moodboards) {
-    await prisma.moodboard.create({
-      data: {
-        id: seedId(3, board.n),
-        clientId: U[board.client],
-        name: board.name,
-        savedItems: board.items.map(([key, note]) => ({ imageUrl: photo(key, 800), note })),
-      },
-    });
+    await upsertById(
+      (args) => prisma.moodboard.upsert(args),
+      [
+        {
+          id: seedId(3, board.n),
+          clientId: U[board.client],
+          name: board.name,
+          savedItems: board.items.map(([key, note]) => ({ imageUrl: photo(key, 800), note })),
+        },
+      ],
+    );
   }
 
   const briefs: { n: number; client: UserKey; moodboard?: number; styles: string[]; rooms: string[]; budgetRange: string; description: string }[] = [
@@ -851,17 +913,20 @@ async function main() {
     { n: 6, client: 'ishan', styles: ['Minimalist'], rooms: ['Living Room', 'Bedroom'], budgetRange: '1,000,000', description: 'First apartment, furnishing from scratch.' },
   ];
   for (const brief of briefs) {
-    await prisma.brief.create({
-      data: {
-        id: seedId(4, brief.n),
-        clientId: U[brief.client],
-        moodboardId: brief.moodboard ? seedId(3, brief.moodboard) : null,
-        styles: brief.styles,
-        rooms: brief.rooms,
-        budgetRange: brief.budgetRange,
-        description: brief.description,
-      },
-    });
+    await upsertById(
+      (args) => prisma.brief.upsert(args),
+      [
+        {
+          id: seedId(4, brief.n),
+          clientId: U[brief.client],
+          moodboardId: brief.moodboard ? seedId(3, brief.moodboard) : null,
+          styles: brief.styles,
+          rooms: brief.rooms,
+          budgetRange: brief.budgetRange,
+          description: brief.description,
+        },
+      ],
+    );
   }
 
   // Projects (each with its accepted request and proposal)
@@ -969,35 +1034,41 @@ async function main() {
 
   for (const request of requests) {
     const requestId = seedId(8, request.n);
-    await prisma.projectRequest.create({
-      data: {
-        id: requestId,
-        clientId: U[request.client],
-        designerId: request.designer ? U[request.designer] : null,
-        briefId: request.brief ? seedId(4, request.brief) : null,
-        title: request.title,
-        description: request.description,
-        timeline: request.timeline ?? null,
-        budget: request.budget,
-        type: request.type,
-        status: request.status,
-        createdAt: daysAgo(request.createdDaysAgo),
-      },
-    });
-    for (const [index, proposal] of (request.proposals ?? []).entries()) {
-      await prisma.proposal.create({
-        data: {
-          id: seedId(9, request.n * 10 + index),
-          requestId,
-          designerId: U[proposal.designer],
-          scope: proposal.scope,
-          timeline: proposal.timeline,
-          stageFees: stageFees(proposal.total),
-          totalAmount: proposal.total,
-          status: proposal.status,
-          submittedAt: daysAgo(proposal.daysAgo),
+    await upsertById(
+      (args) => prisma.projectRequest.upsert(args),
+      [
+        {
+          id: requestId,
+          clientId: U[request.client],
+          designerId: request.designer ? U[request.designer] : null,
+          briefId: request.brief ? seedId(4, request.brief) : null,
+          title: request.title,
+          description: request.description,
+          timeline: request.timeline ?? null,
+          budget: request.budget,
+          type: request.type,
+          status: request.status,
+          createdAt: daysAgo(request.createdDaysAgo),
         },
-      });
+      ],
+    );
+    for (const [index, proposal] of (request.proposals ?? []).entries()) {
+      await upsertById(
+        (args) => prisma.proposal.upsert(args),
+        [
+          {
+            id: seedId(9, request.n * 10 + index),
+            requestId,
+            designerId: U[proposal.designer],
+            scope: proposal.scope,
+            timeline: proposal.timeline,
+            stageFees: stageFees(proposal.total),
+            totalAmount: proposal.total,
+            status: proposal.status,
+            submittedAt: daysAgo(proposal.daysAgo),
+          },
+        ],
+      );
     }
   }
 
@@ -1030,19 +1101,21 @@ async function main() {
 
   // Reviews: published ones feed designer ratings; one waits for moderation.
   const reviewId = (n: number) => seedId(12, n);
-  await prisma.review.createMany({
-    data: [
+  await upsertById(
+    (args) => prisma.review.upsert(args),
+    [
       { id: reviewId(1), projectId: projectId(3), reviewerId: U.sam, designerId: U.ravi, rating: 5, comment: 'Clear communication and a practical layout. Would hire again.', isVisible: true, createdAt: daysAgo(10) },
       { id: reviewId(2), projectId: projectId(8), reviewerId: U.kasun, designerId: U.ravi, rating: 4, comment: 'Lovely result, finished a few days late.', isVisible: true, createdAt: daysAgo(40) },
       { id: reviewId(3), projectId: projectId(9), reviewerId: U.nadia, designerId: U.nimal, rating: 5, comment: 'Beautiful joinery and very tidy on site.', isVisible: true, createdAt: daysAgo(70) },
       { id: reviewId(4), projectId: projectId(4), reviewerId: U.sam, designerId: U.tharushi, rating: 4, comment: 'Great ideas for the indoor-outdoor flow.', isVisible: false, createdAt: daysAgo(1) },
       ...REVIEWED.map((r, index) => ({ id: reviewId(5 + index), projectId: projectId(r.n), reviewerId: U[r.client], designerId: U[r.designer], rating: r.rating, comment: r.comment, isVisible: true, createdAt: daysAgo(Math.max(1, Math.floor(r.started / 6) - 1)) })),
     ],
-  });
+  );
 
   // Designer verification: approved, pending and rejected with feedback
-  await prisma.verification.createMany({
-    data: [
+  await upsertById(
+    (args) => prisma.verification.upsert(args),
+    withIds(21, [
       { designerId: U.ravi, status: VerificationStatus.APPROVED, evidenceUrl: seedFile('ravi-credentials.pdf'), notes: 'Diploma in interior design and three client references.', reviewedById: U.admin, reviewedAt: daysAgo(170), createdAt: daysAgo(175) },
       { designerId: U.tharushi, status: VerificationStatus.APPROVED, evidenceUrl: seedFile('tharushi-credentials.pdf'), notes: 'Architecture degree and practice registration.', reviewedById: U.admin, reviewedAt: daysAgo(160), createdAt: daysAgo(165) },
       { designerId: U.nimal, status: VerificationStatus.APPROVED, evidenceUrl: seedFile('nimal-credentials.pdf'), notes: 'Trade certificate and past work.', reviewedById: U.moderator, reviewedAt: daysAgo(150), createdAt: daysAgo(155) },
@@ -1050,31 +1123,36 @@ async function main() {
       { designerId: U.ayesha, status: VerificationStatus.PENDING, evidenceUrl: seedFile('ayesha-credentials.pdf'), notes: 'Diploma and two client references attached.', createdAt: daysAgo(10) },
       { designerId: U.arjun, status: VerificationStatus.PENDING, evidenceUrl: seedFile('arjun-degree.pdf'), notes: 'Graduation certificate.', createdAt: daysAgo(2) },
       { designerId: U.shenali, status: VerificationStatus.REJECTED, evidenceUrl: seedFile('shenali-credentials.jpg'), notes: 'Photo of my certificate.', reviewNotes: 'The photo is too blurry to read. Please upload a clear scan or PDF.', reviewedById: U.admin, reviewedAt: daysAgo(20), createdAt: daysAgo(25) },
-    ],
-  });
+    ]),
+  );
 
   // Reports in every status and across target types
   const reportedMessage = await prisma.message.findFirstOrThrow({
     where: { projectId: projectId(6), senderId: U.amaya },
   });
-  await prisma.report.createMany({
-    data: [
+  await upsertById(
+    (args) => prisma.report.upsert(args),
+    withIds(22, [
       { reporterId: U.nadia, reportedUserId: U.ayesha, targetType: ReportTargetType.USER, targetId: U.ayesha, reason: 'Unsolicited messages outside the platform', details: 'Sample report for moderation testing.', status: ReportStatus.OPEN, createdAt: daysAgo(6) },
       { reporterId: U.ravi, reportedUserId: U.amaya, targetType: ReportTargetType.MESSAGE, targetId: reportedMessage.id, reason: 'Cancellation dispute', details: 'Wants the proposal fee refunded.', status: ReportStatus.UNDER_REVIEW, createdAt: daysAgo(3) },
       { reporterId: U.tharushi, reportedUserId: U.chaminda, targetType: ReportTargetType.PORTFOLIO, targetId: seedId(2, 15), reason: 'Copied my project photos', status: ReportStatus.RESOLVED, resolvedById: U.admin, resolvedAt: daysAgo(15), createdAt: daysAgo(18) },
       { reporterId: U.ravi, reportedUserId: U.kasun, targetType: ReportTargetType.REVIEW, targetId: reviewId(2), reason: 'Review mentions a delay I did not cause', status: ReportStatus.DISMISSED, resolvedById: U.moderator, resolvedAt: daysAgo(35), createdAt: daysAgo(38) },
       { reporterId: U.kasun, reportedUserId: U.ravindu, targetType: ReportTargetType.USER, targetId: U.ravindu, reason: 'Spam', details: 'Sent the same advert to several designers.', status: ReportStatus.RESOLVED, resolvedById: U.moderator, resolvedAt: daysAgo(50), createdAt: daysAgo(52) },
       { reporterId: U.amaya, targetType: ReportTargetType.PROJECT, targetId: projectId(6), reason: 'Designer asked for payment outside Inside', status: ReportStatus.OPEN, createdAt: daysAgo(2) },
-    ],
-  });
+    ]),
+  );
 
   // Blocks
-  await prisma.block.createMany({
-    data: [
+  for (const data of [
       { blockerId: U.nadia, blockedId: U.ayesha, reason: 'Sample block for trust and safety testing.' },
       { blockerId: U.kasun, blockedId: U.ravindu, reason: 'Spam messages.' },
-    ],
-  });
+    ]) {
+    await prisma.block.upsert({
+      where: { blockerId_blockedId: { blockerId: data.blockerId, blockedId: data.blockedId } },
+      create: data,
+      update: data,
+    });
+  }
 
   // Notifications (unread ones have readAt null)
   type NoteSeed = { user: UserKey; type: NotificationType; title: string; message: string; daysAgo: number; read?: boolean; metadata?: Prisma.InputJsonValue };
@@ -1098,8 +1176,9 @@ async function main() {
     { user: 'malsha', type: NotificationType.MESSAGE, title: 'New message', message: 'Tharushi Wickramasinghe sent a message on "Kids room refresh"', daysAgo: 1, metadata: { projectId: projectId(7) } },
     { user: 'chaminda', type: NotificationType.SYSTEM, title: 'Account suspended', message: 'Your account was suspended by an administrator', daysAgo: 15 },
   ];
-  await prisma.notification.createMany({
-    data: notes.map((note) => ({
+  await upsertById(
+    (args) => prisma.notification.upsert(args),
+    withIds(24, notes.map((note) => ({
       userId: U[note.user],
       type: note.type,
       title: note.title,
@@ -1108,12 +1187,13 @@ async function main() {
       isRead: Boolean(note.read),
       readAt: note.read ? daysAgo(Math.max(0, note.daysAgo - 0.5)) : null,
       createdAt: daysAgo(note.daysAgo),
-    })),
-  });
+    }))),
+  );
 
   // Admin audit trail
-  await prisma.activityLog.createMany({
-    data: [
+  await upsertById(
+    (args) => prisma.activityLog.upsert(args),
+    withIds(16, [
       { userId: U.admin, action: 'VERIFICATION_APPROVED', metadata: { designerId: U.ravi }, createdAt: daysAgo(170) },
       { userId: U.admin, action: 'VERIFICATION_APPROVED', metadata: { designerId: U.tharushi }, createdAt: daysAgo(160) },
       { userId: U.moderator, action: 'VERIFICATION_APPROVED', metadata: { designerId: U.nimal }, createdAt: daysAgo(150) },
@@ -1125,20 +1205,26 @@ async function main() {
       { userId: U.admin, action: 'REPORT_RESOLVED', metadata: { targetUserId: U.chaminda }, createdAt: daysAgo(15) },
       { userId: U.admin, action: 'USER_SUSPENDED', metadata: { targetUserId: U.chaminda }, createdAt: daysAgo(15) },
       { userId: U.admin, action: 'REPORT_UNDER_REVIEW', metadata: { targetUserId: U.amaya }, createdAt: daysAgo(2) },
-    ],
-  });
+    ], 100000),
+  );
 
   // Newsletter
-  await prisma.newsletterSubscriber.createMany({
-    data: [
+  for (const data of [
       { email: 'client@inside.test', createdAt: daysAgo(100) },
       { email: 'designer3@inside.test', createdAt: daysAgo(90) },
       { email: 'reader.one@example.com', createdAt: daysAgo(12) },
       { email: 'reader.two@example.com', createdAt: daysAgo(3) },
-    ],
-  });
+    ]) {
+    await prisma.newsletterSubscriber.upsert({ where: { email: data.email }, create: data, update: data });
+  }
 
-  await prisma.product.createMany({ data: PRODUCT_SEED });
+  for (const { id, ...data } of PRODUCT_SEED) {
+    await prisma.product.upsert({
+      where: { id: id as string },
+      create: { id: id as string, ...data },
+      update: data,
+    });
+  }
 
   console.log('Seed complete.');
   console.log(`All accounts use the password ${SEED_PASSWORD}`);

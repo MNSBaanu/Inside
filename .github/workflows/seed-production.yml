@@ -7,6 +7,11 @@ on:
       - 'packages/database/prisma/seed.ts'
       - 'packages/database/prisma/products.ts'
   workflow_dispatch:
+    inputs:
+      reset:
+        description: Wipe all data first, then load the sample data
+        type: boolean
+        default: false
 
 concurrency:
   group: seed-production
@@ -19,6 +24,7 @@ jobs:
 
     env:
       DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+      SEED_MODE: ${{ inputs.reset && 'reset' || 'sync' }}
 
     steps:
       - name: Checkout
