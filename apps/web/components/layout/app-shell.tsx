@@ -26,7 +26,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/feedback';
 import { api } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
@@ -127,31 +126,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     >
       <aside
         className={cn(
-          'h-fit min-w-0 rounded-card bg-sand p-6 [scrollbar-width:none] lg:flex lg:h-full lg:flex-col lg:overflow-y-auto [&::-webkit-scrollbar]:hidden',
-          collapsed && 'lg:items-center lg:px-3',
+          'relative h-fit min-w-0 rounded-card bg-brand p-6 text-canvas [scrollbar-width:none] lg:flex lg:h-full lg:flex-col lg:overflow-y-auto [&::-webkit-scrollbar]:hidden',
+          collapsed && 'lg:items-center lg:px-3 lg:pt-4',
         )}
       >
-        <div className={cn('flex items-start justify-between gap-2', collapsed && 'lg:justify-center')}>
-          <div className={cn('min-w-0', collapsed && 'lg:hidden')}>
-            <p className="ui-label text-ink/70">Signed in as</p>
-            <p className="mt-2 font-display text-xl font-semibold">{user.name}</p>
-          </div>
-          <button
-            type="button"
-            onClick={toggleCollapsed}
-            aria-label={collapsed ? 'Expand menu' : 'Collapse menu'}
-            title={collapsed ? 'Expand menu' : 'Collapse menu'}
-            aria-expanded={!collapsed}
-            className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-xl text-ink/70 transition-colors duration-300 hover:bg-canvas hover:text-ink lg:flex"
-          >
-            {collapsed ? (
-              <PanelLeftOpen aria-hidden className="h-5 w-5" />
-            ) : (
-              <PanelLeftClose aria-hidden className="h-5 w-5" />
-            )}
-          </button>
-        </div>
-        <div className={cn(collapsed && 'lg:hidden')}>
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? 'Expand menu' : 'Collapse menu'}
+          title={collapsed ? 'Expand menu' : 'Collapse menu'}
+          aria-expanded={!collapsed}
+          className={cn(
+            'hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg text-canvas/70 transition-colors duration-300 hover:bg-canvas/10 hover:text-canvas lg:flex',
+            !collapsed && 'absolute right-3 top-3',
+          )}
+        >
+          {collapsed ? (
+            <PanelLeftOpen aria-hidden className="h-5 w-5" />
+          ) : (
+            <PanelLeftClose aria-hidden className="h-5 w-5" />
+          )}
+        </button>
+
+        <div className={cn('min-w-0 lg:pr-8', collapsed && 'lg:hidden')}>
+          <p className="ui-label text-canvas/70">Signed in as</p>
+          <p className="mt-2 font-display text-xl font-semibold">{user.name}</p>
           {user.role === 'DESIGNER' ? (
             <RoleToggle activeRole={user.activeRole} />
           ) : (
@@ -164,55 +163,39 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <nav
           className={cn(
             'mt-8 flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible',
-            collapsed ? 'lg:mt-6 lg:w-full' : 'lg:-mx-4',
+            collapsed ? 'lg:mt-4 lg:w-full' : 'lg:-mx-4',
           )}
         >
           {items.map((item) => {
             const active =
               pathname === item.href ||
               (!item.exact && pathname.startsWith(`${item.href}/`));
-            const Icon = item.icon;
             return (
-              <Link
+              <SidebarLink
                 key={item.href}
                 href={item.href}
-                aria-current={active ? 'page' : undefined}
-                title={collapsed ? item.label : undefined}
-                className={cn(
-                  'flex min-h-11 items-center gap-3 whitespace-nowrap rounded-xl px-4 py-2.5 text-[0.9375rem] transition-colors duration-300',
-                  collapsed && 'lg:justify-center lg:px-0',
-                  active
-                    ? 'bg-surface font-semibold text-ink shadow-sm'
-                    : 'font-medium text-ink/80 hover:bg-canvas hover:text-ink',
-                )}
-              >
-                <Icon aria-hidden className="h-[18px] w-[18px] shrink-0" />
-                <span className={cn(collapsed && 'lg:sr-only')}>{item.label}</span>
-              </Link>
+                label={item.label}
+                icon={item.icon}
+                active={active}
+                collapsed={collapsed}
+              />
             );
           })}
         </nav>
 
-        {collapsed ? (
-          <button
-            type="button"
+        <div
+          className={cn(
+            'mt-8 hidden border-t border-canvas/15 pt-4 lg:mt-auto lg:block',
+            collapsed ? 'lg:w-full' : 'lg:-mx-4',
+          )}
+        >
+          <SidebarLink
+            label="Sign out"
+            icon={LogOut}
+            collapsed={collapsed}
             onClick={onSignOut}
-            aria-label="Sign out"
-            title="Sign out"
-            className="mt-6 hidden h-11 w-11 items-center justify-center rounded-xl text-ink/70 transition-colors duration-300 hover:bg-canvas hover:text-ink lg:flex"
-          >
-            <LogOut aria-hidden className="h-[18px] w-[18px]" />
-          </button>
-        ) : (
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-8 hidden w-fit lg:inline-flex"
-            onClick={onSignOut}
-          >
-            Sign out
-          </Button>
-        )}
+          />
+        </div>
       </aside>
 
       <div className="min-w-0 [scrollbar-width:none] lg:h-full lg:overflow-y-auto lg:pb-16 [&::-webkit-scrollbar]:hidden">
@@ -234,6 +217,55 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </SignOutContext.Provider>
       </div>
     </div>
+  );
+}
+
+function SidebarLink({
+  href,
+  label,
+  icon: Icon,
+  active = false,
+  collapsed,
+  onClick,
+}: {
+  href?: string;
+  label: string;
+  icon: LucideIcon;
+  active?: boolean;
+  collapsed: boolean;
+  onClick?: () => void;
+}) {
+  const className = cn(
+    'flex min-h-11 w-full items-center gap-3 whitespace-nowrap rounded-xl px-4 py-2.5 text-[0.9375rem] transition-colors duration-300',
+    collapsed && 'lg:justify-center lg:px-0',
+    active
+      ? 'bg-canvas font-semibold text-brand-deep shadow-sm'
+      : 'font-medium text-canvas/80 hover:bg-canvas/10 hover:text-canvas',
+  );
+  const content = (
+    <>
+      <Icon aria-hidden className="h-[18px] w-[18px] shrink-0" />
+      <span className={cn(collapsed && 'lg:sr-only')}>{label}</span>
+    </>
+  );
+  const title = collapsed ? label : undefined;
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        aria-current={active ? 'page' : undefined}
+        title={title}
+        className={className}
+      >
+        {content}
+      </Link>
+    );
+  }
+  return (
+    <button type="button" onClick={onClick} title={title} className={className}>
+      {content}
+    </button>
   );
 }
 
