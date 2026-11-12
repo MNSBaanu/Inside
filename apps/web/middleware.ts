@@ -22,7 +22,11 @@ export function middleware(request: NextRequest) {
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
 
-  if (!guarded || request.cookies.has('inside.session')) {
+  // A prefetched redirect is cached by the router and replayed after sign-in,
+  // so prefetches get the page shell; the app shell still guards the page.
+  const prefetch = request.headers.has('next-router-prefetch');
+
+  if (!guarded || prefetch || request.cookies.has('inside.session')) {
     return NextResponse.next();
   }
 
