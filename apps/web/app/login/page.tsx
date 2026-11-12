@@ -29,6 +29,7 @@ function LoginForm() {
     setSubmitting(true);
     try {
       await login(email, password);
+      router.refresh();
       router.push(redirectTo);
     } catch (cause) {
       setError(errorMessage(cause));

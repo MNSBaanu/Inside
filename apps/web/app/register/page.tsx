@@ -41,6 +41,7 @@ export default function RegisterPage() {
     setSubmitting(true);
     try {
       await register({ name, email, password, role });
+      router.refresh();
       router.push('/dashboard');
     } catch (cause) {
       setError(errorMessage(cause));
