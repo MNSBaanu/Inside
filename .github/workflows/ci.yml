@@ -15,8 +15,43 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      web: ${{ steps.filter.outputs.web }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Filter paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            shared: &shared
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - '.github/workflows/ci.yml'
+            api:
+              - *shared
+              - 'apps/api/**'
+              - 'packages/database/**'
+            web:
+              - *shared
+              - 'apps/web/**'
+              - 'packages/eslint-config/**'
+
   test-api:
     name: API unit + e2e
+    needs: changes
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || needs.changes.outputs.api == 'true'
     runs-on: ubuntu-latest
 
     services:
@@ -74,6 +109,8 @@ jobs:
 
   test-web:
     name: Web unit
+    needs: changes
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
 
     steps:
