@@ -17,6 +17,7 @@ test.describe('Admin', () => {
   test('shows platform activity including admin actions', async ({ page }) => {
     await signIn(page, accounts.admin);
     await page.goto('/admin/activity');
+    await page.getByLabel('Search').fill('suspended');
     await expect(page.getByText(/user suspended/i).first()).toBeVisible();
   });
 

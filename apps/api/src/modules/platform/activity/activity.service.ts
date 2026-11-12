@@ -56,10 +56,35 @@ export class ActivityService {
     }));
   }
 
-  async listRecent(page: number, pageSize: number) {
-    const [total, items] = await this.prisma.$transaction([
-      this.prisma.activityLog.count(),
+  async listRecent(
+    page: number,
+    pageSize: number,
+    filter: { action?: string; search?: string } = {},
+  ) {
+    const where: Prisma.ActivityLogWhereInput = {
+      ...(filter.action ? { action: filter.action } : {}),
+      ...(filter.search
+        ? {
+            OR: [
+              { action: { contains: filter.search, mode: 'insensitive' } },
+              {
+                user: {
+                  name: { contains: filter.search, mode: 'insensitive' },
+                },
+              },
+              {
+                project: {
+                  title: { contains: filter.search, mode: 'insensitive' },
+                },
+              },
+            ],
+          }
+        : {}),
+    };
+    const [total, items, actions] = await this.prisma.$transaction([
+      this.prisma.activityLog.count({ where }),
       this.prisma.activityLog.findMany({
+        where,
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
@@ -68,9 +93,15 @@ export class ActivityService {
           project: { select: { id: true, title: true } },
         },
       }),
+      this.prisma.activityLog.findMany({
+        distinct: ['action'],
+        select: { action: true },
+        orderBy: { action: 'asc' },
+      }),
     ]);
     return {
       total,
+      actions: actions.map((row) => row.action),
       items: items.map((item) => ({
         id: item.id,
         projectId: item.projectId,

@@ -126,7 +126,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     >
       <aside
         className={cn(
-          'relative h-fit min-w-0 rounded-card bg-brand p-6 text-canvas [scrollbar-width:none] lg:flex lg:h-full lg:flex-col lg:overflow-y-auto [&::-webkit-scrollbar]:hidden',
+          'relative h-fit min-w-0 rounded-card bg-brand-soft p-6 text-ink [scrollbar-width:none] lg:flex lg:h-full lg:flex-col lg:overflow-y-auto [&::-webkit-scrollbar]:hidden',
           collapsed && 'lg:items-center lg:px-3 lg:pt-4',
         )}
       >
@@ -137,7 +137,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           title={collapsed ? 'Expand menu' : 'Collapse menu'}
           aria-expanded={!collapsed}
           className={cn(
-            'hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg text-canvas/70 transition-colors duration-300 hover:bg-canvas/10 hover:text-canvas lg:flex',
+            'hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg text-brand-deep/70 transition-colors duration-300 hover:bg-surface/70 hover:text-brand-deep lg:flex',
             !collapsed && 'absolute right-3 top-3',
           )}
         >
@@ -149,12 +149,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </button>
 
         <div className={cn('min-w-0 lg:pr-8', collapsed && 'lg:hidden')}>
-          <p className="ui-label text-canvas/70">Signed in as</p>
+          <p className="ui-label text-brand-deep/70">Signed in as</p>
           <p className="mt-2 font-display text-xl font-semibold">{user.name}</p>
           {user.role === 'DESIGNER' ? (
             <RoleToggle activeRole={user.activeRole} />
           ) : (
-            <Badge tone="brand" className="mt-3">
+            <Badge tone="brand" className="mt-3 !bg-surface">
               {user.activeRole.toLowerCase()}
             </Badge>
           )}
@@ -185,7 +185,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <div
           className={cn(
-            'mt-8 hidden border-t border-canvas/15 pt-4 lg:mt-auto lg:block',
+            'mt-8 hidden border-t border-brand/15 pt-4 lg:mt-auto lg:block',
             collapsed ? 'lg:w-full' : 'lg:-mx-4',
           )}
         >
@@ -239,8 +239,8 @@ function SidebarLink({
     'flex min-h-11 w-full items-center gap-3 whitespace-nowrap rounded-xl px-4 py-2.5 text-[0.9375rem] transition-colors duration-300',
     collapsed && 'lg:justify-center lg:px-0',
     active
-      ? 'bg-canvas font-semibold text-brand-deep shadow-sm'
-      : 'font-medium text-canvas/80 hover:bg-canvas/10 hover:text-canvas',
+      ? 'bg-surface font-semibold text-brand-deep shadow-sm'
+      : 'font-medium text-ink/80 hover:bg-surface/60 hover:text-ink',
   );
   const content = (
     <>

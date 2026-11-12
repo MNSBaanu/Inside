@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { NotificationType, VerificationStatus } from '@inside/database';
+import { NotificationType, Prisma, VerificationStatus } from '@inside/database';
 import type { AuthUser } from '../auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import {
@@ -71,9 +71,22 @@ export class VerificationsService {
     };
   }
 
-  async listPending(query: PaginationQueryDto) {
-    const { page, pageSize, skip, take } = paginate(query, 100);
-    const where = { status: VerificationStatus.PENDING };
+  async listPending(query: PaginationQueryDto & { search?: string }) {
+    const { page, pageSize, skip, take } = paginate(query, 20);
+    const search = query.search?.trim();
+    const where: Prisma.VerificationWhereInput = {
+      status: VerificationStatus.PENDING,
+      ...(search
+        ? {
+            OR: [
+              { notes: { contains: search, mode: 'insensitive' } },
+              {
+                designer: { name: { contains: search, mode: 'insensitive' } },
+              },
+            ],
+          }
+        : {}),
+    };
     const [total, items] = await Promise.all([
       this.prisma.verification.count({ where }),
       this.prisma.verification.findMany({

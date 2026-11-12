@@ -6,6 +6,7 @@ import {
 import {
   AccountStatus,
   NotificationType,
+  Prisma,
   ProjectStatus,
   ReportStatus,
   ReportTargetType,
@@ -14,10 +15,13 @@ import {
 } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
-import {
-  PaginationQueryDto,
-  paginate,
-} from '../../../common/dto/pagination-query.dto';
+import { paginate } from '../../../common/dto/pagination-query.dto';
+import type {
+  AdminActivityQueryDto,
+  AdminReportsQueryDto,
+  AdminReviewsQueryDto,
+  AdminUsersQueryDto,
+} from './dto/admin-list-query.dto';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
 
@@ -70,11 +74,25 @@ export class AdminService {
     };
   }
 
-  async listUsers(query: PaginationQueryDto) {
-    const { page, pageSize, skip, take } = paginate(query, 100);
+  async listUsers(query: AdminUsersQueryDto) {
+    const { page, pageSize, skip, take } = paginate(query, 20);
+    const search = query.search?.trim();
+    const where: Prisma.UserWhereInput = {
+      ...(query.role ? { role: query.role } : {}),
+      ...(query.status ? { status: query.status } : {}),
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: 'insensitive' } },
+              { email: { contains: search, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
     const [total, items] = await Promise.all([
-      this.prisma.user.count(),
+      this.prisma.user.count({ where }),
       this.prisma.user.findMany({
+        where,
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         skip,
         take,
@@ -197,10 +215,30 @@ export class AdminService {
     return { success: true, data: { user: { id: userId, isVerified: false } } };
   }
 
-  async listOpenReports(query: PaginationQueryDto) {
-    const { page, pageSize, skip, take } = paginate(query, 100);
-    const where = {
-      status: { in: [ReportStatus.OPEN, ReportStatus.UNDER_REVIEW] },
+  async listOpenReports(query: AdminReportsQueryDto) {
+    const { page, pageSize, skip, take } = paginate(query, 20);
+    const search = query.search?.trim();
+    const where: Prisma.ReportWhereInput = {
+      status: query.status
+        ? query.status
+        : { in: [ReportStatus.OPEN, ReportStatus.UNDER_REVIEW] },
+      ...(query.targetType ? { targetType: query.targetType } : {}),
+      ...(search
+        ? {
+            OR: [
+              { reason: { contains: search, mode: 'insensitive' } },
+              { details: { contains: search, mode: 'insensitive' } },
+              {
+                reporter: { name: { contains: search, mode: 'insensitive' } },
+              },
+              {
+                reportedUser: {
+                  name: { contains: search, mode: 'insensitive' },
+                },
+              },
+            ],
+          }
+        : {}),
     };
     const [total, items] = await Promise.all([
       this.prisma.report.count({ where }),
@@ -299,18 +337,47 @@ export class AdminService {
     return { success: true, data: { report: this.serializeReport(updated) } };
   }
 
-  async listReviews() {
-    const items = await this.prisma.review.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 100,
-      include: {
-        reviewer: { select: { id: true, name: true, avatarUrl: true } },
-        designer: { select: { id: true, name: true, email: true } },
-      },
-    });
+  async listReviews(query: AdminReviewsQueryDto) {
+    const { page, pageSize, skip, take } = paginate(query, 20);
+    const search = query.search?.trim();
+    const where: Prisma.ReviewWhereInput = {
+      ...(query.visibility
+        ? { isVisible: query.visibility === 'visible' }
+        : {}),
+      ...(query.rating ? { rating: query.rating } : {}),
+      ...(search
+        ? {
+            OR: [
+              { comment: { contains: search, mode: 'insensitive' } },
+              {
+                reviewer: { name: { contains: search, mode: 'insensitive' } },
+              },
+              {
+                designer: { name: { contains: search, mode: 'insensitive' } },
+              },
+            ],
+          }
+        : {}),
+    };
+    const [total, items] = await Promise.all([
+      this.prisma.review.count({ where }),
+      this.prisma.review.findMany({
+        where,
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        skip,
+        take,
+        include: {
+          reviewer: { select: { id: true, name: true, avatarUrl: true } },
+          designer: { select: { id: true, name: true, email: true } },
+        },
+      }),
+    ]);
     return {
       success: true,
       data: {
+        page,
+        pageSize,
+        total,
         items: items.map((r) => ({
           id: r.id,
           projectId: r.projectId,
@@ -378,10 +445,14 @@ export class AdminService {
     return report;
   }
 
-  async listActivity(query: PaginationQueryDto) {
-    const { page, pageSize } = paginate(query);
-    const { items, total } = await this.activity.listRecent(page, pageSize);
-    return { success: true, data: { items, page, pageSize, total } };
+  async listActivity(query: AdminActivityQueryDto) {
+    const { page, pageSize } = paginate(query, 20);
+    const { items, total, actions } = await this.activity.listRecent(
+      page,
+      pageSize,
+      { action: query.action, search: query.search?.trim() },
+    );
+    return { success: true, data: { items, page, pageSize, total, actions } };
   }
 
   private serializeReport(r: {

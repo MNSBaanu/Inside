@@ -17,8 +17,13 @@ import {
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { CurrentUser } from '../../identity/auth/decorators/current-user.decorator';
 import { AdminGuard } from '../../identity/auth/guards/admin.guard';
-import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto';
 import { JwtAuthGuard } from '../../identity/auth/guards/jwt-auth.guard';
+import {
+  AdminActivityQueryDto,
+  AdminReportsQueryDto,
+  AdminReviewsQueryDto,
+  AdminUsersQueryDto,
+} from './dto/admin-list-query.dto';
 import { SetReviewVisibilityDto } from './dto/set-review-visibility.dto';
 import { AdminService } from './admin.service';
 
@@ -39,7 +44,7 @@ export class AdminController {
   @Get('users')
   @ApiOperation({ summary: 'List users' })
   @ApiOkResponse({ description: 'Users' })
-  users(@Query() query: PaginationQueryDto) {
+  users(@Query() query: AdminUsersQueryDto) {
     return this.admin.listUsers(query);
   }
 
@@ -76,7 +81,7 @@ export class AdminController {
   @Get('reports')
   @ApiOperation({ summary: 'List open + under-review reports' })
   @ApiOkResponse({ description: 'Reports' })
-  reports(@Query() query: PaginationQueryDto) {
+  reports(@Query() query: AdminReportsQueryDto) {
     return this.admin.listOpenReports(query);
   }
 
@@ -113,8 +118,8 @@ export class AdminController {
   @Get('reviews')
   @ApiOperation({ summary: 'List reviews for moderation' })
   @ApiOkResponse({ description: 'Reviews' })
-  reviews() {
-    return this.admin.listReviews();
+  reviews(@Query() query: AdminReviewsQueryDto) {
+    return this.admin.listReviews(query);
   }
 
   @Patch('reviews/:id/visibility')
@@ -131,7 +136,7 @@ export class AdminController {
   @Get('activity')
   @ApiOperation({ summary: 'Platform activity and admin audit trail' })
   @ApiOkResponse({ description: 'Activity log entries, newest first' })
-  activity(@Query() query: PaginationQueryDto) {
+  activity(@Query() query: AdminActivityQueryDto) {
     return this.admin.listActivity(query);
   }
 }

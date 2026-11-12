@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { describeActivity } from '@/components/features/projects/project-history';
 import { useSession } from '@/components/providers/session-provider';
 import { Avatar } from '@/components/ui/avatar';
@@ -10,6 +10,7 @@ import { cardSurface } from '@/components/ui/card';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { BareInput } from '@/components/ui/field';
 import { FilterBar, FilterField } from '@/components/ui/filter-bar';
+import { Pagination } from '@/components/ui/pagination';
 import { Rating } from '@/components/ui/rating';
 import { Select } from '@/components/ui/select';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -19,12 +20,15 @@ import type {
   AccountStatus,
   ActivityEntry,
   AdminReview,
+  ReportTargetType,
   Role,
   VerificationStatus,
 } from '@/lib/types';
 import { cn } from '@/lib/utils/cn';
 import { formatDate, titleCase } from '@/lib/utils/format';
 import { safeHref } from '@/lib/utils/url';
+
+const PAGE_SIZE = 20;
 
 type AdminUser = {
   id: string;
@@ -57,6 +61,22 @@ type PendingVerification = {
   designer?: { id: string; name: string; avatarUrl: string | null };
 };
 
+type Page<T> = {
+  items: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+  actions?: string[];
+};
+
+const REPORT_TARGETS: ReportTargetType[] = [
+  'USER',
+  'PROJECT',
+  'PORTFOLIO',
+  'REVIEW',
+  'MESSAGE',
+];
+
 export function useIsAdmin() {
   const { user } = useSession();
   return user?.role === 'ADMIN';
@@ -72,6 +92,42 @@ export function AdminOnly({ children }: { children: ReactNode }) {
     );
   }
   return <>{children}</>;
+}
+
+/** One page of an admin list, filtered and searched on the server. */
+function useAdminList<T>(endpoint: string, filters: Record<string, string>) {
+  const [search, setSearch] = useState('');
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setQuery(search.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const filterKey = JSON.stringify(filters);
+  useEffect(() => {
+    setPage(1);
+  }, [query, filterKey]);
+
+  const params = new URLSearchParams({
+    page: String(page),
+    pageSize: String(PAGE_SIZE),
+  });
+  if (query) params.set('search', query);
+  for (const [key, value] of Object.entries(filters)) {
+    if (value) params.set(key, value);
+  }
+
+  const list = useApi<Page<T>>(`${endpoint}?${params.toString()}`);
+  const emptyPage = list.data !== null && list.data.items.length === 0;
+  useEffect(() => {
+    if (emptyPage && page > 1) setPage(page - 1);
+  }, [emptyPage, page]);
+
+  const filtered = query !== '' || Object.values(filters).some(Boolean);
+
+  return { list, search, setSearch, page, setPage, filtered };
 }
 
 function useAdminAction() {
@@ -98,14 +154,6 @@ function useAdminAction() {
 
   return { error, pending, run };
 }
-
-const matches = (query: string, ...values: (string | null | undefined)[]) => {
-  const needle = query.trim().toLowerCase();
-  return (
-    needle === '' ||
-    values.some((value) => value?.toLowerCase().includes(needle))
-  );
-};
 
 function Filters({ children }: { children: ReactNode }) {
   return (
@@ -162,20 +210,23 @@ function SelectField({
 
 function Results<T>({
   state,
-  items,
+  page,
+  onPageChange,
+  filtered,
   noun,
   empty,
   actionError,
   children,
 }: {
-  state: { loading: boolean; error: string | null; data: { items: T[] } | null };
-  items: T[];
+  state: { loading: boolean; error: string | null; data: Page<T> | null };
+  page: number;
+  onPageChange: (page: number) => void;
+  filtered: boolean;
   noun: string;
   empty: string;
   actionError?: string | null;
   children: (item: T) => ReactNode;
 }) {
-  if (state.loading) return <Skeleton className="mt-8 h-64" />;
   if (state.error) {
     return (
       <div className="mt-8">
@@ -183,7 +234,13 @@ function Results<T>({
       </div>
     );
   }
-  const total = state.data?.items.length ?? 0;
+  if (!state.data) return <Skeleton className="mt-8 h-64" />;
+
+  const { items, total } = state.data;
+  const first = (page - 1) * PAGE_SIZE + 1;
+  const last = first + items.length - 1;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
   return (
     <div className="mt-8">
       {actionError ? (
@@ -191,21 +248,33 @@ function Results<T>({
           <ErrorNotice message={actionError} />
         </div>
       ) : null}
-      {items.length === 0 ? (
-        <EmptyState
-          title={total === 0 ? empty : 'Nothing matches these filters.'}
-        />
+      {total === 0 ? (
+        <EmptyState title={filtered ? 'Nothing matches these filters.' : empty} />
       ) : (
-        <div className={cn(cardSurface, 'overflow-hidden')}>
-          <p className="border-b border-hairline px-5 py-4 text-sm text-muted md:px-6">
-            {items.length === total
-              ? `${total} ${noun}`
-              : `${items.length} of ${total} ${noun}`}
-          </p>
-          <ul className="flex flex-col divide-y divide-hairline">
-            {items.map(children)}
-          </ul>
-        </div>
+        <>
+          <div
+            className={cn(
+              cardSurface,
+              'overflow-hidden transition-opacity duration-300',
+              state.loading && 'opacity-60',
+            )}
+          >
+            <p className="border-b border-hairline px-5 py-4 text-sm text-muted md:px-6">
+              {total <= PAGE_SIZE
+                ? `${total} ${noun}`
+                : `${first}–${last} of ${total} ${noun}`}
+            </p>
+            <ul className="flex flex-col divide-y divide-hairline">
+              {items.map(children)}
+            </ul>
+          </div>
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+            label={`${titleCase(noun)} pages`}
+          />
+        </>
       )}
     </div>
   );
@@ -216,18 +285,11 @@ const rowClass =
 
 export function UsersSection() {
   const { user: me } = useSession();
-  const users = useApi<{ items: AdminUser[] }>('/admin/users');
-  const { error, pending, run } = useAdminAction();
-  const [search, setSearch] = useState('');
   const [role, setRole] = useState('');
   const [status, setStatus] = useState('');
-
-  const items = (users.data?.items ?? []).filter(
-    (user) =>
-      matches(search, user.name, user.email) &&
-      (role === '' || user.role === role) &&
-      (status === '' || user.status === status),
-  );
+  const { list, search, setSearch, page, setPage, filtered } =
+    useAdminList<AdminUser>('/admin/users', { role, status });
+  const { error, pending, run } = useAdminAction();
 
   return (
     <>
@@ -264,8 +326,10 @@ export function UsersSection() {
       </Filters>
 
       <Results
-        state={users}
-        items={items}
+        state={list}
+        page={page}
+        onPageChange={setPage}
+        filtered={filtered}
         noun="users"
         empty="No users found."
         actionError={error}
@@ -298,7 +362,7 @@ export function UsersSection() {
                     run(
                       user.id,
                       `/admin/users/${user.id}/revoke-verification`,
-                      users.reload,
+                      list.reload,
                     )
                   }
                 >
@@ -311,7 +375,7 @@ export function UsersSection() {
                   variant="outline"
                   disabled={pending === user.id}
                   onClick={() =>
-                    run(user.id, `/admin/users/${user.id}/suspend`, users.reload)
+                    run(user.id, `/admin/users/${user.id}/suspend`, list.reload)
                   }
                 >
                   Suspend
@@ -324,7 +388,7 @@ export function UsersSection() {
                     run(
                       user.id,
                       `/admin/users/${user.id}/reactivate`,
-                      users.reload,
+                      list.reload,
                     )
                   }
                 >
@@ -340,15 +404,9 @@ export function UsersSection() {
 }
 
 export function VerificationsSection() {
-  const verifications = useApi<{ items: PendingVerification[] }>(
-    '/verifications/admin/pending',
-  );
+  const { list, search, setSearch, page, setPage, filtered } =
+    useAdminList<PendingVerification>('/verifications/admin/pending', {});
   const { error, pending, run } = useAdminAction();
-  const [search, setSearch] = useState('');
-
-  const items = (verifications.data?.items ?? []).filter((item) =>
-    matches(search, item.designer?.name, item.notes),
-  );
 
   return (
     <>
@@ -362,8 +420,10 @@ export function VerificationsSection() {
       </Filters>
 
       <Results
-        state={verifications}
-        items={items}
+        state={list}
+        page={page}
+        onPageChange={setPage}
+        filtered={filtered}
         noun="awaiting review"
         empty="Nothing awaiting verification."
         actionError={error}
@@ -403,11 +463,7 @@ export function VerificationsSection() {
                 size="sm"
                 disabled={pending === item.id}
                 onClick={() =>
-                  run(
-                    item.id,
-                    `/verifications/${item.id}/approve`,
-                    verifications.reload,
-                  )
+                  run(item.id, `/verifications/${item.id}/approve`, list.reload)
                 }
               >
                 Approve
@@ -417,11 +473,7 @@ export function VerificationsSection() {
                 variant="outline"
                 disabled={pending === item.id}
                 onClick={() =>
-                  run(
-                    item.id,
-                    `/verifications/${item.id}/reject`,
-                    verifications.reload,
-                  )
+                  run(item.id, `/verifications/${item.id}/reject`, list.reload)
                 }
               >
                 Reject
@@ -435,26 +487,11 @@ export function VerificationsSection() {
 }
 
 export function ReportsSection() {
-  const reports = useApi<{ items: AdminReport[] }>('/admin/reports');
-  const { error, pending, run } = useAdminAction();
-  const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
-  const [type, setType] = useState('');
-
-  const all = reports.data?.items ?? [];
-  const types = [...new Set(all.map((report) => report.targetType))];
-  const items = all.filter(
-    (report) =>
-      matches(
-        search,
-        report.reason,
-        report.details,
-        report.reporter?.name,
-        report.reportedUser?.name,
-      ) &&
-      (status === '' || report.status === status) &&
-      (type === '' || report.targetType === type),
-  );
+  const [targetType, setTargetType] = useState('');
+  const { list, search, setSearch, page, setPage, filtered } =
+    useAdminList<AdminReport>('/admin/reports', { status, targetType });
+  const { error, pending, run } = useAdminAction();
 
   return (
     <>
@@ -479,18 +516,23 @@ export function ReportsSection() {
         <SelectField
           id="report-type"
           label="Reported"
-          value={type}
-          onChange={setType}
+          value={targetType}
+          onChange={setTargetType}
           options={[
             { value: '', label: 'Anything' },
-            ...types.map((value) => ({ value, label: titleCase(value) })),
+            ...REPORT_TARGETS.map((value) => ({
+              value,
+              label: titleCase(value),
+            })),
           ]}
         />
       </Filters>
 
       <Results
-        state={reports}
-        items={items}
+        state={list}
+        page={page}
+        onPageChange={setPage}
+        filtered={filtered}
         noun="reports"
         empty="No open reports."
         actionError={error}
@@ -525,7 +567,7 @@ export function ReportsSection() {
                     run(
                       report.id,
                       `/admin/reports/${report.id}/under-review`,
-                      reports.reload,
+                      list.reload,
                     )
                   }
                 >
@@ -539,7 +581,7 @@ export function ReportsSection() {
                   run(
                     report.id,
                     `/admin/reports/${report.id}/resolve`,
-                    reports.reload,
+                    list.reload,
                   )
                 }
               >
@@ -553,7 +595,7 @@ export function ReportsSection() {
                   run(
                     report.id,
                     `/admin/reports/${report.id}/dismiss`,
-                    reports.reload,
+                    list.reload,
                   )
                 }
               >
@@ -568,24 +610,11 @@ export function ReportsSection() {
 }
 
 export function ReviewsSection() {
-  const reviews = useApi<{ items: AdminReview[] }>('/admin/reviews');
-  const { error, pending, run } = useAdminAction();
-  const [search, setSearch] = useState('');
   const [visibility, setVisibility] = useState('');
   const [rating, setRating] = useState('');
-
-  const items = (reviews.data?.items ?? []).filter(
-    (review) =>
-      matches(
-        search,
-        review.reviewer?.name,
-        review.designer?.name,
-        review.comment,
-      ) &&
-      (visibility === '' ||
-        (visibility === 'visible') === review.isVisible) &&
-      (rating === '' || review.rating === Number(rating)),
-  );
+  const { list, search, setSearch, page, setPage, filtered } =
+    useAdminList<AdminReview>('/admin/reviews', { visibility, rating });
+  const { error, pending, run } = useAdminAction();
 
   return (
     <>
@@ -623,8 +652,10 @@ export function ReviewsSection() {
       </Filters>
 
       <Results
-        state={reviews}
-        items={items}
+        state={list}
+        page={page}
+        onPageChange={setPage}
+        filtered={filtered}
         noun="reviews"
         empty="No reviews yet."
         actionError={error}
@@ -657,7 +688,7 @@ export function ReviewsSection() {
                   run(
                     review.id,
                     `/admin/reviews/${review.id}/visibility`,
-                    reviews.reload,
+                    list.reload,
                     { isVisible: !review.isVisible },
                   )
                 }
@@ -690,24 +721,14 @@ export function ActivityRow({ entry }: { entry: ActivityEntry }) {
 }
 
 export function ActivitySection() {
-  const activity = useApi<{ items: ActivityEntry[] }>(
-    '/admin/activity?pageSize=100',
-  );
-  const [search, setSearch] = useState('');
   const [action, setAction] = useState('');
+  const { list, search, setSearch, page, setPage, filtered } =
+    useAdminList<ActivityEntry>('/admin/activity', { action });
+  const [actions, setActions] = useState<string[]>([]);
 
-  const all = activity.data?.items ?? [];
-  const actions = [...new Set(all.map((entry) => entry.action))].sort();
-  const items = all.filter(
-    (entry) =>
-      matches(
-        search,
-        describeActivity(entry),
-        entry.user?.name,
-        entry.project?.title,
-      ) &&
-      (action === '' || entry.action === action),
-  );
+  useEffect(() => {
+    if (list.data?.actions) setActions(list.data.actions);
+  }, [list.data]);
 
   return (
     <>
@@ -731,9 +752,11 @@ export function ActivitySection() {
       </Filters>
 
       <Results
-        state={activity}
-        items={items}
-        noun="recent events"
+        state={list}
+        page={page}
+        onPageChange={setPage}
+        filtered={filtered}
+        noun="events"
         empty="No activity yet."
       >
         {(entry) => <ActivityRow key={entry.id} entry={entry} />}

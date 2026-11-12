@@ -63,13 +63,13 @@ export default function AdminOverviewPage() {
   const isAdmin = useIsAdmin();
   const stats = useApi<AdminStats>(isAdmin ? '/admin/stats' : null);
   const verifications = useApi<{ items: QueueVerification[] }>(
-    isAdmin ? '/verifications/admin/pending' : null,
+    isAdmin ? `/verifications/admin/pending?pageSize=${QUEUE_SIZE}` : null,
   );
   const reports = useApi<{ items: QueueReport[] }>(
-    isAdmin ? '/admin/reports' : null,
+    isAdmin ? `/admin/reports?pageSize=${QUEUE_SIZE}` : null,
   );
   const reviews = useApi<{ items: AdminReview[] }>(
-    isAdmin ? '/admin/reviews' : null,
+    isAdmin ? `/admin/reviews?visibility=hidden&pageSize=${QUEUE_SIZE}` : null,
   );
   const newUsers = useApi<{ items: NewUser[] }>(
     isAdmin ? '/admin/users?pageSize=5' : null,
@@ -102,9 +102,7 @@ export default function AdminOverviewPage() {
   }
 
   const data = stats.data;
-  const hiddenReviews = (reviews.data?.items ?? []).filter(
-    (review) => !review.isVisible,
-  );
+  const hiddenReviews = reviews.data?.items ?? [];
   const queuesLoaded =
     !verifications.loading && !reports.loading && !reviews.loading;
   const nothingWaiting =
@@ -193,7 +191,7 @@ export default function AdminOverviewPage() {
               error={verifications.error}
               empty="No designers waiting."
             >
-              {verifications.data?.items.slice(0, QUEUE_SIZE).map((item) => (
+              {verifications.data?.items.map((item) => (
                 <QueueItem key={item.id}>
                   <div className="flex items-center gap-3">
                     <Avatar
@@ -259,7 +257,7 @@ export default function AdminOverviewPage() {
               error={reports.error}
               empty="No open reports."
             >
-              {reports.data?.items.slice(0, QUEUE_SIZE).map((report) => (
+              {reports.data?.items.map((report) => (
                 <QueueItem key={report.id}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -315,7 +313,7 @@ export default function AdminOverviewPage() {
               error={reviews.error}
               empty="No hidden reviews."
             >
-              {hiddenReviews.slice(0, QUEUE_SIZE).map((review) => (
+              {hiddenReviews.map((review) => (
                 <QueueItem key={review.id}>
                   <p className="font-semibold">
                     {review.reviewer?.name ?? 'Client'} on{' '}
