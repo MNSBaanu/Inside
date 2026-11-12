@@ -107,7 +107,7 @@ export class ReviewsService {
 
     const items = await this.prisma.review.findMany({
       where: { designerId, isVisible: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       include: { reviewer: { select: reviewerSelect } },
       skip,
       take,

@@ -30,7 +30,7 @@ export class MessagesService {
       this.prisma.message.count({ where: { projectId } }),
       this.prisma.message.findMany({
         where: { projectId },
-        orderBy: { sentAt: 'desc' },
+        orderBy: [{ sentAt: 'desc' }, { id: 'desc' }],
         skip,
         take,
       }),

@@ -145,7 +145,7 @@ export class RequestsService {
       this.prisma.projectRequest.count({ where }),
       this.prisma.projectRequest.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         include: requestInclude,
         skip,
         take,
@@ -197,7 +197,7 @@ export class RequestsService {
           }
         : {}),
     };
-    const orderBy: Prisma.ProjectRequestOrderByWithRelationInput =
+    const sortBy: Prisma.ProjectRequestOrderByWithRelationInput =
       query.sort === 'budget_high'
         ? { budget: 'desc' }
         : query.sort === 'budget_low'
@@ -208,7 +208,7 @@ export class RequestsService {
       this.prisma.projectRequest.count({ where }),
       this.prisma.projectRequest.findMany({
         where,
-        orderBy,
+        orderBy: [sortBy, { id: 'desc' }],
         select: {
           id: true,
           title: true,

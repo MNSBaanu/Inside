@@ -72,7 +72,7 @@ export class PortfoliosService {
       this.prisma.portfolio.findMany({
         where,
         include: portfolioInclude,
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),

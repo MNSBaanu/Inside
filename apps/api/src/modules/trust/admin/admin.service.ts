@@ -31,7 +31,7 @@ export class AdminService {
     const [total, items] = await Promise.all([
       this.prisma.user.count(),
       this.prisma.user.findMany({
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         skip,
         take,
         select: {
@@ -161,7 +161,7 @@ export class AdminService {
       this.prisma.report.count({ where }),
       this.prisma.report.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         skip,
         take,
         include: {

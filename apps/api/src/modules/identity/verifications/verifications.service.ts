@@ -78,7 +78,7 @@ export class VerificationsService {
       this.prisma.verification.count({ where }),
       this.prisma.verification.findMany({
         where,
-        orderBy: { createdAt: 'asc' },
+        orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
         include: { designer: { select: designerSelect } },
         skip,
         take,

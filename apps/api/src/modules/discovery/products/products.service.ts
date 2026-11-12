@@ -36,7 +36,7 @@ export class ProductsService {
       this.prisma.product.count({ where }),
       this.prisma.product.findMany({
         where,
-        orderBy: [{ createdAt: 'desc' }, { name: 'asc' }],
+        orderBy: [{ createdAt: 'desc' }, { name: 'asc' }, { id: 'asc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),

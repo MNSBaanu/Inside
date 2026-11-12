@@ -60,7 +60,7 @@ export class ActivityService {
     const [total, items] = await this.prisma.$transaction([
       this.prisma.activityLog.count(),
       this.prisma.activityLog.findMany({
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {

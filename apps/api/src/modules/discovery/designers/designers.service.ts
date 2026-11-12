@@ -83,7 +83,11 @@ export class DesignersService {
           },
           _count: { select: { portfolios: { where: { isPublished: true } } } },
         },
-        orderBy: [{ isVerified: 'desc' }, { createdAt: 'desc' }],
+        orderBy: [
+          { isVerified: 'desc' },
+          { createdAt: 'desc' },
+          { id: 'desc' },
+        ],
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),
