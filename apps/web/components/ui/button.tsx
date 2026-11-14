@@ -15,8 +15,8 @@ const variants: Record<ButtonVariant, string> = {
 
 const sizes: Record<ButtonSize, string> = {
   sm: 'px-4 py-2',
-  md: 'px-6 py-3',
-  lg: 'px-8 py-4',
+  md: 'px-5 py-2.5',
+  lg: 'px-6 py-3',
 };
 
 function classesFor(

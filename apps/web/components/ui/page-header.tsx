@@ -24,14 +24,16 @@ export function PageHeader({
         ) : null}
         <h1
           className={cn(
-            'mt-6 font-display text-section font-semibold',
-            !app && 'max-w-2xl',
+            'font-display font-semibold',
+            app
+              ? 'mt-4 text-3xl tracking-tight md:text-[2.75rem] md:leading-tight'
+              : 'mt-6 max-w-2xl text-section',
           )}
         >
           {title}
         </h1>
         {description ? (
-          <p className={cn('mt-4 max-w-xl text-muted', !app && 'text-lg')}>
+          <p className={cn('max-w-xl text-muted', app ? 'mt-2 text-sm' : 'mt-4 text-lg')}>
             {description}
           </p>
         ) : null}

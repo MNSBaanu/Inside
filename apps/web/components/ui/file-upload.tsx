@@ -53,7 +53,7 @@ export function FileUpload({
         accept={accept}
         disabled={busy}
         onChange={onChange}
-        className="w-full rounded-card border border-dashed border-hairline bg-surface px-4 py-3 text-sm text-muted file:mr-4 file:rounded-pill file:border-0 file:bg-brand file:px-4 file:py-2 file:text-label file:font-semibold file:uppercase file:text-canvas hover:file:bg-brand-deep disabled:opacity-60"
+        className="w-full rounded-card border border-dashed border-hairline bg-surface px-4 py-3 text-sm text-muted file:mr-4 file:rounded-lg file:border-0 file:bg-brand file:px-4 file:py-2 file:text-label file:font-semibold file:uppercase file:text-canvas hover:file:bg-brand-deep disabled:opacity-60"
       />
       {busy ? <p className="text-sm text-muted">Uploading…</p> : null}
       {error ? (

@@ -93,7 +93,7 @@ export default function ProductDetailPage({
                 href={product.sellerUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-pill bg-brand px-6 py-3 text-base font-semibold text-canvas transition-all duration-300 ease-editorial hover:bg-brand-deep hover:shadow-lift"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-base font-semibold text-canvas transition-all duration-300 ease-editorial hover:bg-brand-deep hover:shadow-lift"
               >
                 Visit seller
               </a>
