@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
@@ -30,7 +31,29 @@ describe('BriefsService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    prisma.brief.findMany.mockResolvedValue([]);
     service = new BriefsService(prisma as unknown as PrismaService);
+  });
+
+  it('blocks a brief identical to an existing one', async () => {
+    prisma.brief.findMany.mockResolvedValue([
+      {
+        styles: ['coastal'],
+        rooms: ['Bedroom'],
+        budgetRange: '100-200',
+        description: 'Nice ',
+      },
+    ]);
+
+    await expect(
+      service.create(client, {
+        styles: ['Coastal'],
+        rooms: ['Bedroom'],
+        budgetRange: '100-200',
+        description: 'Nice',
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(prisma.brief.create).not.toHaveBeenCalled();
   });
 
   it('creates a brief', async () => {

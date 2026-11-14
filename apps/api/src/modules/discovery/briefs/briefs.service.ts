@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -42,6 +43,7 @@ export class BriefsService {
     if (!dto.styles.length || !dto.rooms.length) {
       throw new BadRequestException('styles and rooms are required');
     }
+    await this.assertNotDuplicate(user.id, dto);
 
     const brief = await this.prisma.brief.create({
       data: {
@@ -74,6 +76,12 @@ export class BriefsService {
       (notes.length
         ? `Generated from moodboard "${moodboard.name}": ${notes.join('; ')}`
         : `Generated from moodboard "${moodboard.name}".`);
+    await this.assertNotDuplicate(user.id, {
+      styles,
+      rooms,
+      budgetRange: dto.budgetRange,
+      description,
+    });
 
     const brief = await this.prisma.brief.create({
       data: {
@@ -125,6 +133,39 @@ export class BriefsService {
     await this.requireOwned(id, user.id);
     await this.prisma.brief.delete({ where: { id } });
     return { success: true, data: { deleted: true } };
+  }
+
+  private async assertNotDuplicate(
+    clientId: string,
+    brief: {
+      styles: string[];
+      rooms: string[];
+      budgetRange?: string | null;
+      description?: string | null;
+    },
+  ) {
+    const key = (b: typeof brief) =>
+      JSON.stringify([
+        [...b.styles].map((s) => s.trim().toLowerCase()).sort(),
+        [...b.rooms].map((r) => r.trim().toLowerCase()).sort(),
+        (b.budgetRange ?? '').trim().toLowerCase(),
+        (b.description ?? '').trim().toLowerCase(),
+      ]);
+    const existing = await this.prisma.brief.findMany({
+      where: { clientId },
+      select: {
+        styles: true,
+        rooms: true,
+        budgetRange: true,
+        description: true,
+      },
+    });
+    const target = key(brief);
+    if (existing.some((b) => key(b) === target)) {
+      throw new ConflictException(
+        'You already have a brief with the same rooms, styles, budget and description.',
+      );
+    }
   }
 
   private async requireOwned(id: string, clientId: string) {
