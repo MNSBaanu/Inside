@@ -57,7 +57,7 @@ export default function NewBriefPage() {
         budgetRange: budgetRange || undefined,
         description: description || undefined,
       });
-      router.push(`/briefs/${data.brief.id}`);
+      router.replace(`/briefs/${data.brief.id}`);
     } catch (cause) {
       setError(errorMessage(cause));
       setSubmitting(false);

@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
+import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
@@ -28,49 +29,46 @@ export default function BriefsPage() {
         }
       />
 
-      <div className="mt-12">
+      <div className="mt-8">
         {error ? <ErrorNotice message={error} /> : null}
 
         {loading ? (
-          <div className="flex flex-col gap-4">
-            <Skeleton className="h-32" />
-            <Skeleton className="h-32" />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-16" />
+            <Skeleton className="h-16" />
+            <Skeleton className="h-16" />
           </div>
         ) : data && data.items.length > 0 ? (
-          <ul className="flex flex-col gap-4">
+          <ul className={cn(cardSurface, 'divide-y divide-hairline overflow-hidden p-0')}>
             {data.items.map((brief) => (
               <li key={brief.id}>
                 <Link
                   href={`/briefs/${brief.id}`}
-                  className={cn(cardSurface, 'block p-6 transition-colors duration-300 hover:border-brand')}
+                  className="group grid items-center gap-x-6 gap-y-2 px-5 py-4 transition-colors duration-200 hover:bg-sand/50 md:grid-cols-[minmax(0,2fr)_minmax(0,2fr)_auto_auto]"
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div>
-                      <p className="font-display text-xl font-semibold">
-                        {brief.rooms.join(', ') || 'Untitled brief'}
-                      </p>
-                      <p className="mt-1 text-sm text-muted">
-                        Created {formatDate(brief.createdAt)}
-                      </p>
-                    </div>
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold group-hover:text-brand">
+                      {brief.rooms.join(', ') || 'Untitled brief'}
+                    </p>
+                    <p className="mt-0.5 truncate text-sm text-muted">
+                      Created {formatDate(brief.createdAt)}
+                      {brief.description ? ` · ${brief.description}` : ''}
+                    </p>
+                  </div>
+                  <div className="flex min-w-0 flex-wrap gap-2">
+                    {brief.styles.map((style) => (
+                      <Badge key={style}>{style}</Badge>
+                    ))}
+                  </div>
+                  <div>
                     {brief.budgetRange ? (
                       <Badge tone="highlight">{brief.budgetRange}</Badge>
                     ) : null}
                   </div>
-
-                  {brief.styles.length > 0 ? (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {brief.styles.map((style) => (
-                        <Badge key={style}>{style}</Badge>
-                      ))}
-                    </div>
-                  ) : null}
-
-                  {brief.description ? (
-                    <p className="mt-4 line-clamp-2 text-muted">
-                      {brief.description}
-                    </p>
-                  ) : null}
+                  <ChevronRight
+                    aria-hidden
+                    className="hidden h-4 w-4 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand md:block"
+                  />
                 </Link>
               </li>
             ))}
