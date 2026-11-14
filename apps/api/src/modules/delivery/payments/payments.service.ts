@@ -45,6 +45,7 @@ export class PaymentsService {
     const projectUrl = `${this.config.get<string>('CORS_ORIGIN') ?? 'http://localhost:3000'}/projects/${payment.projectId}`;
 
     const session = await stripe.checkout.sessions.create({
+      ui_mode: 'embedded',
       mode: 'payment',
       line_items: [
         {
@@ -57,11 +58,10 @@ export class PaymentsService {
         },
       ],
       metadata: { paymentId: id },
-      success_url: `${projectUrl}?payment=${id}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: projectUrl,
+      return_url: `${projectUrl}?payment=${id}&session_id={CHECKOUT_SESSION_ID}`,
     });
 
-    return { success: true, data: { url: session.url } };
+    return { success: true, data: { clientSecret: session.client_secret } };
   }
 
   async markPaid(user: AuthUser, id: string, dto: PayPaymentDto) {

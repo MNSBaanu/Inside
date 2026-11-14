@@ -67,12 +67,15 @@ describe('PaymentsService', () => {
   it('creates a checkout session for the client', async () => {
     prisma.milestonePayment.findUnique.mockResolvedValue(pendingPayment);
     stripe.checkout.sessions.create.mockResolvedValue({
-      url: 'https://checkout.stripe.com/c/cs_1',
+      client_secret: 'cs_1_secret',
     });
     const result = await service.createCheckout(client, 'pay1');
-    expect(result.data.url).toBe('https://checkout.stripe.com/c/cs_1');
+    expect(result.data.clientSecret).toBe('cs_1_secret');
     expect(stripe.checkout.sessions.create).toHaveBeenCalledWith(
-      expect.objectContaining({ metadata: { paymentId: 'pay1' } }),
+      expect.objectContaining({
+        ui_mode: 'embedded',
+        metadata: { paymentId: 'pay1' },
+      }),
     );
   });
 

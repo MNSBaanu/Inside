@@ -11,6 +11,12 @@ import { api, errorMessage } from '@/lib/api/client';
 import { formatDate, formatMoney } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
 import type { MilestonePayment } from '@/lib/types';
+import { loadStripe, type Stripe, type StripeEmbeddedCheckout } from '@stripe/stripe-js';
+import { X } from 'lucide-react';
+
+const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
+let checkoutQueue: Promise<void> = Promise.resolve();
 
 export function PaymentList({
   projectId,
@@ -25,6 +31,7 @@ export function PaymentList({
 
   const [actionError, setActionError] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -44,12 +51,16 @@ export function PaymentList({
 
   async function pay(paymentId: string) {
     setActionError(null);
+    if (!stripePromise) {
+      setActionError('Payments are not configured. Add the Stripe publishable key.');
+      return;
+    }
     setPending(paymentId);
     try {
-      const { url } = await api.post<{ url: string }>(
+      const data = await api.post<{ clientSecret: string }>(
         `/payments/${paymentId}/checkout`,
       );
-      window.location.assign(url);
+      setClientSecret(data.clientSecret);
     } catch (cause) {
       setActionError(errorMessage(cause));
     } finally {
@@ -116,6 +127,84 @@ export function PaymentList({
           </li>
         ))}
       </ul>
+
+      {clientSecret && stripePromise ? (
+        <CheckoutDialog
+          stripePromise={stripePromise}
+          clientSecret={clientSecret}
+          onClose={() => setClientSecret(null)}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function CheckoutDialog({
+  stripePromise,
+  clientSecret,
+  onClose,
+}: {
+  stripePromise: Promise<Stripe | null>;
+  clientSecret: string;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onClose]);
+
+  const mountRef = useRef<HTMLDivElement>(null);
+  const [mountError, setMountError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    let checkout: StripeEmbeddedCheckout | undefined;
+    checkoutQueue = checkoutQueue.then(async () => {
+      if (cancelled) return;
+      try {
+        const stripe = await stripePromise;
+        if (!stripe || cancelled || !mountRef.current) return;
+        checkout = await stripe.initEmbeddedCheckout({
+          fetchClientSecret: async () => clientSecret,
+        });
+        checkout.mount(mountRef.current);
+      } catch (cause) {
+        setMountError(errorMessage(cause));
+      }
+    });
+    return () => {
+      cancelled = true;
+      checkoutQueue = checkoutQueue.then(() => checkout?.destroy());
+    };
+  }, [stripePromise, clientSecret]);
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/60 p-4">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Pay milestone"
+        className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white p-4 pt-12 shadow-lg"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close checkout"
+          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full text-ink hover:bg-sand"
+        >
+          <X aria-hidden className="h-5 w-5" />
+        </button>
+        {mountError ? <ErrorNotice message={mountError} /> : null}
+        <div ref={mountRef} />
+      </div>
     </div>
   );
 }
