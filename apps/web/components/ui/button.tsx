@@ -26,7 +26,7 @@ function classesFor(
   className?: string,
 ) {
   return cn(
-    'inline-flex items-center justify-center gap-2 rounded-pill text-base font-semibold transition-all duration-300 ease-editorial disabled:cursor-not-allowed disabled:opacity-50',
+    'inline-flex items-center justify-center gap-2 rounded-lg text-base font-semibold transition-all duration-300 ease-editorial disabled:cursor-not-allowed disabled:opacity-50',
     variants[variant],
     sizes[size],
     fullWidth && 'w-full',
