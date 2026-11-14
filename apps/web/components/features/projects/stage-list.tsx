@@ -72,7 +72,7 @@ export function StageList({
     <div>
       {error ? <ErrorNotice message={error} /> : null}
 
-      <ol className="mt-4 flex flex-col gap-4">
+      <ol className="mt-4 flex flex-col gap-3">
         {stages.map((stage) => {
           const busy = pending === stage.id;
           const awaitingPayment =
@@ -80,89 +80,87 @@ export function StageList({
           return (
             <li
               key={stage.id}
-              className={cn(cardSurface, 'p-6')}
+              className={cn(cardSurface, 'px-5 py-4')}
             >
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-pill bg-sand font-display text-lg font-semibold text-brand">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-pill bg-sand text-sm font-semibold text-brand">
                     {stage.stageOrder}
                   </span>
-                  <div>
-                    <p className="font-display text-xl font-semibold">
+                  <div className="min-w-0">
+                    <p className="font-semibold">
                       {titleCase(stage.name)}
                     </p>
                     <p className="text-sm text-muted">
                       {formatMoney(stage.fee)} · Due {formatDate(stage.dueDate)}
                     </p>
+                    {awaitingPayment ? (
+                      <p className="text-sm text-muted">
+                        {isClient
+                          ? 'Pay this milestone under Payments so the designer can start.'
+                          : "Waiting for the client's payment."}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
-                <StatusBadge status={stage.status} />
-              </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  {isDesigner && stage.status === 'PENDING' ? (
+                    <Button
+                      size="sm"
+                      disabled={busy || awaitingPayment}
+                      onClick={() => act(stage.id, 'start')}
+                    >
+                      Start stage
+                    </Button>
+                  ) : null}
 
-              <div className="mt-6 flex flex-wrap gap-3">
-                {isDesigner && stage.status === 'PENDING' ? (
-                  <Button
-                    size="sm"
-                    disabled={busy || awaitingPayment}
-                    onClick={() => act(stage.id, 'start')}
-                  >
-                    Start stage
-                  </Button>
-                ) : null}
-
-                {awaitingPayment ? (
-                  <p className="self-center text-sm text-muted">
-                    {isClient
-                      ? 'Pay this milestone under Payments so the designer can start.'
-                      : "Waiting for the client's payment."}
-                  </p>
-                ) : null}
-
-                {isDesigner &&
-                (stage.status === 'IN_PROGRESS' ||
-                  stage.status === 'REJECTED') ? (
-                  <Button
-                    size="sm"
-                    disabled={busy}
-                    onClick={() => act(stage.id, 'submit')}
-                  >
-                    {stage.status === 'REJECTED'
-                      ? 'Resubmit for review'
-                      : 'Submit for review'}
-                  </Button>
-                ) : null}
-
-                {isClient && stage.status === 'SUBMITTED' ? (
-                  <>
+                  {isDesigner &&
+                  (stage.status === 'IN_PROGRESS' ||
+                    stage.status === 'REJECTED') ? (
                     <Button
                       size="sm"
                       disabled={busy}
-                      onClick={() => act(stage.id, 'approve')}
+                      onClick={() => act(stage.id, 'submit')}
                     >
-                      Approve
+                      {stage.status === 'REJECTED'
+                        ? 'Resubmit for review'
+                        : 'Submit for review'}
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={busy}
-                      onClick={() =>
-                        setRejecting(rejecting === stage.id ? null : stage.id)
-                      }
-                    >
-                      Request changes
-                    </Button>
-                  </>
-                ) : null}
+                  ) : null}
 
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() =>
-                    setOpenStage(openStage === stage.id ? null : stage.id)
-                  }
-                >
-                  {openStage === stage.id ? 'Hide files' : 'Files'}
-                </Button>
+                  {isClient && stage.status === 'SUBMITTED' ? (
+                    <>
+                      <Button
+                        size="sm"
+                        disabled={busy}
+                        onClick={() => act(stage.id, 'approve')}
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={busy}
+                        onClick={() =>
+                          setRejecting(rejecting === stage.id ? null : stage.id)
+                        }
+                      >
+                        Request changes
+                      </Button>
+                    </>
+                  ) : null}
+
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() =>
+                      setOpenStage(openStage === stage.id ? null : stage.id)
+                    }
+                  >
+                    {openStage === stage.id ? 'Hide files' : 'Files'}
+                  </Button>
+                  <StatusBadge status={stage.status} />
+                </div>
               </div>
 
               <StageTasks

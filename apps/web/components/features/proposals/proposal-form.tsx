@@ -65,7 +65,7 @@ export function ProposalForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-8">
+    <form onSubmit={onSubmit} className="flex flex-col gap-5">
       {error ? <ErrorNotice message={error} /> : null}
 
       <Field label="Scope" htmlFor="scope">
@@ -93,7 +93,7 @@ export function ProposalForm({
       </Field>
 
       <fieldset>
-        <legend className="ui-label mb-4 text-ink/70">Stage fees</legend>
+        <legend className="ui-label mb-3 text-ink/70">Stage fees</legend>
         <div className="grid gap-4 sm:grid-cols-2">
           {billableStages.map((stage) => (
             <Field
@@ -114,16 +114,16 @@ export function ProposalForm({
             </Field>
           ))}
         </div>
-        <p className="mt-4 text-muted">
+        <p className="mt-3 text-sm text-muted">
           Total:{' '}
-          <span className="font-display text-xl font-semibold text-brand">
+          <span className="text-lg font-semibold text-brand">
             {formatMoney(total)}
           </span>
         </p>
       </fieldset>
 
       <div>
-        <Button type="submit" size="lg" disabled={submitting}>
+        <Button type="submit" disabled={submitting}>
           {submitting ? 'Sending…' : 'Send proposal'}
         </Button>
       </div>

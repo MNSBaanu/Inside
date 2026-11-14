@@ -104,7 +104,7 @@ export default function RequestDetailPage({
         <Badge tone="brand">Request</Badge>
         <StatusBadge status={item.status} />
       </div>
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-display text-3xl font-semibold md:text-4xl">
           {item.title}
         </h1>
@@ -144,7 +144,7 @@ export default function RequestDetailPage({
           ) : null}
         </div>
       </div>
-      <p className="mt-4 text-muted">
+      <p className="mt-2 text-sm text-muted">
         {item.type === 'DIRECT' ? 'Direct request' : 'Open to proposals'} ·
         Created {formatDate(item.createdAt)}
         {item.budget !== null ? ` · Budget ${formatMoney(item.budget)}` : ''}
@@ -152,22 +152,22 @@ export default function RequestDetailPage({
       </p>
 
       {item.description ? (
-        <Card className="mt-10">
+        <Card className="mt-6">
           <p className="ui-label text-muted">Description</p>
-          <p className="mt-3 whitespace-pre-line text-muted">
+          <p className="mt-2 whitespace-pre-line text-muted">
             {item.description}
           </p>
         </Card>
       ) : null}
 
       {actionError ? (
-        <div className="mt-8">
+        <div className="mt-6">
           <ErrorNotice message={actionError} />
         </div>
       ) : null}
 
       {canPropose ? (
-        <Card className="mt-12">
+        <Card className="mt-6">
           <CardHeader
             title={canResubmit ? 'Send a revised proposal' : 'Send a proposal'}
             description="Set out the scope, the timeline, and a fee for each stage."
@@ -181,12 +181,12 @@ export default function RequestDetailPage({
         </Card>
       ) : null}
 
-      <section className="mt-16">
-        <h2 className="font-display text-2xl font-semibold">
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold">
           {isClient ? 'Proposals received' : 'Proposals'}
         </h2>
 
-        <div className="mt-8">
+        <div className="mt-3">
           {proposals.loading ? (
             <Skeleton className="h-40" />
           ) : proposals.error ? (
@@ -194,11 +194,11 @@ export default function RequestDetailPage({
           ) : proposals.data && proposals.data.items.length > 0 ? (
             <>
             {isClient && comparable.length >= 2 ? (
-              <div className="mb-8">
+              <div className="mb-4">
                 <ProposalComparison proposals={comparable} />
               </div>
             ) : null}
-            <ul className="flex flex-col gap-6">
+            <ul className="flex flex-col gap-3">
               {proposals.data.items.map((proposal) => (
                 <li key={proposal.id}>
                   <Card>
@@ -207,10 +207,10 @@ export default function RequestDetailPage({
                         <Avatar
                           name={proposal.designer?.name ?? 'Designer'}
                           src={proposal.designer?.avatarUrl}
-                          size={48}
+                          size={40}
                         />
                         <div>
-                          <p className="font-display text-xl font-semibold">
+                          <p className="font-semibold">
                             {proposal.designer?.name ?? 'Designer'}
                           </p>
                           <p className="text-sm text-muted">
@@ -221,25 +221,25 @@ export default function RequestDetailPage({
                       <StatusBadge status={proposal.status} />
                     </div>
 
-                    <p className="mt-6 whitespace-pre-line text-muted">
+                    <p className="mt-4 whitespace-pre-line text-sm text-muted">
                       {proposal.scope}
                     </p>
 
-                    <dl className="mt-6 flex flex-wrap gap-8">
+                    <dl className="mt-4 flex flex-wrap gap-8">
                       <div>
                         <dt className="ui-label text-muted">Timeline</dt>
-                        <dd className="mt-2 text-lg">{proposal.timeline}</dd>
+                        <dd className="mt-1">{proposal.timeline}</dd>
                       </div>
                       <div>
                         <dt className="ui-label text-muted">Total</dt>
-                        <dd className="mt-2 font-display text-2xl font-semibold text-brand">
+                        <dd className="mt-1 text-xl font-semibold text-brand">
                           {formatMoney(proposal.totalAmount)}
                         </dd>
                       </div>
                     </dl>
 
                     {proposal.stageFees.length > 0 ? (
-                      <ul className="mt-6 flex flex-wrap gap-2">
+                      <ul className="mt-4 flex flex-wrap gap-2">
                         {proposal.stageFees.map((stage) => (
                           <li key={stage.name}>
                             <Badge>
@@ -251,11 +251,11 @@ export default function RequestDetailPage({
                     ) : null}
 
                     {proposal.status === 'PENDING' ? (
-                      <div className="mt-8 flex flex-wrap gap-4">
+                      <div className="mt-5 flex flex-wrap gap-2">
                         {isClient ? (
                           <>
                             <Button
-                              size="lg"
+                              size="sm"
                               disabled={pendingId === proposal.id}
                               onClick={() => act(proposal.id, 'accept')}
                             >
@@ -264,7 +264,7 @@ export default function RequestDetailPage({
                                 : 'Accept proposal'}
                             </Button>
                             <Button
-                              size="lg"
+                              size="sm"
                               variant="outline"
                               disabled={pendingId === proposal.id}
                               onClick={() => act(proposal.id, 'reject')}
@@ -274,7 +274,7 @@ export default function RequestDetailPage({
                           </>
                         ) : proposal.designerId === user?.id ? (
                           <Button
-                            size="lg"
+                            size="sm"
                             variant="outline"
                             disabled={pendingId === proposal.id}
                             onClick={() => act(proposal.id, 'withdraw')}

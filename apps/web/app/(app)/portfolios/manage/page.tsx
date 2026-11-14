@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils/cn';
+import { ImageOff, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -9,6 +10,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, cardSurface } from '@/components/ui/card';
 import { Combobox } from '@/components/ui/combobox';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { FileUpload } from '@/components/ui/file-upload';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
@@ -33,7 +35,9 @@ export default function ManagePortfoliosPage() {
   });
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [adding, setAdding] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [confirmId, setConfirmId] = useState<string | null>(null);
 
   async function onCreate(event: React.FormEvent) {
     event.preventDefault();
@@ -59,6 +63,7 @@ export default function ManagePortfoliosPage() {
         budget: '',
         imageUrl: '',
       });
+      setAdding(false);
       await reload();
     } catch (cause) {
       setFormError(errorMessage(cause));
@@ -87,166 +92,189 @@ export default function ManagePortfoliosPage() {
         eyebrow="My work"
         title="Your published projects."
         description="Published work is what clients browse, and what helps match you with their briefs."
+        action={
+          <Button size="lg" onClick={() => setAdding(!adding)}>
+            {adding ? 'Close' : 'Add project'}
+          </Button>
+        }
       />
 
-      <Card className="mt-12">
-        <CardHeader
-          title="Add a project"
-          description="Publish a finished room with at least one image."
-        />
-
-        <form onSubmit={onCreate} className="flex flex-col gap-6">
-          {formError ? <ErrorNotice message={formError} /> : null}
-
-          <Field label="Title" htmlFor="title">
-            <Input
-              id="title"
-              required
-              value={form.title}
-              onChange={(event) =>
-                setForm({ ...form, title: event.target.value })
-              }
-              placeholder="Kalutara Villa"
-            />
-          </Field>
-
-          <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Style" htmlFor="style">
-              <Combobox
-                id="style"
-                value={form.style}
-                options={STYLES}
-                onChange={(style) => setForm({ ...form, style })}
-                placeholder="Tropical Modern"
-              />
-            </Field>
-            <Field label="Room type" htmlFor="roomType">
-              <Combobox
-                id="roomType"
-                value={form.roomType}
-                options={ROOM_TYPES}
-                onChange={(roomType) => setForm({ ...form, roomType })}
-                placeholder="Living Room"
-              />
-            </Field>
-          </div>
-
-          <Field label="Budget" htmlFor="budget" hint="Optional, in LKR.">
-            <Input
-              id="budget"
-              type="number"
-              min={0}
-              value={form.budget}
-              onChange={(event) =>
-                setForm({ ...form, budget: event.target.value })
-              }
-              placeholder="650000"
-            />
-          </Field>
-
-          <FileUpload
-            folder="portfolios"
-            label="Cover image"
-            onUploaded={(file) => setForm({ ...form, imageUrl: file.url })}
+      {adding ? (
+        <Card className="mt-6">
+          <CardHeader
+            title="Add a project"
+            description="Publish a finished room with at least one image."
           />
 
-          <Field label="Description" htmlFor="description">
-            <Textarea
-              id="description"
-              value={form.description}
-              onChange={(event) =>
-                setForm({ ...form, description: event.target.value })
-              }
-              placeholder="What the brief was, and how you solved it."
-            />
-          </Field>
+          <form onSubmit={onCreate} className="flex flex-col gap-5">
+            {formError ? <ErrorNotice message={formError} /> : null}
 
-          <div>
-            <Button type="submit" size="lg" disabled={busy}>
-              {busy ? 'Publishing…' : 'Publish project'}
-            </Button>
-          </div>
-        </form>
-      </Card>
-
-      <section className="mt-16">
-        <h2 className="font-display text-2xl font-semibold">Published work</h2>
-
-        <div className="mt-8">
-          {error ? <ErrorNotice message={error} /> : null}
-
-          {loading ? (
-            <div className="grid gap-8 sm:grid-cols-2">
-              <Skeleton className="h-72" />
-              <Skeleton className="h-72" />
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field label="Title" htmlFor="title">
+                <Input
+                  id="title"
+                  required
+                  value={form.title}
+                  onChange={(event) =>
+                    setForm({ ...form, title: event.target.value })
+                  }
+                  placeholder="Kalutara Villa"
+                />
+              </Field>
+              <Field label="Budget" htmlFor="budget" hint="Optional, in LKR.">
+                <Input
+                  id="budget"
+                  type="number"
+                  min={0}
+                  value={form.budget}
+                  onChange={(event) =>
+                    setForm({ ...form, budget: event.target.value })
+                  }
+                  placeholder="650000"
+                />
+              </Field>
+              <Field label="Style" htmlFor="style">
+                <Combobox
+                  id="style"
+                  value={form.style}
+                  options={STYLES}
+                  onChange={(style) => setForm({ ...form, style })}
+                  placeholder="Tropical Modern"
+                />
+              </Field>
+              <Field label="Room type" htmlFor="roomType">
+                <Combobox
+                  id="roomType"
+                  value={form.roomType}
+                  options={ROOM_TYPES}
+                  onChange={(roomType) => setForm({ ...form, roomType })}
+                  placeholder="Living Room"
+                />
+              </Field>
             </div>
-          ) : data && data.items.length > 0 ? (
-            <ul className="grid gap-8 sm:grid-cols-2">
-              {data.items.map((portfolio) => (
-                <li
-                  key={portfolio.id}
-                  className={cn(cardSurface, 'overflow-hidden')}
+
+            <FileUpload
+              folder="portfolios"
+              label="Cover image"
+              onUploaded={(file) => setForm({ ...form, imageUrl: file.url })}
+            />
+
+            <Field label="Description" htmlFor="description">
+              <Textarea
+                id="description"
+                value={form.description}
+                onChange={(event) =>
+                  setForm({ ...form, description: event.target.value })
+                }
+                placeholder="What the brief was, and how you solved it."
+              />
+            </Field>
+
+            <div className="flex flex-wrap gap-3">
+              <Button type="submit" disabled={busy}>
+                {busy ? 'Publishing…' : 'Publish project'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setAdding(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </Card>
+      ) : null}
+
+      <section className="mt-8">
+        {error ? <ErrorNotice message={error} /> : null}
+        {!adding && formError ? <ErrorNotice message={formError} /> : null}
+
+        {loading ? (
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-20" />
+            <Skeleton className="h-20" />
+          </div>
+        ) : data && data.items.length > 0 ? (
+          <ul className={cn(cardSurface, 'divide-y divide-hairline overflow-hidden')}>
+            {data.items.map((portfolio) => (
+              <li key={portfolio.id} className="flex items-center gap-4 px-5 py-3">
+                <Link
+                  href={`/portfolios/${portfolio.id}`}
+                  className="group flex min-w-0 flex-1 items-center gap-4"
                 >
-                  <div className="relative aspect-[4/3] bg-sand">
+                  <span className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-sand">
                     {portfolio.images[0] ? (
                       <Image
                         src={portfolio.images[0].imageUrl}
                         unoptimized={!isOptimizableImage(portfolio.images[0].imageUrl)}
-                        alt={portfolio.title}
+                        alt=""
                         fill
-                        sizes="(min-width: 640px) 45vw, 100vw"
+                        sizes="80px"
                         className="object-cover"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center ui-label text-muted">
-                        No images
-                      </div>
+                      <ImageOff
+                        aria-hidden
+                        className="absolute inset-0 m-auto h-4 w-4 text-muted"
+                      />
                     )}
-                  </div>
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate font-semibold group-hover:text-brand">
+                      {portfolio.title}
+                    </span>
+                    <span className="block truncate text-sm text-muted">
+                      {[
+                        portfolio.style,
+                        portfolio.roomType,
+                        portfolio.budget !== null ? formatMoney(portfolio.budget) : null,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ') || 'No details'}
+                    </span>
+                  </span>
+                </Link>
 
-                  <div className="p-6">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        <p className="truncate font-display text-xl font-semibold">
-                          {portfolio.title}
-                        </p>
-                        <p className="mt-1 text-sm text-muted">
-                          {formatMoney(portfolio.budget)}
-                        </p>
-                      </div>
-                      <Badge tone={portfolio.isPublished ? 'support' : 'neutral'}>
-                        {portfolio.isPublished ? 'Published' : 'Draft'}
-                      </Badge>
-                    </div>
-
-                    <div className="mt-6 flex flex-wrap gap-3">
-                      <Link
-                        href={`/portfolios/${portfolio.id}`}
-                        className="ui-label link-underline text-ink"
-                      >
-                        View
-                      </Link>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={removingId === portfolio.id}
-                        onClick={() => onDelete(portfolio.id)}
-                      >
-                        {removingId === portfolio.id ? 'Removing…' : 'Delete'}
-                      </Button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : !error ? (
-            <EmptyState
-              title="Nothing published yet."
-              description="Add your first project so clients can find you."
-            />
-          ) : null}
-        </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <Badge tone={portfolio.isPublished ? 'support' : 'neutral'}>
+                    {portfolio.isPublished ? 'Published' : 'Draft'}
+                  </Badge>
+                  <button
+                    type="button"
+                    disabled={removingId === portfolio.id}
+                    onClick={() => setConfirmId(portfolio.id)}
+                    aria-label={`Delete ${portfolio.title}`}
+                    title="Delete"
+                    className="grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
+                  >
+                    <Trash2 aria-hidden className="h-4 w-4" />
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : !error ? (
+          <EmptyState
+            title="Nothing published yet."
+            description="Add your first project so clients can find you."
+            action={<Button onClick={() => setAdding(true)}>Add project</Button>}
+          />
+        ) : null}
       </section>
+
+      {confirmId ? (
+        <ConfirmDialog
+          title="Delete this project?"
+          description="It will be removed from your profile and the explore page. This cannot be undone."
+          onCancel={() => setConfirmId(null)}
+          onConfirm={() => {
+            const id = confirmId;
+            setConfirmId(null);
+            void onDelete(id);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
