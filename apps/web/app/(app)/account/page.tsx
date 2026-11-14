@@ -81,19 +81,48 @@ function AccountForm({ user }: { user: User }) {
         </p>
       ) : null}
 
-      <Card className="mt-12">
+      <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <Card>
         <CardHeader
           title="Profile details"
           description="Keep this current - it feeds your public profile."
         />
 
-        <form onSubmit={onSubmit} className="flex flex-col gap-6">
+        <form onSubmit={onSubmit} className="flex flex-col gap-5">
           {error ? <ErrorNotice message={error} /> : null}
           {saved ? (
             <p className="rounded-card bg-support-soft px-4 py-3 text-sm text-success">
               Profile updated.
             </p>
           ) : null}
+
+          <div className="flex flex-wrap items-center gap-5">
+            <Avatar name={form.name || user.name} src={form.avatarUrl} size={72} />
+            <div className="flex flex-col items-start gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <FileUpload
+                  folder="avatars"
+                  label={form.avatarUrl ? 'Change photo' : 'Upload photo'}
+                  onUploaded={(file) =>
+                    setForm((current) => ({ ...current, avatarUrl: file.url }))
+                  }
+                />
+                {form.avatarUrl ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setForm({ ...form, avatarUrl: '' })}
+                  >
+                    Remove photo
+                  </Button>
+                ) : null}
+              </div>
+              <p className="text-sm text-muted">
+                JPG, PNG or WebP. Saved when you press Save.
+              </p>
+            </div>
+          </div>
 
           <Field label="Full name" htmlFor="name">
             <Input
@@ -119,7 +148,7 @@ function AccountForm({ user }: { user: User }) {
             />
           </Field>
 
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Location" htmlFor="location">
               <Combobox
                 id="location"
@@ -141,35 +170,6 @@ function AccountForm({ user }: { user: User }) {
             </Field>
           </div>
 
-          <div>
-            <p className="text-sm font-semibold">Profile photo</p>
-            <div className="mt-3 flex flex-wrap items-center gap-5">
-              <Avatar name={form.name || user.name} src={form.avatarUrl} size={72} />
-              <div className="flex flex-col items-start gap-2">
-                <FileUpload
-                  folder="avatars"
-                  label={form.avatarUrl ? 'Change photo' : 'Upload photo'}
-                  onUploaded={(file) =>
-                    setForm((current) => ({ ...current, avatarUrl: file.url }))
-                  }
-                />
-                {form.avatarUrl ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setForm({ ...form, avatarUrl: '' })}
-                  >
-                    Remove photo
-                  </Button>
-                ) : null}
-                <p className="text-sm text-muted">
-                  JPG, PNG or WebP. Saved when you press Save.
-                </p>
-              </div>
-            </div>
-          </div>
-
           {isDesigner ? (
             <label className="flex items-center gap-3 rounded-card bg-sand px-5 py-4">
               <input
@@ -184,28 +184,24 @@ function AccountForm({ user }: { user: User }) {
             </label>
           ) : null}
 
-          <div className="flex flex-wrap gap-4">
-            <Button type="submit" size="lg" disabled={saving}>
+          <div>
+            <Button type="submit" disabled={saving}>
               {saving ? 'Saving…' : 'Save changes'}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              onClick={onSignOut}
-            >
-              Sign out
             </Button>
           </div>
         </form>
       </Card>
 
-      <div className="mt-8">
+      <div className="flex flex-col gap-6">
         <RoleSwitch />
-      </div>
-
-      <div className="mt-8">
         <PasswordForm />
+        <Card>
+          <CardHeader title="Sign out" description="End your session on this device." />
+          <Button type="button" variant="outline" onClick={onSignOut}>
+            Sign out
+          </Button>
+        </Card>
+      </div>
       </div>
     </div>
   );

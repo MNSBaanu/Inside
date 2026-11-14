@@ -72,7 +72,7 @@ export function PasswordForm() {
         </Field>
 
         <div>
-          <Button type="submit" size="lg" disabled={busy}>
+          <Button type="submit" disabled={busy}>
             {busy ? 'Updating…' : 'Update password'}
           </Button>
         </div>
