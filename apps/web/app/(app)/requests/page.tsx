@@ -2,7 +2,9 @@
 
 import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
+import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
@@ -10,13 +12,40 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { formatDate, formatMoney } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
-import type { ProjectRequest } from '@/lib/types';
+import type { ProjectRequest, RequestStatus } from '@/lib/types';
+
+const STATUSES: RequestStatus[] = [
+  'PENDING',
+  'OPEN',
+  'ACCEPTED',
+  'REJECTED',
+  'CANCELLED',
+  'CLOSED',
+];
+
+function readable(status: string) {
+  const words = status.toLowerCase().replace(/_/g, ' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+function otherParty(request: ProjectRequest, isClient: boolean) {
+  const party = isClient ? request.designer : request.client;
+  return party?.name ? ` · ${isClient ? 'To' : 'From'} ${party.name}` : '';
+}
 
 export default function RequestsPage() {
   const { user } = useSession();
   const { data, error, loading } =
     useApi<{ items: ProjectRequest[] }>('/requests');
   const isClient = user?.activeRole === 'CLIENT';
+  const [filter, setFilter] = useState<RequestStatus | null>(null);
+
+  const items = data?.items ?? [];
+  const counts = items.reduce<Partial<Record<RequestStatus, number>>>(
+    (acc, request) => ({ ...acc, [request.status]: (acc[request.status] ?? 0) + 1 }),
+    {},
+  );
+  const visible = filter ? items.filter((request) => request.status === filter) : items;
 
   return (
     <div>
@@ -38,39 +67,85 @@ export default function RequestsPage() {
         }
       />
 
-      <div className="mt-12">
+      <div className="mt-8">
         {error ? <ErrorNotice message={error} /> : null}
 
         {loading ? (
-          <div className="flex flex-col gap-4">
-            <Skeleton className="h-28" />
-            <Skeleton className="h-28" />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-16" />
+            <Skeleton className="h-16" />
+            <Skeleton className="h-16" />
           </div>
         ) : data && data.items.length > 0 ? (
-          <ul className="flex flex-col gap-4">
-            {data.items.map((request) => (
-              <li key={request.id}>
-                <Link
-                  href={`/requests/${request.id}`}
-                  className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6 transition-colors duration-300 hover:border-brand')}
-                >
-                  <div className="min-w-0">
-                    <p className="font-display text-xl font-semibold">
-                      {request.title}
-                    </p>
-                    <p className="mt-1 text-sm text-muted">
-                      {request.type === 'DIRECT' ? 'Direct' : 'Open'} ·{' '}
-                      {formatDate(request.createdAt)}
-                      {request.budget !== null
-                        ? ` · ${formatMoney(request.budget)}`
-                        : ''}
-                    </p>
-                  </div>
-                  <StatusBadge status={request.status} />
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <>
+            <div
+              role="group"
+              aria-label="Filter by status"
+              className="mb-4 flex flex-wrap gap-2"
+            >
+              {[null, ...STATUSES.filter((status) => counts[status])].map((status) => {
+                const active = filter === status;
+                return (
+                  <button
+                    key={status ?? 'ALL'}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setFilter(status)}
+                    className={cn(
+                      'inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors',
+                      active
+                        ? 'border-brand bg-brand text-canvas'
+                        : 'border-hairline bg-surface text-ink/80 hover:border-brand hover:text-brand',
+                    )}
+                  >
+                    {status ? readable(status) : 'All'}
+                    <span className={active ? 'text-canvas/80' : 'text-muted'}>
+                      {status ? counts[status] : data.items.length}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {visible.length > 0 ? (
+              <ul className={cn(cardSurface, 'divide-y divide-hairline overflow-hidden')}>
+                {visible.map((request) => (
+                  <li key={request.id}>
+                    <Link
+                      href={`/requests/${request.id}`}
+                      className="group grid items-center gap-x-6 gap-y-2 px-5 py-4 transition-colors duration-200 hover:bg-sand/50 md:grid-cols-[minmax(0,1fr)_auto_auto_auto]"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold group-hover:text-brand">
+                          {request.title}
+                        </p>
+                        <p className="mt-0.5 truncate text-sm text-muted">
+                          {request.type === 'DIRECT' ? 'Direct' : 'Open'} ·{' '}
+                          {formatDate(request.createdAt)}
+                          {otherParty(request, isClient)}
+                        </p>
+                      </div>
+                      <p className="text-sm font-medium md:text-right">
+                        {request.budget !== null ? formatMoney(request.budget) : (
+                          <span className="text-muted">No budget</span>
+                        )}
+                      </p>
+                      <StatusBadge status={request.status} />
+                      <ChevronRight
+                        aria-hidden
+                        className="hidden h-4 w-4 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand md:block"
+                      />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <EmptyState
+                title="No requests with this status."
+                description="Pick another status or show all requests."
+              />
+            )}
+          </>
         ) : !error ? (
           <EmptyState
             title={isClient ? 'No requests yet.' : 'Nothing waiting on you.'}

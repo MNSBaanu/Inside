@@ -1,5 +1,7 @@
 'use client';
 
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
@@ -91,12 +93,56 @@ export default function RequestDetailPage({
 
   return (
     <div>
-      <Badge tone="brand">Request</Badge>
+      <Link
+        href="/requests"
+        className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-brand"
+      >
+        <ChevronLeft aria-hidden className="h-4 w-4" />
+        All requests
+      </Link>
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge tone="brand">Request</Badge>
+        <StatusBadge status={item.status} />
+      </div>
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-display text-3xl font-semibold md:text-4xl">
           {item.title}
         </h1>
-        <StatusBadge status={item.status} />
+        <div className="flex flex-wrap items-center gap-2">
+          {isClient && ['OPEN', 'PENDING'].includes(item.status) ? (
+            <>
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={pendingId === item.id}
+                onClick={() => changeRequest('close')}
+              >
+                Close to new proposals
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={pendingId === item.id}
+                onClick={() => changeRequest('cancel')}
+              >
+                Cancel request
+              </Button>
+            </>
+          ) : null}
+          {isDesigner &&
+          item.type === 'DIRECT' &&
+          item.designerId === user?.id &&
+          item.status === 'PENDING' ? (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={pendingId === item.id}
+              onClick={() => changeRequest('decline')}
+            >
+              Decline request
+            </Button>
+          ) : null}
+        </div>
       </div>
       <p className="mt-4 text-muted">
         {item.type === 'DIRECT' ? 'Direct request' : 'Open to proposals'} ·
@@ -104,43 +150,6 @@ export default function RequestDetailPage({
         {item.budget !== null ? ` · Budget ${formatMoney(item.budget)}` : ''}
         {item.timeline ? ` · Timeline ${item.timeline}` : ''}
       </p>
-
-      {isClient && ['OPEN', 'PENDING'].includes(item.status) ? (
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={pendingId === item.id}
-            onClick={() => changeRequest('cancel')}
-          >
-            Cancel request
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            disabled={pendingId === item.id}
-            onClick={() => changeRequest('close')}
-          >
-            Close to new proposals
-          </Button>
-        </div>
-      ) : null}
-
-      {isDesigner &&
-      item.type === 'DIRECT' &&
-      item.designerId === user?.id &&
-      item.status === 'PENDING' ? (
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={pendingId === item.id}
-            onClick={() => changeRequest('decline')}
-          >
-            Decline request
-          </Button>
-        </div>
-      ) : null}
 
       {item.description ? (
         <Card className="mt-10">

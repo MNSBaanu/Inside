@@ -1,5 +1,7 @@
 'use client';
 
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
@@ -49,7 +51,7 @@ function NewRequestForm() {
         ...(budget ? { budget: Number(budget) } : {}),
         ...(timeline ? { timeline } : {}),
       });
-      router.push(`/requests/${data.request.id}`);
+      router.replace(`/requests/${data.request.id}`);
     } catch (cause) {
       setError(errorMessage(cause));
       setSubmitting(false);
@@ -57,11 +59,11 @@ function NewRequestForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-8">
+    <form onSubmit={onSubmit} className="flex flex-col gap-5">
       {error ? <ErrorNotice message={error} /> : null}
 
       <fieldset>
-        <legend className="ui-label mb-4 text-ink/70">Request type</legend>
+        <legend className="ui-label mb-3 text-ink/70">Request type</legend>
         <div className="grid gap-3 sm:grid-cols-2">
           <button
             type="button"
@@ -69,7 +71,7 @@ function NewRequestForm() {
             aria-pressed={type === 'DIRECT'}
             disabled={!designerId}
             className={cn(
-              'rounded-card border p-5 text-left transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50',
+              'rounded-card border p-4 text-left transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50',
               type === 'DIRECT'
                 ? 'border-brand bg-brand-soft'
                 : 'border-hairline bg-surface hover:border-ink/30',
@@ -90,7 +92,7 @@ function NewRequestForm() {
             onClick={() => setType('OPEN')}
             aria-pressed={type === 'OPEN'}
             className={cn(
-              'rounded-card border p-5 text-left transition-colors duration-300',
+              'rounded-card border p-4 text-left transition-colors duration-300',
               type === 'OPEN'
                 ? 'border-brand bg-brand-soft'
                 : 'border-hairline bg-surface hover:border-ink/30',
@@ -128,39 +130,40 @@ function NewRequestForm() {
         />
       </Field>
 
-      <Field
-        label="Expected timeline"
-        htmlFor="timeline"
-        hint="Optional, for example 6 weeks."
-      >
-        <Input
-          id="timeline"
-          maxLength={200}
-          value={timeline}
-          onChange={(event) => setTimeline(event.target.value)}
-          placeholder="6 weeks"
-        />
-      </Field>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field
+          label="Expected timeline"
+          htmlFor="timeline"
+          hint="Optional, for example 6 weeks."
+        >
+          <Input
+            id="timeline"
+            maxLength={200}
+            value={timeline}
+            onChange={(event) => setTimeline(event.target.value)}
+            placeholder="6 weeks"
+          />
+        </Field>
 
-      <Field label="Budget" htmlFor="budget" hint="Optional, in LKR.">
-        <Input
-          id="budget"
-          type="number"
-          min={0}
-          value={budget}
-          onChange={(event) => setBudget(event.target.value)}
-          placeholder="500000"
-        />
-      </Field>
+        <Field label="Budget" htmlFor="budget" hint="Optional, in LKR.">
+          <Input
+            id="budget"
+            type="number"
+            min={0}
+            value={budget}
+            onChange={(event) => setBudget(event.target.value)}
+            placeholder="500000"
+          />
+        </Field>
+      </div>
 
-      <div className="flex flex-wrap gap-4">
-        <Button type="submit" size="lg" disabled={submitting}>
+      <div className="flex flex-wrap gap-3">
+        <Button type="submit" disabled={submitting}>
           {submitting ? 'Sending…' : 'Send request'}
         </Button>
         <Button
           type="button"
           variant="outline"
-          size="lg"
           onClick={() => router.push('/requests')}
         >
           Cancel
@@ -173,6 +176,13 @@ function NewRequestForm() {
 export default function NewRequestPage() {
   return (
     <div>
+      <Link
+        href="/requests"
+        className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-brand"
+      >
+        <ChevronLeft aria-hidden className="h-4 w-4" />
+        All requests
+      </Link>
       <PageHeader
         variant="app"
         eyebrow="New request"
@@ -180,7 +190,7 @@ export default function NewRequestPage() {
         description="Send it to one designer, or open it up and compare what comes back."
       />
 
-      <Card className="mt-12">
+      <Card className="mt-6">
         <CardHeader title="Request details" />
         <Suspense fallback={<Skeleton className="h-64" />}>
           <NewRequestForm />
