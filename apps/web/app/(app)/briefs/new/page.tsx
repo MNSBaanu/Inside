@@ -1,5 +1,7 @@
 'use client';
 
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { BriefAssistant } from '@/components/features/briefs/brief-assistant';
@@ -66,6 +68,13 @@ export default function NewBriefPage() {
 
   return (
     <div>
+      <Link
+        href="/briefs"
+        className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-brand"
+      >
+        <ChevronLeft aria-hidden className="h-4 w-4" />
+        All briefs
+      </Link>
       <PageHeader
         variant="app"
         eyebrow="New brief"
@@ -82,15 +91,16 @@ export default function NewBriefPage() {
         }}
       />
 
-      <Card className="mt-12">
+      <Card className="mt-6">
         <CardHeader
           title="Brief details"
           description="You can edit any of this later."
         />
 
-        <form onSubmit={onSubmit} className="flex flex-col gap-8">
+        <form onSubmit={onSubmit} className="flex flex-col gap-5">
           {error ? <ErrorNotice message={error} /> : null}
 
+          <div className="grid gap-5 md:grid-cols-2">
           <Field
             label="Rooms"
             htmlFor="rooms"
@@ -118,6 +128,7 @@ export default function NewBriefPage() {
               suggestions={styleSuggestions}
             />
           </Field>
+          </div>
 
           <Field
             label="Budget range"
@@ -147,14 +158,13 @@ export default function NewBriefPage() {
             />
           </Field>
 
-          <div className="flex flex-wrap gap-4">
-            <Button type="submit" size="lg" disabled={submitting}>
+          <div className="flex flex-wrap gap-3">
+            <Button type="submit" disabled={submitting}>
               {submitting ? 'Creating…' : 'Create brief'}
             </Button>
             <Button
               type="button"
               variant="outline"
-              size="lg"
               onClick={() => router.push('/briefs')}
             >
               Cancel

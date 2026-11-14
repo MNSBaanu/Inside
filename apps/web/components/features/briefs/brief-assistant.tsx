@@ -48,7 +48,7 @@ export function BriefAssistant({
   }
 
   return (
-    <Card className="mt-12">
+    <Card className="mt-6">
       <CardHeader
         title="Describe it in your own words"
         description="Write a few sentences about the space and we will fill in the form below. You can change anything afterwards."

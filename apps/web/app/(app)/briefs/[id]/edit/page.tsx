@@ -1,5 +1,7 @@
 'use client';
 
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
@@ -55,7 +57,7 @@ function BriefForm({ brief }: { brief: Brief }) {
         budgetRange: budgetRange || undefined,
         description: description || undefined,
       });
-      router.push(`/briefs/${brief.id}`);
+      router.replace(`/briefs/${brief.id}`);
     } catch (cause) {
       setSaveError(errorMessage(cause));
       setSaving(false);
@@ -64,25 +66,34 @@ function BriefForm({ brief }: { brief: Brief }) {
 
   return (
     <div>
+      <Link
+        href={`/briefs/${brief.id}`}
+        className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-brand"
+      >
+        <ChevronLeft aria-hidden className="h-4 w-4" />
+        Back to brief
+      </Link>
       <PageHeader
         variant="app"
         eyebrow="Edit brief"
         title="Update your brief."
       />
 
-      <Card className="mt-12">
+      <Card className="mt-6">
         <CardHeader title="Brief details" />
 
-        <form onSubmit={onSubmit} className="flex flex-col gap-8">
+        <form onSubmit={onSubmit} className="flex flex-col gap-5">
           {saveError ? <ErrorNotice message={saveError} /> : null}
 
-          <Field label="Rooms" htmlFor="rooms" hint="Press Enter to add.">
-            <TagInput id="rooms" values={rooms} onChange={setRooms} />
-          </Field>
+          <div className="grid gap-5 md:grid-cols-2">
+            <Field label="Rooms" htmlFor="rooms" hint="Press Enter to add.">
+              <TagInput id="rooms" values={rooms} onChange={setRooms} />
+            </Field>
 
-          <Field label="Styles" htmlFor="styles">
-            <TagInput id="styles" values={styles} onChange={setStyles} />
-          </Field>
+            <Field label="Styles" htmlFor="styles">
+              <TagInput id="styles" values={styles} onChange={setStyles} />
+            </Field>
+          </div>
 
           <Field label="Budget range" htmlFor="budgetRange">
             <Input
@@ -102,14 +113,13 @@ function BriefForm({ brief }: { brief: Brief }) {
             />
           </Field>
 
-          <div className="flex flex-wrap gap-4">
-            <Button type="submit" size="lg" disabled={saving}>
+          <div className="flex flex-wrap gap-3">
+            <Button type="submit" disabled={saving}>
               {saving ? 'Saving…' : 'Save changes'}
             </Button>
             <Button
               type="button"
               variant="outline"
-              size="lg"
               onClick={() => router.push(`/briefs/${brief.id}`)}
             >
               Cancel
