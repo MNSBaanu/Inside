@@ -59,7 +59,7 @@ export default function AdminSectionPage({
         title={title}
         description={description}
       />
-      <div className="mt-10">
+      <div className="mt-6">
         <Section />
       </div>
     </AdminOnly>

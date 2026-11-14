@@ -1,5 +1,12 @@
 'use client';
 
+import {
+  FolderKanban,
+  Inbox,
+  Users,
+  UserX,
+  type LucideIcon,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
 import {
@@ -8,10 +15,10 @@ import {
   useIsAdmin,
 } from '@/components/features/admin/admin-sections';
 import { Avatar } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cardSurface } from '@/components/ui/card';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { PageHeader } from '@/components/ui/page-header';
 import { Rating } from '@/components/ui/rating';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
@@ -113,29 +120,27 @@ export default function AdminOverviewPage() {
 
   return (
     <AdminOnly>
-      <div className="flex flex-col gap-2">
-        <Badge tone="brand" className="w-fit">
-          Admin
-        </Badge>
-        <h1 className="mt-4 font-display text-section font-semibold">
-          Overview.
-        </h1>
-        <p className="max-w-xl text-muted">
-          {data
+      <PageHeader
+        variant="app"
+        eyebrow="Admin"
+        title="Overview."
+        description={
+          data
             ? summary(data)
-            : 'What needs a decision today, and how the platform is doing.'}
-        </p>
-      </div>
+            : 'What needs a decision today, and how the platform is doing.'
+        }
+      />
 
       {stats.error ? (
-        <div className="mt-8">
+        <div className="mt-6">
           <ErrorNotice message={stats.error} />
         </div>
       ) : null}
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatTile
           href="/admin/users"
+          icon={Users}
           label="Users"
           value={data?.users}
           note={
@@ -146,16 +151,19 @@ export default function AdminOverviewPage() {
         />
         <StatTile
           href="/admin/activity"
+          icon={FolderKanban}
           label="Active projects"
           value={data?.activeProjects}
         />
         <StatTile
           href="/admin/users"
+          icon={UserX}
           label="Suspended"
           value={data?.suspended}
         />
         <StatTile
           href="/admin/reports"
+          icon={Inbox}
           label="Waiting on you"
           value={
             data
@@ -166,23 +174,23 @@ export default function AdminOverviewPage() {
         />
       </div>
 
-      <section className="mt-14">
-        <h2 className="font-display text-2xl font-semibold">Needs attention</h2>
+      <section className="mt-8">
+        <h2 className="font-display text-lg font-semibold">Needs attention</h2>
         {actionError ? (
-          <div className="mt-6">
+          <div className="mt-3">
             <ErrorNotice message={actionError} />
           </div>
         ) : null}
 
         {nothingWaiting ? (
-          <div className="mt-6">
+          <div className="mt-3">
             <EmptyState
               title="All clear."
               description="No verifications, reports or hidden reviews are waiting."
             />
           </div>
         ) : (
-          <div className="mt-6 grid gap-6 xl:grid-cols-3">
+          <div className="mt-3 grid gap-4 xl:grid-cols-3">
             <Queue
               title="Verifications"
               href="/admin/verifications"
@@ -348,10 +356,10 @@ export default function AdminOverviewPage() {
         )}
       </section>
 
-      <div className="mt-14 grid gap-10 xl:grid-cols-[2fr_1fr]">
+      <div className="mt-8 grid gap-6 xl:grid-cols-[2fr_1fr]">
         <section>
           <SectionHeading title="Recent activity" href="/admin/activity" />
-          <div className="mt-6">
+          <div className="mt-3">
             {activity.loading ? (
               <Skeleton className="h-48" />
             ) : activity.error ? (
@@ -375,7 +383,7 @@ export default function AdminOverviewPage() {
 
         <section>
           <SectionHeading title="Newest accounts" href="/admin/users" />
-          <div className="mt-6">
+          <div className="mt-3">
             {newUsers.loading ? (
               <Skeleton className="h-48" />
             ) : newUsers.error ? (
@@ -388,7 +396,7 @@ export default function AdminOverviewPage() {
                 )}
               >
                 {newUsers.data.items.map((user) => (
-                  <li key={user.id} className="flex items-center gap-3 px-5 py-4">
+                  <li key={user.id} className="flex items-center gap-3 px-5 py-3">
                     <Avatar name={user.name} src={user.avatarUrl} size={36} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold">{user.name}</p>
@@ -425,8 +433,8 @@ function summary(data: AdminStats) {
 function SectionHeading({ title, href }: { title: string; href: string }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <h2 className="font-display text-2xl font-semibold">{title}</h2>
-      <Link href={href} className="ui-label link-underline text-ink">
+      <h2 className="font-display text-lg font-semibold">{title}</h2>
+      <Link href={href} className="text-sm font-semibold text-brand hover:underline">
         View all
       </Link>
     </div>
@@ -461,7 +469,7 @@ function Queue({
             <span className="ml-2 text-muted">{total}</span>
           ) : null}
         </p>
-        <Link href={href} className="ui-label link-underline text-ink">
+        <Link href={href} className="text-sm font-semibold text-brand hover:underline">
           View all
         </Link>
       </div>
@@ -481,17 +489,19 @@ function Queue({
 }
 
 function QueueItem({ children }: { children: ReactNode }) {
-  return <li className="px-5 py-4">{children}</li>;
+  return <li className="px-5 py-3">{children}</li>;
 }
 
 function StatTile({
   href,
+  icon: Icon,
   label,
   value,
   note,
   urgent = false,
 }: {
   href: string;
+  icon: LucideIcon;
   label: string;
   value: number | undefined;
   note?: string;
@@ -502,26 +512,38 @@ function StatTile({
     <Link
       href={href}
       className={cn(
-        'rounded-card p-6 transition-colors duration-300',
+        'group flex items-center gap-4 rounded-card p-5 transition-colors duration-300',
         highlighted
           ? 'bg-highlight-soft hover:bg-highlight-soft/70'
-          : 'bg-sand hover:bg-sand/70',
+          : 'bg-sand hover:bg-brand-soft',
       )}
     >
-      <p className="ui-label text-ink/70">{label}</p>
-      {value === undefined ? (
-        <Skeleton className="mt-4 h-10 w-14 bg-canvas" />
-      ) : (
-        <p
-          className={cn(
-            'mt-3 font-display text-4xl font-semibold',
-            highlighted ? 'text-status-action' : 'text-brand',
-          )}
-        >
-          {value}
-        </p>
-      )}
-      {note ? <p className="mt-2 text-sm text-muted">{note}</p> : null}
+      <span
+        className={cn(
+          'grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-canvas',
+          highlighted ? 'text-status-action' : 'text-brand',
+        )}
+      >
+        <Icon aria-hidden className="h-5 w-5" />
+      </span>
+      <span className="min-w-0">
+        {value === undefined ? (
+          <Skeleton className="h-8 w-10 bg-canvas" />
+        ) : (
+          <span
+            className={cn(
+              'block font-display text-3xl font-semibold leading-none',
+              highlighted ? 'text-status-action' : 'text-brand',
+            )}
+          >
+            {value}
+          </span>
+        )}
+        <span className="mt-1.5 block text-sm text-ink/70 group-hover:text-ink">
+          {label}
+        </span>
+        {note ? <span className="block text-xs text-muted">{note}</span> : null}
+      </span>
     </Link>
   );
 }

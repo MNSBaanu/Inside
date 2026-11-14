@@ -229,12 +229,12 @@ function Results<T>({
 }) {
   if (state.error) {
     return (
-      <div className="mt-8">
+      <div className="mt-4">
         <ErrorNotice message={state.error} />
       </div>
     );
   }
-  if (!state.data) return <Skeleton className="mt-8 h-64" />;
+  if (!state.data) return <Skeleton className="mt-4 h-64" />;
 
   const { items, total } = state.data;
   const first = (page - 1) * PAGE_SIZE + 1;
@@ -242,9 +242,9 @@ function Results<T>({
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
-    <div className="mt-8">
+    <div className="mt-4">
       {actionError ? (
-        <div className="mb-6">
+        <div className="mb-4">
           <ErrorNotice message={actionError} />
         </div>
       ) : null}
@@ -259,7 +259,7 @@ function Results<T>({
               state.loading && 'opacity-60',
             )}
           >
-            <p className="border-b border-hairline px-5 py-4 text-sm text-muted md:px-6">
+            <p className="border-b border-hairline px-5 py-3 text-sm text-muted md:px-6">
               {total <= PAGE_SIZE
                 ? `${total} ${noun}`
                 : `${first}–${last} of ${total} ${noun}`}
@@ -281,7 +281,7 @@ function Results<T>({
 }
 
 const rowClass =
-  'flex flex-wrap items-center justify-between gap-x-6 gap-y-4 px-5 py-5 md:px-6';
+  'flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-3 md:px-6';
 
 export function UsersSection() {
   const { user: me } = useSession();
@@ -336,13 +336,12 @@ export function UsersSection() {
       >
         {(user) => (
           <li key={user.id} className={rowClass}>
-            <div className="flex min-w-0 items-center gap-4">
-              <Avatar name={user.name} src={user.avatarUrl} size={44} />
+            <div className="flex min-w-0 items-center gap-3">
+              <Avatar name={user.name} src={user.avatarUrl} size={36} />
               <div className="min-w-0">
                 <p className="font-semibold">{user.name}</p>
-                <p className="break-all text-sm text-muted">{user.email}</p>
-                <p className="text-sm text-muted">
-                  Joined {formatDate(user.createdAt)}
+                <p className="break-all text-sm text-muted">
+                  {user.email} · Joined {formatDate(user.createdAt)}
                 </p>
               </div>
             </div>
@@ -430,11 +429,11 @@ export function VerificationsSection() {
       >
         {(item) => (
           <li key={item.id} className={rowClass}>
-            <div className="flex min-w-0 items-center gap-4">
+            <div className="flex min-w-0 items-center gap-3">
               <Avatar
                 name={item.designer?.name ?? 'Designer'}
                 src={item.designer?.avatarUrl ?? null}
-                size={44}
+                size={36}
               />
               <div className="min-w-0">
                 <p className="font-semibold">
@@ -705,7 +704,7 @@ export function ReviewsSection() {
 
 export function ActivityRow({ entry }: { entry: ActivityEntry }) {
   return (
-    <li className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-5 py-4 md:px-6">
+    <li className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-5 py-3 md:px-6">
       <div className="min-w-0">
         <p className="font-semibold first-letter:uppercase">
           {describeActivity(entry)}
