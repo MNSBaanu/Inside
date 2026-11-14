@@ -72,9 +72,8 @@ export default function MessagesPage() {
                             {titleCase(project.currentStage)}
                           </span>
                           {unread ? (
-                            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand px-1.5 text-xs font-semibold text-canvas">
-                              {project.unreadCount}
-                              <span className="sr-only"> unread</span>
+                            <span className="rounded-full bg-brand px-2 py-0.5 text-xs font-semibold text-canvas">
+                              {`${project.unreadCount} unread`}
                             </span>
                           ) : null}
                         </span>
