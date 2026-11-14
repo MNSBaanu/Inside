@@ -353,6 +353,8 @@ export type MoodboardItem = {
   imageUrl: string;
   note?: string | null;
   portfolioId?: string | null;
+  loves?: string[];
+  reaction?: 'love' | 'dislike';
 };
 
 export type Moodboard = {
@@ -360,6 +362,8 @@ export type Moodboard = {
   clientId: string;
   name: string;
   savedItems: MoodboardItem[];
+  moodWords: string[];
+  palette: string[];
   createdAt: string;
   updatedAt: string;
 };

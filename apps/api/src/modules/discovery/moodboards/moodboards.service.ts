@@ -57,6 +57,8 @@ export class MoodboardsService {
         ...(dto.savedItems !== undefined
           ? { savedItems: this.toJson(dto.savedItems) }
           : {}),
+        ...(dto.moodWords !== undefined ? { moodWords: dto.moodWords } : {}),
+        ...(dto.palette !== undefined ? { palette: dto.palette } : {}),
       },
     });
     return { success: true, data: { moodboard: this.serialize(moodboard) } };
@@ -152,6 +154,8 @@ export class MoodboardsService {
     clientId: string;
     name: string;
     savedItems: unknown;
+    moodWords: string[];
+    palette: string[];
     createdAt: Date;
     updatedAt: Date;
     _count?: { briefs: number };
@@ -161,6 +165,8 @@ export class MoodboardsService {
       clientId: moodboard.clientId,
       name: moodboard.name,
       savedItems: this.asItems(moodboard.savedItems),
+      moodWords: moodboard.moodWords,
+      palette: moodboard.palette,
       createdAt: moodboard.createdAt,
       updatedAt: moodboard.updatedAt,
       ...(moodboard._count ? { briefCount: moodboard._count.briefs } : {}),

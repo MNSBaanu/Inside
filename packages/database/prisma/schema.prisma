@@ -245,6 +245,8 @@ model Moodboard {
   clientId   String
   name       String
   savedItems Json     @default("[]")
+  moodWords  String[] @default([])
+  palette    String[] @default([])
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

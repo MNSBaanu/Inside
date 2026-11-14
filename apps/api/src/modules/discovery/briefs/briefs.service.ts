@@ -68,14 +68,9 @@ export class BriefsService {
     dto: GenerateBriefDto,
   ) {
     const moodboard = await this.requireMoodboardOwned(moodboardId, user.id);
-    const notes = this.extractNotes(moodboard.savedItems);
     const styles = dto.styles?.length ? dto.styles : ['Mixed'];
     const rooms = dto.rooms?.length ? dto.rooms : ['General'];
-    const description =
-      dto.description ??
-      (notes.length
-        ? `Generated from moodboard "${moodboard.name}": ${notes.join('; ')}`
-        : `Generated from moodboard "${moodboard.name}".`);
+    const description = dto.description ?? this.describeMoodboard(moodboard);
     await this.assertNotDuplicate(user.id, {
       styles,
       rooms,
@@ -197,23 +192,62 @@ export class BriefsService {
     return moodboard;
   }
 
-  private extractNotes(savedItems: unknown): string[] {
-    if (!Array.isArray(savedItems)) {
-      return [];
-    }
-    return savedItems
-      .map((item) => {
-        if (
-          item &&
-          typeof item === 'object' &&
-          'note' in item &&
-          typeof (item as { note?: unknown }).note === 'string'
-        ) {
-          return (item as { note: string }).note;
+  private describeMoodboard(moodboard: {
+    name: string;
+    savedItems: unknown;
+    moodWords?: string[];
+    palette?: string[];
+  }): string {
+    const items = (
+      Array.isArray(moodboard.savedItems) ? moodboard.savedItems : []
+    ) as { note?: unknown; loves?: unknown; reaction?: unknown }[];
+    const noteOf = (item: (typeof items)[number]) =>
+      typeof item.note === 'string' && item.note.trim()
+        ? item.note.trim()
+        : null;
+    const liked = items.filter((item) => item.reaction !== 'dislike');
+    const disliked = items.filter((item) => item.reaction === 'dislike');
+
+    const loveCounts = new Map<string, number>();
+    for (const item of liked) {
+      if (!Array.isArray(item.loves)) continue;
+      for (const love of item.loves) {
+        if (typeof love === 'string') {
+          loveCounts.set(love, (loveCounts.get(love) ?? 0) + 1);
         }
-        return null;
-      })
-      .filter((note): note is string => Boolean(note));
+      }
+    }
+
+    const lines = [`Generated from moodboard "${moodboard.name}".`];
+    if (moodboard.moodWords?.length) {
+      lines.push(`Feeling: ${moodboard.moodWords.join(', ')}.`);
+    }
+    if (moodboard.palette?.length) {
+      lines.push(`Palette: ${moodboard.palette.join(', ')}.`);
+    }
+    if (loveCounts.size) {
+      const loves = [...loveCounts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .map(([love, count]) => `${love.toLowerCase()} (${count})`);
+      lines.push(`Loves: ${loves.join(', ')}.`);
+    }
+    const likedNotes = liked
+      .map(noteOf)
+      .filter((note): note is string => !!note);
+    if (likedNotes.length) {
+      lines.push(`Notes: ${likedNotes.join('; ')}.`);
+    }
+    if (disliked.length) {
+      const dislikedNotes = disliked
+        .map(noteOf)
+        .filter((note): note is string => !!note);
+      lines.push(
+        `Not for them: ${disliked.length} ${disliked.length === 1 ? 'image' : 'images'}${
+          dislikedNotes.length ? ` (${dislikedNotes.join('; ')})` : ''
+        }.`,
+      );
+    }
+    return lines.join('\n').slice(0, 4000);
   }
 
   private serialize(brief: {
