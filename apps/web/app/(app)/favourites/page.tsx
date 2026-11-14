@@ -2,11 +2,12 @@
 
 import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
+import { Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { PageHeader } from '@/components/ui/page-header';
-import { Button, ButtonLink } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
@@ -40,49 +41,59 @@ export default function FavouritesPage() {
         description="A shortlist you can come back to when you are ready to send a request."
       />
 
-      <div className="mt-12">
+      <div className="mt-8">
         {error ? <ErrorNotice message={error} /> : null}
         {actionError ? <ErrorNotice message={actionError} /> : null}
 
         {loading ? (
-          <div className="flex flex-col gap-4">
-            <Skeleton className="h-24" />
-            <Skeleton className="h-24" />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-16" />
+            <Skeleton className="h-16" />
           </div>
         ) : data && data.items.length > 0 ? (
-          <ul className="flex flex-col gap-4">
+          <ul className={cn(cardSurface, 'divide-y divide-hairline overflow-hidden')}>
             {data.items.map((favourite) => (
               <li
                 key={favourite.id}
-                className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6')}
+                className="flex flex-wrap items-center justify-between gap-3 px-5 py-3"
               >
                 <Link
                   href={`/designers/${favourite.designerId}`}
-                  className="flex items-center gap-4"
+                  className="group flex min-w-0 items-center gap-3"
                 >
                   <Avatar
                     name={favourite.designer?.name ?? 'Designer'}
                     src={favourite.designer?.avatarUrl}
-                    size={48}
+                    size={40}
                   />
-                  <span>
-                    <span className="block font-display text-xl font-semibold">
+                  <span className="min-w-0">
+                    <span className="block truncate font-semibold group-hover:text-brand">
                       {favourite.designer?.name ?? 'Designer'}
                     </span>
-                    <span className="block text-sm text-muted">
+                    <span className="block truncate text-sm text-muted">
                       {favourite.designer?.location ?? 'Location not set'}
                     </span>
                   </span>
                 </Link>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={pending === favourite.designerId}
-                  onClick={() => remove(favourite.designerId)}
-                >
-                  Remove
-                </Button>
+                <div className="flex items-center gap-2">
+                  <ButtonLink
+                    href={`/requests/new?designerId=${favourite.designerId}`}
+                    size="sm"
+                  >
+                    Send request
+                  </ButtonLink>
+                  <button
+                    type="button"
+                    disabled={pending === favourite.designerId}
+                    onClick={() => remove(favourite.designerId)}
+                    aria-label={`Remove ${favourite.designer?.name ?? 'designer'} from saved`}
+                    title="Remove from saved"
+                    className="grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
+                  >
+                    <Trash2 aria-hidden className="h-4 w-4" />
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

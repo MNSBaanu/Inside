@@ -2,12 +2,11 @@
 
 import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
+import { MessageSquare } from 'lucide-react';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 import { PageHeader } from '@/components/ui/page-header';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { StatusBadge } from '@/components/ui/status-badge';
 import { formatDate, titleCase } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
 import type { ProjectListItem } from '@/lib/types';
@@ -32,49 +31,59 @@ export default function MessagesPage() {
         description="Messages live inside each project, so context never gets separated from the work."
       />
 
-      <div className="mt-12">
+      <div className="mt-8">
         {error ? <ErrorNotice message={error} /> : null}
 
         {loading ? (
-          <div className="flex flex-col gap-4">
-            <Skeleton className="h-24" />
-            <Skeleton className="h-24" />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-16" />
+            <Skeleton className="h-16" />
           </div>
         ) : threads.length > 0 ? (
-          <ul className="flex flex-col gap-4">
-            {threads.map((project) => (
-              <li key={project.id}>
-                <Link
-                  href={`/projects/${project.id}`}
-                  className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6 transition-colors duration-300 hover:border-brand')}
-                >
-                  <div className="min-w-0">
-                    <p className="font-display text-xl font-semibold">
-                      {project.title}
-                    </p>
-                    <p className="mt-1 truncate text-sm text-muted">
-                      {project.lastMessage
-                        ? project.lastMessage.content
-                        : 'No messages yet.'}
-                    </p>
-                    <p className="mt-1 text-sm text-muted">
-                      {titleCase(project.currentStage)} ·{' '}
-                      {formatDate(
-                        project.lastMessage?.sentAt ?? project.updatedAt,
-                      )}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {project.unreadCount > 0 ? (
-                      <Badge tone="brand">
-                        {project.unreadCount} unread
-                      </Badge>
-                    ) : null}
-                    <StatusBadge status={project.status} />
-                  </div>
-                </Link>
-              </li>
-            ))}
+          <ul className={cn(cardSurface, 'divide-y divide-hairline overflow-hidden')}>
+            {threads.map((project) => {
+              const unread = project.unreadCount > 0;
+              return (
+                <li key={project.id}>
+                  <Link
+                    href={`/projects/${project.id}`}
+                    className="group flex items-center gap-4 px-5 py-3.5 transition-colors duration-200 hover:bg-sand/50"
+                  >
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-soft text-brand">
+                      <MessageSquare aria-hidden className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <p className={cn('truncate group-hover:text-brand', unread ? 'font-bold' : 'font-semibold')}>
+                          {project.title}
+                        </p>
+                        <span className="shrink-0 text-xs text-muted">
+                          {formatDate(project.lastMessage?.sentAt ?? project.updatedAt)}
+                        </span>
+                      </div>
+                      <div className="mt-0.5 flex items-center justify-between gap-3">
+                        <p className={cn('truncate text-sm', unread ? 'text-ink' : 'text-muted')}>
+                          {project.lastMessage
+                            ? project.lastMessage.content
+                            : 'No messages yet.'}
+                        </p>
+                        <span className="flex shrink-0 items-center gap-2">
+                          <span className="hidden text-xs text-muted sm:inline">
+                            {titleCase(project.currentStage)}
+                          </span>
+                          {unread ? (
+                            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand px-1.5 text-xs font-semibold text-canvas">
+                              {project.unreadCount}
+                              <span className="sr-only"> unread</span>
+                            </span>
+                          ) : null}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         ) : !error ? (
           <EmptyState

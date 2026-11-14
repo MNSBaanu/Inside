@@ -49,32 +49,38 @@ export default function SafetyPage() {
         </div>
       ) : null}
 
-      <section className="mt-12">
-        <h2 className="font-display text-2xl font-semibold">Blocked people</h2>
+      <div className="mt-8 grid items-start gap-8 lg:grid-cols-2">
+      <section aria-labelledby="blocked-title">
+        <h2 id="blocked-title" className="flex items-center gap-2 font-display text-lg font-semibold">
+          Blocked people
+          {blocks.data ? (
+            <span className="text-sm font-normal text-muted">{blocks.data.items.length}</span>
+          ) : null}
+        </h2>
 
-        <div className="mt-6">
+        <div className="mt-3">
           {blocks.loading ? (
-            <Skeleton className="h-24" />
+            <Skeleton className="h-20" />
           ) : blocks.error ? (
             <ErrorNotice message={blocks.error} />
           ) : blocks.data && blocks.data.items.length > 0 ? (
-            <ul className="flex flex-col gap-4">
+            <ul className={cn(cardSurface, 'divide-y divide-hairline overflow-hidden')}>
               {blocks.data.items.map((block) => (
                 <li
                   key={block.id}
-                  className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6')}
+                  className="flex items-center justify-between gap-4 px-5 py-3"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex min-w-0 items-center gap-3">
                     <Avatar
                       name={block.blocked?.name ?? 'User'}
                       src={block.blocked?.avatarUrl ?? null}
-                      size={48}
+                      size={36}
                     />
-                    <div>
-                      <p className="font-display text-xl font-semibold">
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold">
                         {block.blocked?.name ?? 'User'}
                       </p>
-                      <p className="mt-1 text-sm text-muted">
+                      <p className="truncate text-sm text-muted">
                         Blocked {formatDate(block.createdAt)}
                         {block.reason ? ` · ${block.reason}` : ''}
                       </p>
@@ -98,37 +104,36 @@ export default function SafetyPage() {
         </div>
       </section>
 
-      <section className="mt-16">
-        <h2 className="font-display text-2xl font-semibold">Reports you filed</h2>
+      <section aria-labelledby="reports-title">
+        <h2 id="reports-title" className="flex items-center gap-2 font-display text-lg font-semibold">
+          Reports you filed
+          {reports.data ? (
+            <span className="text-sm font-normal text-muted">{reports.data.items.length}</span>
+          ) : null}
+        </h2>
 
-        <div className="mt-6">
+        <div className="mt-3">
           {reports.loading ? (
-            <Skeleton className="h-24" />
+            <Skeleton className="h-20" />
           ) : reports.error ? (
             <ErrorNotice message={reports.error} />
           ) : reports.data && reports.data.items.length > 0 ? (
-            <ul className="flex flex-col gap-4">
+            <ul className={cn(cardSurface, 'divide-y divide-hairline overflow-hidden')}>
               {reports.data.items.map((report) => (
-                <li
-                  key={report.id}
-                  className={cn(cardSurface, 'p-6')}
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                      <p className="font-display text-xl font-semibold">
+                <li key={report.id} className="px-5 py-3">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="font-semibold">
                         {titleCase(report.targetType)} reported
+                        <span className="font-normal text-muted"> · {formatDate(report.createdAt)}</span>
                       </p>
-                      <p className="mt-1 text-sm text-muted">
-                        {formatDate(report.createdAt)}
+                      <p className="mt-0.5 text-sm text-muted">
+                        {report.reason}
+                        {report.details ? ` · ${report.details}` : ''}
                       </p>
                     </div>
                     <StatusBadge status={report.status} />
                   </div>
-
-                  <p className="mt-4 text-muted">{report.reason}</p>
-                  {report.details ? (
-                    <p className="mt-2 text-sm text-muted">{report.details}</p>
-                  ) : null}
                 </li>
               ))}
             </ul>
@@ -140,8 +145,9 @@ export default function SafetyPage() {
           )}
         </div>
       </section>
+      </div>
 
-      <p className="mt-12 text-sm text-muted">
+      <p className="mt-10 text-sm text-muted">
         Managing your profile instead?{' '}
         <Link href="/account" className="link-underline font-semibold text-ink">
           Go to account
