@@ -1,5 +1,7 @@
 'use client';
 
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
@@ -73,49 +75,50 @@ export default function ProjectWorkspacePage({
     }
   }
 
+  const party = isClient ? item.designer : item.client;
+  const stageItems = [...(stages.data?.items ?? [])].sort(
+    (a, b) => a.stageOrder - b.stageOrder,
+  );
+  const doneStages = stageItems.filter((stage) => stage.status === 'APPROVED').length;
+
   return (
     <div>
-      <Badge tone="brand">Project</Badge>
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-display text-section font-semibold">
-          {item.title}
-        </h1>
+      <Link
+        href="/projects"
+        className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-brand"
+      >
+        <ChevronLeft aria-hidden className="h-4 w-4" />
+        All projects
+      </Link>
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge tone="brand">Project</Badge>
         <StatusBadge status={item.status} />
       </div>
-      <p className="mt-4 text-muted">
-        Current stage: {titleCase(item.currentStage)} · Started{' '}
-        {formatDate(item.startedAt)}
-        {item.completedAt ? ` · Completed ${formatDate(item.completedAt)}` : ''}
-      </p>
-
-      {actionError ? (
-        <div className="mt-8">
-          <ErrorNotice message={actionError} />
-        </div>
-      ) : null}
-
-      {isClient && item.status !== 'COMPLETED' ? (
-        <div className="mt-8 flex flex-wrap gap-3">
-          {item.status === 'ACTIVE' ? (
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={busy}
-              onClick={() => changeStatus('on-hold')}
-            >
-              Put on hold
-            </Button>
-          ) : null}
-          {item.status === 'ON_HOLD' ? (
-            <Button
-              size="sm"
-              disabled={busy}
-              onClick={() => changeStatus('resume')}
-            >
-              Resume
-            </Button>
-          ) : null}
-          {item.status !== 'CANCELLED' ? (
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+        <h1 className="font-display text-3xl font-semibold md:text-4xl">
+          {item.title}
+        </h1>
+        {isClient && !['COMPLETED', 'CANCELLED'].includes(item.status) ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {item.status === 'ACTIVE' ? (
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={busy}
+                onClick={() => changeStatus('on-hold')}
+              >
+                Put on hold
+              </Button>
+            ) : null}
+            {item.status === 'ON_HOLD' ? (
+              <Button
+                size="sm"
+                disabled={busy}
+                onClick={() => changeStatus('resume')}
+              >
+                Resume
+              </Button>
+            ) : null}
             <Button
               size="sm"
               variant="outline"
@@ -124,13 +127,64 @@ export default function ProjectWorkspacePage({
             >
               Cancel project
             </Button>
-          ) : null}
+          </div>
+        ) : null}
+      </div>
+      <p className="mt-3 text-muted">
+        {party?.name ? `${isClient ? 'Designer' : 'Client'}: ${party.name} · ` : ''}
+        Started {formatDate(item.startedAt)}
+        {item.completedAt ? ` · Completed ${formatDate(item.completedAt)}` : ''}
+      </p>
+
+      {stageItems.length > 0 ? (
+        <div className="mt-6 max-w-3xl">
+          <div className="flex items-center justify-between text-sm">
+            <span>
+              <span className="text-muted">Current stage </span>
+              <span className="font-semibold">{titleCase(item.currentStage)}</span>
+            </span>
+            <span className="text-muted">
+              {doneStages} of {stageItems.length} approved
+            </span>
+          </div>
+          <ol className="mt-2 grid gap-1.5" style={{ gridTemplateColumns: `repeat(${stageItems.length}, minmax(0, 1fr))` }}>
+            {stageItems.map((stage) => (
+              <li key={stage.id}>
+                <span
+                  aria-hidden
+                  className={cn(
+                    'block h-1.5 rounded-full',
+                    stage.status === 'APPROVED'
+                      ? 'bg-brand'
+                      : stage.name === item.currentStage
+                        ? 'bg-highlight'
+                        : 'bg-sand',
+                  )}
+                />
+                <span
+                  className={cn(
+                    'mt-1.5 block truncate text-xs',
+                    stage.name === item.currentStage ? 'font-semibold text-ink' : 'text-muted',
+                  )}
+                >
+                  {titleCase(stage.name)}
+                  <span className="sr-only"> · {titleCase(stage.status)}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
+
+      {actionError ? (
+        <div className="mt-6">
+          <ErrorNotice message={actionError} />
         </div>
       ) : null}
 
       {isClient && cancelling && item.status !== 'CANCELLED' ? (
         <form
-          className="mt-4 flex max-w-xl flex-col gap-3"
+          className="mt-6 flex max-w-xl flex-col gap-3 rounded-card border border-error/30 bg-error/5 p-4"
           onSubmit={(event) => {
             event.preventDefault();
             void changeStatus('cancel', { reason: cancelReason.trim() });
@@ -149,13 +203,22 @@ export default function ProjectWorkspacePage({
               maxLength={1000}
             />
           </Field>
-          <div>
+          <div className="flex flex-wrap gap-2">
             <Button
               type="submit"
               size="sm"
               disabled={busy || cancelReason.trim().length < 2}
+              className="!bg-error hover:!bg-error/90"
             >
               Confirm cancellation
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={() => setCancelling(false)}
+            >
+              Keep project
             </Button>
           </div>
         </form>
@@ -164,7 +227,7 @@ export default function ProjectWorkspacePage({
       <div
         role="tablist"
         aria-label="Project sections"
-        className="mt-12 flex gap-2 overflow-x-auto border-b border-hairline"
+        className="mt-8 flex gap-1 overflow-x-auto border-b border-hairline"
       >
         {tabs.map((name) => (
           <button
@@ -174,7 +237,7 @@ export default function ProjectWorkspacePage({
             aria-selected={tab === name}
             onClick={() => setTab(name)}
             className={cn(
-              '-mb-px whitespace-nowrap border-b-2 px-5 py-3 text-label font-semibold uppercase transition-colors duration-300',
+              '-mb-px whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors duration-300',
               tab === name
                 ? 'border-brand text-brand'
                 : 'border-transparent text-muted hover:text-ink',
@@ -185,7 +248,7 @@ export default function ProjectWorkspacePage({
         ))}
       </div>
 
-      <div className="mt-8">
+      <div className="mt-6">
         {tab === 'Stages' ? (
           stages.loading ? (
             <Skeleton className="h-48" />
