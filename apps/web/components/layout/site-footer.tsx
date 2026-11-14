@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { NewsletterForm } from '@/components/features/home/newsletter-form';
 
-const columns = [
+export const columns = [
   {
     heading: 'Explore',
     links: [

@@ -5,7 +5,7 @@ tags: [project, academic, final-year, nestjs, nextjs, expo, prisma]
 status: in development, submission 2026-11-20
 version: 0.0.1
 created: 2026-05-04
-updated: 2026-11-12
+updated: 2026-11-14
 repo: https://github.com/MNSBaanu/Inside
 author: MNS Baanu
 ---
@@ -73,3 +73,4 @@ Web appears to be on Vercel; API on Render (confirmed by owner 2026-11-08). Root
 - 2026-11-11: Seed expanded for a production-like demo: 26 listed designers (20 new + 8 new clients), 79 published portfolios, 53 shop products, 14 open requests, 33 completed projects with reviews. Every style, room and shop category returns results (Kids Room has 2). All Unsplash photos checked by eye and for HTTP 200; dead `neutrals` photo replaced. Ravi and Nimal stay on page 1 for the Playwright directory tests.
 - 2026-11-12: Work moved to `main` only (dev retired). Added `seed-production.yml`: on seed changes on main it applies migrations and seeds Neon with `SEED_MODE=sync`, which adds missing sample rows and updates existing ones without deleting anything; the manual run has a reset option that wipes first. Seed rows now all have fixed ids or natural keys; default local run still resets. CI jobs run only when their own code changes. `NEXT_PUBLIC_SITE_URL` set on Vercel.
 - 2026-11-12: Admin area rebuilt: `/admin` is now an overview (counts from new `GET /admin/stats`, recent activity) and each section has its own page under `/admin/[section]` (users, verifications, reports, reviews, activity) with search and filters on the loaded rows. Admins land on `/admin` instead of the dashboard and their side menu only lists admin pages and Account. Paginated API lists got an `id` tie-breaker so items no longer repeat across pages.
+- 2026-11-14: Home page rebuilt to an editorial luxury layout (Inside theme colours, Inter Tight): full-height hero, about + stats, numbered steps accordion, spotlight carousel, staggered work grid, editorial cards, and a home-only dark footer with an image wordmark (shared footer hidden on `/`). Scroll effects: sticky hero that zooms out under the next card, spotlight zooms in, counting stats. Search, styles, designers, testimonials and FAQ removed from the home page.
