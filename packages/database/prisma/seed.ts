@@ -61,13 +61,14 @@ async function upsertById<T extends { id: string }>(
 }
 
 /** Deliverables are unique per stage and version, so match on that rather than the seed id. */
-const upsertDeliverable = (args: { create: Prisma.DeliverableUncheckedCreateInput }) => {
+const upsertDeliverable = (args: { create: Prisma.DeliverableUncheckedCreateInput & { version: number } }) => {
   const { id: _id, ...update } = args.create;
   return prisma.deliverable.upsert({
     where: { stageId_version: { stageId: args.create.stageId, version: args.create.version } },
     create: args.create,
     update,
   });
+};
 
 /** Gives rows without a natural id a fixed one, so a later run finds the same row. */
 const withIds = <T>(group: number, rows: T[], offset = 0) =>
