@@ -60,6 +60,15 @@ async function upsertById<T extends { id: string }>(
   }
 }
 
+/** Deliverables are unique per stage and version, so match on that rather than the seed id. */
+const upsertDeliverable = (args: { create: Prisma.DeliverableUncheckedCreateInput }) => {
+  const { id: _id, ...update } = args.create;
+  return prisma.deliverable.upsert({
+    where: { stageId_version: { stageId: args.create.stageId, version: args.create.version } },
+    create: args.create,
+    update,
+  });
+
 /** Gives rows without a natural id a fixed one, so a later run finds the same row. */
 const withIds = <T>(group: number, rows: T[], offset = 0) =>
   rows.map((row, index) => ({ ...row, id: seedId(group, offset + index + 1) }));
@@ -661,7 +670,7 @@ async function seedProject(plan: ProjectPlan) {
     if (submitted) {
       const isImage = index % 2 === 1;
       await upsertById(
-        (args) => prisma.deliverable.upsert(args),
+        upsertDeliverable,
         [
           {
             id: seedId(14, plan.n * 100 + (index + 1) * 10 + 1),
@@ -685,7 +694,7 @@ async function seedProject(plan: ProjectPlan) {
       logs.push({ projectId: id, userId: client, action: 'STAGE_REJECTED', metadata: { stageId, name, reason: plan.rejection.reason }, createdAt: at(index) });
       if (plan.rejection.revised) {
         await upsertById(
-          (args) => prisma.deliverable.upsert(args),
+          upsertDeliverable,
           [
             {
               id: seedId(14, plan.n * 100 + (index + 1) * 10 + 2),
