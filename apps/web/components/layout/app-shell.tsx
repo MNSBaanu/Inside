@@ -48,6 +48,8 @@ type NavItem = {
 
 const members: Role[] = ['CLIENT', 'DESIGNER'];
 
+const footerHrefs = ['/account', '/safety'];
+
 const navigation: NavItem[] = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, roles: members },
   { href: '/briefs', label: 'Briefs', icon: FileText, roles: ['CLIENT'] },
@@ -90,6 +92,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const items = navigation.filter(
     (item) => !item.roles || item.roles.includes(user.activeRole),
   );
+  const isActive = (item: NavItem) =>
+    pathname === item.href || (!item.exact && pathname.startsWith(`${item.href}/`));
+  const mainItems = items.filter((item) => !footerHrefs.includes(item.href));
+  const footerItems = items.filter((item) => footerHrefs.includes(item.href));
 
   async function onSignOut() {
     signingOut.current = true;
@@ -99,7 +105,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="shell grid grid-cols-1 gap-8 pb-32 pt-28 md:pb-40 md:pt-32 lg:h-dvh lg:grid-cols-[88px_1fr] lg:overflow-hidden lg:pb-8 lg:pt-24">
-      <aside className="flex min-w-0 items-center gap-3 rounded-card bg-ink p-2 text-canvas [scrollbar-width:none] lg:h-full lg:flex-col lg:gap-0 lg:overflow-y-auto lg:px-2 lg:py-5 [&::-webkit-scrollbar]:hidden">
+      <aside className="flex min-w-0 items-center gap-3 rounded-card bg-ink p-2 text-canvas [scrollbar-width:none] lg:h-full lg:flex-col lg:gap-0 lg:overflow-hidden lg:px-2 lg:py-4 [&::-webkit-scrollbar]:hidden">
         <Link
           href="/account"
           title={`${user.name} · ${user.activeRole.toLowerCase()}`}
@@ -108,7 +114,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Avatar
             name={user.name}
             src={user.avatarUrl}
-            size={44}
+            size={40}
             className="ring-2 ring-canvas/20"
           />
           <span className="hidden rounded-pill bg-canvas/10 px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wider text-canvas/80 lg:block">
@@ -116,25 +122,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </span>
         </Link>
 
-        <nav className="flex flex-1 gap-1 overflow-x-auto [scrollbar-width:none] lg:mt-6 lg:w-full lg:flex-col lg:overflow-visible [&::-webkit-scrollbar]:hidden">
-          {items.map((item) => {
-            const active =
-              pathname === item.href ||
-              (!item.exact && pathname.startsWith(`${item.href}/`));
-            return (
-              <RailLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                icon={item.icon}
-                active={active}
-              />
-            );
-          })}
+        <nav className="flex flex-1 gap-0.5 overflow-x-auto [scrollbar-width:none] lg:mt-4 lg:min-h-0 lg:w-full lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden [&::-webkit-scrollbar]:hidden">
+          {mainItems.map((item) => (
+            <RailLink
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+              active={isActive(item)}
+            />
+          ))}
         </nav>
 
-        <div className="flex shrink-0 gap-1 lg:mt-6 lg:w-full lg:flex-col lg:border-t lg:border-canvas/10 lg:pt-4">
+        <div className="flex shrink-0 gap-0.5 lg:mt-3 lg:w-full lg:flex-col lg:border-t lg:border-canvas/10 lg:pt-3">
           {user.role === 'DESIGNER' ? <RoleSwitch activeRole={user.activeRole} /> : null}
+          {footerItems.map((item) => (
+            <RailLink
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+              active={isActive(item)}
+            />
+          ))}
           <RailLink label="Sign out" icon={LogOut} onClick={onSignOut} />
         </div>
       </aside>
@@ -179,18 +189,18 @@ function RailLink({
   disabled?: boolean;
 }) {
   const className = cn(
-    'group flex min-w-[4.5rem] shrink-0 flex-col items-center gap-1 rounded-xl px-1.5 py-2 text-center text-[0.6875rem] leading-tight transition-colors duration-300 disabled:opacity-60 lg:w-full lg:min-w-0',
+    'group flex min-w-[4.5rem] shrink-0 flex-col items-center gap-0.5 rounded-xl px-1 py-1.5 text-center text-[0.6875rem] leading-tight transition-colors duration-300 disabled:opacity-60 lg:w-full lg:min-w-0',
     active ? 'font-semibold text-canvas' : 'font-medium text-canvas/65 hover:text-canvas',
   );
   const content = (
     <>
       <span
         className={cn(
-          'flex h-9 w-9 items-center justify-center rounded-lg transition-colors duration-300',
+          'flex h-8 w-8 items-center justify-center rounded-lg transition-colors duration-300',
           active ? 'bg-canvas/15' : 'group-hover:bg-canvas/10',
         )}
       >
-        <Icon aria-hidden className="h-5 w-5" />
+        <Icon aria-hidden className="h-[18px] w-[18px]" />
       </span>
       <span>{label}</span>
     </>
