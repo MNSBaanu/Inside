@@ -3,22 +3,25 @@
 import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
 import {
+  ArrowRight,
   Bell,
   ChevronRight,
   FolderKanban,
   Inbox,
   type LucideIcon,
 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useSession } from '@/components/providers/session-provider';
-import { ButtonLink } from '@/components/ui/button';
-import { EmptyState, Skeleton } from '@/components/ui/feedback';
+import { Button, ButtonLink } from '@/components/ui/button';
+import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { formatDate, titleCase } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
+import { spotlightImage } from '@/lib/utils/images';
 import type { Notification, Project, ProjectRequest } from '@/lib/types';
 
 export default function DashboardPage() {
@@ -51,13 +54,32 @@ export default function DashboardPage() {
         variant="app"
         eyebrow="Overview"
         title={`Welcome back, ${user?.name.split(' ')[0]}.`}
-        action={
-          isClient ? (
-            <ButtonLink href="/briefs/new">Start a brief</ButtonLink>
-          ) : (
-            <ButtonLink href="/requests">Find work</ButtonLink>
-          )
-        }
+      />
+
+      <WelcomeBanner
+        {...(isClient
+          ? {
+              eyebrow: 'Start something new',
+              title: 'Describe your space and get matched with designers',
+              body: 'Write a few lines about the room. Our AI assistant fills in the brief, and matching ranks designers whose work fits.',
+              href: '/briefs/new',
+              cta: 'Start a brief',
+            }
+          : user?.isVerified
+            ? {
+                eyebrow: 'Find work',
+                title: 'New projects are waiting for a designer like you',
+                body: 'Browse open projects from clients and send a proposal with your scope, timeline and stage fees.',
+                href: '/open-projects',
+                cta: 'See open projects',
+              }
+            : {
+                eyebrow: 'Stand out',
+                title: 'Get verified to win more clients',
+                body: 'Submit your qualifications and past work. Verified designers get a badge and rank higher in matches.',
+                href: '/verification',
+                cta: 'Start verification',
+              })}
       />
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -98,6 +120,8 @@ export default function DashboardPage() {
         <div className="mt-3">
           {projects.loading ? (
             <Skeleton className="h-32" />
+          ) : projects.error ? (
+            <LoadError message={projects.error} onRetry={() => void projects.reload()} />
           ) : activeProjects.length === 0 ? (
             <EmptyState
               title="No active projects yet."
@@ -156,6 +180,11 @@ export default function DashboardPage() {
         <div className="mt-3">
           {notifications.loading ? (
             <Skeleton className="h-32" />
+          ) : notifications.error ? (
+            <LoadError
+              message={notifications.error}
+              onRetry={() => void notifications.reload()}
+            />
           ) : notifications.data && notifications.data.items.length > 0 ? (
             <ul className={cn(cardSurface, 'divide-y divide-hairline overflow-hidden')}>
               {notifications.data.items.slice(0, 6).map((item) => (
@@ -186,6 +215,51 @@ export default function DashboardPage() {
         </div>
       </section>
       </div>
+    </div>
+  );
+}
+
+function WelcomeBanner({
+  eyebrow,
+  title,
+  body,
+  href,
+  cta,
+}: {
+  eyebrow: string;
+  title: string;
+  body: string;
+  href: string;
+  cta: string;
+}) {
+  return (
+    <section className="relative mt-8 overflow-hidden rounded-card bg-brand-deep text-canvas">
+      <div className="relative z-10 max-w-xl p-6 md:p-8">
+        <p className="text-sm font-semibold text-canvas/70">{eyebrow}</p>
+        <h2 className="mt-2 font-display text-2xl font-semibold leading-tight md:text-3xl">
+          {title}
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed text-canvas/80 md:text-base">{body}</p>
+        <ButtonLink href={href} variant="onDark" className="mt-6">
+          {cta}
+          <ArrowRight aria-hidden className="h-4 w-4" />
+        </ButtonLink>
+      </div>
+      <div className="absolute inset-y-0 right-0 hidden w-2/5 md:block">
+        <Image src={spotlightImage} alt="" fill sizes="30vw" className="object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-deep via-brand-deep/40 to-transparent" />
+      </div>
+    </section>
+  );
+}
+
+function LoadError({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <div className="flex flex-col items-start gap-3">
+      <ErrorNotice message={message} />
+      <Button variant="outline" size="sm" onClick={onRetry}>
+        Try again
+      </Button>
     </div>
   );
 }

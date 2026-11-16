@@ -81,7 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (status !== 'authenticated' || !user) {
     return (
-      <div className="shell pb-32 pt-28 md:pb-40 md:pt-32">
+      <div className="shell page">
         <Skeleton className="h-12 w-64" />
         <Skeleton className="mt-8 h-72 w-full" />
       </div>
@@ -104,7 +104,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="lg:pl-[88px]">
-      <div className="shell flex flex-col gap-8 pb-32 pt-28 md:pb-40 md:pt-32 lg:pt-24">
+      <div className="shell page flex flex-col gap-8 lg:pt-24">
         <aside className="flex min-w-0 items-center gap-3 rounded-card bg-ink p-2 text-canvas [scrollbar-width:none] lg:fixed lg:inset-y-0 lg:left-0 lg:z-[60] lg:w-[88px] lg:flex-col lg:gap-0 lg:overflow-hidden lg:rounded-none lg:px-2 lg:py-5 [&::-webkit-scrollbar]:hidden">
           <Link
             href="/"

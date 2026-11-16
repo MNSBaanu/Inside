@@ -100,7 +100,7 @@ function HeaderContent({ pathname }: { pathname: string }) {
           </nav>
         )}
 
-        <div className="ml-auto flex items-center gap-5">
+        <div className={`flex items-center gap-5 ${workspace ? 'ml-auto' : ''}`}>
           {status === 'authenticated' && user ? (
             <>
               {designerWorkspace ? (

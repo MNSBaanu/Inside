@@ -12,14 +12,8 @@ import { api } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
 import type { Notification, ProjectListItem, User } from '@/lib/types';
 
-export function AccountMenu({ user }: { user: User }) {
-  const { logout, refreshUser } = useSession();
+function useUnreadCounts() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [switching, setSwitching] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
   const notifications = useApi<{ items: Notification[] }>('/notifications');
   const projects = useApi<{ items: ProjectListItem[] }>('/projects');
   const reloadNotifications = notifications.reload;
@@ -29,6 +23,20 @@ export function AccountMenu({ user }: { user: User }) {
     void reloadNotifications();
     void reloadProjects();
   }, [pathname, reloadNotifications, reloadProjects]);
+
+  return {
+    alerts: notifications.data?.items.filter((item) => item.readAt === null).length ?? 0,
+    messages: projects.data?.items.reduce((sum, item) => sum + item.unreadCount, 0) ?? 0,
+  };
+}
+
+export function AccountMenu({ user }: { user: User }) {
+  const { logout, refreshUser } = useSession();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [switching, setSwitching] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const unread = useUnreadCounts();
 
   useEffect(() => {
     if (!open) return;
@@ -47,11 +55,6 @@ export function AccountMenu({ user }: { user: User }) {
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [open]);
-
-  const unreadAlerts =
-    notifications.data?.items.filter((item) => item.readAt === null).length ?? 0;
-  const unreadMessages =
-    projects.data?.items.reduce((sum, item) => sum + item.unreadCount, 0) ?? 0;
 
   const otherRole = user.activeRole === 'DESIGNER' ? 'CLIENT' : 'DESIGNER';
 
@@ -75,8 +78,8 @@ export function AccountMenu({ user }: { user: User }) {
 
   return (
     <div className="hidden items-center gap-2 sm:flex">
-      <IconLink href="/messages" label="Messages" count={unreadMessages} icon={MessageSquare} />
-      <IconLink href="/notifications" label="Notifications" count={unreadAlerts} icon={Bell} />
+      <IconLink href="/messages" label="Messages" count={unread.messages} icon={MessageSquare} />
+      <IconLink href="/notifications" label="Notifications" count={unread.alerts} icon={Bell} />
 
       <div ref={menuRef} className="relative ml-2">
         <button
