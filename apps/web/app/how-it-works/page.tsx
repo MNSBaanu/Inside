@@ -63,14 +63,14 @@ const assurances = [
 
 export default function HowItWorksPage() {
   return (
-    <div className="py-32 md:py-40">
+    <div className="page">
       <section className="shell">
         <PageHeader
           eyebrow="How it works"
           title="From first brief to final handover."
           description="Inside structures the messy middle of an interior project into stages you can actually track."
           action={
-            <ButtonLink href="/briefs/new" size="lg">
+            <ButtonLink href="/briefs/new">
               Start a brief
             </ButtonLink>
           }
@@ -82,7 +82,7 @@ export default function HowItWorksPage() {
           <Reveal className="flex flex-col">
             <h2
               id="stages-title"
-              className="text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.03em]"
+              className="text-heading font-medium leading-[1.05] tracking-[-0.03em]"
             >
               Five stages,
               <br />
@@ -94,8 +94,8 @@ export default function HowItWorksPage() {
           </Reveal>
 
           <Reveal delay={120} className="divide-y divide-ink/10">
-            {stages.map((stage) => (
-              <details key={stage.number} className="group py-5 first:pt-0">
+            {stages.map((stage, index) => (
+              <details key={stage.number} open={index === 0} className="group py-5 first:pt-0">
                 <summary className="flex cursor-pointer list-none items-baseline gap-3">
                   <span className="text-xs text-muted">{stage.number}</span>
                   <span className="text-xl font-medium tracking-[-0.02em]">{stage.title}</span>
@@ -104,7 +104,7 @@ export default function HowItWorksPage() {
                     className="ml-auto h-4 w-4 shrink-0 self-center text-muted transition-transform duration-300 group-open:rotate-45"
                   />
                 </summary>
-                <div className="relative mt-5 aspect-[16/9] overflow-hidden rounded-2xl">
+                <div className="relative mt-5 aspect-[16/9] overflow-hidden rounded-card">
                   <Image
                     src={stage.image}
                     alt=""

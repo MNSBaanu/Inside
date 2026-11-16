@@ -21,6 +21,11 @@ export default function ShopPage() {
   const [applied, setApplied] = useState(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
   const resultsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const style = new URLSearchParams(window.location.search).get('style');
+    if (style) setFilters((current) => ({ ...current, style }));
+  }, []);
   const showPage = (next: number) => {
     setPage(next);
     resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -50,14 +55,14 @@ export default function ShopPage() {
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
   return (
-    <div className="shell py-32 md:py-40">
+    <div className="shell page">
       <PageHeader
         eyebrow="Shop"
         title="Pieces to finish the room."
         description="Furniture, lighting, rugs and decor chosen to go with your space. Save favourites to a moodboard."
       />
 
-      <FilterBar onSubmit={(event) => event.preventDefault()} className="mt-12">
+      <FilterBar onSubmit={(event) => event.preventDefault()} className="mt-8">
         <FilterField label="Search" htmlFor="q">
           <BareInput
             id="q"
@@ -105,7 +110,7 @@ export default function ShopPage() {
         </FilterField>
       </FilterBar>
 
-      <div ref={resultsRef} className="mt-12 scroll-mt-28">
+      <div ref={resultsRef} className="mt-8 scroll-mt-28">
         {error ? <ErrorNotice message={error} /> : null}
 
         {loading ? (

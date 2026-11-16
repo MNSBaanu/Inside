@@ -2,6 +2,7 @@ import { MapPin } from 'lucide-react';
 import { cardSurface } from '@/components/ui/card';
 import { cn } from '@/lib/utils/cn';
 import { formatDate, formatMoney } from '@/lib/utils/format';
+import { Tag } from '@/components/ui/tag';
 import type { OpenRequest } from '@/lib/types';
 
 export function postedAgo(value: string) {
@@ -28,7 +29,7 @@ export function OpenRequestCard({
         'group relative p-5 transition-colors duration-200 hover:border-ink/25 hover:bg-sand/30 md:p-6',
       )}
     >
-      <p className="inline-flex rounded-md bg-brand-soft px-2 py-1 text-xs font-semibold text-brand-deep">
+      <p className="inline-flex rounded-pill bg-brand-soft px-2 py-1 text-xs font-semibold text-brand-deep">
         {postedAgo(request.createdAt)}
         <span aria-hidden className="px-1.5">•</span>
         Proposals: {request.proposalCount}
@@ -50,9 +51,11 @@ export function OpenRequestCard({
           {request.budget !== null ? `: ${formatMoney(request.budget)}` : ''}
         </span>
         {request.timeline ? <span>Est. time: {request.timeline}</span> : null}
-        <span>
-          {request.rooms.length} {request.rooms.length === 1 ? 'room' : 'rooms'}
-        </span>
+        {request.rooms.length > 0 ? (
+          <span>
+            {request.rooms.length} {request.rooms.length === 1 ? 'room' : 'rooms'}
+          </span>
+        ) : null}
       </p>
 
       {request.description ? (
@@ -62,12 +65,7 @@ export function OpenRequestCard({
       {tags.length > 0 ? (
         <div className="mt-4 flex flex-wrap gap-2">
           {tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-md bg-sand px-2.5 py-1 text-xs font-semibold text-ink"
-            >
-              {tag}
-            </span>
+            <Tag key={tag}>{tag}</Tag>
           ))}
         </div>
       ) : null}

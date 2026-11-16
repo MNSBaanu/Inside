@@ -1,4 +1,7 @@
-import type { FormEventHandler, ReactNode } from 'react';
+'use client';
+
+import { SlidersHorizontal } from 'lucide-react';
+import { Children, useState, type FormEventHandler, type ReactNode } from 'react';
 import { cn } from '@/lib/utils/cn';
 
 export function FilterBar({
@@ -12,6 +15,9 @@ export function FilterBar({
   className?: string;
   children: ReactNode;
 }) {
+  const [open, setOpen] = useState(false);
+  const [first, ...rest] = Children.toArray(children);
+
   return (
     <form
       onSubmit={onSubmit}
@@ -21,7 +27,26 @@ export function FilterBar({
         className,
       )}
     >
-      {children}
+      {first}
+      {rest.length > 0 ? (
+        <>
+          <button
+            type="button"
+            onClick={() => setOpen((current) => !current)}
+            aria-expanded={open}
+            className="flex items-center justify-between gap-2 px-5 py-3 text-sm font-semibold text-ink lg:hidden"
+          >
+            <span className="inline-flex items-center gap-2">
+              <SlidersHorizontal aria-hidden className="h-4 w-4" />
+              {open ? 'Hide filters' : 'More filters'}
+            </span>
+            <span aria-hidden className="text-muted">{rest.length}</span>
+          </button>
+          <div className={cn('flex-col border-t border-hairline lg:contents', open ? 'flex' : 'hidden')}>
+            {rest}
+          </div>
+        </>
+      ) : null}
     </form>
   );
 }

@@ -17,7 +17,12 @@ export function PageHeader({
 }) {
   const app = variant === 'app';
   return (
-    <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+    <div
+      className={cn(
+        'flex flex-col gap-6',
+        app && 'md:flex-row md:items-end md:justify-between',
+      )}
+    >
       <div>
         {eyebrow ? (
           <Badge tone={app ? 'brand' : 'neutral'}>{eyebrow}</Badge>
@@ -27,18 +32,18 @@ export function PageHeader({
             'font-display font-semibold',
             app
               ? 'mt-4 text-3xl tracking-tight md:text-[2.75rem] md:leading-tight'
-              : 'mt-6 max-w-2xl text-section',
+              : 'mt-4 max-w-3xl text-heading',
           )}
         >
           {title}
         </h1>
         {description ? (
-          <p className={cn('max-w-xl text-muted', app ? 'mt-2 text-sm' : 'mt-4 text-lg')}>
+          <p className={cn('max-w-xl text-muted', app ? 'mt-2 text-sm' : 'mt-3 text-base md:text-lg')}>
             {description}
           </p>
         ) : null}
       </div>
-      {action}
+      {action ? <div className={cn(!app && '-mt-1')}>{action}</div> : null}
     </div>
   );
 }

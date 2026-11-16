@@ -63,19 +63,15 @@ export default function OpenProjectsPage() {
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
   return (
-    <div className="shell py-32 md:py-40">
-      <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-        <PageHeader
-          eyebrow="Open projects"
-          title="Projects looking for a designer."
-          description="Clients post the space, budget and timeline. Designers reply with a proposal covering scope, timeline and stage fees."
-        />
-        <ButtonLink href="/requests/new" size="lg" className="shrink-0">
-          Post a project
-        </ButtonLink>
-      </div>
+    <div className="shell page">
+      <PageHeader
+        eyebrow="Open projects"
+        title="Projects looking for a designer."
+        description="Clients post the space, budget and timeline. Designers reply with a proposal covering scope, timeline and stage fees."
+        action={<ButtonLink href="/requests/new">Post a project</ButtonLink>}
+      />
 
-      <FilterBar onSubmit={(event) => event.preventDefault()} className="mt-12">
+      <FilterBar onSubmit={(event) => event.preventDefault()} className="mt-8">
         <FilterField label="Search" htmlFor="q">
           <BareInput
             id="q"
@@ -144,15 +140,9 @@ export default function OpenProjectsPage() {
           </div>
         ) : data && data.items.length > 0 ? (
           <>
-            <div className="mb-4 flex items-baseline justify-between">
-              <h2 className="font-semibold">
-                {SORT_OPTIONS.find((option) => option.value === applied.sort)
-                  ?.label ?? 'Newest first'}
-              </h2>
-              <span className="text-sm text-muted">
-                {data.total} open {data.total === 1 ? 'project' : 'projects'}
-              </span>
-            </div>
+            <p className="mb-4 text-sm text-muted">
+              {data.total} open {data.total === 1 ? 'project' : 'projects'}
+            </p>
             <ul className="flex flex-col gap-4">
               {data.items.map((request) => (
                 <OpenRequestCard

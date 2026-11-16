@@ -20,7 +20,7 @@ export default function ExplorePage({
   const tab = single(searchParams.tab) === 'designers' ? 'designers' : 'projects';
 
   return (
-    <div className="shell pb-24 pt-28 md:pb-32 md:pt-32">
+    <div className="shell page">
       <PageHeader
         eyebrow="Explore"
         title="Rooms to love, designers to hire."
@@ -29,7 +29,7 @@ export default function ExplorePage({
 
       <nav
         aria-label="Explore sections"
-        className="mt-10 inline-flex rounded-pill border border-hairline bg-surface p-1"
+        className="mt-8 inline-flex rounded-pill border border-hairline bg-surface p-1"
       >
         {tabs.map((item) => (
           <Link

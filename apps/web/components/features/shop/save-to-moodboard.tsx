@@ -15,7 +15,7 @@ export function SaveToMoodboard({ product }: { product: Product }) {
 
   if (!user) {
     return (
-      <ButtonLink href={`/login?next=/shop/${product.slug}`} variant="outline">
+      <ButtonLink href={`/login?next=/shop/${product.slug}`}>
         Sign in to save to a moodboard
       </ButtonLink>
     );
@@ -82,7 +82,7 @@ function SaveForm({ product }: { product: Product }) {
             }}
           />
         </div>
-        <Button variant="outline" onClick={save} disabled={busy || saved}>
+        <Button onClick={save} disabled={busy || saved}>
           {saved ? 'Saved' : busy ? 'Saving…' : 'Save to moodboard'}
         </Button>
       </div>

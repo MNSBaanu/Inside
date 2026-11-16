@@ -10,9 +10,9 @@ test.describe('Designer directory', () => {
     await page.reload();
     await expect(page.getByLabel('Search')).toHaveValue('Ravi');
     await expect(page.getByRole('status')).toHaveText('1 designer found');
-    await page.getByRole('link', { name: /Ravi Designer/ }).click();
+    await page.getByRole('link', { name: /Ravi Jayasinghe/ }).click();
     await expect(
-      page.getByRole('heading', { name: 'Ravi Designer' }),
+      page.getByRole('heading', { name: 'Ravi Jayasinghe' }),
     ).toBeVisible();
     await page.goBack();
     await expect(page.getByLabel('Search')).toHaveValue('Ravi');
@@ -33,6 +33,9 @@ test.describe('Designer directory', () => {
       page.getByRole('link', { name: 'Request this designer' }),
     ).toHaveCount(0);
     await page.goBack();
+    await page.getByLabel('Search').waitFor();
+    const moreFilters = page.getByRole('button', { name: 'More filters' });
+    if (await moreFilters.isVisible()) await moreFilters.click();
     await page.getByRole('combobox', { name: 'Availability' }).click();
     await page.getByRole('option', { name: 'Available now' }).click();
     await expect(page).toHaveURL(/availableOnly=true/);
