@@ -2,6 +2,7 @@
 
 import {
   Activity,
+  ArrowLeftRight,
   BadgeCheck,
   FileText,
   Flag,
@@ -13,8 +14,6 @@ import {
   LifeBuoy,
   LogOut,
   Palette,
-  PanelLeftClose,
-  PanelLeftOpen,
   ShieldCheck,
   Star,
   UserRound,
@@ -24,8 +23,8 @@ import {
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { Avatar } from '@/components/ui/avatar';
 import { useSession } from '@/components/providers/session-provider';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/feedback';
 import { api } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
@@ -68,30 +67,11 @@ const navigation: NavItem[] = [
   { href: '/safety', label: 'Safety', icon: LifeBuoy, roles: members },
 ];
 
-const COLLAPSED_KEY = 'inside.sidebarCollapsed';
-
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, status, logout } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const signingOut = useRef(false);
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    try {
-      setCollapsed(window.localStorage.getItem(COLLAPSED_KEY) === 'true');
-    } catch {}
-  }, []);
-
-  function toggleCollapsed() {
-    setCollapsed((current) => {
-      try {
-        window.localStorage.setItem(COLLAPSED_KEY, String(!current));
-      } catch {}
-      return !current;
-    });
-  }
-
   useEffect(() => {
     if (status === 'unauthenticated' && !signingOut.current) {
       router.replace(`/login?next=${encodeURIComponent(pathname)}`);
@@ -118,83 +98,44 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div
-      className={cn(
-        'shell grid grid-cols-1 gap-12 pb-32 pt-28 transition-[grid-template-columns] duration-300 md:pb-40 md:pt-32 lg:h-dvh lg:overflow-hidden lg:pb-8 lg:pt-24',
-        collapsed ? 'lg:grid-cols-[72px_1fr] lg:gap-8' : 'lg:grid-cols-[240px_1fr]',
-      )}
-    >
-      <aside
-        className={cn(
-          'relative h-fit min-w-0 rounded-card bg-brand-soft p-6 text-ink [scrollbar-width:none] lg:flex lg:h-full lg:flex-col lg:overflow-y-auto [&::-webkit-scrollbar]:hidden',
-          collapsed && 'lg:items-center lg:px-3 lg:pt-4',
-        )}
-      >
-        <button
-          type="button"
-          onClick={toggleCollapsed}
-          aria-label={collapsed ? 'Expand menu' : 'Collapse menu'}
-          title={collapsed ? 'Expand menu' : 'Collapse menu'}
-          aria-expanded={!collapsed}
-          className={cn(
-            'hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg text-brand-deep/70 transition-colors duration-300 hover:bg-surface/70 hover:text-brand-deep lg:flex',
-            !collapsed && 'absolute right-3 top-3',
-          )}
+    <div className="shell grid grid-cols-1 gap-8 pb-32 pt-28 md:pb-40 md:pt-32 lg:h-dvh lg:grid-cols-[88px_1fr] lg:overflow-hidden lg:pb-8 lg:pt-24">
+      <aside className="flex min-w-0 items-center gap-3 rounded-card bg-ink p-2 text-canvas [scrollbar-width:none] lg:h-full lg:flex-col lg:gap-0 lg:overflow-y-auto lg:px-2 lg:py-5 [&::-webkit-scrollbar]:hidden">
+        <Link
+          href="/account"
+          title={`${user.name} · ${user.activeRole.toLowerCase()}`}
+          className="flex shrink-0 flex-col items-center gap-1.5 px-2 lg:px-0"
         >
-          {collapsed ? (
-            <PanelLeftOpen aria-hidden className="h-5 w-5" />
-          ) : (
-            <PanelLeftClose aria-hidden className="h-5 w-5" />
-          )}
-        </button>
+          <Avatar
+            name={user.name}
+            src={user.avatarUrl}
+            size={44}
+            className="ring-2 ring-canvas/20"
+          />
+          <span className="hidden rounded-pill bg-canvas/10 px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wider text-canvas/80 lg:block">
+            {user.activeRole.toLowerCase()}
+          </span>
+        </Link>
 
-        <div className={cn('min-w-0 lg:pr-8', collapsed && 'lg:hidden')}>
-          <p className="ui-label text-brand-deep/70">Signed in as</p>
-          <p className="mt-2 font-display text-xl font-semibold">{user.name}</p>
-          {user.role === 'DESIGNER' ? (
-            <RoleToggle activeRole={user.activeRole} />
-          ) : (
-            <Badge tone="brand" className="mt-3 !bg-surface">
-              {user.activeRole.toLowerCase()}
-            </Badge>
-          )}
-        </div>
-
-        <nav
-          className={cn(
-            'mt-8 flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible',
-            collapsed ? 'lg:mt-4 lg:w-full' : 'lg:-mx-4',
-          )}
-        >
+        <nav className="flex flex-1 gap-1 overflow-x-auto [scrollbar-width:none] lg:mt-6 lg:w-full lg:flex-col lg:overflow-visible [&::-webkit-scrollbar]:hidden">
           {items.map((item) => {
             const active =
               pathname === item.href ||
               (!item.exact && pathname.startsWith(`${item.href}/`));
             return (
-              <SidebarLink
+              <RailLink
                 key={item.href}
                 href={item.href}
                 label={item.label}
                 icon={item.icon}
                 active={active}
-                collapsed={collapsed}
               />
             );
           })}
         </nav>
 
-        <div
-          className={cn(
-            'mt-8 hidden border-t border-brand/15 pt-4 lg:mt-auto lg:block',
-            collapsed ? 'lg:w-full' : 'lg:-mx-4',
-          )}
-        >
-          <SidebarLink
-            label="Sign out"
-            icon={LogOut}
-            collapsed={collapsed}
-            onClick={onSignOut}
-          />
+        <div className="flex shrink-0 gap-1 lg:mt-6 lg:w-full lg:flex-col lg:border-t lg:border-canvas/10 lg:pt-4">
+          {user.role === 'DESIGNER' ? <RoleSwitch activeRole={user.activeRole} /> : null}
+          <RailLink label="Sign out" icon={LogOut} onClick={onSignOut} />
         </div>
       </aside>
 
@@ -220,65 +161,71 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function SidebarLink({
+function RailLink({
   href,
   label,
   icon: Icon,
   active = false,
-  collapsed,
   onClick,
+  ariaLabel,
+  disabled,
 }: {
   href?: string;
   label: string;
   icon: LucideIcon;
   active?: boolean;
-  collapsed: boolean;
   onClick?: () => void;
+  ariaLabel?: string;
+  disabled?: boolean;
 }) {
   const className = cn(
-    'flex min-h-11 w-full items-center gap-3 whitespace-nowrap rounded-xl px-4 py-2.5 text-[0.9375rem] transition-colors duration-300',
-    collapsed && 'lg:justify-center lg:px-0',
-    active
-      ? 'bg-surface font-semibold text-brand-deep shadow-sm'
-      : 'font-medium text-ink/80 hover:bg-surface/60 hover:text-ink',
+    'group flex min-w-[4.5rem] shrink-0 flex-col items-center gap-1 rounded-xl px-1.5 py-2 text-center text-[0.6875rem] leading-tight transition-colors duration-300 disabled:opacity-60 lg:w-full lg:min-w-0',
+    active ? 'font-semibold text-canvas' : 'font-medium text-canvas/65 hover:text-canvas',
   );
   const content = (
     <>
-      <Icon aria-hidden className="h-[18px] w-[18px] shrink-0" />
-      <span className={cn(collapsed && 'lg:sr-only')}>{label}</span>
+      <span
+        className={cn(
+          'flex h-9 w-9 items-center justify-center rounded-lg transition-colors duration-300',
+          active ? 'bg-canvas/15' : 'group-hover:bg-canvas/10',
+        )}
+      >
+        <Icon aria-hidden className="h-5 w-5" />
+      </span>
+      <span>{label}</span>
     </>
   );
-  const title = collapsed ? label : undefined;
 
   if (href) {
     return (
-      <Link
-        href={href}
-        aria-current={active ? 'page' : undefined}
-        title={title}
-        className={className}
-      >
+      <Link href={href} aria-current={active ? 'page' : undefined} className={className}>
         {content}
       </Link>
     );
   }
   return (
-    <button type="button" onClick={onClick} title={title} className={className}>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      disabled={disabled}
+      className={className}
+    >
       {content}
     </button>
   );
 }
 
-function RoleToggle({ activeRole }: { activeRole: Role }) {
+function RoleSwitch({ activeRole }: { activeRole: Role }) {
   const { refreshUser } = useSession();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const target: Role = activeRole === 'DESIGNER' ? 'CLIENT' : 'DESIGNER';
 
-  async function switchTo(role: Role) {
-    if (role === activeRole) return;
+  async function switchRole() {
     setBusy(true);
     try {
-      await api.patch('/users/me/active-role', { activeRole: role });
+      await api.patch('/users/me/active-role', { activeRole: target });
       await refreshUser();
       router.push('/dashboard');
     } finally {
@@ -287,28 +234,12 @@ function RoleToggle({ activeRole }: { activeRole: Role }) {
   }
 
   return (
-    <div
-      role="group"
-      aria-label="Working as"
-      className="mt-3 grid grid-cols-2 rounded-pill bg-canvas p-1"
-    >
-      {(['CLIENT', 'DESIGNER'] as const).map((role) => (
-        <button
-          key={role}
-          type="button"
-          disabled={busy}
-          onClick={() => switchTo(role)}
-          aria-pressed={activeRole === role}
-          className={cn(
-            'min-h-9 rounded-pill px-3 py-1.5 text-sm font-semibold transition-colors duration-300 disabled:opacity-60',
-            activeRole === role
-              ? 'bg-ink text-canvas'
-              : 'text-ink/70 hover:text-ink',
-          )}
-        >
-          {role === 'CLIENT' ? 'Client' : 'Designer'}
-        </button>
-      ))}
-    </div>
+    <RailLink
+      label={target === 'CLIENT' ? 'Client view' : 'Designer view'}
+      ariaLabel={target === 'CLIENT' ? 'Switch to client' : 'Switch to designer'}
+      icon={ArrowLeftRight}
+      onClick={switchRole}
+      disabled={busy}
+    />
   );
 }
