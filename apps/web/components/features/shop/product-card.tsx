@@ -1,6 +1,8 @@
+import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
+import { cardSurface } from '@/components/ui/card';
+import { cn } from '@/lib/utils/cn';
 import { formatMoney } from '@/lib/utils/format';
 import { isOptimizableImage } from '@/lib/utils/images';
 import type { Product } from '@/lib/types';
@@ -13,8 +15,14 @@ export function ProductCard({
   sizes?: string;
 }) {
   return (
-    <Link href={`/shop/${product.id}`} className="group block">
-      <div className="relative aspect-square overflow-hidden rounded-card bg-sand shadow-card">
+    <Link
+      href={`/shop/${product.id}`}
+      className={cn(
+        cardSurface,
+        'group flex h-full flex-col p-3 transition-shadow duration-500 ease-editorial hover:shadow-lift',
+      )}
+    >
+      <div className="relative aspect-square overflow-hidden rounded-xl bg-sand">
         <Image
           src={product.imageUrl}
           unoptimized={!isOptimizableImage(product.imageUrl)}
@@ -23,25 +31,33 @@ export function ProductCard({
           sizes={sizes}
           className="object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.04]"
         />
+        {product.style ? (
+          <span className="absolute left-3 top-3 rounded-pill bg-white/90 px-2.5 py-0.5 text-xs font-semibold text-ink backdrop-blur">
+            {product.style}
+          </span>
+        ) : null}
       </div>
 
-      <div className="mt-4 flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="truncate text-lg font-semibold transition-colors duration-300 group-hover:text-brand">
-            {product.name}
-          </h3>
-          <p className="mt-0.5 truncate text-sm text-muted">
-            {product.sellerName}
-          </p>
-        </div>
-        <p className="whitespace-nowrap font-semibold">
-          {formatMoney(product.price)}
+      <div className="flex flex-1 flex-col px-1.5 pt-3">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+          {product.category}
         </p>
-      </div>
+        <h3 className="mt-1 truncate text-base font-semibold transition-colors duration-300 group-hover:text-brand">
+          {product.name}
+        </h3>
+        <p className="truncate text-sm text-muted">{product.sellerName}</p>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        <Badge>{product.category}</Badge>
-        {product.style ? <Badge tone="brand">{product.style}</Badge> : null}
+        <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+          <p className="whitespace-nowrap text-lg font-semibold">
+            {formatMoney(product.price)}
+          </p>
+          <span
+            aria-hidden
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-hairline transition-colors duration-300 group-hover:border-brand group-hover:bg-brand group-hover:text-white"
+          >
+            <ArrowUpRight className="h-4 w-4" />
+          </span>
+        </div>
       </div>
     </Link>
   );

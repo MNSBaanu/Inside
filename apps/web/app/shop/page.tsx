@@ -109,14 +109,14 @@ export default function ShopPage() {
         {error ? <ErrorNotice message={error} /> : null}
 
         {loading ? (
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 8 }).map((_, index) => (
-              <Skeleton key={index} className="aspect-square" />
+              <Skeleton key={index} className="aspect-[4/5] rounded-card" />
             ))}
           </div>
         ) : data && data.items.length > 0 ? (
           <>
-            <div className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {data.items.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
