@@ -54,6 +54,11 @@ export class MatchingService {
         OR: relevant,
       },
       include: {
+        images: {
+          take: 1,
+          orderBy: { displayOrder: 'asc' },
+          select: { imageUrl: true },
+        },
         designer: {
           select: {
             id: true,
@@ -79,6 +84,7 @@ export class MatchingService {
           title: string;
           style: string;
           roomType: string;
+          imageUrl: string | null;
         }[];
       }
     >();
@@ -125,6 +131,7 @@ export class MatchingService {
         title: p.title,
         style: p.style,
         roomType: p.roomType,
+        imageUrl: p.images?.[0]?.imageUrl ?? null,
       };
       if (!existing || score > existing.score) {
         byDesigner.set(p.designerId, {
