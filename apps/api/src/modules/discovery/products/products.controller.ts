@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ListProductsQueryDto } from './dto/list-products-query.dto';
 import { ProductsService } from './products.service';
@@ -15,10 +15,10 @@ export class ProductsController {
     return this.productsService.list(query);
   }
 
-  @Get(':id')
+  @Get(':slug')
   @ApiOperation({ summary: 'Product detail' })
   @ApiOkResponse({ description: 'Product' })
-  getOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.productsService.getById(id);
+  getOne(@Param('slug') slug: string) {
+    return this.productsService.getBySlug(slug);
   }
 }

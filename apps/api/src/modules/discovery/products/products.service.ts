@@ -53,9 +53,9 @@ export class ProductsService {
     };
   }
 
-  async getById(id: string) {
+  async getBySlug(slug: string) {
     const product = await this.prisma.product.findFirst({
-      where: { id, isPublished: true },
+      where: { slug, isPublished: true },
     });
     if (!product) {
       throw new NotFoundException('Product not found');
@@ -65,6 +65,7 @@ export class ProductsService {
 
   private serialize(product: {
     id: string;
+    slug: string;
     name: string;
     description: string;
     category: string;
@@ -76,6 +77,7 @@ export class ProductsService {
   }) {
     return {
       id: product.id,
+      slug: product.slug,
       name: product.name,
       description: product.description,
       category: product.category,

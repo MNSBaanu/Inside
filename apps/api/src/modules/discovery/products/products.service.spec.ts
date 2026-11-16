@@ -12,6 +12,7 @@ describe('ProductsService', () => {
 
   const row = {
     id: 'p1',
+    slug: 'p1-product',
     name: 'Oak Sofa',
     description: 'Comfortable',
     category: 'Seating',
@@ -59,11 +60,11 @@ describe('ProductsService', () => {
   it('does not return unpublished or missing products', async () => {
     prisma.product.findFirst.mockResolvedValue(null);
 
-    await expect(service.getById('missing')).rejects.toBeInstanceOf(
+    await expect(service.getBySlug('missing')).rejects.toBeInstanceOf(
       NotFoundException,
     );
     expect(prisma.product.findFirst).toHaveBeenCalledWith({
-      where: { id: 'missing', isPublished: true },
+      where: { slug: 'missing', isPublished: true },
     });
   });
 });

@@ -16,17 +16,17 @@ const PLACEHOLDER_SELLER_URL = /^https?:\/\/(www\.)?example\.com(\/|$)/;
 export default function ProductDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: { slug: string };
 }) {
   const { data, error, loading } = useApi<{ product: Product }>(
-    `/products/${params.id}`,
+    `/products/${params.slug}`,
   );
 
   if (loading) {
     return (
-      <div className="shell py-32 md:py-40">
-        <div className="grid gap-12 lg:grid-cols-2">
-          <Skeleton className="aspect-square w-full" />
+      <div className="shell pb-32 pt-24 md:pb-40 md:pt-28">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,26rem)_1fr]">
+          <Skeleton className="aspect-square w-full max-w-md" />
           <Skeleton className="h-96 w-full" />
         </div>
       </div>
@@ -35,7 +35,7 @@ export default function ProductDetailPage({
 
   if (error || !data) {
     return (
-      <div className="shell py-32 md:py-40">
+      <div className="shell pb-32 pt-24 md:pb-40 md:pt-28">
         <ErrorNotice message={error ?? 'Product not found'} />
         <Link href="/shop" className="link-underline mt-6 inline-block">
           Back to the shop
@@ -47,7 +47,7 @@ export default function ProductDetailPage({
   const { product } = data;
 
   return (
-    <div className="shell py-32 md:py-40">
+    <div className="shell pb-32 pt-24 md:pb-40 md:pt-28">
       <Link
         href="/shop"
         className="inline-flex items-center gap-1 text-sm text-muted hover:text-brand"
@@ -56,15 +56,15 @@ export default function ProductDetailPage({
         All products
       </Link>
 
-      <div className="mt-8 grid gap-12 lg:grid-cols-2 lg:gap-16">
-        <div className="relative aspect-square overflow-hidden rounded-card bg-sand shadow-card">
+      <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,26rem)_1fr] lg:gap-14">
+        <div className="relative aspect-square w-full max-w-md overflow-hidden rounded-card bg-sand shadow-card">
           <Image
             src={product.imageUrl}
             unoptimized={!isOptimizableImage(product.imageUrl)}
             alt={product.name}
             fill
             priority
-            sizes="(min-width: 1024px) 45vw, 100vw"
+            sizes="(min-width: 640px) 28rem, 100vw"
             className="object-cover"
           />
         </div>

@@ -388,6 +388,7 @@ export type Block = {
 
 export type Product = {
   id: string;
+  slug: string;
   name: string;
   description: string;
   category: string;

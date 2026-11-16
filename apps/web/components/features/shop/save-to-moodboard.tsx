@@ -15,7 +15,7 @@ export function SaveToMoodboard({ product }: { product: Product }) {
 
   if (!user) {
     return (
-      <ButtonLink href={`/login?next=/shop/${product.id}`} variant="outline">
+      <ButtonLink href={`/login?next=/shop/${product.slug}`} variant="outline">
         Sign in to save to a moodboard
       </ButtonLink>
     );

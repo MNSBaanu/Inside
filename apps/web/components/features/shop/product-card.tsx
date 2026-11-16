@@ -16,7 +16,7 @@ export function ProductCard({
 }) {
   return (
     <Link
-      href={`/shop/${product.id}`}
+      href={`/shop/${product.slug}`}
       className={cn(
         cardSurface,
         'group flex h-full flex-col p-3 transition-shadow duration-500 ease-editorial hover:shadow-lift',

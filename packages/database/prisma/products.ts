@@ -9,7 +9,6 @@ const productId = (n: number) =>
 
 type Seed = Omit<Prisma.ProductCreateManyInput, 'id' | 'imageUrl' | 'sellerUrl'> & {
   image: string;
-  slug: string;
 };
 
 const SEEDS: Seed[] = [
@@ -599,10 +598,10 @@ const SEEDS: Seed[] = [
 ];
 
 export const PRODUCT_SEED: Prisma.ProductCreateManyInput[] = SEEDS.map(
-  ({ image, slug, ...rest }, index) => ({
+  ({ image, ...rest }, index) => ({
     ...rest,
     id: productId(index + 1),
     imageUrl: photo(image),
-    sellerUrl: `https://example.com/shop/${slug}`,
+    sellerUrl: `https://example.com/shop/${rest.slug}`,
   }),
 );
