@@ -1,9 +1,11 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
@@ -12,22 +14,72 @@ const roles = ['CLIENT', 'DESIGNER'] as const;
 
 export function RoleSwitch() {
   const { user, refreshUser } = useSession();
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
-  if (user?.role !== 'DESIGNER') return null;
+  if (!user || user.role === 'ADMIN') return null;
 
-  async function switchTo(activeRole: (typeof roles)[number]) {
+  async function run(action: () => Promise<unknown>, next?: string) {
     setError(null);
     setBusy(true);
     try {
-      await api.patch('/users/me/active-role', { activeRole });
+      await action();
       await refreshUser();
+      if (next) router.push(next);
     } catch (cause) {
       setError(errorMessage(cause));
     } finally {
       setBusy(false);
+      setConfirming(false);
     }
+  }
+
+  if (user.role === 'CLIENT') {
+    return (
+      <Card>
+        <CardHeader
+          title="Designer account"
+          description="Take on interior projects yourself. You keep your client account and can switch between the two."
+        />
+        {error ? <ErrorNotice message={error} /> : null}
+        <Button variant="outline" disabled={busy} onClick={() => setConfirming(true)}>
+          Create designer account
+        </Button>
+        {confirming ? (
+          <ConfirmDialog
+            title="Create a designer account?"
+            description="Your profile will be listed as a designer. Submit your qualifications for verification to get the verified badge."
+            confirmLabel="Create designer account"
+            busy={busy}
+            onConfirm={() =>
+              run(() => api.post('/users/me/designer-account', {}), '/verification')
+            }
+            onCancel={() => setConfirming(false)}
+          />
+        ) : null}
+      </Card>
+    );
+  }
+
+  if (!user.hasClientAccount) {
+    return (
+      <Card>
+        <CardHeader
+          title="Client account"
+          description="Brief your own projects and hire other designers. You keep your designer account and can switch between the two."
+        />
+        {error ? <ErrorNotice message={error} /> : null}
+        <Button
+          variant="outline"
+          disabled={busy}
+          onClick={() => run(() => api.post('/users/me/client-account', {}))}
+        >
+          Create client account
+        </Button>
+      </Card>
+    );
   }
 
   return (
@@ -45,7 +97,7 @@ export function RoleSwitch() {
             key={role}
             type="button"
             disabled={busy}
-            onClick={() => switchTo(role)}
+            onClick={() => run(() => api.patch('/users/me/active-role', { activeRole: role }))}
             aria-pressed={user.activeRole === role}
             className={cn(
               'rounded-card border p-5 text-left transition-colors duration-300 disabled:opacity-60',

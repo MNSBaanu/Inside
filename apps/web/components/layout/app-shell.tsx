@@ -127,7 +127,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="flex shrink-0 gap-0.5 lg:mt-3 lg:w-full lg:flex-col lg:border-t lg:border-canvas/10 lg:pt-3">
-            {user.role === 'DESIGNER' ? <RoleSwitch activeRole={user.activeRole} /> : null}
+            {user.role === 'DESIGNER' && user.hasClientAccount ? <RoleSwitch activeRole={user.activeRole} /> : null}
             {footerItems.map((item) => (
               <RailLink
                 key={item.href}

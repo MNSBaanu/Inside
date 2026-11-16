@@ -107,7 +107,7 @@ export function AccountMenu({ user }: { user: User }) {
             >
               Dashboard
             </Link>
-            {user.role === 'DESIGNER' ? (
+            {user.role === 'DESIGNER' && user.hasClientAccount ? (
               <button
                 type="button"
                 role="menuitem"
