@@ -820,6 +820,7 @@ async function main() {
       name: user.name,
       role: user.role,
       activeRole: user.activeRole ?? user.role,
+      hasClientAccount: user.role === Role.DESIGNER && user.activeRole === Role.CLIENT,
       isVerified: user.isVerified ?? false,
       emailVerified: user.emailVerified === false ? null : daysAgo(user.joinedDaysAgo),
       status: user.status ?? AccountStatus.ACTIVE,

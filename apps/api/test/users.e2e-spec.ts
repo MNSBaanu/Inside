@@ -63,6 +63,20 @@ describe('UsersController (e2e)', () => {
       .expect(200);
 
     expect(profile.body.data.user.bio).toBe('Scandi interiors');
+    expect(profile.body.data.user.hasClientAccount).toBe(false);
+
+    await request(app.getHttpServer())
+      .patch('/users/me/active-role')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ activeRole: 'CLIENT' })
+      .expect(403);
+
+    const created = await request(app.getHttpServer())
+      .post('/users/me/client-account')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201);
+
+    expect(created.body.data.user.hasClientAccount).toBe(true);
 
     const switched = await request(app.getHttpServer())
       .patch('/users/me/active-role')
@@ -97,5 +111,22 @@ describe('UsersController (e2e)', () => {
       .set('Authorization', `Bearer ${register.body.data.accessToken}`)
       .send({ activeRole: 'DESIGNER' })
       .expect(403);
+
+    const upgraded = await request(app.getHttpServer())
+      .post('/users/me/designer-account')
+      .set('Authorization', `Bearer ${register.body.data.accessToken}`)
+      .expect(201);
+
+    expect(upgraded.body.data.user).toMatchObject({
+      role: 'DESIGNER',
+      activeRole: 'DESIGNER',
+      hasClientAccount: true,
+    });
+
+    await request(app.getHttpServer())
+      .patch('/users/me/active-role')
+      .set('Authorization', `Bearer ${upgraded.body.data.accessToken}`)
+      .send({ activeRole: 'CLIENT' })
+      .expect(200);
   });
 });

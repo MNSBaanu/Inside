@@ -216,6 +216,10 @@ describe('Platform flows (e2e)', () => {
     });
 
     it('stops a designer proposing on their own open request', async () => {
+      await request(server())
+        .post('/users/me/client-account')
+        .set(auth(designer.token))
+        .expect(201);
       const toClient = await request(server())
         .patch('/users/me/active-role')
         .set(auth(designer.token))

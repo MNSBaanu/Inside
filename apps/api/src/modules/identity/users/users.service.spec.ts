@@ -34,11 +34,12 @@ describe('UsersService', () => {
     );
   });
 
-  it('allows designers to switch to CLIENT', async () => {
+  it('allows designers with a client account to switch to CLIENT', async () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'd1',
       role: Role.DESIGNER,
       activeRole: Role.DESIGNER,
+      hasClientAccount: true,
       status: AccountStatus.ACTIVE,
       passwordHash: 'x',
     });
@@ -59,6 +60,60 @@ describe('UsersService', () => {
         data: { activeRole: Role.CLIENT },
       }),
     );
+  });
+
+  it('blocks designers without a client account from switching to CLIENT', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'd1',
+      role: Role.DESIGNER,
+      activeRole: Role.DESIGNER,
+      hasClientAccount: false,
+      status: AccountStatus.ACTIVE,
+      passwordHash: 'x',
+    });
+
+    await expect(
+      service.switchActiveRole('d1', 's1', { activeRole: 'CLIENT' }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it('lets a designer create a client account once', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'd1',
+      role: Role.DESIGNER,
+      hasClientAccount: false,
+      status: AccountStatus.ACTIVE,
+    });
+    prisma.user.update.mockResolvedValue({ id: 'd1', hasClientAccount: true });
+
+    await service.createClientAccount('d1');
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'd1' },
+      data: { hasClientAccount: true },
+    });
+  });
+
+  it('turns a client into a designer who keeps client access', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'c1',
+      role: Role.CLIENT,
+      status: AccountStatus.ACTIVE,
+    });
+    prisma.user.update.mockResolvedValue({ id: 'c1', role: Role.DESIGNER });
+
+    const result = await service.createDesignerAccount('c1', 's1');
+
+    expect(result.data.accessToken).toBe('new.access.token');
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'c1' },
+      data: {
+        role: Role.DESIGNER,
+        activeRole: Role.DESIGNER,
+        hasClientAccount: true,
+      },
+    });
   });
 
   it('blocks clients from switching to DESIGNER', async () => {

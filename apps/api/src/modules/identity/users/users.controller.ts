@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -56,5 +56,19 @@ export class UsersController {
     @Body() dto: SwitchActiveRoleDto,
   ) {
     return this.usersService.switchActiveRole(user.id, user.sessionId, dto);
+  }
+
+  @Post('me/client-account')
+  @ApiOperation({ summary: 'Designer opts in to a client account' })
+  @ApiOkResponse({ description: 'Updated user' })
+  createClientAccount(@CurrentUser() user: AuthUser) {
+    return this.usersService.createClientAccount(user.id);
+  }
+
+  @Post('me/designer-account')
+  @ApiOperation({ summary: 'Client opts in to a designer account' })
+  @ApiOkResponse({ description: 'Updated role and new access token' })
+  createDesignerAccount(@CurrentUser() user: RequestUser) {
+    return this.usersService.createDesignerAccount(user.id, user.sessionId);
   }
 }

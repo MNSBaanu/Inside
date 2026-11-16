@@ -93,11 +93,19 @@ export class UsersService {
       throw new ForbiddenException('Admins cannot switch active role');
     }
 
-    // Designers may operate as CLIENT or DESIGNER. Clients stay CLIENT-only.
+    // Clients become designers through createDesignerAccount, not a switch.
     if (user.role === Role.CLIENT && nextRole === Role.DESIGNER) {
       throw new ForbiddenException(
         'Client accounts cannot switch to designer mode',
       );
+    }
+
+    if (
+      user.role === Role.DESIGNER &&
+      nextRole === Role.CLIENT &&
+      !user.hasClientAccount
+    ) {
+      throw new ForbiddenException('Create a client account first');
     }
 
     if (user.role !== Role.DESIGNER && user.role !== Role.CLIENT) {
@@ -109,6 +117,55 @@ export class UsersService {
     const updated = await this.prisma.user.update({
       where: { id: userId },
       data: { activeRole: nextRole },
+    });
+
+    const accessToken = await this.authService.signAccessToken(
+      updated,
+      sessionId,
+    );
+
+    return {
+      success: true,
+      data: {
+        user: this.authService.toPublicUser(updated),
+        accessToken,
+      },
+    };
+  }
+
+  async createClientAccount(userId: string) {
+    const user = await this.requireActiveUser(userId);
+    if (user.role !== Role.DESIGNER) {
+      throw new ForbiddenException('Only designers can add a client account');
+    }
+    if (user.hasClientAccount) {
+      throw new BadRequestException('You already have a client account');
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { hasClientAccount: true },
+    });
+
+    return {
+      success: true,
+      data: { user: this.authService.toPublicUser(updated) },
+    };
+  }
+
+  async createDesignerAccount(userId: string, sessionId: string) {
+    const user = await this.requireActiveUser(userId);
+    if (user.role !== Role.CLIENT) {
+      throw new ForbiddenException('Only clients can add a designer account');
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        role: Role.DESIGNER,
+        activeRole: Role.DESIGNER,
+        hasClientAccount: true,
+      },
     });
 
     const accessToken = await this.authService.signAccessToken(

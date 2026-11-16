@@ -117,6 +117,7 @@ model User {
   name         String
   role         Role          @default(CLIENT)
   activeRole   Role          @default(CLIENT)
+  hasClientAccount Boolean   @default(false)
   isVerified   Boolean       @default(false)
   emailVerified DateTime?
   status       AccountStatus @default(ACTIVE)
