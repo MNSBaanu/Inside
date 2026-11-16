@@ -39,7 +39,7 @@ export default async function DesignerProfilePage({
 
   if (!data) {
     return (
-      <div className="shell py-32 md:py-40">
+      <div className="shell page">
         <ErrorNotice message="Designer not found" />
       </div>
     );
@@ -49,7 +49,7 @@ export default async function DesignerProfilePage({
   const cover = portfolios.find((portfolio) => portfolio.images[0])?.images[0];
 
   return (
-    <div className="py-32 md:py-40">
+    <div className="page">
       <AutoRefresh />
       <section className="shell">
         <BackLink fallback="/explore?tab=designers" />
@@ -77,7 +77,7 @@ export default async function DesignerProfilePage({
                 className="-mt-11 ring-4 ring-sand"
               />
               <div className="mt-3">
-                <h1 className="font-display text-3xl font-semibold md:text-4xl">
+                <h1 className="font-display text-title font-semibold">
                   {designer.name}
                 </h1>
                 <p className="mt-1 text-muted">

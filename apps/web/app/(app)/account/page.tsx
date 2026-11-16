@@ -16,6 +16,7 @@ import { api, errorMessage } from '@/lib/api/client';
 import { LOCATIONS } from '@/lib/utils/options';
 import type { User } from '@/lib/types';
 import { FileUpload } from '@/components/ui/file-upload';
+import { useToast } from '@/components/ui/toast';
 
 export default function AccountPage() {
   const { user } = useSession();
@@ -36,13 +37,12 @@ function AccountForm({ user }: { user: User }) {
   });
   const [isAvailable, setIsAvailable] = useState(user.isAvailable);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
+  const toast = useToast();
   const [saving, setSaving] = useState(false);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
-    setSaved(false);
     setSaving(true);
     try {
       await api.patch<{ user: User }>('/users/me', {
@@ -54,7 +54,7 @@ function AccountForm({ user }: { user: User }) {
         isAvailable,
       });
       await refreshUser();
-      setSaved(true);
+      toast('Profile updated.');
     } catch (cause) {
       setError(errorMessage(cause));
     } finally {
@@ -90,11 +90,6 @@ function AccountForm({ user }: { user: User }) {
 
         <form onSubmit={onSubmit} className="flex flex-col gap-5">
           {error ? <ErrorNotice message={error} /> : null}
-          {saved ? (
-            <p className="rounded-card bg-support-soft px-4 py-3 text-sm text-success">
-              Profile updated.
-            </p>
-          ) : null}
 
           <div className="flex flex-wrap items-center gap-5">
             <Avatar name={form.name || user.name} src={form.avatarUrl} size={72} />

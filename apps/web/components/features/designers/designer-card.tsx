@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Avatar } from '@/components/ui/avatar';
 import type { DesignerSummary } from '@/lib/types';
 import { formatMoney } from '@/lib/utils/format';
+import { Tag } from '@/components/ui/tag';
 import { isOptimizableImage } from '@/lib/utils/images';
 
 export function DesignerCard({ designer }: { designer: DesignerSummary }) {
@@ -66,12 +67,7 @@ export function DesignerCard({ designer }: { designer: DesignerSummary }) {
         {designer.specialities.length > 0 ? (
           <div className="mt-2 flex flex-wrap justify-center gap-1.5">
             {designer.specialities.map((style) => (
-              <span
-                key={style}
-                className="rounded-pill border border-hairline px-2.5 py-0.5 text-xs"
-              >
-                {style}
-              </span>
+              <Tag key={style}>{style}</Tag>
             ))}
           </div>
         ) : null}

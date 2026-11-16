@@ -7,6 +7,7 @@ import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
 import type { Favourite } from '@/lib/types';
+import { useToast } from '@/components/ui/toast';
 
 export function FavouriteButton({ designerId }: { designerId: string }) {
   const { user, status } = useSession();
@@ -29,6 +30,7 @@ function ClientFavouriteButton({ designerId }: { designerId: string }) {
     data?.items.some((item) => item.designerId === designerId) ??
     false;
   const [busy, setBusy] = useState(false);
+  const toast = useToast();
   const [actionError, setActionError] = useState<string | null>(null);
 
   async function toggle() {
@@ -38,9 +40,11 @@ function ClientFavouriteButton({ designerId }: { designerId: string }) {
       if (saved) {
         await api.delete(`/favourites/${designerId}`);
         setSaved(false);
+        toast('Removed from saved designers.');
       } else {
         await api.post('/favourites', { designerId });
         setSaved(true);
+        toast('Designer saved.');
       }
     } catch (cause) {
       setActionError(errorMessage(cause));

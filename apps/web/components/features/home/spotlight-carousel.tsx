@@ -20,7 +20,7 @@ export function SpotlightCarousel({
     setIndex((current) => (current + step + slides.length) % slides.length);
 
   return (
-    <div className="relative flex min-h-[560px] items-end overflow-hidden rounded-2xl p-4 sm:p-8 md:min-h-[680px]">
+    <div className="relative flex min-h-[560px] items-end overflow-hidden rounded-card p-4 sm:p-8 md:min-h-[680px]">
       {slides.map((item, i) => (
         <Image
           key={item.id}
@@ -37,7 +37,7 @@ export function SpotlightCarousel({
         className="absolute left-1/2 top-[38%] hidden items-start gap-2 md:flex"
       >
         <span className="mt-1 h-3 w-3 rounded-full border-2 border-white bg-white/40" />
-        <span className="w-40 rounded-xl bg-canvas/95 p-2 shadow-lg">
+        <span className="w-40 rounded-xl bg-canvas/95 p-2 shadow-lift">
           <span className="block px-1 pb-2 text-xs font-medium">{hotspot.title}</span>
           <span className="relative block aspect-[4/3] overflow-hidden rounded-lg">
             <Image src={hotspot.src} alt="" fill sizes="160px" className="object-cover" />
@@ -45,7 +45,7 @@ export function SpotlightCarousel({
         </span>
       </Link>
 
-      <div className="relative w-full max-w-sm rounded-xl bg-canvas/95 p-5 shadow-lg backdrop-blur sm:p-6">
+      <div className="relative w-full max-w-sm rounded-xl bg-canvas/95 p-5 shadow-lift backdrop-blur sm:p-6">
         <p className="text-xl font-medium tracking-[-0.02em]">{slide.title}</p>
         <p className="mt-1 flex items-center gap-1 text-xs text-muted">
           <MapPin aria-hidden className="h-3.5 w-3.5" /> {slide.style}

@@ -73,7 +73,7 @@ export function PortfolioDetail({
 
   if (loading) {
     return (
-      <div className="shell py-32 md:py-40">
+      <div className="shell page">
         <Skeleton className="h-16 w-2/3" />
         <Skeleton className="mt-10 aspect-[16/9] w-full" />
       </div>
@@ -82,7 +82,7 @@ export function PortfolioDetail({
 
   if (error || !data) {
     return (
-      <div className="shell py-32 md:py-40">
+      <div className="shell page">
         <ErrorNotice message={error ?? 'Portfolio not found'} />
       </div>
     );
@@ -100,7 +100,7 @@ export function PortfolioDetail({
   ];
 
   return (
-    <div className="py-32 md:py-40">
+    <div className="page">
       <section className="shell">
         <BackLink fallback="/explore" />
         <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
@@ -111,7 +111,7 @@ export function PortfolioDetail({
               ) : null}
               {portfolio.roomType ? <Badge>{portfolio.roomType}</Badge> : null}
             </div>
-            <h1 className="mt-4 max-w-3xl font-display text-3xl font-semibold md:text-4xl">
+            <h1 className="mt-4 max-w-3xl font-display text-title font-semibold">
               {portfolio.title}
             </h1>
           </div>

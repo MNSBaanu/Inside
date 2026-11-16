@@ -9,6 +9,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
+import { useToast } from '@/components/ui/toast';
 
 const roles = ['CLIENT', 'DESIGNER'] as const;
 
@@ -18,15 +19,17 @@ export function RoleSwitch() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const toast = useToast();
 
   if (!user || user.role === 'ADMIN') return null;
 
-  async function run(action: () => Promise<unknown>, next?: string) {
+  async function run(action: () => Promise<unknown>, done: string, next?: string) {
     setError(null);
     setBusy(true);
     try {
       await action();
       await refreshUser();
+      toast(done);
       if (next) router.push(next);
     } catch (cause) {
       setError(errorMessage(cause));
@@ -54,7 +57,11 @@ export function RoleSwitch() {
             confirmLabel="Create designer account"
             busy={busy}
             onConfirm={() =>
-              run(() => api.post('/users/me/designer-account', {}), '/verification')
+              run(
+                () => api.post('/users/me/designer-account', {}),
+                'Designer account created.',
+                '/verification',
+              )
             }
             onCancel={() => setConfirming(false)}
           />
@@ -74,7 +81,9 @@ export function RoleSwitch() {
         <Button
           variant="outline"
           disabled={busy}
-          onClick={() => run(() => api.post('/users/me/client-account', {}))}
+          onClick={() =>
+            run(() => api.post('/users/me/client-account', {}), 'Client account created.')
+          }
         >
           Create client account
         </Button>
@@ -97,7 +106,12 @@ export function RoleSwitch() {
             key={role}
             type="button"
             disabled={busy}
-            onClick={() => run(() => api.patch('/users/me/active-role', { activeRole: role }))}
+            onClick={() =>
+              run(
+                () => api.patch('/users/me/active-role', { activeRole: role }),
+                `Now working as a ${role === 'CLIENT' ? 'client' : 'designer'}.`,
+              )
+            }
             aria-pressed={user.activeRole === role}
             className={cn(
               'rounded-card border p-5 text-left transition-colors duration-300 disabled:opacity-60',

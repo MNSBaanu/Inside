@@ -105,7 +105,7 @@ export default function RequestDetailPage({
         <StatusBadge status={item.status} />
       </div>
       <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-display text-3xl font-semibold md:text-4xl">
+        <h1 className="font-display text-title font-semibold">
           {item.title}
         </h1>
         <div className="flex flex-wrap items-center gap-2">

@@ -291,7 +291,7 @@ export default function MoodboardsPage() {
                               </span>
                             ) : null}
                             {item.reaction === 'dislike' ? (
-                              <span className="absolute bottom-2 left-2 rounded-md bg-ink/80 px-2 py-0.5 text-xs text-canvas">
+                              <span className="absolute bottom-2 left-2 rounded-pill bg-ink/80 px-2 py-0.5 text-xs text-canvas">
                                 Not for me
                               </span>
                             ) : null}

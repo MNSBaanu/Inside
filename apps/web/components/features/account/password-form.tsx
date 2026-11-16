@@ -6,24 +6,24 @@ import { Card, CardHeader } from '@/components/ui/card';
 import { Field, Input } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
+import { useToast } from '@/components/ui/toast';
 
 export function PasswordForm() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
-    setSaved(false);
     setBusy(true);
     try {
       await api.patch('/users/me/password', { currentPassword, newPassword });
       setCurrentPassword('');
       setNewPassword('');
-      setSaved(true);
+      toast('Password updated.');
     } catch (cause) {
       setError(errorMessage(cause));
     } finally {
@@ -37,11 +37,6 @@ export function PasswordForm() {
 
       <form onSubmit={onSubmit} className="flex flex-col gap-6">
         {error ? <ErrorNotice message={error} /> : null}
-        {saved ? (
-          <p className="rounded-card bg-support-soft px-4 py-3 text-sm text-success">
-            Password updated.
-          </p>
-        ) : null}
 
         <Field label="Current password" htmlFor="currentPassword">
           <Input

@@ -58,6 +58,14 @@ const config: Config = {
           'clamp(2.25rem, 4.5vw, 3.75rem)',
           { lineHeight: '1.04', letterSpacing: '-0.005em' },
         ],
+        heading: [
+          'clamp(2rem, 4vw, 3.25rem)',
+          { lineHeight: '1.05', letterSpacing: '-0.03em' },
+        ],
+        title: [
+          'clamp(1.875rem, 3vw, 2.25rem)',
+          { lineHeight: '1.15', letterSpacing: '-0.01em' },
+        ],
       },
       borderRadius: {
         card: '20px',

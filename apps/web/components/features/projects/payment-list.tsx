@@ -192,7 +192,7 @@ function CheckoutDialog({
         role="dialog"
         aria-modal="true"
         aria-label="Pay milestone"
-        className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white p-4 pt-12 shadow-lg"
+        className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-card bg-white p-4 pt-12 shadow-lift"
       >
         <button
           type="button"

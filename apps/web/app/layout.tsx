@@ -5,6 +5,7 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { FooterGate } from '@/components/layout/footer-gate';
 import { SessionProvider } from '@/components/providers/session-provider';
+import { ToastProvider } from '@/components/ui/toast';
 
 const brand = Inter_Tight({
   subsets: ['latin'],
@@ -30,6 +31,7 @@ export default function RootLayout({
     <html lang="en" className={brand.variable}>
       <body>
         <SessionProvider>
+          <ToastProvider>
           <a href="#main" className="skip-link">
             Skip to content
           </a>
@@ -38,6 +40,7 @@ export default function RootLayout({
           <FooterGate>
             <SiteFooter />
           </FooterGate>
+          </ToastProvider>
         </SessionProvider>
       </body>
     </html>

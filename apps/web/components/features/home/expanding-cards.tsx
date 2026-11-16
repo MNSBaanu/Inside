@@ -29,7 +29,7 @@ export function ExpandingCards({ cards }: { cards: Card[] }) {
             href={card.href}
             onMouseEnter={() => setActive(index)}
             onFocus={() => setActive(index)}
-            className={`group flex min-w-0 flex-col overflow-hidden rounded-2xl bg-sand transition-all duration-700 ease-editorial ${
+            className={`group flex min-w-0 flex-col overflow-hidden rounded-card bg-sand transition-all duration-700 ease-editorial ${
               open ? 'lg:flex-[2_1_0%]' : 'lg:flex-[1_1_0%]'
             }`}
           >

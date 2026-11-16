@@ -7,6 +7,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 import { formatDate, formatMoney } from '@/lib/utils/format';
 import type { OpenRequest } from '@/lib/types';
+import { Tag } from '@/components/ui/tag';
 import { postedAgo } from './open-request-card';
 
 export function OpenRequestDrawer({
@@ -137,12 +138,7 @@ export function OpenRequestDrawer({
                         <p className="text-sm text-muted">{group.label}</p>
                         <div className="mt-2 flex flex-wrap gap-2">
                           {group.items.map((item) => (
-                            <span
-                              key={item}
-                              className="rounded-md bg-sand px-2.5 py-1 text-xs font-semibold"
-                            >
-                              {item}
-                            </span>
+                            <Tag key={item}>{item}</Tag>
                           ))}
                         </div>
                       </div>

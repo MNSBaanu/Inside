@@ -164,7 +164,7 @@ export function StyleWizard({
         role="dialog"
         aria-modal="true"
         aria-labelledby="style-wizard-title"
-        className="flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-surface shadow-lg"
+        className="flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-card bg-surface shadow-lift"
       >
         <div className="border-b border-hairline p-5">
           <div className="flex items-start justify-between gap-4">
@@ -275,7 +275,7 @@ export function StyleWizard({
                   sizes="(min-width: 640px) 560px, 100vw"
                   className={`object-cover transition ${item.reaction === 'dislike' ? 'opacity-40 grayscale' : ''}`}
                 />
-                <span className="absolute left-3 top-3 rounded-md bg-ink/70 px-2 py-0.5 text-xs text-canvas">
+                <span className="absolute left-3 top-3 rounded-pill bg-ink/70 px-2 py-0.5 text-xs text-canvas">
                   {imageIndex + 1} / {draft.savedItems.length}
                 </span>
               </div>
