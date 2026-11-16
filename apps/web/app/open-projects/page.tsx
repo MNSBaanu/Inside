@@ -1,21 +1,17 @@
 'use client';
 
-import { cn } from '@/lib/utils/cn';
-import { cardSurface } from '@/components/ui/card';
-import { MapPin } from 'lucide-react';
-import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ButtonLink } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
 import { Combobox } from '@/components/ui/combobox';
 import { BareInput } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { OpenRequestCard } from '@/components/features/open-projects/open-request-card';
+import { OpenRequestDrawer } from '@/components/features/open-projects/open-request-drawer';
 import { FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { PageHeader } from '@/components/ui/page-header';
 import { Select } from '@/components/ui/select';
 import { LOCATIONS } from '@/lib/utils/options';
-import { formatDate, formatMoney } from '@/lib/utils/format';
 import { buildQuery, useApi } from '@/lib/api/use-api';
 import type { OpenRequest, Paginated } from '@/lib/types';
 
@@ -39,6 +35,8 @@ export default function OpenProjectsPage() {
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [applied, setApplied] = useState(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState<OpenRequest | null>(null);
+  const closeDrawer = useCallback(() => setSelected(null), []);
   const resultsRef = useRef<HTMLDivElement>(null);
   const showPage = (next: number) => {
     setPage(next);
@@ -146,22 +144,24 @@ export default function OpenProjectsPage() {
           </div>
         ) : data && data.items.length > 0 ? (
           <>
-            <div className={cn(cardSurface, 'overflow-hidden')}>
-              <div className="flex items-center justify-between border-b border-hairline px-5 py-4 md:px-6">
-                <h2 className="font-semibold">
-                  {SORT_OPTIONS.find((option) => option.value === applied.sort)
-                    ?.label ?? 'Newest first'}
-                </h2>
-                <span className="text-sm text-muted">
-                  {data.total} open {data.total === 1 ? 'project' : 'projects'}
-                </span>
-              </div>
-              <ul className="divide-y divide-hairline">
-                {data.items.map((request) => (
-                  <OpenRequestRow key={request.id} request={request} />
-                ))}
-              </ul>
+            <div className="mb-4 flex items-baseline justify-between">
+              <h2 className="font-semibold">
+                {SORT_OPTIONS.find((option) => option.value === applied.sort)
+                  ?.label ?? 'Newest first'}
+              </h2>
+              <span className="text-sm text-muted">
+                {data.total} open {data.total === 1 ? 'project' : 'projects'}
+              </span>
             </div>
+            <ul className="flex flex-col gap-4">
+              {data.items.map((request) => (
+                <OpenRequestCard
+                  key={request.id}
+                  request={request}
+                  onOpen={() => setSelected(request)}
+                />
+              ))}
+            </ul>
 
             <Pagination page={page} totalPages={totalPages} onPageChange={showPage} />
           </>
@@ -179,74 +179,10 @@ export default function OpenProjectsPage() {
           )
         ) : null}
       </div>
+
+      {selected ? (
+        <OpenRequestDrawer request={selected} onClose={closeDrawer} />
+      ) : null}
     </div>
-  );
-}
-
-function postedAgo(value: string) {
-  const days = Math.floor((Date.now() - new Date(value).getTime()) / 86_400_000);
-  if (days <= 0) return 'Posted today';
-  if (days === 1) return 'Posted yesterday';
-  if (days < 30) return `Posted ${days} days ago`;
-  return `Posted ${formatDate(value)}`;
-}
-
-function OpenRequestRow({ request }: { request: OpenRequest }) {
-  const tags = [...request.rooms, ...request.styles];
-  const href = `/requests/${request.id}`;
-
-  return (
-    <li className="group relative px-5 py-5 transition-colors duration-200 hover:bg-sand/60 md:px-6">
-      <p className="text-xs text-muted">{postedAgo(request.createdAt)}</p>
-      <h3 className="mt-1 text-lg font-semibold leading-snug">
-        <Link
-          href={href}
-          className="after:absolute after:inset-0 group-hover:text-brand group-hover:underline"
-        >
-          {request.title}
-        </Link>
-      </h3>
-
-      <p className="mt-2 text-sm text-muted">
-        Fixed price
-        <span aria-hidden> · </span>
-        Budget:{' '}
-        <span className="font-semibold text-ink">
-          {formatMoney(request.budget)}
-        </span>
-        {request.timeline ? (
-          <>
-            <span aria-hidden> · </span>
-            Timeline:{' '}
-            <span className="font-semibold text-ink">{request.timeline}</span>
-          </>
-        ) : null}
-      </p>
-
-      {request.description ? (
-        <p className="mt-3 line-clamp-3 max-w-3xl text-sm">
-          {request.description}
-        </p>
-      ) : null}
-
-      {tags.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {tags.map((tag) => (
-            <Badge key={tag}>{tag}</Badge>
-          ))}
-        </div>
-      ) : null}
-
-      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted">
-        <span>
-          Proposals:{' '}
-          <span className="font-semibold text-ink">{request.proposalCount}</span>
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <MapPin aria-hidden className="h-3.5 w-3.5" />
-          {request.location ?? 'Location not set'}
-        </span>
-      </div>
-    </li>
   );
 }
