@@ -104,68 +104,77 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="shell grid grid-cols-1 gap-8 pb-32 pt-28 md:pb-40 md:pt-32 lg:h-dvh lg:grid-cols-[88px_1fr] lg:overflow-hidden lg:pb-8 lg:pt-24">
-      <aside className="flex min-w-0 items-center gap-3 rounded-card bg-ink p-2 text-canvas [scrollbar-width:none] lg:h-full lg:flex-col lg:gap-0 lg:overflow-hidden lg:px-2 lg:py-4 [&::-webkit-scrollbar]:hidden">
-        <Link
-          href="/account"
-          title={`${user.name} · ${user.activeRole.toLowerCase()}`}
-          className="flex shrink-0 flex-col items-center gap-1.5 px-2 lg:px-0"
-        >
-          <Avatar
-            name={user.name}
-            src={user.avatarUrl}
-            size={40}
-            className="ring-2 ring-canvas/20"
-          />
-          <span className="hidden rounded-pill bg-canvas/10 px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wider text-canvas/80 lg:block">
-            {user.activeRole.toLowerCase()}
-          </span>
-        </Link>
-
-        <nav className="flex flex-1 gap-0.5 overflow-x-auto [scrollbar-width:none] lg:mt-4 lg:min-h-0 lg:w-full lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden [&::-webkit-scrollbar]:hidden">
-          {mainItems.map((item) => (
-            <RailLink
-              key={item.href}
-              href={item.href}
-              label={item.label}
-              icon={item.icon}
-              active={isActive(item)}
+    <div className="lg:pl-[88px]">
+      <div className="shell flex flex-col gap-8 pb-32 pt-28 md:pb-40 md:pt-32 lg:pt-24">
+        <aside className="flex min-w-0 items-center gap-3 rounded-card bg-ink p-2 text-canvas [scrollbar-width:none] lg:fixed lg:inset-y-0 lg:left-0 lg:z-[60] lg:w-[88px] lg:flex-col lg:gap-0 lg:overflow-hidden lg:rounded-none lg:px-2 lg:py-5 [&::-webkit-scrollbar]:hidden">
+          <Link
+            href="/"
+            aria-label="Inside - home"
+            className="mb-5 hidden font-display text-3xl font-semibold leading-none tracking-tight text-canvas lg:block"
+          >
+            I<span className="text-brand-soft">.</span>
+          </Link>
+          <Link
+            href="/account"
+            title={`${user.name} · ${user.activeRole.toLowerCase()}`}
+            className="flex shrink-0 flex-col items-center gap-1.5 px-2 lg:px-0"
+          >
+            <Avatar
+              name={user.name}
+              src={user.avatarUrl}
+              size={40}
+              className="ring-2 ring-canvas/20"
             />
-          ))}
-        </nav>
+            <span className="hidden rounded-pill bg-canvas/10 px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wider text-canvas/80 lg:block">
+              {user.activeRole.toLowerCase()}
+            </span>
+          </Link>
 
-        <div className="flex shrink-0 gap-0.5 lg:mt-3 lg:w-full lg:flex-col lg:border-t lg:border-canvas/10 lg:pt-3">
-          {user.role === 'DESIGNER' ? <RoleSwitch activeRole={user.activeRole} /> : null}
-          {footerItems.map((item) => (
-            <RailLink
-              key={item.href}
-              href={item.href}
-              label={item.label}
-              icon={item.icon}
-              active={isActive(item)}
-            />
-          ))}
-          <RailLink label="Sign out" icon={LogOut} onClick={onSignOut} />
-        </div>
-      </aside>
+          <nav className="flex flex-1 gap-0.5 overflow-x-auto [scrollbar-width:none] lg:mt-4 lg:min-h-0 lg:w-full lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden [&::-webkit-scrollbar]:hidden">
+            {mainItems.map((item) => (
+              <RailLink
+                key={item.href}
+                href={item.href}
+                label={item.label}
+                icon={item.icon}
+                active={isActive(item)}
+              />
+            ))}
+          </nav>
 
-      <div className="min-w-0 [scrollbar-width:none] lg:h-full lg:overflow-y-auto lg:pb-16 [&::-webkit-scrollbar]:hidden">
-        {user.emailVerified ? null : (
-          <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-card bg-highlight-soft px-6 py-4">
-            <p className="text-sm text-status-action">
-              Your email isn&apos;t verified yet.
-            </p>
-            <Link
-              href="/verify-email"
-              className="ui-label link-underline text-status-action"
-            >
-              Verify now
-            </Link>
+          <div className="flex shrink-0 gap-0.5 lg:mt-3 lg:w-full lg:flex-col lg:border-t lg:border-canvas/10 lg:pt-3">
+            {user.role === 'DESIGNER' ? <RoleSwitch activeRole={user.activeRole} /> : null}
+            {footerItems.map((item) => (
+              <RailLink
+                key={item.href}
+                href={item.href}
+                label={item.label}
+                icon={item.icon}
+                active={isActive(item)}
+              />
+            ))}
+            <RailLink label="Sign out" icon={LogOut} onClick={onSignOut} />
           </div>
-        )}
-        <SignOutContext.Provider value={onSignOut}>
-          {children}
-        </SignOutContext.Provider>
+        </aside>
+
+        <div className="min-w-0">
+          {user.emailVerified ? null : (
+            <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-card bg-highlight-soft px-6 py-4">
+              <p className="text-sm text-status-action">
+                Your email isn&apos;t verified yet.
+              </p>
+              <Link
+                href="/verify-email"
+                className="ui-label link-underline text-status-action"
+              >
+                Verify now
+              </Link>
+            </div>
+          )}
+          <SignOutContext.Provider value={onSignOut}>
+            {children}
+          </SignOutContext.Provider>
+        </div>
       </div>
     </div>
   );

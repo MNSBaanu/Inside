@@ -61,6 +61,8 @@ function HeaderContent({ pathname }: { pathname: string }) {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ease-editorial ${
+        workspace ? 'lg:left-[88px]' : ''
+      } ${
         scrolled || menuOpen
           ? 'border-b border-hairline bg-canvas/85 backdrop-blur-md'
           : 'border-b border-transparent'
@@ -73,7 +75,9 @@ function HeaderContent({ pathname }: { pathname: string }) {
       >
         <Link
           href="/"
-          className="font-display text-2xl font-semibold tracking-tight text-ink"
+          className={`font-display text-2xl font-semibold tracking-tight text-ink ${
+            workspace ? 'lg:hidden' : ''
+          }`}
           aria-label="Inside - home"
         >
           Inside<span className="text-brand">.</span>
@@ -96,7 +100,7 @@ function HeaderContent({ pathname }: { pathname: string }) {
           </nav>
         )}
 
-        <div className="flex items-center gap-5">
+        <div className="ml-auto flex items-center gap-5">
           {status === 'authenticated' && user ? (
             <>
               {designerWorkspace ? (
