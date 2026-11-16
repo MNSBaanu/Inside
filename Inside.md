@@ -5,7 +5,7 @@ tags: [project, academic, final-year, nestjs, nextjs, expo, prisma]
 status: in development, submission 2026-11-20
 version: 0.0.1
 created: 2026-05-04
-updated: 2026-11-15
+updated: 2026-11-17
 repo: https://github.com/MNSBaanu/Inside
 author: MNS Baanu
 ---
@@ -75,3 +75,4 @@ Web appears to be on Vercel; API on Render (confirmed by owner 2026-11-08). Root
 - 2026-11-12: Admin area rebuilt: `/admin` is now an overview (counts from new `GET /admin/stats`, recent activity) and each section has its own page under `/admin/[section]` (users, verifications, reports, reviews, activity) with search and filters on the loaded rows. Admins land on `/admin` instead of the dashboard and their side menu only lists admin pages and Account. Paginated API lists got an `id` tie-breaker so items no longer repeat across pages.
 - 2026-11-14: Home page rebuilt to an editorial luxury layout (Inside theme colours, Inter Tight): full-height hero, about + stats, numbered steps accordion, spotlight carousel, staggered work grid, editorial cards, and a home-only dark footer with an image wordmark (shared footer hidden on `/`). Scroll effects: sticky hero that zooms out under the next card, spotlight zooms in, counting stats. Search, styles, designers, testimonials and FAQ removed from the home page.
 - 2026-11-15: Stripe payments use embedded Checkout inside the project page (needs `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` on web). Client app restyled: row lists with filters (briefs, requests with status filter, projects, saved, notifications, messages, safety), compact detail pages with back links, project stage progress bar, two-column account, overview tiles. Shorter buttons, smaller app headings, reusable delete confirmation. Briefs: identical briefs are blocked. Moodboards: collapsible boards and a guided "Describe your style" popup (mood words, palette, love / not for me with tags); new `moodWords` and `palette` columns (migration `20261115090000_moodboard_vibe`); turning a board into a brief writes a readable summary.
+- 2026-11-17: Dual roles are now opt-in. New `User.hasClientAccount` (migration `20261117090000_opt_in_client_account`, backfilled true for designers already using client features). Designers switch to client mode only after `POST /users/me/client-account`; clients become designers with `POST /users/me/designer-account` (keeps client access). Account page shows the matching "Create … account" card; sidebar and avatar menu show the switch only when both exist. Also: dashboard sidebar is now a full-height icon rail on the left edge, product pages use slug URLs (`Product.slug`), open projects use cards with a slide-over detail panel.

@@ -25,7 +25,7 @@ Inside is a full-stack platform that connects **clients** and **interior designe
 - **Project workspace** — staged flow (Proposal → Concept → Design → Revision → Completion)
 - **Messaging & notifications** — in-app and email alerts; push on mobile
 - **Milestone payment demo** — Stripe test-mode Checkout and approval records; no escrow or designer payouts
-- **Dual-role accounts** — designers can switch `activeRole` CLIENT ↔ DESIGNER
+- **Opt-in dual-role accounts** — every account starts with one role; a designer can create a client account and a client can create a designer account from Account, then switch `activeRole` CLIENT ↔ DESIGNER
 - **Trust & admin** — verification, reviews, moderation, and platform oversight
 
 ---
