@@ -10,7 +10,7 @@ test.describe('Hiring and the project workspace', () => {
 
     const comparison = page.getByRole('table', { name: 'Proposals side by side' });
     await expect(comparison).toBeVisible();
-    for (const name of ['Ravi Designer', 'Tharushi Wickramasinghe', 'Shenali De Silva']) {
+    for (const name of ['Ravi Jayasinghe', 'Tharushi Wickramasinghe', 'Shenali De Silva']) {
       await expect(comparison.getByRole('columnheader', { name })).toBeVisible();
     }
 

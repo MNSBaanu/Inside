@@ -307,7 +307,7 @@ const USERS: UserSeed[] = [
   { key: 'ishan', email: 'client5@inside.test', name: 'Ishan Jayawardena', role: Role.CLIENT, location: 'Jaffna', emailVerified: false, joinedDaysAgo: 1 },
   { key: 'ravindu', email: 'suspended.client@inside.test', name: 'Ravindu Silva', role: Role.CLIENT, status: AccountStatus.SUSPENDED, location: 'Colombo', joinedDaysAgo: 60 },
 
-  { key: 'ravi', email: 'designer@inside.test', name: 'Ravi Designer', role: Role.DESIGNER, isVerified: true, location: 'Kandy', bio: 'Minimalist and Scandinavian interiors, 6 years experience.', joinedDaysAgo: 180 },
+  { key: 'ravi', email: 'designer@inside.test', name: 'Ravi Jayasinghe', role: Role.DESIGNER, isVerified: true, location: 'Kandy', bio: 'Minimalist and Scandinavian interiors, 6 years experience.', joinedDaysAgo: 180 },
   { key: 'ayesha', email: 'designer2@inside.test', name: 'Ayesha Designer', role: Role.DESIGNER, emailVerified: false, location: 'Galle', bio: 'Coastal and relaxed interiors for small homes.', joinedDaysAgo: 20 },
   { key: 'tharushi', email: 'designer3@inside.test', name: 'Tharushi Wickramasinghe', role: Role.DESIGNER, isVerified: true, location: 'Colombo', bio: 'Tropical modern homes that stay cool without extra air conditioning.', joinedDaysAgo: 170 },
   { key: 'nimal', email: 'designer4@inside.test', name: 'Nimal Herath', role: Role.DESIGNER, isVerified: true, isAvailable: false, location: 'Kurunegala', bio: 'Kitchens and joinery. Fully booked until next quarter.', joinedDaysAgo: 160 },
@@ -348,7 +348,7 @@ const USERS: UserSeed[] = [
 ];
 
 const AVATARS: Partial<Record<UserKey, string>> = {
-  ravi: '1566492031773-4f4e44671857',
+  ravi: '1492562080023-ab3db95bfbce',
   tharushi: '1488426862026-3ee34a7d66df',
   nimal: '1500648767791-00dcc994a43e',
   shenali: '1567532939604-b6b5b0db2604',
@@ -1169,7 +1169,7 @@ async function main() {
   type NoteSeed = { user: UserKey; type: NotificationType; title: string; message: string; daysAgo: number; read?: boolean; metadata?: Prisma.InputJsonValue };
   const notes: NoteSeed[] = [
     { user: 'nadia', type: NotificationType.STAGE, title: 'Stage submitted', message: 'CONCEPT stage is awaiting your approval', daysAgo: 3, metadata: { projectId: projectId(1) } },
-    { user: 'nadia', type: NotificationType.MESSAGE, title: 'New message', message: 'Ravi Designer sent a message on "Living room and kitchen refresh"', daysAgo: 1, metadata: { projectId: projectId(1) } },
+    { user: 'nadia', type: NotificationType.MESSAGE, title: 'New message', message: 'Ravi Jayasinghe sent a message on "Living room and kitchen refresh"', daysAgo: 1, metadata: { projectId: projectId(1) } },
     { user: 'nadia', type: NotificationType.PROPOSAL, title: 'New proposal', message: 'Tharushi Wickramasinghe sent a proposal for "Guest bathroom"', daysAgo: 2, metadata: { requestId: seedId(8, 23) } },
     { user: 'nadia', type: NotificationType.PAYMENT, title: 'Milestone released', message: 'Your PROPOSAL stage payment was released', daysAgo: 20, read: true },
     { user: 'ravi', type: NotificationType.REQUEST, title: 'New project request', message: 'Kasun Perera sent you a request: "Dining room lighting plan"', daysAgo: 2, metadata: { requestId: seedId(8, 24) } },
@@ -1180,7 +1180,7 @@ async function main() {
     { user: 'kasun', type: NotificationType.PROPOSAL, title: 'New proposal', message: 'Shenali De Silva sent a proposal for "Japandi living room"', daysAgo: 3, metadata: { requestId: seedId(8, 20) } },
     { user: 'kasun', type: NotificationType.PROPOSAL, title: 'New proposal', message: 'Tharushi Wickramasinghe sent a proposal for "Japandi living room"', daysAgo: 4, metadata: { requestId: seedId(8, 20) } },
     { user: 'kasun', type: NotificationType.PROPOSAL, title: 'Proposal withdrawn', message: 'Ayesha Designer withdrew their proposal for "Japandi living room"', daysAgo: 4, read: true },
-    { user: 'sam', type: NotificationType.PROPOSAL, title: 'New proposal', message: 'Ravi Designer sent a proposal for "Coastal master bedroom redesign"', daysAgo: 9, read: true },
+    { user: 'sam', type: NotificationType.PROPOSAL, title: 'New proposal', message: 'Ravi Jayasinghe sent a proposal for "Coastal master bedroom redesign"', daysAgo: 9, read: true },
     { user: 'shenali', type: NotificationType.VERIFICATION, title: 'Verification rejected', message: 'Verification rejected: The photo is too blurry to read. Please upload a clear scan or PDF.', daysAgo: 20 },
     { user: 'shenali', type: NotificationType.PROPOSAL, title: 'Proposal declined', message: 'Your proposal for "Entrance hallway" was declined', daysAgo: 9 },
     { user: 'amaya', type: NotificationType.REQUEST, title: 'Request declined', message: 'Nimal Herath declined your request "Townhouse kitchen"', daysAgo: 18, read: true },
