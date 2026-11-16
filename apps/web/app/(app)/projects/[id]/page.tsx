@@ -9,6 +9,7 @@ import { MessageThread } from '@/components/features/projects/message-thread';
 import { PaymentList } from '@/components/features/projects/payment-list';
 import { ProjectHistory } from '@/components/features/projects/project-history';
 import { StageList } from '@/components/features/projects/stage-list';
+import { StageTimeline } from '@/components/features/projects/stage-timeline';
 import { ReviewForm } from '@/components/features/reviews/review-form';
 import { ReviewList } from '@/components/features/reviews/review-list';
 import { Badge } from '@/components/ui/badge';
@@ -79,7 +80,6 @@ export default function ProjectWorkspacePage({
   const stageItems = [...(stages.data?.items ?? [])].sort(
     (a, b) => a.stageOrder - b.stageOrder,
   );
-  const doneStages = stageItems.filter((stage) => stage.status === 'APPROVED').length;
 
   return (
     <div>
@@ -95,7 +95,7 @@ export default function ProjectWorkspacePage({
         <StatusBadge status={item.status} />
       </div>
       <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-display text-3xl font-semibold md:text-4xl">
+        <h1 className="font-display text-title font-semibold">
           {item.title}
         </h1>
         {isClient && !['COMPLETED', 'CANCELLED'].includes(item.status) ? (
@@ -137,43 +137,7 @@ export default function ProjectWorkspacePage({
       </p>
 
       {stageItems.length > 0 ? (
-        <div className="mt-6 max-w-3xl">
-          <div className="flex items-center justify-between text-sm">
-            <span>
-              <span className="text-muted">Current stage </span>
-              <span className="font-semibold">{titleCase(item.currentStage)}</span>
-            </span>
-            <span className="text-muted">
-              {doneStages} of {stageItems.length} approved
-            </span>
-          </div>
-          <ol className="mt-2 grid gap-1.5" style={{ gridTemplateColumns: `repeat(${stageItems.length}, minmax(0, 1fr))` }}>
-            {stageItems.map((stage) => (
-              <li key={stage.id}>
-                <span
-                  aria-hidden
-                  className={cn(
-                    'block h-1.5 rounded-full',
-                    stage.status === 'APPROVED'
-                      ? 'bg-brand'
-                      : stage.name === item.currentStage
-                        ? 'bg-highlight'
-                        : 'bg-sand',
-                  )}
-                />
-                <span
-                  className={cn(
-                    'mt-1.5 block truncate text-xs',
-                    stage.name === item.currentStage ? 'font-semibold text-ink' : 'text-muted',
-                  )}
-                >
-                  {titleCase(stage.name)}
-                  <span className="sr-only"> · {titleCase(stage.status)}</span>
-                </span>
-              </li>
-            ))}
-          </ol>
-        </div>
+        <StageTimeline stages={stageItems} currentStage={item.currentStage} />
       ) : null}
 
       {actionError ? (

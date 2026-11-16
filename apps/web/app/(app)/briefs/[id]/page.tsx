@@ -1,7 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils/cn';
-import { ChevronLeft, Pencil, Trash2 } from 'lucide-react';
+import { ChevronLeft, Pencil, Sparkles, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -18,6 +19,7 @@ import { FavouriteButton } from '@/components/features/designers/favourite-butto
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { formatDate } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
+import { isOptimizableImage } from '@/lib/utils/images';
 import type { Brief, PartySummary } from '@/lib/types';
 
 const MATCHES_PER_PAGE = 4;
@@ -27,7 +29,7 @@ type Match = {
   rating: number | null;
   score: number;
   factors: { key: string; label: string; points: number; max: number }[];
-  matchedPortfolios: { id: string; title: string }[];
+  matchedPortfolios: { id: string; title: string; imageUrl: string | null }[];
 };
 
 export default function BriefDetailPage({
@@ -166,8 +168,12 @@ export default function BriefDetailPage({
       </div>
 
       <section className="mt-10">
-        <h2 className="font-display text-xl font-semibold">
+        <h2 className="flex items-center gap-2 font-display text-xl font-semibold">
           Designers matched to this brief
+          <span className="inline-flex items-center gap-1 rounded-pill bg-brand-soft px-2.5 py-0.5 font-sans text-xs font-semibold text-brand-deep">
+            <Sparkles aria-hidden className="h-3.5 w-3.5" />
+            Smart match
+          </span>
         </h2>
         <p className="mt-1 text-sm text-muted">
           Ranked by how closely their published work matches your styles, rooms,
@@ -220,8 +226,33 @@ export default function BriefDetailPage({
                         </span>
                       </span>
                     </Link>
-                    <Badge tone="highlight">{match.score}% match</Badge>
+                    <ScoreRing score={match.score} />
                   </div>
+
+                  {match.matchedPortfolios.some((portfolio) => portfolio.imageUrl) ? (
+                    <div className="mt-4 grid grid-cols-3 gap-2">
+                      {match.matchedPortfolios
+                        .filter((portfolio) => portfolio.imageUrl)
+                        .slice(0, 3)
+                        .map((portfolio) => (
+                          <Link
+                            key={portfolio.id}
+                            href={`/portfolios/${portfolio.id}`}
+                            title={portfolio.title}
+                            className="group relative aspect-[4/3] overflow-hidden rounded-xl bg-sand"
+                          >
+                            <Image
+                              src={portfolio.imageUrl as string}
+                              unoptimized={!isOptimizableImage(portfolio.imageUrl as string)}
+                              alt={portfolio.title}
+                              fill
+                              sizes="(min-width: 1024px) 12vw, 30vw"
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          </Link>
+                        ))}
+                    </div>
+                  ) : null}
 
                   <div className="mt-3 flex flex-wrap items-center gap-2">
                     {match.designer.isVerified ? (
@@ -284,6 +315,33 @@ export default function BriefDetailPage({
           )}
         </div>
       </section>
+    </div>
+  );
+}
+
+function ScoreRing({ score }: { score: number }) {
+  const radius = 22;
+  const circumference = 2 * Math.PI * radius;
+  const value = Math.max(0, Math.min(100, score));
+  return (
+    <div className="relative h-14 w-14 shrink-0" role="img" aria-label={`${value}% match`}>
+      <svg viewBox="0 0 56 56" className="h-full w-full -rotate-90" aria-hidden>
+        <circle cx="28" cy="28" r={radius} fill="none" strokeWidth="5" className="stroke-sand" />
+        <circle
+          cx="28"
+          cy="28"
+          r={radius}
+          fill="none"
+          strokeWidth="5"
+          strokeLinecap="round"
+          className="stroke-brand"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference * (1 - value / 100)}
+        />
+      </svg>
+      <span className="absolute inset-0 grid place-items-center text-sm font-semibold text-brand-deep">
+        {value}%
+      </span>
     </div>
   );
 }

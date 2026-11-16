@@ -85,28 +85,34 @@ test('a new client goes from the landing page to a completed, reviewed project',
     await page.goto('/designers');
     await page.getByLabel('Search').fill('Ravi');
     await expect(page).toHaveURL(/q=Ravi/);
-    await page.getByRole('link', { name: /Ravi Designer/ }).first().click();
-    await expect(page.getByRole('heading', { name: 'Ravi Designer' })).toBeVisible();
+    await page.getByRole('link', { name: /Ravi Jayasinghe/ }).first().click();
+    await expect(page.getByRole('heading', { name: 'Ravi Jayasinghe' })).toBeVisible();
     await page.getByRole('button', { name: 'Save designer' }).click();
     await expect(page.getByRole('button', { name: 'Saved' })).toBeVisible();
 
     await page.goto('/favourites');
-    await expect(page.getByText('Ravi Designer').first()).toBeVisible();
+    await expect(page.getByText('Ravi Jayasinghe').first()).toBeVisible();
   });
 
   await test.step('client writes a brief and requests a matched designer', async () => {
     await page.goto('/briefs/new');
+    const skipAssistant = page.getByRole('button', { name: 'Skip and fill it in step by step' });
+    await expect(page.getByLabel('Rooms').or(skipAssistant)).toBeVisible();
+    if (await skipAssistant.isVisible()) await skipAssistant.click();
     await page.getByLabel('Rooms').fill('Living Room');
     await page.getByLabel('Rooms').press('Enter');
+    await page.getByRole('button', { name: 'Next' }).click();
     await page.getByLabel('Styles').fill('Scandinavian');
     await page.getByLabel('Styles').press('Enter');
+    await page.getByRole('button', { name: 'Next' }).click();
     await page.getByLabel('Budget range').fill('400000-500000');
     await page.getByLabel('Description').fill('Calm, light living room.');
+    await page.getByRole('button', { name: 'Next' }).click();
     await page.getByRole('button', { name: 'Create brief' }).click();
     await expect(page).toHaveURL(/\/briefs\/[0-9a-f-]+$/);
 
-    const match = page.getByRole('listitem').filter({ hasText: 'Ravi Designer' });
-    await expect(match.getByText(/% match/)).toBeVisible();
+    const match = page.getByRole('listitem').filter({ hasText: 'Ravi Jayasinghe' });
+    await expect(match.getByRole('img', { name: /% match/ })).toBeVisible();
     await expect(match.getByText('Description', { exact: true })).toBeVisible();
     await match.getByRole('link', { name: 'Request', exact: true }).click();
     await expect(page).toHaveURL(/\/requests\/new\?designerId=.+&briefId=/);
@@ -141,7 +147,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
     await expect(page.getByRole('heading', { name: 'Proposals received' })).toBeVisible();
     await page
       .getByRole('listitem')
-      .filter({ hasText: 'Ravi Designer' })
+      .filter({ hasText: 'Ravi Jayasinghe' })
       .getByRole('button', { name: 'Accept proposal' })
       .click();
     await expect(page).toHaveURL(/\/projects\/[0-9a-f-]+$/);
@@ -228,7 +234,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
     const guestContext = await browser.newContext();
     const guest = await guestContext.newPage();
     await guest.goto('/designers');
-    await guest.getByRole('link', { name: /Ravi Designer/ }).first().click();
+    await guest.getByRole('link', { name: /Ravi Jayasinghe/ }).first().click();
     await expect(guest.getByText(reviewText)).toBeVisible();
     await guestContext.close();
   });
