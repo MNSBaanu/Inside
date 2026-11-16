@@ -158,7 +158,7 @@ export default async function DesignerProfilePage({
                 key={portfolio.id}
                 className="w-[85%] shrink-0 snap-start sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]"
               >
-                <PortfolioCard portfolio={portfolio} compact />
+                <PortfolioCard portfolio={portfolio} />
               </div>
             ))}
           </div>
