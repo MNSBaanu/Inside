@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
+import { Plus } from 'lucide-react';
+import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/page-header';
 import { Reveal } from '@/components/features/home/reveal';
+import { authImage, featuredWork, heroImage, spotlightImage } from '@/lib/utils/images';
 
 export const metadata: Metadata = {
   title: 'How Inside works',
@@ -15,31 +18,31 @@ const stages = [
     number: '01',
     title: 'Write your brief',
     body: 'Set out the room, the budget range, the timeline and the feeling you want. Attach a moodboard so designers can read your taste, not guess it.',
-    tone: 'bg-highlight-soft',
+    image: authImage,
   },
   {
     number: '02',
     title: 'Get matched',
     body: 'We rank designers against your brief by style, room type, budget fit and availability. You can also invite a specific designer directly.',
-    tone: 'bg-support-soft',
+    image: heroImage,
   },
   {
     number: '03',
     title: 'Compare proposals',
     body: 'Each proposal carries scope, cost and a timeline in weeks. Read them side by side, then accept the one that fits.',
-    tone: 'bg-brand-soft',
+    image: featuredWork[1].src,
   },
   {
     number: '04',
     title: 'Work in stages',
     body: 'Accepted proposals become a project split into stages - concept, design, revision, completion. Each stage is submitted and approved in the workspace.',
-    tone: 'bg-highlight-soft',
+    image: spotlightImage,
   },
   {
     number: '05',
     title: 'Pay per milestone',
     body: 'Pay each milestone once its stage is approved, then release it to confirm you are happy with the work.',
-    tone: 'bg-support-soft',
+    image: featuredWork[2].src,
   },
 ];
 
@@ -74,21 +77,46 @@ export default function HowItWorksPage() {
         />
       </section>
 
-      <section className="shell mt-20">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {stages.map((stage, index) => (
-            <Reveal key={stage.number} delay={index * 80}>
-              <div className={`h-full rounded-card ${stage.tone} p-8 md:p-10`}>
-                <p className="font-display text-5xl font-semibold text-brand">
-                  {stage.number}
-                </p>
-                <h2 className="mt-8 font-display text-2xl font-semibold">
-                  {stage.title}
-                </h2>
-                <p className="mt-4 text-muted">{stage.body}</p>
-              </div>
-            </Reveal>
-          ))}
+      <section aria-labelledby="stages-title" className="shell mt-20">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
+          <Reveal className="flex flex-col">
+            <h2
+              id="stages-title"
+              className="text-[clamp(2rem,4vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.03em]"
+            >
+              Five stages,
+              <br />
+              one workspace
+            </h2>
+            <p className="mt-6 max-w-sm text-muted">
+              Open a stage to see what happens and what you control at each step.
+            </p>
+          </Reveal>
+
+          <Reveal delay={120} className="divide-y divide-ink/10">
+            {stages.map((stage) => (
+              <details key={stage.number} className="group py-5 first:pt-0">
+                <summary className="flex cursor-pointer list-none items-baseline gap-3">
+                  <span className="text-xs text-muted">{stage.number}</span>
+                  <span className="text-xl font-medium tracking-[-0.02em]">{stage.title}</span>
+                  <Plus
+                    aria-hidden
+                    className="ml-auto h-4 w-4 shrink-0 self-center text-muted transition-transform duration-300 group-open:rotate-45"
+                  />
+                </summary>
+                <div className="relative mt-5 aspect-[16/9] overflow-hidden rounded-2xl">
+                  <Image
+                    src={stage.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+                <p className="mt-4 max-w-lg text-xs leading-relaxed text-muted">{stage.body}</p>
+              </details>
+            ))}
+          </Reveal>
         </div>
       </section>
 
