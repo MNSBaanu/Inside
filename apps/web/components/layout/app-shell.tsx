@@ -23,7 +23,6 @@ import {
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { Avatar } from '@/components/ui/avatar';
 import { useSession } from '@/components/providers/session-provider';
 import { Skeleton } from '@/components/ui/feedback';
 import { api } from '@/lib/api/client';
@@ -110,27 +109,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link
             href="/"
             aria-label="Inside - home"
-            className="mb-5 hidden font-display text-3xl font-semibold leading-none tracking-tight text-canvas lg:block"
+            className="mb-6 hidden font-display text-3xl font-semibold leading-none tracking-tight text-canvas lg:block"
           >
             I<span className="text-brand-soft">.</span>
           </Link>
-          <Link
-            href="/account"
-            title={`${user.name} · ${user.activeRole.toLowerCase()}`}
-            className="flex shrink-0 flex-col items-center gap-1.5 px-2 lg:px-0"
-          >
-            <Avatar
-              name={user.name}
-              src={user.avatarUrl}
-              size={40}
-              className="ring-2 ring-canvas/20"
-            />
-            <span className="hidden rounded-pill bg-canvas/10 px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wider text-canvas/80 lg:block">
-              {user.activeRole.toLowerCase()}
-            </span>
-          </Link>
 
-          <nav className="flex flex-1 gap-0.5 overflow-x-auto [scrollbar-width:none] lg:mt-4 lg:min-h-0 lg:w-full lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden [&::-webkit-scrollbar]:hidden">
+          <nav className="flex flex-1 gap-0.5 overflow-x-auto [scrollbar-width:none] lg:min-h-0 lg:w-full lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden [&::-webkit-scrollbar]:hidden">
             {mainItems.map((item) => (
               <RailLink
                 key={item.href}
