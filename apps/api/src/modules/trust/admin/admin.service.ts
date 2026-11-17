@@ -253,10 +253,14 @@ export class AdminService {
         },
       }),
     ]);
+    const targets = await this.reportTargets(items);
     return {
       success: true,
       data: {
-        items: items.map((r) => this.serializeReport(r)),
+        items: items.map((r) => ({
+          ...this.serializeReport(r),
+          target: targets.get(r.targetId) ?? null,
+        })),
         page,
         pageSize,
         total,
@@ -453,6 +457,65 @@ export class AdminService {
       { action: query.action, search: query.search?.trim() },
     );
     return { success: true, data: { items, page, pageSize, total, actions } };
+  }
+
+  private async reportTargets(
+    reports: { targetType: ReportTargetType; targetId: string }[],
+  ) {
+    const ids = (type: ReportTargetType) =>
+      reports.filter((r) => r.targetType === type).map((r) => r.targetId);
+    const [users, projects, portfolios, reviews, messages] = await Promise.all([
+      this.prisma.user.findMany({
+        where: { id: { in: ids(ReportTargetType.USER) } },
+        select: { id: true, name: true, role: true },
+      }),
+      this.prisma.project.findMany({
+        where: { id: { in: ids(ReportTargetType.PROJECT) } },
+        select: { id: true, title: true },
+      }),
+      this.prisma.portfolio.findMany({
+        where: { id: { in: ids(ReportTargetType.PORTFOLIO) } },
+        select: { id: true, title: true },
+      }),
+      this.prisma.review.findMany({
+        where: { id: { in: ids(ReportTargetType.REVIEW) } },
+        select: { id: true, comment: true, designerId: true },
+      }),
+      this.prisma.message.findMany({
+        where: { id: { in: ids(ReportTargetType.MESSAGE) } },
+        select: {
+          id: true,
+          content: true,
+          project: { select: { title: true } },
+        },
+      }),
+    ]);
+    const excerpt = (text: string | null) =>
+      text ? (text.length > 80 ? `${text.slice(0, 80)}…` : text) : null;
+    const map = new Map<string, { label: string; href: string | null }>();
+    for (const u of users) {
+      map.set(u.id, {
+        label: u.name,
+        href: u.role === 'DESIGNER' ? `/designers/${u.id}` : null,
+      });
+    }
+    for (const p of projects) map.set(p.id, { label: p.title, href: null });
+    for (const p of portfolios) {
+      map.set(p.id, { label: p.title, href: `/portfolios/${p.id}` });
+    }
+    for (const r of reviews) {
+      map.set(r.id, {
+        label: excerpt(r.comment) ?? 'Review without a comment',
+        href: `/designers/${r.designerId}`,
+      });
+    }
+    for (const m of messages) {
+      map.set(m.id, {
+        label: `"${excerpt(m.content)}" in ${m.project.title}`,
+        href: null,
+      });
+    }
+    return map;
   }
 
   private serializeReport(r: {

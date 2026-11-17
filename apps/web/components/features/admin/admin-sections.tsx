@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState, type ReactNode } from 'react';
 import { describeActivity } from '@/components/features/projects/project-history';
 import { useSession } from '@/components/providers/session-provider';
@@ -7,6 +8,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cardSurface } from '@/components/ui/card';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { BareInput } from '@/components/ui/field';
 import { FilterBar, FilterField } from '@/components/ui/filter-bar';
@@ -50,6 +52,7 @@ type AdminReport = {
   createdAt: string;
   reporter: { id: string; name: string } | null;
   reportedUser: { id: string; name: string } | null;
+  target: { label: string; href: string | null } | null;
 };
 
 type PendingVerification = {
@@ -491,6 +494,10 @@ export function ReportsSection() {
   const { list, search, setSearch, page, setPage, filtered } =
     useAdminList<AdminReport>('/admin/reports', { status, targetType });
   const { error, pending, run } = useAdminAction();
+  const [confirm, setConfirm] = useState<{
+    report: AdminReport;
+    action: 'resolve' | 'dismiss';
+  } | null>(null);
 
   return (
     <>
@@ -542,6 +549,19 @@ export function ReportsSection() {
               <p className="font-semibold">
                 {titleCase(report.targetType)} reported
               </p>
+              {report.target ? (
+                report.target.href ? (
+                  <Link
+                    href={report.target.href}
+                    target="_blank"
+                    className="text-sm font-medium text-brand hover:underline"
+                  >
+                    {report.target.label}
+                  </Link>
+                ) : (
+                  <p className="text-sm font-medium">{report.target.label}</p>
+                )
+              ) : null}
               <p className="text-sm text-muted">
                 {report.reporter ? `By ${report.reporter.name}` : 'Reporter'}
                 {report.reportedUser
@@ -576,13 +596,7 @@ export function ReportsSection() {
               <Button
                 size="sm"
                 disabled={pending === report.id}
-                onClick={() =>
-                  run(
-                    report.id,
-                    `/admin/reports/${report.id}/resolve`,
-                    list.reload,
-                  )
-                }
+                onClick={() => setConfirm({ report, action: 'resolve' })}
               >
                 Resolve
               </Button>
@@ -590,13 +604,7 @@ export function ReportsSection() {
                 size="sm"
                 variant="outline"
                 disabled={pending === report.id}
-                onClick={() =>
-                  run(
-                    report.id,
-                    `/admin/reports/${report.id}/dismiss`,
-                    list.reload,
-                  )
-                }
+                onClick={() => setConfirm({ report, action: 'dismiss' })}
               >
                 Dismiss
               </Button>
@@ -604,6 +612,27 @@ export function ReportsSection() {
           </li>
         )}
       </Results>
+
+      {confirm ? (
+        <ConfirmDialog
+          title={
+            confirm.action === 'resolve'
+              ? 'Resolve this report?'
+              : 'Dismiss this report?'
+          }
+          description={`${titleCase(confirm.report.targetType)} reported${confirm.report.target ? `: ${confirm.report.target.label}` : ''}. ${confirm.action === 'resolve' ? 'The reporter is told it was acted on.' : 'The reporter is told no action was needed.'}`}
+          confirmLabel={confirm.action === 'resolve' ? 'Resolve' : 'Dismiss'}
+          busy={pending === confirm.report.id}
+          onConfirm={() =>
+            void run(
+              confirm.report.id,
+              `/admin/reports/${confirm.report.id}/${confirm.action}`,
+              list.reload,
+            ).finally(() => setConfirm(null))
+          }
+          onCancel={() => setConfirm(null)}
+        />
+      ) : null}
     </>
   );
 }

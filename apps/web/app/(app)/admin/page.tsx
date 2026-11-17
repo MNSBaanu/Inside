@@ -17,6 +17,7 @@ import {
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cardSurface } from '@/components/ui/card';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { Rating } from '@/components/ui/rating';
@@ -53,6 +54,7 @@ type QueueReport = {
   status: string;
   createdAt: string;
   reporter: { name: string } | null;
+  target: { label: string; href: string | null } | null;
 };
 
 type NewUser = {
@@ -87,6 +89,10 @@ export default function AdminOverviewPage() {
 
   const [actionError, setActionError] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<{
+    report: QueueReport;
+    action: 'resolve' | 'dismiss';
+  } | null>(null);
 
   async function act(
     id: string,
@@ -272,6 +278,19 @@ export default function AdminOverviewPage() {
                       <p className="font-semibold">
                         {titleCase(report.targetType)} reported
                       </p>
+                      {report.target ? (
+                        report.target.href ? (
+                          <Link
+                            href={report.target.href}
+                            target="_blank"
+                            className="text-sm font-medium text-brand hover:underline"
+                          >
+                            {report.target.label}
+                          </Link>
+                        ) : (
+                          <p className="text-sm font-medium">{report.target.label}</p>
+                        )
+                      ) : null}
                       <p className="text-sm text-muted">
                         {report.reporter ? `By ${report.reporter.name} · ` : ''}
                         {formatDate(report.createdAt)}
@@ -284,13 +303,7 @@ export default function AdminOverviewPage() {
                     <Button
                       size="sm"
                       disabled={pending === report.id}
-                      onClick={() =>
-                        act(
-                          report.id,
-                          `/admin/reports/${report.id}/resolve`,
-                          reports.reload,
-                        )
-                      }
+                      onClick={() => setConfirm({ report, action: 'resolve' })}
                     >
                       Resolve
                     </Button>
@@ -298,13 +311,7 @@ export default function AdminOverviewPage() {
                       size="sm"
                       variant="outline"
                       disabled={pending === report.id}
-                      onClick={() =>
-                        act(
-                          report.id,
-                          `/admin/reports/${report.id}/dismiss`,
-                          reports.reload,
-                        )
-                      }
+                      onClick={() => setConfirm({ report, action: 'dismiss' })}
                     >
                       Dismiss
                     </Button>
@@ -312,6 +319,27 @@ export default function AdminOverviewPage() {
                 </QueueItem>
               ))}
             </Queue>
+
+            {confirm ? (
+              <ConfirmDialog
+                title={
+                  confirm.action === 'resolve'
+                    ? 'Resolve this report?'
+                    : 'Dismiss this report?'
+                }
+                description={`${titleCase(confirm.report.targetType)} reported${confirm.report.target ? `: ${confirm.report.target.label}` : ''}. ${confirm.action === 'resolve' ? 'The reporter is told it was acted on.' : 'The reporter is told no action was needed.'}`}
+                confirmLabel={confirm.action === 'resolve' ? 'Resolve' : 'Dismiss'}
+                busy={pending === confirm.report.id}
+                onConfirm={() =>
+                  void act(
+                    confirm.report.id,
+                    `/admin/reports/${confirm.report.id}/${confirm.action}`,
+                    reports.reload,
+                  ).finally(() => setConfirm(null))
+                }
+                onCancel={() => setConfirm(null)}
+              />
+            ) : null}
 
             <Queue
               title="Hidden reviews"
