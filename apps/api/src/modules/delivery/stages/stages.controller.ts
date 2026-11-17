@@ -39,6 +39,14 @@ export class StagesController {
     return this.stages.listByProject(user, projectId);
   }
 
+  @Get('stages/schedule')
+  @UseGuards(JwtAuthGuard, DesignerModeGuard)
+  @ApiOperation({ summary: "Designer's open stages across active projects" })
+  @ApiOkResponse({ description: 'Stages ordered by due date' })
+  schedule(@CurrentUser() user: AuthUser) {
+    return this.stages.listSchedule(user);
+  }
+
   @Patch('stages/:id/due-date')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Set or clear a stage due date (either party)' })

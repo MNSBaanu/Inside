@@ -59,6 +59,46 @@ export class StagesService {
     };
   }
 
+  async listSchedule(user: AuthUser) {
+    const items = await this.prisma.projectStage.findMany({
+      where: {
+        status: { not: StageStatus.APPROVED },
+        project: {
+          designerId: user.id,
+          status: { in: [ProjectStatus.ACTIVE, ProjectStatus.ON_HOLD] },
+        },
+      },
+      include: {
+        project: {
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            client: { select: { name: true } },
+          },
+        },
+      },
+      orderBy: [
+        { dueDate: { sort: 'asc', nulls: 'last' } },
+        { stageOrder: 'asc' },
+      ],
+    });
+    return {
+      success: true,
+      data: {
+        items: items.map((stage) => ({
+          ...this.serialize(stage),
+          project: {
+            id: stage.project.id,
+            title: stage.project.title,
+            status: stage.project.status,
+            clientName: stage.project.client.name,
+          },
+        })),
+      },
+    };
+  }
+
   async setDueDate(user: AuthUser, stageId: string, dueDate: Date | null) {
     const stage = await this.requireStage(stageId);
     if (

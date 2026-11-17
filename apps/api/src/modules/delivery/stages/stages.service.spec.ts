@@ -231,4 +231,44 @@ describe('StagesService', () => {
     const result = await service.reject(client, 's1', 'try again');
     expect(result.data.stage.status).toBe(StageStatus.REJECTED);
   });
+
+  it('lists the designer schedule with project details', async () => {
+    const due = new Date('2026-11-20T00:00:00Z');
+    prisma.projectStage.findMany.mockResolvedValue([
+      {
+        id: 's1',
+        projectId: 'p1',
+        stageOrder: 2,
+        name: StageName.CONCEPT,
+        status: StageStatus.IN_PROGRESS,
+        fee: 140000,
+        dueDate: due,
+        submittedAt: null,
+        approvedAt: null,
+        createdAt: due,
+        updatedAt: due,
+        project: {
+          id: 'p1',
+          title: 'Living room',
+          status: ProjectStatus.ACTIVE,
+          client: { name: 'Nadia' },
+        },
+      },
+    ]);
+
+    const result = await service.listSchedule(designer);
+
+    expect(prisma.projectStage.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          status: { not: StageStatus.APPROVED },
+          project: expect.objectContaining({ designerId: designer.id }),
+        }),
+      }),
+    );
+    expect(result.data.items[0]).toMatchObject({
+      id: 's1',
+      project: { id: 'p1', title: 'Living room', clientName: 'Nadia' },
+    });
+  });
 });
