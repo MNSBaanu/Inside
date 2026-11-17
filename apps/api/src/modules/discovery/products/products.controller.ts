@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ProductSlugParamDto } from './dto/product-slug-param.dto';
 import { ListProductsQueryDto } from './dto/list-products-query.dto';
 import { ProductsService } from './products.service';
 
@@ -18,7 +19,7 @@ export class ProductsController {
   @Get(':slug')
   @ApiOperation({ summary: 'Product detail' })
   @ApiOkResponse({ description: 'Product' })
-  getOne(@Param('slug') slug: string) {
-    return this.productsService.getBySlug(slug);
+  getOne(@Param() params: ProductSlugParamDto) {
+    return this.productsService.getBySlug(params.slug);
   }
 }
