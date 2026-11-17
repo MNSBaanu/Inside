@@ -29,6 +29,7 @@ const DAY = 86_400_000;
 
 const groups = [
   { key: 'overdue', title: 'Overdue' },
+  { key: 'waiting', title: 'Waiting on client' },
   { key: 'week', title: 'Next 7 days' },
   { key: 'later', title: 'Later' },
   { key: 'none', title: 'No due date' },
@@ -36,7 +37,9 @@ const groups = [
 
 type GroupKey = (typeof groups)[number]['key'];
 
-function groupOf(dueDate: string | null, today: number): GroupKey {
+function groupOf(item: ScheduleItem, today: number): GroupKey {
+  if (item.status === 'SUBMITTED') return 'waiting';
+  const { dueDate } = item;
   if (!dueDate) return 'none';
   const due = new Date(dueDate).getTime();
   if (due < today) return 'overdue';
@@ -87,7 +90,7 @@ export default function SchedulePage() {
           <div className="flex flex-col gap-8">
             {groups.map((group) => {
               const rows = items.filter(
-                (item) => groupOf(item.dueDate, today) === group.key,
+                (item) => groupOf(item, today) === group.key,
               );
               if (rows.length === 0) return null;
               return (

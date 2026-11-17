@@ -22,6 +22,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { formatDate, titleCase } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
 import { spotlightImage } from '@/lib/utils/images';
+import { notificationHref } from '@/lib/notifications';
 import type { Notification, Project, ProjectRequest } from '@/lib/types';
 
 export default function DashboardPage() {
@@ -197,15 +198,29 @@ export default function DashboardPage() {
                         : 'mt-2 h-2 w-2 shrink-0 rounded-pill bg-hairline'
                     }
                   />
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold">{item.title}</p>
-                    {item.message ? (
-                      <p className="mt-0.5 line-clamp-2 text-sm text-muted">{item.message}</p>
-                    ) : null}
-                    <p className="mt-0.5 text-xs text-muted">
-                      {formatDate(item.createdAt)}
-                    </p>
-                  </div>
+                  {(() => {
+                    const href = notificationHref(item);
+                    const content = (
+                      <>
+                        <p className="text-sm font-semibold group-hover:text-brand group-hover:underline">
+                          {item.title}
+                        </p>
+                        {item.message ? (
+                          <p className="mt-0.5 line-clamp-2 text-sm text-muted">{item.message}</p>
+                        ) : null}
+                        <p className="mt-0.5 text-xs text-muted">
+                          {formatDate(item.createdAt)}
+                        </p>
+                      </>
+                    );
+                    return href ? (
+                      <Link href={href} className="group min-w-0 flex-1">
+                        {content}
+                      </Link>
+                    ) : (
+                      <div className="min-w-0">{content}</div>
+                    );
+                  })()}
                 </li>
               ))}
             </ul>
