@@ -12,6 +12,7 @@ import { HealthModule } from './modules/platform/health/health.module';
 import { MatchingModule } from './modules/discovery/matching/matching.module';
 import { MessagesModule } from './modules/delivery/messages/messages.module';
 import { MoodboardsModule } from './modules/discovery/moodboards/moodboards.module';
+import { ContactModule } from './modules/platform/contact/contact.module';
 import { NewsletterModule } from './modules/platform/newsletter/newsletter.module';
 import { NotificationsModule } from './modules/platform/notifications/notifications.module';
 import { PaymentsModule } from './modules/delivery/payments/payments.module';
@@ -66,6 +67,7 @@ import { VerificationsModule } from './modules/identity/verifications/verificati
     AdminModule,
     UploadsModule,
     NewsletterModule,
+    ContactModule,
     HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
