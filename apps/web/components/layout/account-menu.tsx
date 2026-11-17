@@ -24,6 +24,12 @@ function useUnreadCounts() {
     void reloadProjects();
   }, [pathname, reloadNotifications, reloadProjects]);
 
+  useEffect(() => {
+    const onChange = () => void reloadNotifications();
+    window.addEventListener('inside:notifications-changed', onChange);
+    return () => window.removeEventListener('inside:notifications-changed', onChange);
+  }, [reloadNotifications]);
+
   return {
     alerts: notifications.data?.items.filter((item) => item.readAt === null).length ?? 0,
     messages: projects.data?.items.reduce((sum, item) => sum + item.unreadCount, 0) ?? 0,

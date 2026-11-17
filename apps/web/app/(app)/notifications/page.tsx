@@ -27,6 +27,7 @@ export default function NotificationsPage() {
     setBusy(true);
     try {
       await api.patch('/notifications/read-all', {});
+      window.dispatchEvent(new Event('inside:notifications-changed'));
       await reload();
     } catch (cause) {
       setActionError(errorMessage(cause));
@@ -39,6 +40,7 @@ export default function NotificationsPage() {
     setActionError(null);
     try {
       await api.patch(`/notifications/${id}/read`, {});
+      window.dispatchEvent(new Event('inside:notifications-changed'));
       await reload();
     } catch (cause) {
       setActionError(errorMessage(cause));
