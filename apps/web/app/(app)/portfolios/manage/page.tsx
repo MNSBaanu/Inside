@@ -114,6 +114,8 @@ export default function ManagePortfoliosPage() {
                 <Input
                   id="title"
                   required
+                  minLength={2}
+                  maxLength={160}
                   value={form.title}
                   onChange={(event) =>
                     setForm({ ...form, title: event.target.value })
