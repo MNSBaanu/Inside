@@ -9,6 +9,7 @@ export const columns = [
       { href: '/shop', label: 'Shop' },
       { href: '/open-projects', label: 'Open projects' },
       { href: '/how-it-works', label: 'How it works' },
+      { href: '/contact', label: 'Contact us' },
     ],
   },
   {

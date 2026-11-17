@@ -3,6 +3,7 @@
 import { notFound } from 'next/navigation';
 import {
   ActivitySection,
+  ContactSection,
   AdminOnly,
   ReportsSection,
   ReviewsSection,
@@ -28,6 +29,7 @@ const sections: Record<
     Section: ReviewsSection,
   },
   activity: { Section: ActivitySection },
+  contact: { Section: ContactSection },
 };
 
 export default function AdminSectionPage({

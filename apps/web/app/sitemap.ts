@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-const routes = ['', '/explore', '/shop', '/open-projects', '/how-it-works', '/login', '/register'];
+const routes = ['', '/explore', '/shop', '/open-projects', '/how-it-works', '/contact', '/login', '/register'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();

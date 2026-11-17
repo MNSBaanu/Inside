@@ -13,6 +13,7 @@ import {
   exportUsersCsv,
   revokeButtonClass,
 } from '@/components/features/admin/admin-users';
+import { CONTACT_TOPICS } from '@/components/features/contact/contact-form';
 import { describeActivity } from '@/components/features/projects/project-history';
 import { useSession } from '@/components/providers/session-provider';
 import { Avatar } from '@/components/ui/avatar';
@@ -978,6 +979,184 @@ export function ActivitySection() {
         empty="No activity yet."
       >
         {(entry) => <ActivityRow key={entry.id} entry={entry} />}
+      </Results>
+    </>
+  );
+}
+
+type ContactMessage = {
+  id: string;
+  name: string;
+  email: string;
+  topic: string;
+  message: string;
+  status: 'NEW' | 'IN_PROGRESS' | 'RESOLVED';
+  createdAt: string;
+};
+
+const contactGrid =
+  'lg:grid lg:grid-cols-[minmax(0,1fr)_9rem_6.5rem_7.5rem_13rem] lg:items-center lg:gap-x-4';
+
+function topicLabel(topic: string) {
+  return CONTACT_TOPICS.find((item) => item.value === topic)?.label ?? titleCase(topic);
+}
+
+export function ContactSection() {
+  const [status, setStatus] = useState('');
+  const [topic, setTopic] = useState('');
+  const { list, search, setSearch, page, setPage, filtered } =
+    useAdminList<ContactMessage>('/admin/contact', { status, topic });
+  const { error, pending, run } = useAdminAction();
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  function setMessageStatus(item: ContactMessage, next: ContactMessage['status']) {
+    return run(item.id, `/admin/contact/${item.id}/status`, list.reload, {
+      status: next,
+    });
+  }
+
+  function reply(item: ContactMessage) {
+    const subject = encodeURIComponent(`Re: ${topicLabel(item.topic)} - Inside`);
+    window.location.href = `mailto:${item.email}?subject=${subject}`;
+    if (item.status === 'NEW') void setMessageStatus(item, 'IN_PROGRESS');
+  }
+
+  async function exportMessages() {
+    const items = await fetchAllPages<ContactMessage>('/admin/contact', {
+      search: search.trim(),
+      status,
+      topic,
+    });
+    downloadCsv(
+      'contact-messages',
+      ['Name', 'Email', 'Topic', 'Message', 'Status', 'Date'],
+      items.map((item) => [
+        item.name,
+        item.email,
+        topicLabel(item.topic),
+        item.message,
+        titleCase(item.status),
+        item.createdAt.slice(0, 10),
+      ]),
+    );
+  }
+
+  return (
+    <>
+      <SectionHeader
+        title="Contact."
+        description="Messages sent through the public Contact us page."
+        action={<ExportButton onExport={exportMessages} />}
+      />
+      <Filters>
+        <SearchField
+          id="contact-search"
+          value={search}
+          onChange={setSearch}
+          placeholder="Name, email or message"
+        />
+        <SelectField
+          id="contact-status"
+          label="Status"
+          value={status}
+          onChange={setStatus}
+          options={[
+            { value: '', label: 'Any status' },
+            { value: 'NEW', label: 'New' },
+            { value: 'IN_PROGRESS', label: 'In progress' },
+            { value: 'RESOLVED', label: 'Resolved' },
+          ]}
+        />
+        <SelectField
+          id="contact-topic"
+          label="Topic"
+          value={topic}
+          onChange={setTopic}
+          options={[{ value: '', label: 'Any topic' }, ...CONTACT_TOPICS]}
+        />
+      </Filters>
+
+      <Results
+        state={list}
+        page={page}
+        onPageChange={setPage}
+        filtered={filtered}
+        noun="messages"
+        empty="No messages yet."
+        actionError={error}
+        columns={{
+          className: contactGrid,
+          labels: ['Message', 'Topic', 'Date', 'Status', 'Actions'],
+        }}
+      >
+        {(item) => {
+          const open = expanded === item.id;
+          const long = item.message.length > 160;
+          return (
+            <li key={item.id} className={cn(gridRow, contactGrid)}>
+              <div className="min-w-0">
+                <p className="font-semibold">
+                  {item.name}
+                  <span className="font-normal text-muted"> · {item.email}</span>
+                </p>
+                <p
+                  className={cn(
+                    'mt-0.5 whitespace-pre-line break-words text-sm text-muted',
+                    !open && 'line-clamp-2',
+                  )}
+                >
+                  {item.message}
+                </p>
+                {long ? (
+                  <button
+                    type="button"
+                    onClick={() => setExpanded(open ? null : item.id)}
+                    className="mt-1 text-sm font-semibold text-brand hover:underline"
+                  >
+                    {open ? 'Show less' : 'Read more'}
+                  </button>
+                ) : null}
+              </div>
+
+              <p className="text-sm">{topicLabel(item.topic)}</p>
+
+              <p className="text-sm text-muted">{formatDate(item.createdAt)}</p>
+
+              <div>
+                <StatusBadge status={item.status} />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 lg:flex-nowrap lg:justify-end">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={pending === item.id}
+                  onClick={() => reply(item)}
+                >
+                  Reply
+                </Button>
+                {item.status === 'RESOLVED' ? (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={pending === item.id}
+                    onClick={() => void setMessageStatus(item, 'IN_PROGRESS')}
+                  >
+                    Reopen
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    disabled={pending === item.id}
+                    onClick={() => void setMessageStatus(item, 'RESOLVED')}
+                  >
+                    Resolve
+                  </Button>
+                )}
+              </div>
+            </li>
+          );
+        }}
       </Results>
     </>
   );

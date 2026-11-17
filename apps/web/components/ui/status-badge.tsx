@@ -27,6 +27,7 @@ type AnyStatus =
 export type StatusGroup = 'action' | 'progress' | 'done' | 'problem' | 'closed';
 
 const groups: Record<string, StatusGroup> = {
+  NEW: 'action',
   PENDING: 'action',
   SUBMITTED: 'action',
   UNDER_REVIEW: 'action',
