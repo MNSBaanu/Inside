@@ -37,7 +37,12 @@ export function ReviewForm({
       });
       onSubmitted();
     } catch (cause) {
-      setError(errorMessage(cause));
+      const message = errorMessage(cause);
+      if (/already reviewed/i.test(message)) {
+        onSubmitted();
+        return;
+      }
+      setError(message);
       setSubmitting(false);
     }
   }
