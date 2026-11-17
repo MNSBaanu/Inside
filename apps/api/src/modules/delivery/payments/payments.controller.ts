@@ -38,8 +38,8 @@ export class PaymentsController {
   }
 
   @Post('payments/:id/checkout')
-  @ApiOperation({ summary: 'Client starts a Stripe Checkout for a milestone' })
-  @ApiOkResponse({ description: 'Checkout URL' })
+  @ApiOperation({ summary: 'Client starts a card payment for a milestone' })
+  @ApiOkResponse({ description: 'Client secret' })
   checkout(
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
@@ -48,7 +48,7 @@ export class PaymentsController {
   }
 
   @Patch('payments/:id/pay')
-  @ApiOperation({ summary: 'Confirm a completed Stripe Checkout session' })
+  @ApiOperation({ summary: 'Confirm a completed Stripe payment' })
   @ApiOkResponse({ description: 'Paid' })
   pay(
     @CurrentUser() user: AuthUser,

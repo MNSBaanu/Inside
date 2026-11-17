@@ -42,47 +42,33 @@ export class PaymentsService {
   async createCheckout(user: AuthUser, id: string) {
     const payment = await this.requirePendingForClient(user, id);
     const stripe = this.requireStripe();
-    const projectUrl = `${this.config.get<string>('CORS_ORIGIN') ?? 'http://localhost:3000'}/projects/${payment.projectId}`;
-
-    const session = await stripe.checkout.sessions.create({
-      ui_mode: 'embedded',
-      mode: 'payment',
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: 'lkr',
-            unit_amount: Math.round(Number(payment.amount) * 100),
-            product_data: { name: `${payment.project.title} milestone` },
-          },
-        },
-      ],
+    const intent = await stripe.paymentIntents.create({
+      amount: Math.round(Number(payment.amount) * 100),
+      currency: 'lkr',
+      payment_method_types: ['card'],
+      description: `${payment.project.title} milestone`,
       metadata: { paymentId: id },
-      return_url: `${projectUrl}?payment=${id}&session_id={CHECKOUT_SESSION_ID}`,
     });
 
-    return { success: true, data: { clientSecret: session.client_secret } };
+    return { success: true, data: { clientSecret: intent.client_secret } };
   }
 
   async markPaid(user: AuthUser, id: string, dto: PayPaymentDto) {
     const payment = await this.requirePendingForClient(user, id);
     const stripe = this.requireStripe();
 
-    const session = await stripe.checkout.sessions
-      .retrieve(dto.sessionId)
+    const intent = await stripe.paymentIntents
+      .retrieve(dto.paymentIntentId)
       .catch(() => {
-        throw new BadRequestException('Invalid checkout session');
+        throw new BadRequestException('Invalid payment');
       });
     if (
-      session.metadata?.paymentId !== id ||
-      session.payment_status !== 'paid'
+      intent.metadata?.paymentId !== id ||
+      intent.status !== 'succeeded'
     ) {
       throw new BadRequestException('Payment has not been completed');
     }
-    const intentId =
-      typeof session.payment_intent === 'string'
-        ? session.payment_intent
-        : (session.payment_intent?.id ?? session.id);
+    const intentId = intent.id;
 
     try {
       const updated = await this.prisma.milestonePayment.update({
