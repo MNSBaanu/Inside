@@ -5,11 +5,13 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -24,6 +26,7 @@ import {
   AdminReviewsQueryDto,
   AdminUsersQueryDto,
 } from './dto/admin-list-query.dto';
+import { AdminCreateUserDto } from './dto/create-user.dto';
 import { SetReviewVisibilityDto } from './dto/set-review-visibility.dto';
 import { AdminService } from './admin.service';
 
@@ -46,6 +49,27 @@ export class AdminController {
   @ApiOkResponse({ description: 'Users' })
   users(@Query() query: AdminUsersQueryDto) {
     return this.admin.listUsers(query);
+  }
+
+  @Get('users/export')
+  @ApiOperation({ summary: 'All users matching the filters, for CSV export' })
+  @ApiOkResponse({ description: 'Users' })
+  exportUsers(@Query() query: AdminUsersQueryDto) {
+    return this.admin.exportUsers(query);
+  }
+
+  @Post('users')
+  @ApiOperation({ summary: 'Create a client or designer account' })
+  @ApiCreatedResponse({ description: 'Created' })
+  createUser(@CurrentUser() admin: AuthUser, @Body() dto: AdminCreateUserDto) {
+    return this.admin.createUser(admin, dto);
+  }
+
+  @Get('users/:id')
+  @ApiOperation({ summary: 'User details with activity counts' })
+  @ApiOkResponse({ description: 'User' })
+  user(@Param('id', ParseUUIDPipe) id: string) {
+    return this.admin.getUser(id);
   }
 
   @Patch('users/:id/suspend')

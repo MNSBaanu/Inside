@@ -1,8 +1,10 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import {
   AccountStatus,
   NotificationType,
@@ -22,6 +24,7 @@ import type {
   AdminReviewsQueryDto,
   AdminUsersQueryDto,
 } from './dto/admin-list-query.dto';
+import type { AdminCreateUserDto } from './dto/create-user.dto';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
 
@@ -76,19 +79,7 @@ export class AdminService {
 
   async listUsers(query: AdminUsersQueryDto) {
     const { page, pageSize, skip, take } = paginate(query, 20);
-    const search = query.search?.trim();
-    const where: Prisma.UserWhereInput = {
-      ...(query.role ? { role: query.role } : {}),
-      ...(query.status ? { status: query.status } : {}),
-      ...(search
-        ? {
-            OR: [
-              { name: { contains: search, mode: 'insensitive' } },
-              { email: { contains: search, mode: 'insensitive' } },
-            ],
-          }
-        : {}),
-    };
+    const where = this.usersWhere(query);
     const [total, items] = await Promise.all([
       this.prisma.user.count({ where }),
       this.prisma.user.findMany({
@@ -110,6 +101,108 @@ export class AdminService {
       }),
     ]);
     return { success: true, data: { items, page, pageSize, total } };
+  }
+
+  async exportUsers(query: AdminUsersQueryDto) {
+    const items = await this.prisma.user.findMany({
+      where: this.usersWhere(query),
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: 5000,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        isVerified: true,
+        status: true,
+        phone: true,
+        location: true,
+        createdAt: true,
+      },
+    });
+    return { success: true, data: { items } };
+  }
+
+  async getUser(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        activeRole: true,
+        hasClientAccount: true,
+        isVerified: true,
+        emailVerified: true,
+        status: true,
+        bio: true,
+        avatarUrl: true,
+        phone: true,
+        location: true,
+        isAvailable: true,
+        createdAt: true,
+        updatedAt: true,
+        _count: {
+          select: {
+            portfolios: true,
+            projectsAsClient: true,
+            projectsAsDesigner: true,
+            reviewsReceived: true,
+            reviewsWritten: true,
+            reportsAgainst: true,
+          },
+        },
+      },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return { success: true, data: { user } };
+  }
+
+  async createUser(admin: AuthUser, dto: AdminCreateUserDto) {
+    const email = dto.email.toLowerCase();
+    const existing = await this.prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      throw new ConflictException('Email already registered');
+    }
+    const role = dto.role === 'DESIGNER' ? Role.DESIGNER : Role.CLIENT;
+    const user = await this.prisma.user.create({
+      data: {
+        email,
+        passwordHash: await bcrypt.hash(dto.password, 10),
+        name: dto.name.trim(),
+        role,
+        activeRole: role,
+        emailVerified: new Date(),
+      },
+      select: { id: true, email: true, name: true, role: true },
+    });
+
+    await this.activity.log({
+      userId: admin.id,
+      action: 'USER_CREATED',
+      metadata: { targetUserId: user.id, role },
+    });
+
+    return { success: true, data: { user } };
+  }
+
+  private usersWhere(query: AdminUsersQueryDto): Prisma.UserWhereInput {
+    const search = query.search?.trim();
+    return {
+      ...(query.role ? { role: query.role } : {}),
+      ...(query.status ? { status: query.status } : {}),
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: 'insensitive' } },
+              { email: { contains: search, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
   }
 
   async suspend(admin: AuthUser, userId: string) {
