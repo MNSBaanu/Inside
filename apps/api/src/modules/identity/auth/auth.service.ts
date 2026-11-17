@@ -15,6 +15,7 @@ import {
 } from '@inside/database';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../../../database/prisma.service';
+import { EmailService } from '../../platform/email/email.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
@@ -61,6 +62,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
+    private readonly email: EmailService,
   ) {
     const days = Number(this.config.get('JWT_REFRESH_DAYS') ?? 30);
     this.refreshTtlMs = days * 24 * 60 * 60 * 1000;
@@ -97,6 +99,11 @@ export class AuthService {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
     });
+    await this.email.send(
+      user.email,
+      'Confirm your email for Inside',
+      `Hi ${user.name},\n\nConfirm your email address to finish setting up your Inside account:\n${this.email.webUrl(`/verify-email?token=${rawVerifyToken}`)}\n\nThe link expires in 24 hours. If you didn't sign up, you can ignore this email.`,
+    );
 
     const tokens = await this.issueTokens(user);
     return {
@@ -228,6 +235,11 @@ export class AuthService {
         expiresAt: new Date(Date.now() + 60 * 60 * 1000),
       },
     });
+    await this.email.send(
+      user.email,
+      'Reset your Inside password',
+      `Hi ${user.name},\n\nUse this link to choose a new password:\n${this.email.webUrl(`/reset-password?token=${rawToken}`)}\n\nThe link expires in 1 hour. If you didn't ask for this, you can ignore this email.`,
+    );
 
     if (this.exposeDevAuthSecrets()) {
       response.data.resetToken = rawToken;

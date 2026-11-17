@@ -5,6 +5,7 @@ import { AccountStatus, AuthTokenType, Role } from '@inside/database';
 import * as bcrypt from 'bcryptjs';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { EmailService } from '../../platform/email/email.service';
 
 describe('AuthService', () => {
   const prisma = {
@@ -44,6 +45,11 @@ describe('AuthService', () => {
     }),
   };
 
+  const email = {
+    send: jest.fn().mockResolvedValue(true),
+    webUrl: jest.fn((path: string) => `http://localhost:3000${path}`),
+  };
+
   let service: AuthService;
 
   beforeEach(() => {
@@ -52,6 +58,7 @@ describe('AuthService', () => {
       prisma as unknown as PrismaService,
       jwt as unknown as JwtService,
       config as unknown as ConfigService,
+      email as unknown as EmailService,
     );
   });
 
