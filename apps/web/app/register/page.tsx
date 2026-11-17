@@ -83,7 +83,12 @@ export default function RegisterPage() {
                 <span className="block font-display text-lg font-semibold">
                   {option.title}
                 </span>
-                <span className="mt-1 block text-sm text-muted">
+                <span
+                  className={cn(
+                    'mt-1 block text-sm',
+                    role === option.value ? 'text-ink' : 'text-muted',
+                  )}
+                >
                   {option.body}
                 </span>
               </button>
