@@ -72,9 +72,11 @@ export function ReportDialog({
   }
 
   return (
+    <>
+    <div aria-hidden className="basis-full" />
     <form
       onSubmit={onSubmit}
-      className={cn(cardSurface, 'mt-4 flex w-full max-w-md flex-col gap-4 p-6')}
+      className={cn(cardSurface, 'flex w-full max-w-md flex-col gap-4 p-6')}
     >
       {error ? <ErrorNotice message={error} /> : null}
 
@@ -114,5 +116,6 @@ export function ReportDialog({
         </Button>
       </div>
     </form>
+    </>
   );
 }
