@@ -10,6 +10,7 @@ import { Card, CardHeader } from '@/components/ui/card';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
+import { useApi } from '@/lib/api/use-api';
 import { cn } from '@/lib/utils/cn';
 import type { ProjectRequest } from '@/lib/types';
 
@@ -18,6 +19,9 @@ function NewRequestForm() {
   const searchParams = useSearchParams();
   const designerId = searchParams.get('designerId') ?? undefined;
   const briefId = searchParams.get('briefId') ?? undefined;
+  const { data: picked } = useApi<{ designer: { name: string } }>(
+    designerId ? `/designers/${designerId}` : null,
+  );
 
   const [type, setType] = useState<'DIRECT' | 'OPEN'>(
     designerId ? 'DIRECT' : 'OPEN',
@@ -82,7 +86,7 @@ function NewRequestForm() {
             </span>
             <span className="mt-1 block text-sm text-muted">
               {designerId
-                ? 'Send straight to the designer you picked.'
+                ? `Send straight to ${picked?.designer.name ?? 'the designer you picked'}.`
                 : 'Open a designer profile first to send directly.'}
             </span>
           </button>

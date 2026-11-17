@@ -10,6 +10,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
@@ -32,6 +33,7 @@ export default function RequestDetailPage({
 
   const [actionError, setActionError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [confirmAccept, setConfirmAccept] = useState<Proposal | null>(null);
 
   if (request.loading) return <Skeleton className="h-64" />;
   if (request.error || !request.data) {
@@ -111,14 +113,16 @@ export default function RequestDetailPage({
         <div className="flex flex-wrap items-center gap-2">
           {isClient && ['OPEN', 'PENDING'].includes(item.status) ? (
             <>
-              <Button
-                size="sm"
-                variant="ghost"
-                disabled={pendingId === item.id}
-                onClick={() => changeRequest('close')}
-              >
-                Close to new proposals
-              </Button>
+              {item.type === 'OPEN' && item.status === 'OPEN' ? (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={pendingId === item.id}
+                  onClick={() => changeRequest('close')}
+                >
+                  Close to new proposals
+                </Button>
+              ) : null}
               <Button
                 size="sm"
                 variant="outline"
@@ -145,7 +149,10 @@ export default function RequestDetailPage({
         </div>
       </div>
       <p className="mt-2 text-sm text-muted">
-        {item.type === 'DIRECT' ? 'Direct request' : 'Open to proposals'} ·
+        {item.type === 'DIRECT'
+          ? `Direct request${item.designer?.name ? ` to ${item.designer.name}` : ''}`
+          : 'Open to proposals'}{' '}
+        ·
         Created {formatDate(item.createdAt)}
         {item.budget !== null ? ` · Budget ${formatMoney(item.budget)}` : ''}
         {item.timeline ? ` · Timeline ${item.timeline}` : ''}
@@ -257,7 +264,7 @@ export default function RequestDetailPage({
                             <Button
                               size="sm"
                               disabled={pendingId === proposal.id}
-                              onClick={() => act(proposal.id, 'accept')}
+                              onClick={() => setConfirmAccept(proposal)}
                             >
                               {pendingId === proposal.id
                                 ? 'Working…'
@@ -293,14 +300,31 @@ export default function RequestDetailPage({
             <EmptyState
               title="No proposals yet."
               description={
-                isClient
-                  ? 'Designers will respond here. Open requests usually attract more replies.'
-                  : 'Be the first to propose on this request.'
+                !isClient
+                  ? 'Be the first to propose on this request.'
+                  : item.type === 'DIRECT'
+                    ? `${item.designer?.name ?? 'The designer'} will reply here with a proposal.`
+                    : 'Designers will respond here. Open requests usually attract more replies.'
               }
             />
           )}
         </div>
       </section>
+
+      {confirmAccept ? (
+        <ConfirmDialog
+          title="Accept this proposal?"
+          description={`This starts the project with ${confirmAccept.designer?.name ?? 'this designer'} for ${formatMoney(confirmAccept.totalAmount)}, paid stage by stage. Other proposals on this request will be declined.`}
+          confirmLabel="Accept and start project"
+          busy={pendingId === confirmAccept.id}
+          onConfirm={() =>
+            void act(confirmAccept.id, 'accept').finally(() =>
+              setConfirmAccept(null),
+            )
+          }
+          onCancel={() => setConfirmAccept(null)}
+        />
+      ) : null}
     </div>
   );
 }
