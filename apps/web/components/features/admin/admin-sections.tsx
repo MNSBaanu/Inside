@@ -77,12 +77,14 @@ type PendingVerification = {
   designer?: { id: string; name: string; avatarUrl: string | null };
 };
 
-type Page<T> = {
+export type Page<T> = {
   items: T[];
   page: number;
   pageSize: number;
   total: number;
   actions?: string[];
+  categories?: string[];
+  sellers?: string[];
 };
 
 const REPORT_TARGETS: ReportTargetType[] = [
@@ -111,7 +113,7 @@ export function AdminOnly({ children }: { children: ReactNode }) {
 }
 
 /** One page of an admin list, filtered and searched on the server. */
-function useAdminList<T>(endpoint: string, filters: Record<string, string>) {
+export function useAdminList<T>(endpoint: string, filters: Record<string, string>) {
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
@@ -146,7 +148,7 @@ function useAdminList<T>(endpoint: string, filters: Record<string, string>) {
   return { list, search, setSearch, page, setPage, filtered };
 }
 
-function useAdminAction() {
+export function useAdminAction() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
 
@@ -171,7 +173,7 @@ function useAdminAction() {
   return { error, pending, run };
 }
 
-function Filters({ children }: { children: ReactNode }) {
+export function Filters({ children }: { children: ReactNode }) {
   return (
     <FilterBar compact onSubmit={(event) => event.preventDefault()}>
       {children}
@@ -179,7 +181,7 @@ function Filters({ children }: { children: ReactNode }) {
   );
 }
 
-function SearchField({
+export function SearchField({
   id,
   value,
   onChange,
@@ -204,7 +206,7 @@ function SearchField({
   );
 }
 
-function SelectField({
+export function SelectField({
   id,
   label,
   value,
@@ -224,7 +226,7 @@ function SelectField({
   );
 }
 
-function Results<T>({
+export function Results<T>({
   state,
   page,
   onPageChange,
@@ -319,7 +321,7 @@ function Results<T>({
 const rowClass =
   'flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-3 md:px-6';
 
-const gridRow = 'grid gap-3 px-5 py-3 md:px-6';
+export const gridRow = 'grid gap-3 px-5 py-3 md:px-6';
 const usersGrid =
   'md:grid md:grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_6.5rem_15rem] md:items-center md:gap-x-4';
 const reportsGrid =
@@ -327,7 +329,7 @@ const reportsGrid =
 const reviewsGrid =
   'lg:grid lg:grid-cols-[minmax(0,1fr)_8.5rem_6.5rem_6.5rem_8rem] lg:items-center lg:gap-x-4';
 
-function SectionHeader({
+export function SectionHeader({
   title,
   description,
   action,

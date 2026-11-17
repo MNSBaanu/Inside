@@ -10,6 +10,11 @@ import {
   UsersSection,
   VerificationsSection,
 } from '@/components/features/admin/admin-sections';
+import {
+  OpenProjectsSection,
+  ProjectsSection,
+  ShopSection,
+} from '@/components/features/admin/admin-manage';
 import { PageHeader } from '@/components/ui/page-header';
 
 const sections: Record<
@@ -22,6 +27,9 @@ const sections: Record<
     description: 'Designers waiting for their credentials to be checked.',
     Section: VerificationsSection,
   },
+  projects: { Section: ProjectsSection },
+  shop: { Section: ShopSection },
+  'open-projects': { Section: OpenProjectsSection },
   reports: { Section: ReportsSection },
   reviews: {
     title: 'Reviews.',
