@@ -579,7 +579,7 @@ export class AdminService {
         select: {
           id: true,
           content: true,
-          project: { select: { title: true } },
+          project: { select: { id: true, title: true } },
         },
       }),
     ]);
@@ -589,10 +589,13 @@ export class AdminService {
     for (const u of users) {
       map.set(u.id, {
         label: u.name,
-        href: u.role === 'DESIGNER' ? `/designers/${u.id}` : null,
+        href:
+          u.role === 'DESIGNER' ? `/designers/${u.id}` : `/admin/users/${u.id}`,
       });
     }
-    for (const p of projects) map.set(p.id, { label: p.title, href: null });
+    for (const p of projects) {
+      map.set(p.id, { label: p.title, href: `/admin/projects/${p.id}` });
+    }
     for (const p of portfolios) {
       map.set(p.id, { label: p.title, href: `/portfolios/${p.id}` });
     }
@@ -605,7 +608,7 @@ export class AdminService {
     for (const m of messages) {
       map.set(m.id, {
         label: `"${excerpt(m.content)}" in ${m.project.title}`,
-        href: null,
+        href: `/admin/projects/${m.project.id}`,
       });
     }
     return map;
