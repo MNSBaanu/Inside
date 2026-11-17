@@ -4,6 +4,7 @@ import { ChevronLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SaveToMoodboard } from '@/components/features/shop/save-to-moodboard';
+import { ShopDiscount } from '@/components/features/shop/shop-discount';
 import { Tag } from '@/components/ui/tag';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { formatMoney } from '@/lib/utils/format';
@@ -81,6 +82,7 @@ export default function ProductDetailPage({
           <p className="mt-4 text-2xl font-semibold">
             {formatMoney(product.price)}
           </p>
+          <ShopDiscount price={product.price} slug={product.slug} />
           <p className="mt-6 max-w-xl text-lg text-muted">
             {product.description}
           </p>
@@ -94,9 +96,9 @@ export default function ProductDetailPage({
                 href={product.sellerUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-ink/20 px-5 py-2.5 text-base font-semibold text-ink transition-all duration-300 ease-editorial hover:border-ink hover:bg-ink hover:text-canvas"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-base font-semibold text-canvas transition-all duration-300 ease-editorial hover:bg-brand-deep"
               >
-                Visit seller
+                Buy from seller
               </a>
             )}
             <SaveToMoodboard product={product} />
