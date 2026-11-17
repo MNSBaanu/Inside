@@ -21,21 +21,13 @@ const sections: Record<
     description: 'Designers waiting for their credentials to be checked.',
     Section: VerificationsSection,
   },
-  reports: {
-    title: 'Reports.',
-    description: 'Reported people and content that still need a decision.',
-    Section: ReportsSection,
-  },
+  reports: { Section: ReportsSection },
   reviews: {
     title: 'Reviews.',
     description: 'Client reviews. Hidden ones do not appear on designer profiles.',
     Section: ReviewsSection,
   },
-  activity: {
-    title: 'Activity.',
-    description: 'What has happened across projects, plus the admin audit trail.',
-    Section: ActivitySection,
-  },
+  activity: { Section: ActivitySection },
 };
 
 export default function AdminSectionPage({

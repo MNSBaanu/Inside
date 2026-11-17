@@ -2,7 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useState, type ReactNode } from 'react';
-import { Download, UserPlus } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
+import {
+  downloadCsv,
+  ExportButton,
+  fetchAllPages,
+} from '@/components/features/admin/admin-export';
 import {
   AddUserDialog,
   exportUsersCsv,
@@ -165,22 +170,9 @@ function useAdminAction() {
   return { error, pending, run };
 }
 
-function Filters({
-  compact = false,
-  children,
-}: {
-  compact?: boolean;
-  children: ReactNode;
-}) {
+function Filters({ children }: { children: ReactNode }) {
   return (
-    <FilterBar
-      onSubmit={(event) => event.preventDefault()}
-      className={
-        compact
-          ? 'lg:!p-1 [&_div:has(>label)]:!py-2 lg:[&_div:has(>label)]:!py-1.5'
-          : undefined
-      }
-    >
+    <FilterBar compact onSubmit={(event) => event.preventDefault()}>
       {children}
     </FilterBar>
   );
@@ -239,6 +231,7 @@ function Results<T>({
   noun,
   empty,
   actionError,
+  columns,
   children,
 }: {
   state: { loading: boolean; error: string | null; data: Page<T> | null };
@@ -248,6 +241,7 @@ function Results<T>({
   noun: string;
   empty: string;
   actionError?: string | null;
+  columns?: { className: string; labels: string[] };
   children: (item: T) => ReactNode;
 }) {
   if (state.error) {
@@ -287,6 +281,24 @@ function Results<T>({
                 ? `${total} ${noun}`
                 : `${first}–${last} of ${total} ${noun}`}
             </p>
+            {columns ? (
+              <div
+                aria-hidden
+                className={cn(
+                  'hidden gap-x-4 border-b border-hairline bg-sand/40 px-5 py-2 text-label font-semibold uppercase text-muted md:px-6',
+                  columns.className,
+                )}
+              >
+                {columns.labels.map((label, index) => (
+                  <span
+                    key={label}
+                    className={cn(index === columns.labels.length - 1 && 'text-right')}
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            ) : null}
             <ul className="flex flex-col divide-y divide-hairline">
               {items.map(children)}
             </ul>
@@ -306,6 +318,36 @@ function Results<T>({
 const rowClass =
   'flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-3 md:px-6';
 
+const gridRow = 'grid gap-3 px-5 py-3 md:px-6';
+const usersGrid =
+  'md:grid md:grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_6.5rem_15rem] md:items-center md:gap-x-4';
+const reportsGrid =
+  'lg:grid lg:grid-cols-[minmax(0,1fr)_10rem_6.5rem_7.5rem_22rem] lg:items-center lg:gap-x-4';
+const reviewsGrid =
+  'lg:grid lg:grid-cols-[minmax(0,1fr)_8.5rem_6.5rem_6.5rem_8rem] lg:items-center lg:gap-x-4';
+
+function SectionHeader({
+  title,
+  description,
+  action,
+}: {
+  title: string;
+  description: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="mb-6">
+      <PageHeader
+        variant="app"
+        eyebrow="Admin"
+        title={title}
+        description={description}
+        action={action}
+      />
+    </div>
+  );
+}
+
 export function UsersSection() {
   const { user: me } = useSession();
   const [role, setRole] = useState('');
@@ -314,34 +356,19 @@ export function UsersSection() {
     useAdminList<AdminUser>('/admin/users', { role, status });
   const { error, pending, run } = useAdminAction();
   const [adding, setAdding] = useState(false);
-  const [exporting, setExporting] = useState(false);
-  const [exportError, setExportError] = useState<string | null>(null);
-
-  async function onExport() {
-    setExportError(null);
-    setExporting(true);
-    try {
-      await exportUsersCsv({ search: search.trim(), role, status });
-    } catch (cause) {
-      setExportError(errorMessage(cause));
-    } finally {
-      setExporting(false);
-    }
-  }
 
   return (
     <>
-      <PageHeader
-        variant="app"
-        eyebrow="Admin"
+      <SectionHeader
         title="Users."
         description="Every account on the platform. Suspend, reactivate or remove a verified badge."
         action={
-          <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant="outline" onClick={onExport} disabled={exporting}>
-              <Download aria-hidden className="mr-1.5 h-4 w-4" />
-              {exporting ? 'Exporting…' : 'Export CSV'}
-            </Button>
+          <div className="flex flex-wrap items-start gap-2">
+            <ExportButton
+              onExport={() =>
+                exportUsersCsv({ search: search.trim(), role, status })
+              }
+            />
             <Button size="sm" onClick={() => setAdding(true)}>
               <UserPlus aria-hidden className="mr-1.5 h-4 w-4" />
               Add user
@@ -349,12 +376,6 @@ export function UsersSection() {
           </div>
         }
       />
-      <div className="mt-6" />
-      {exportError ? (
-        <div className="mb-4">
-          <ErrorNotice message={exportError} />
-        </div>
-      ) : null}
       {adding ? (
         <AddUserDialog
           onClose={() => setAdding(false)}
@@ -365,7 +386,7 @@ export function UsersSection() {
         />
       ) : null}
 
-      <Filters compact>
+      <Filters>
         <SearchField
           id="user-search"
           value={search}
@@ -405,11 +426,15 @@ export function UsersSection() {
         noun="users"
         empty="No users found."
         actionError={error}
+        columns={{
+          className: usersGrid,
+          labels: ['User', 'Role', 'Verified', 'Status', 'Actions'],
+        }}
       >
         {(user) => (
           <li
             key={user.id}
-            className="relative grid gap-3 px-5 py-3 transition-colors hover:bg-sand/40 md:grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_6.5rem_15rem] md:items-center md:gap-x-4 md:px-6"
+            className={cn(gridRow, usersGrid, 'relative transition-colors hover:bg-sand/40')}
           >
             <div className="flex min-w-0 items-center gap-3">
               <Avatar name={user.name} src={user.avatarUrl} size={36} />
@@ -586,8 +611,35 @@ export function ReportsSection() {
     action: 'resolve' | 'dismiss';
   } | null>(null);
 
+  async function exportReports() {
+    const items = await fetchAllPages<AdminReport>('/admin/reports', {
+      search: search.trim(),
+      status,
+      targetType,
+    });
+    downloadCsv(
+      'reports',
+      ['Reported', 'Item', 'Reason', 'Details', 'Reporter', 'About', 'Status', 'Date'],
+      items.map((report) => [
+        titleCase(report.targetType),
+        report.target?.label ?? '',
+        report.reason,
+        report.details ?? '',
+        report.reporter?.name ?? '',
+        report.reportedUser?.name ?? '',
+        titleCase(report.status),
+        report.createdAt.slice(0, 10),
+      ]),
+    );
+  }
+
   return (
     <>
+      <SectionHeader
+        title="Reports."
+        description="Reported people and content that still need a decision."
+        action={<ExportButton onExport={exportReports} />}
+      />
       <Filters>
         <SearchField
           id="report-search"
@@ -629,45 +681,63 @@ export function ReportsSection() {
         noun="reports"
         empty="No open reports."
         actionError={error}
+        columns={{
+          className: reportsGrid,
+          labels: ['Report', 'People', 'Date', 'Status', 'Actions'],
+        }}
       >
         {(report) => (
-          <li key={report.id} className={rowClass}>
-            <div className="min-w-0 max-w-xl">
-              <p className="font-semibold">
-                {titleCase(report.targetType)} reported
-              </p>
-              {report.target ? (
-                report.target.href ? (
-                  <Link
-                    href={report.target.href}
-                    target="_blank"
-                    className="text-sm font-medium text-brand hover:underline"
-                  >
-                    {report.target.label}
-                  </Link>
-                ) : (
-                  <p className="text-sm font-medium">{report.target.label}</p>
-                )
-              ) : null}
-              <p className="text-sm text-muted">
-                {report.reporter ? `By ${report.reporter.name}` : 'Reporter'}
-                {report.reportedUser
-                  ? ` · about ${report.reportedUser.name}`
-                  : ''}
-                {` · ${formatDate(report.createdAt)}`}
-              </p>
-              <p className="mt-2">{report.reason}</p>
+          <li key={report.id} className={cn(gridRow, reportsGrid)}>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-baseline gap-x-2">
+                <Badge>{titleCase(report.targetType)}</Badge>
+                {report.target ? (
+                  report.target.href ? (
+                    <Link
+                      href={report.target.href}
+                      target="_blank"
+                      className="font-semibold text-brand hover:underline"
+                    >
+                      {report.target.label}
+                    </Link>
+                  ) : (
+                    <span className="font-semibold">{report.target.label}</span>
+                  )
+                ) : null}
+              </div>
+              <p className="mt-1.5">{report.reason}</p>
               {report.details ? (
-                <p className="mt-1 text-sm text-muted">{report.details}</p>
+                <p className="mt-0.5 line-clamp-2 text-sm text-muted">
+                  {report.details}
+                </p>
               ) : null}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="text-sm">
+              <p>
+                <span className="text-muted">By </span>
+                {report.reporter?.name ?? 'Unknown'}
+              </p>
+              {report.reportedUser ? (
+                <p>
+                  <span className="text-muted">About </span>
+                  {report.reportedUser.name}
+                </p>
+              ) : null}
+            </div>
+
+            <p className="text-sm text-muted">{formatDate(report.createdAt)}</p>
+
+            <div>
               <StatusBadge status={report.status} />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 lg:flex-nowrap lg:justify-end">
               {report.status === 'OPEN' ? (
                 <Button
                   size="sm"
                   variant="ghost"
+                  className="whitespace-nowrap"
                   disabled={pending === report.id}
                   onClick={() =>
                     run(
@@ -774,27 +844,37 @@ export function ReviewsSection() {
         noun="reviews"
         empty="No reviews yet."
         actionError={error}
+        columns={{
+          className: reviewsGrid,
+          labels: ['Review', 'Rating', 'Date', 'Visibility', 'Actions'],
+        }}
       >
         {(review) => (
-          <li key={review.id} className={rowClass}>
-            <div className="min-w-0 max-w-xl">
+          <li key={review.id} className={cn(gridRow, reviewsGrid)}>
+            <div className="min-w-0">
               <p className="font-semibold">
-                {review.reviewer?.name ?? 'Client'} on{' '}
+                {review.reviewer?.name ?? 'Client'}
+                <span className="font-normal text-muted"> on </span>
                 {review.designer?.name ?? 'designer'}
               </p>
-              <p className="text-sm text-muted">
-                {formatDate(review.createdAt)}
-              </p>
-              <Rating value={review.rating} className="mt-2" />
               {review.comment ? (
-                <p className="mt-2 text-muted">{review.comment}</p>
+                <p className="mt-0.5 line-clamp-2 text-sm text-muted">
+                  {review.comment}
+                </p>
               ) : null}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <Rating value={review.rating} />
+
+            <p className="text-sm text-muted">{formatDate(review.createdAt)}</p>
+
+            <div>
               <Badge tone={review.isVisible ? 'support' : 'neutral'}>
                 {review.isVisible ? 'Visible' : 'Hidden'}
               </Badge>
+            </div>
+
+            <div className="flex lg:justify-end">
               <Button
                 size="sm"
                 variant={review.isVisible ? 'outline' : 'primary'}
@@ -845,8 +925,31 @@ export function ActivitySection() {
     if (list.data?.actions) setActions(list.data.actions);
   }, [list.data]);
 
+  async function exportActivity() {
+    const items = await fetchAllPages<ActivityEntry>('/admin/activity', {
+      search: search.trim(),
+      action,
+    });
+    downloadCsv(
+      'activity',
+      ['Event', 'Action', 'Person', 'Project', 'Date'],
+      items.map((entry) => [
+        describeActivity(entry),
+        entry.action,
+        entry.user?.name ?? 'System',
+        entry.project?.title ?? '',
+        entry.createdAt,
+      ]),
+    );
+  }
+
   return (
     <>
+      <SectionHeader
+        title="Activity."
+        description="What has happened across projects, plus the admin audit trail."
+        action={<ExportButton onExport={exportActivity} />}
+      />
       <Filters>
         <SearchField
           id="activity-search"

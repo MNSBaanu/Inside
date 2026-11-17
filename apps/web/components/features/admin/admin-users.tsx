@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState, type FormEvent } from 'react';
+import { downloadCsv, fetchExport } from '@/components/features/admin/admin-export';
 import { useSession } from '@/components/providers/session-provider';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -33,18 +34,8 @@ type ExportUser = {
   createdAt: string;
 };
 
-function csvCell(value: string) {
-  return /[",\n\r]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
-}
-
 export async function exportUsersCsv(filters: Record<string, string>) {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(filters)) {
-    if (value) params.set(key, value);
-  }
-  const { items } = await api.get<{ items: ExportUser[] }>(
-    `/admin/users/export?${params.toString()}`,
-  );
+  const items = await fetchExport<ExportUser>('/admin/users/export', filters);
   const header = ['Name', 'Email', 'Role', 'Verified', 'Status', 'Phone', 'Location', 'Joined'];
   const rows = items.map((user) => [
     user.name,
@@ -56,18 +47,7 @@ export async function exportUsersCsv(filters: Record<string, string>) {
     user.location ?? '',
     user.createdAt.slice(0, 10),
   ]);
-  const csv = [header, ...rows]
-    .map((row) => row.map(csvCell).join(','))
-    .join('\r\n');
-
-  const url = URL.createObjectURL(
-    new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' }),
-  );
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `inside-users-${new Date().toISOString().slice(0, 10)}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
+  downloadCsv('users', header, rows);
 }
 
 export function AddUserDialog({
