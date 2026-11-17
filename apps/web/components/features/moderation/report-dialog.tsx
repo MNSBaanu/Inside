@@ -74,7 +74,7 @@ export function ReportDialog({
   return (
     <form
       onSubmit={onSubmit}
-      className={cn(cardSurface, 'mt-4 flex flex-col gap-4 p-6')}
+      className={cn(cardSurface, 'mt-4 flex w-full max-w-md flex-col gap-4 p-6')}
     >
       {error ? <ErrorNotice message={error} /> : null}
 
