@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils/cn';
 import { errorMessage } from '@/lib/api/client';
 import { uploadFile, type UploadFolder, type UploadedFile } from '@/lib/api/upload';
 
+const MAX_BYTES = 10 * 1024 * 1024;
+
 export function FileUpload({
   folder,
   accept = 'image/*',
@@ -27,6 +29,11 @@ export function FileUpload({
   async function onChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
+    if (file.size > MAX_BYTES) {
+      setError('File is too large (max 10 MB).');
+      if (inputRef.current) inputRef.current.value = '';
+      return;
+    }
     setError(null);
     setBusy(true);
     try {
