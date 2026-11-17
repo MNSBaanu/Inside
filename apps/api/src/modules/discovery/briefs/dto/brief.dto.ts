@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -32,6 +33,9 @@ export class CreateBriefDto {
   @IsOptional()
   @IsString()
   @MaxLength(80)
+  @Matches(/^(?=.*\d)[A-Za-z0-9\s.,-]+$/, {
+    message: 'budgetRange must contain a number, e.g. 400000-800000',
+  })
   budgetRange?: string;
 
   @ApiPropertyOptional()
@@ -62,6 +66,9 @@ export class UpdateBriefDto {
   @IsOptional()
   @IsString()
   @MaxLength(80)
+  @Matches(/^(?=.*\d)[A-Za-z0-9\s.,-]+$/, {
+    message: 'budgetRange must contain a number, e.g. 400000-800000',
+  })
   budgetRange?: string;
 
   @ApiPropertyOptional()
@@ -93,6 +100,9 @@ export class GenerateBriefDto {
   @IsOptional()
   @IsString()
   @MaxLength(80)
+  @Matches(/^(?=.*\d)[A-Za-z0-9\s.,-]+$/, {
+    message: 'budgetRange must contain a number, e.g. 400000-800000',
+  })
   budgetRange?: string;
 
   @ApiPropertyOptional()
