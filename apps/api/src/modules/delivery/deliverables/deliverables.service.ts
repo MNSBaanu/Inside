@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { NotificationType, ProjectStatus, StageStatus } from '@inside/database';
+import { stageLabel } from '../../../common/format';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
@@ -74,7 +75,7 @@ export class DeliverablesService {
       userId: stage.project.clientId,
       type: NotificationType.DELIVERABLE,
       title: 'New deliverable',
-      message: `New ${stage.name} deliverable (v${version}) is available`,
+      message: `New ${stageLabel(stage.name)} deliverable (v${version}) on "${stage.project.title}"`,
       metadata: {
         projectId: stage.projectId,
         stageId: stage.id,

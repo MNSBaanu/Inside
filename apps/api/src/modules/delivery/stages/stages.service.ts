@@ -12,6 +12,7 @@ import {
   StageName,
   StageStatus,
 } from '@inside/database';
+import { formatLkr, stageLabel } from '../../../common/format';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
@@ -127,7 +128,7 @@ export class StagesService {
           : stage.project.clientId,
       type: NotificationType.STAGE,
       title: 'Stage due date changed',
-      message: `${user.name} changed the ${stage.name} due date`,
+      message: `${user.name} changed the ${stageLabel(stage.name)} due date on "${stage.project.title}"`,
       metadata: { projectId: stage.projectId, stageId },
     });
     await this.activity.log({
@@ -168,7 +169,7 @@ export class StagesService {
       userId: stage.project.clientId,
       type: NotificationType.STAGE,
       title: 'Stage started',
-      message: `${stage.name} stage has been started`,
+      message: `${stageLabel(stage.name)} stage of "${stage.project.title}" has started`,
       metadata: { projectId: stage.projectId, stageId: stage.id },
     });
 
@@ -223,7 +224,7 @@ export class StagesService {
       userId: stage.project.clientId,
       type: NotificationType.STAGE,
       title: 'Stage submitted',
-      message: `${stage.name} stage is awaiting your approval`,
+      message: `${stageLabel(stage.name)} stage of "${stage.project.title}" is awaiting your approval`,
       metadata: { projectId: stage.projectId, stageId: stage.id },
     });
 
@@ -316,7 +317,7 @@ export class StagesService {
       userId: stage.project.designerId,
       type: NotificationType.STAGE,
       title: 'Stage approved',
-      message: `${stage.name} stage was approved`,
+      message: `${stageLabel(stage.name)} stage of "${stage.project.title}" was approved`,
       metadata: { projectId: stage.projectId, stageId: stage.id },
     });
 
@@ -332,7 +333,7 @@ export class StagesService {
         userId: stage.project.designerId,
         type: NotificationType.PAYMENT,
         title: 'Milestone released',
-        message: `Milestone payment of ${fee} was released`,
+        message: `${formatLkr(fee)} for the ${stageLabel(stage.name)} stage of "${stage.project.title}" was released`,
         metadata: { projectId: stage.projectId, stageId: stage.id },
       });
       await this.activity.log({
@@ -387,7 +388,7 @@ export class StagesService {
       userId: stage.project.designerId,
       type: NotificationType.STAGE,
       title: 'Stage rejected',
-      message: `${stage.name} stage was rejected: ${reason}`,
+      message: `Changes requested on the ${stageLabel(stage.name)} stage of "${stage.project.title}": ${reason}`,
       metadata: { projectId: stage.projectId, stageId: stage.id },
     });
 
