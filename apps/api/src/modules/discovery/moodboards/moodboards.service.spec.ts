@@ -15,6 +15,7 @@ describe('MoodboardsService', () => {
       findUniqueOrThrow: jest.fn(),
       delete: jest.fn(),
     },
+    product: { findFirst: jest.fn() },
   };
 
   const user = {
@@ -54,6 +55,52 @@ describe('MoodboardsService', () => {
     });
 
     expect(result.data.moodboard.savedItems).toHaveLength(1);
+  });
+
+  it('saves a shop product with details from the database', async () => {
+    prisma.moodboard.findUnique.mockResolvedValue({
+      id: 'm1',
+      clientId: 'c1',
+      name: 'Board',
+      savedItems: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    prisma.product.findFirst.mockResolvedValue({
+      slug: 'brass-floor-lamp',
+      name: 'Brass Floor Lamp',
+      price: 34500,
+      imageUrl: 'https://images.unsplash.com/lamp.jpg',
+    });
+    prisma.moodboard.findUniqueOrThrow.mockResolvedValue({
+      id: 'm1',
+      clientId: 'c1',
+      name: 'Board',
+      savedItems: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    await service.addItem(user, 'm1', {
+      imageUrl: 'https://example.com/ignored.jpg',
+      productSlug: 'brass-floor-lamp',
+      productPrice: 1,
+    });
+
+    expect(prisma.moodboard.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: {
+          savedItems: [
+            {
+              imageUrl: 'https://images.unsplash.com/lamp.jpg',
+              note: 'Brass Floor Lamp',
+              productSlug: 'brass-floor-lamp',
+              productPrice: 34500,
+            },
+          ],
+        },
+      }),
+    );
   });
 
   it('forbids access to another client moodboard', async () => {

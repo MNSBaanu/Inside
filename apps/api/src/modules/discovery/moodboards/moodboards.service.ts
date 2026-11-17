@@ -86,6 +86,22 @@ export class MoodboardsService {
         throw new NotFoundException('Portfolio not found');
       }
     }
+    if (dto.productSlug) {
+      const product = await this.prisma.product.findFirst({
+        where: { slug: dto.productSlug, isPublished: true },
+      });
+      if (!product) {
+        throw new NotFoundException('Product not found');
+      }
+      items.push({
+        imageUrl: product.imageUrl,
+        note: product.name,
+        productSlug: product.slug,
+        productPrice: Number(product.price),
+      });
+      const updated = await this.saveItems(moodboard, items);
+      return { success: true, data: { moodboard: this.serialize(updated) } };
+    }
     items.push({
       imageUrl: dto.imageUrl,
       ...(dto.note !== undefined ? { note: dto.note } : {}),

@@ -4,11 +4,14 @@ import {
   ArrayMaxSize,
   IsArray,
   IsIn,
+  IsNumber,
   IsOptional,
   IsString,
   IsUrl,
   IsUUID,
+  Matches,
   MaxLength,
+  Min,
   MinLength,
   ValidateNested,
 } from 'class-validator';
@@ -50,6 +53,19 @@ export class MoodboardItemDto {
   @IsOptional()
   @IsIn(IMAGE_REACTIONS)
   reaction?: string;
+
+  @ApiPropertyOptional({ description: 'Linked shop product slug' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  @Matches(/^[a-z0-9-]+$/i)
+  productSlug?: string;
+
+  @ApiPropertyOptional({ description: 'Product price when saved' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  productPrice?: number;
 }
 
 export class CreateMoodboardDto {

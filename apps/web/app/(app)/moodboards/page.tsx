@@ -1,7 +1,8 @@
 'use client';
 
-import { ChevronDown, Heart } from 'lucide-react';
+import { ChevronDown, Heart, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { FileUpload } from '@/components/ui/file-upload';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { api, errorMessage } from '@/lib/api/client';
-import { formatDate } from '@/lib/utils/format';
+import { formatDate, formatMoney } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
 import type { Brief, Moodboard } from '@/lib/types';
 import { useRouter } from 'next/navigation';
@@ -22,6 +23,7 @@ import {
   hasStyle,
   hexOf,
 } from '@/components/features/moodboards/style-wizard';
+import { ShopPicker } from '@/components/features/moodboards/shop-picker';
 
 export default function MoodboardsPage() {
   const router = useRouter();
@@ -35,6 +37,7 @@ export default function MoodboardsPage() {
   const [confirmBoardId, setConfirmBoardId] = useState<string | null>(null);
   const [patched, setPatched] = useState<Record<string, Moodboard>>({});
   const [styleBoardId, setStyleBoardId] = useState<string | null>(null);
+  const [shopBoardId, setShopBoardId] = useState<string | null>(null);
 
   useEffect(() => {
     setPatched({});
@@ -56,6 +59,7 @@ export default function MoodboardsPage() {
 
   const styleSaved = data?.items.find((board) => board.id === styleBoardId);
   const styleBoard = styleSaved ? (patched[styleSaved.id] ?? styleSaved) : null;
+  const shopBoard = data?.items.find((board) => board.id === shopBoardId) ?? null;
 
   async function onCreate(event: React.FormEvent) {
     event.preventDefault();
@@ -208,7 +212,7 @@ export default function MoodboardsPage() {
                         </span>
                         <span className="mt-1 block text-sm text-muted">
                           {board.savedItems.length}{' '}
-                          {board.savedItems.length === 1 ? 'image' : 'images'} ·
+                          {board.savedItems.length === 1 ? 'item' : 'items'} ·
                           Created {formatDate(board.createdAt)}
                           {board.moodWords.length > 0 ? ` · ${board.moodWords.join(', ')}` : ''}
                         </span>
@@ -296,6 +300,19 @@ export default function MoodboardsPage() {
                               </span>
                             ) : null}
                           </div>
+                          {item.productSlug ? (
+                            <div className="mt-2">
+                              <Link
+                                href={`/shop/${item.productSlug}`}
+                                className="block truncate text-sm font-semibold hover:text-brand hover:underline"
+                              >
+                                {item.note ?? 'Shop item'}
+                              </Link>
+                              {item.productPrice !== undefined ? (
+                                <p className="text-sm text-muted">{formatMoney(item.productPrice)}</p>
+                              ) : null}
+                            </div>
+                          ) : null}
                           {item.loves?.length && item.reaction !== 'dislike' ? (
                             <p className="mt-1.5 text-xs text-muted">Loves: {item.loves.join(', ')}</p>
                           ) : null}
@@ -310,11 +327,21 @@ export default function MoodboardsPage() {
                       ))}
                     </ul>
                   ) : (
-                    <p className="mt-6 text-muted">No images on this board.</p>
+                    <p className="mt-6 text-muted">Nothing on this board yet.</p>
                   )}
 
-                  <FileUpload
+                  <Button
+                    size="sm"
+                    variant="outline"
                     className="mt-8"
+                    onClick={() => setShopBoardId(board.id)}
+                  >
+                    <ShoppingBag aria-hidden className="h-4 w-4" />
+                    Add from shop
+                  </Button>
+
+                  <FileUpload
+                    className="mt-6"
                     folder="moodboards"
                     label="Add an image"
                     onUploaded={(file) => void addItem(board.id, file.url)}
@@ -333,6 +360,16 @@ export default function MoodboardsPage() {
           />
         ) : null}
       </div>
+      {shopBoard ? (
+        <ShopPicker
+          moodboardId={shopBoard.id}
+          savedSlugs={shopBoard.savedItems.flatMap((item) =>
+            item.productSlug ? [item.productSlug] : [],
+          )}
+          onAdded={() => void reload()}
+          onClose={() => setShopBoardId(null)}
+        />
+      ) : null}
     </div>
   );
 }

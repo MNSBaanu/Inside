@@ -41,6 +41,7 @@ function SaveForm({ product }: { product: Product }) {
       await api.post(`/moodboards/${moodboardId}/items`, {
         imageUrl: product.imageUrl,
         note: product.name,
+        productSlug: product.slug,
       });
       setSaved(true);
     } catch (cause) {

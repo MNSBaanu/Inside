@@ -357,6 +357,8 @@ export type MoodboardItem = {
   portfolioId?: string | null;
   loves?: string[];
   reaction?: 'love' | 'dislike';
+  productSlug?: string;
+  productPrice?: number;
 };
 
 export type Moodboard = {
