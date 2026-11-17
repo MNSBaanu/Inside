@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  MaxLength,
   Min,
 } from 'class-validator';
 
@@ -21,16 +22,19 @@ export class ListPortfoliosQueryDto {
   })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   location?: string;
 
   @ApiPropertyOptional({ example: 'Scandinavian' })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   style?: string;
 
   @ApiPropertyOptional({ example: 'Living Room' })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   roomType?: string;
 
   @ApiPropertyOptional({ example: 100000 })
