@@ -2,6 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useState, type ReactNode } from 'react';
+import { Download, UserPlus } from 'lucide-react';
+import {
+  AddUserDialog,
+  exportUsersCsv,
+  revokeButtonClass,
+} from '@/components/features/admin/admin-users';
 import { describeActivity } from '@/components/features/projects/project-history';
 import { useSession } from '@/components/providers/session-provider';
 import { Avatar } from '@/components/ui/avatar';
@@ -12,6 +18,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { BareInput } from '@/components/ui/field';
 import { FilterBar, FilterField } from '@/components/ui/filter-bar';
+import { PageHeader } from '@/components/ui/page-header';
 import { Pagination } from '@/components/ui/pagination';
 import { Rating } from '@/components/ui/rating';
 import { Select } from '@/components/ui/select';
@@ -158,9 +165,22 @@ function useAdminAction() {
   return { error, pending, run };
 }
 
-function Filters({ children }: { children: ReactNode }) {
+function Filters({
+  compact = false,
+  children,
+}: {
+  compact?: boolean;
+  children: ReactNode;
+}) {
   return (
-    <FilterBar onSubmit={(event) => event.preventDefault()}>
+    <FilterBar
+      onSubmit={(event) => event.preventDefault()}
+      className={
+        compact
+          ? 'lg:!p-1 [&_div:has(>label)]:!py-2 lg:[&_div:has(>label)]:!py-1.5'
+          : undefined
+      }
+    >
       {children}
     </FilterBar>
   );
@@ -293,10 +313,59 @@ export function UsersSection() {
   const { list, search, setSearch, page, setPage, filtered } =
     useAdminList<AdminUser>('/admin/users', { role, status });
   const { error, pending, run } = useAdminAction();
+  const [adding, setAdding] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+
+  async function onExport() {
+    setExportError(null);
+    setExporting(true);
+    try {
+      await exportUsersCsv({ search: search.trim(), role, status });
+    } catch (cause) {
+      setExportError(errorMessage(cause));
+    } finally {
+      setExporting(false);
+    }
+  }
 
   return (
     <>
-      <Filters>
+      <PageHeader
+        variant="app"
+        eyebrow="Admin"
+        title="Users."
+        description="Every account on the platform. Suspend, reactivate or remove a verified badge."
+        action={
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={onExport} disabled={exporting}>
+              <Download aria-hidden className="mr-1.5 h-4 w-4" />
+              {exporting ? 'Exporting…' : 'Export CSV'}
+            </Button>
+            <Button size="sm" onClick={() => setAdding(true)}>
+              <UserPlus aria-hidden className="mr-1.5 h-4 w-4" />
+              Add user
+            </Button>
+          </div>
+        }
+      />
+      <div className="mt-6" />
+      {exportError ? (
+        <div className="mb-4">
+          <ErrorNotice message={exportError} />
+        </div>
+      ) : null}
+      {adding ? (
+        <AddUserDialog
+          onClose={() => setAdding(false)}
+          onCreated={() => {
+            setAdding(false);
+            void list.reload();
+          }}
+        />
+      ) : null}
+
+      <Filters compact>
         <SearchField
           id="user-search"
           value={search}
@@ -338,27 +407,45 @@ export function UsersSection() {
         actionError={error}
       >
         {(user) => (
-          <li key={user.id} className={rowClass}>
+          <li
+            key={user.id}
+            className="relative grid gap-3 px-5 py-3 transition-colors hover:bg-sand/40 md:grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_6.5rem_15rem] md:items-center md:gap-x-4 md:px-6"
+          >
             <div className="flex min-w-0 items-center gap-3">
               <Avatar name={user.name} src={user.avatarUrl} size={36} />
               <div className="min-w-0">
-                <p className="font-semibold">{user.name}</p>
+                <Link
+                  href={`/admin/users/${user.id}`}
+                  className="font-semibold after:absolute after:inset-0 hover:underline"
+                >
+                  {user.name}
+                </Link>
                 <p className="break-all text-sm text-muted">
                   {user.email} · Joined {formatDate(user.createdAt)}
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <Badge>{titleCase(user.role)}</Badge>
-              {user.role === 'DESIGNER' && user.isVerified ? (
-                <Badge tone="support">Verified</Badge>
-              ) : null}
-              <StatusBadge status={user.status} />
+            <div className="flex flex-wrap items-center gap-3 md:contents">
+              <div>
+                <Badge>{titleCase(user.role)}</Badge>
+              </div>
+              <div>
+                {user.role === 'DESIGNER' && user.isVerified ? (
+                  <Badge tone="support">Verified</Badge>
+                ) : null}
+              </div>
+              <div>
+                <StatusBadge status={user.status} />
+              </div>
+            </div>
+
+            <div className="relative z-10 flex flex-wrap items-center gap-2 md:flex-nowrap md:justify-end">
               {user.role === 'DESIGNER' && user.isVerified ? (
                 <Button
                   size="sm"
-                  variant="ghost"
+                  variant="outline"
+                  className={revokeButtonClass}
                   disabled={pending === user.id}
                   onClick={() =>
                     run(
@@ -368,7 +455,7 @@ export function UsersSection() {
                     )
                   }
                 >
-                  Revoke badge
+                  Revoke
                 </Button>
               ) : null}
               {user.id === me?.id ? null : user.status === 'ACTIVE' ? (

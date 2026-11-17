@@ -13,13 +13,9 @@ import { PageHeader } from '@/components/ui/page-header';
 
 const sections: Record<
   string,
-  { title: string; description: string; Section: () => JSX.Element }
+  { title?: string; description?: string; Section: () => JSX.Element }
 > = {
-  users: {
-    title: 'Users.',
-    description: 'Every account on the platform. Suspend, reactivate or remove a verified badge.',
-    Section: UsersSection,
-  },
+  users: { Section: UsersSection },
   verifications: {
     title: 'Verifications.',
     description: 'Designers waiting for their credentials to be checked.',
@@ -53,13 +49,15 @@ export default function AdminSectionPage({
 
   return (
     <AdminOnly>
-      <PageHeader
-        variant="app"
-        eyebrow="Admin"
-        title={title}
-        description={description}
-      />
-      <div className="mt-6">
+      {title ? (
+        <PageHeader
+          variant="app"
+          eyebrow="Admin"
+          title={title}
+          description={description}
+        />
+      ) : null}
+      <div className={title ? 'mt-6' : undefined}>
         <Section />
       </div>
     </AdminOnly>

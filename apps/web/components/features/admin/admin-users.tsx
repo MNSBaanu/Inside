@@ -1,0 +1,363 @@
+'use client';
+
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { useSession } from '@/components/providers/session-provider';
+import { Avatar } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { cardSurface } from '@/components/ui/card';
+import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { Field, Input } from '@/components/ui/field';
+import { Select } from '@/components/ui/select';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { api, errorMessage } from '@/lib/api/client';
+import { useApi } from '@/lib/api/use-api';
+import type { AccountStatus, Role } from '@/lib/types';
+import { cn } from '@/lib/utils/cn';
+import { formatDate, titleCase } from '@/lib/utils/format';
+
+export const revokeButtonClass =
+  '!border-error/40 !text-error hover:!border-error hover:!bg-error hover:!text-canvas';
+
+type ExportUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  isVerified: boolean;
+  status: AccountStatus;
+  phone: string | null;
+  location: string | null;
+  createdAt: string;
+};
+
+function csvCell(value: string) {
+  return /[",\n\r]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+}
+
+export async function exportUsersCsv(filters: Record<string, string>) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (value) params.set(key, value);
+  }
+  const { items } = await api.get<{ items: ExportUser[] }>(
+    `/admin/users/export?${params.toString()}`,
+  );
+  const header = ['Name', 'Email', 'Role', 'Verified', 'Status', 'Phone', 'Location', 'Joined'];
+  const rows = items.map((user) => [
+    user.name,
+    user.email,
+    titleCase(user.role),
+    user.isVerified ? 'Yes' : 'No',
+    titleCase(user.status),
+    user.phone ?? '',
+    user.location ?? '',
+    user.createdAt.slice(0, 10),
+  ]);
+  const csv = [header, ...rows]
+    .map((row) => row.map(csvCell).join(','))
+    .join('\r\n');
+
+  const url = URL.createObjectURL(
+    new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' }),
+  );
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `inside-users-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+export function AddUserDialog({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: () => void;
+}) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState<'CLIENT' | 'DESIGNER'>('CLIENT');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !busy) onClose();
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [busy, onClose]);
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setBusy(true);
+    try {
+      await api.post('/admin/users', { name, email, password, role });
+      onCreated();
+    } catch (cause) {
+      setError(errorMessage(cause));
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-ink/60 p-4">
+      <form
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="add-user-title"
+        onSubmit={onSubmit}
+        className="flex w-full max-w-md flex-col gap-4 rounded-card bg-surface p-6 shadow-lift"
+      >
+        <h2 id="add-user-title" className="font-display text-xl font-semibold">
+          Add user
+        </h2>
+        {error ? <ErrorNotice message={error} /> : null}
+        <Field label="Account type" htmlFor="new-user-role">
+          <Select
+            id="new-user-role"
+            value={role}
+            onChange={(value) => setRole(value as 'CLIENT' | 'DESIGNER')}
+            options={[
+              { value: 'CLIENT', label: 'Client' },
+              { value: 'DESIGNER', label: 'Designer' },
+            ]}
+          />
+        </Field>
+        <Field label="Full name" htmlFor="new-user-name">
+          <Input
+            id="new-user-name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            required
+            minLength={2}
+            maxLength={100}
+            autoFocus
+          />
+        </Field>
+        <Field label="Email" htmlFor="new-user-email">
+          <Input
+            id="new-user-email"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            required
+            autoComplete="off"
+          />
+        </Field>
+        <Field
+          label="Password"
+          htmlFor="new-user-password"
+          hint="At least 8 characters, with a letter and a number. Share it with the user."
+        >
+          <Input
+            id="new-user-password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            required
+            minLength={8}
+            maxLength={72}
+            pattern="(?=.*[A-Za-z])(?=.*\d).+"
+            autoComplete="new-password"
+          />
+        </Field>
+        <div className="mt-2 flex justify-end gap-3">
+          <Button type="button" variant="ghost" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={busy}>
+            {busy ? 'Creating…' : 'Create user'}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+type AdminUserDetail = {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  activeRole: Role;
+  hasClientAccount: boolean;
+  isVerified: boolean;
+  emailVerified: string | null;
+  status: AccountStatus;
+  bio: string | null;
+  avatarUrl: string | null;
+  phone: string | null;
+  location: string | null;
+  isAvailable: boolean;
+  createdAt: string;
+  updatedAt: string;
+  _count: {
+    portfolios: number;
+    projectsAsClient: number;
+    projectsAsDesigner: number;
+    reviewsReceived: number;
+    reviewsWritten: number;
+    reportsAgainst: number;
+  };
+};
+
+export function AdminUserDetail({ id }: { id: string }) {
+  const { user: me } = useSession();
+  const { data, error, reload } = useApi<{ user: AdminUserDetail }>(
+    `/admin/users/${id}`,
+  );
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+
+  async function run(action: string) {
+    setActionError(null);
+    setPending(true);
+    try {
+      await api.patch(`/admin/users/${id}/${action}`, {});
+      await reload();
+    } catch (cause) {
+      setActionError(errorMessage(cause));
+    } finally {
+      setPending(false);
+    }
+  }
+
+  const back = (
+    <Link
+      href="/admin/users"
+      className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink"
+    >
+      <ArrowLeft aria-hidden className="h-4 w-4" />
+      All users
+    </Link>
+  );
+
+  if (error) {
+    return (
+      <div className="flex flex-col gap-4">
+        {back}
+        <ErrorNotice message={error} />
+      </div>
+    );
+  }
+  if (!data) return <Skeleton className="h-64" />;
+
+  const user = data.user;
+  const isDesigner = user.role === 'DESIGNER';
+  const counts = [
+    isDesigner
+      ? { label: 'Portfolios', value: user._count.portfolios }
+      : null,
+    isDesigner
+      ? { label: 'Projects as designer', value: user._count.projectsAsDesigner }
+      : null,
+    { label: 'Projects as client', value: user._count.projectsAsClient },
+    isDesigner
+      ? { label: 'Reviews received', value: user._count.reviewsReceived }
+      : { label: 'Reviews written', value: user._count.reviewsWritten },
+    { label: 'Reports against', value: user._count.reportsAgainst },
+  ].filter((item): item is { label: string; value: number } => item !== null);
+
+  const details = [
+    { label: 'Email', value: user.email },
+    { label: 'Email confirmed', value: user.emailVerified ? formatDate(user.emailVerified) : 'Not yet' },
+    { label: 'Phone', value: user.phone ?? '—' },
+    { label: 'Location', value: user.location ?? '—' },
+    { label: 'Joined', value: formatDate(user.createdAt) },
+    { label: 'Last updated', value: formatDate(user.updatedAt) },
+    ...(isDesigner
+      ? [
+          { label: 'Taking new work', value: user.isAvailable ? 'Yes' : 'No' },
+          { label: 'Also a client', value: user.hasClientAccount ? 'Yes' : 'No' },
+        ]
+      : []),
+  ];
+
+  return (
+    <div className="flex flex-col gap-6">
+      {back}
+      {actionError ? <ErrorNotice message={actionError} /> : null}
+
+      <section className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-5 md:p-6')}>
+        <div className="flex min-w-0 items-center gap-4">
+          <Avatar name={user.name} src={user.avatarUrl} size={56} />
+          <div className="min-w-0">
+            <h2 className="font-display text-2xl font-semibold">{user.name}</h2>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <Badge>{titleCase(user.role)}</Badge>
+              {isDesigner && user.isVerified ? (
+                <Badge tone="support">Verified</Badge>
+              ) : null}
+              <StatusBadge status={user.status} />
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {isDesigner && user.isVerified ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className={revokeButtonClass}
+              disabled={pending}
+              onClick={() => run('revoke-verification')}
+            >
+              Revoke
+            </Button>
+          ) : null}
+          {user.id === me?.id ? null : user.status === 'ACTIVE' ? (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={pending}
+              onClick={() => run('suspend')}
+            >
+              Suspend
+            </Button>
+          ) : (
+            <Button size="sm" disabled={pending} onClick={() => run('reactivate')}>
+              Reactivate
+            </Button>
+          )}
+        </div>
+      </section>
+
+      <section className="grid grid-cols-2 gap-3 md:grid-cols-5">
+        {counts.map((item) => (
+          <div key={item.label} className={cn(cardSurface, 'p-4')}>
+            <p className="font-display text-2xl font-semibold">{item.value}</p>
+            <p className="mt-1 text-sm text-muted">{item.label}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className={cn(cardSurface, 'p-5 md:p-6')}>
+        <h3 className="font-semibold">Account</h3>
+        <dl className="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2">
+          {details.map((item) => (
+            <div key={item.label}>
+              <dt className="text-label font-semibold uppercase text-muted">{item.label}</dt>
+              <dd className="mt-0.5 break-all">{item.value}</dd>
+            </div>
+          ))}
+        </dl>
+        {user.bio ? (
+          <>
+            <h3 className="mt-6 font-semibold">Bio</h3>
+            <p className="mt-2 whitespace-pre-line text-muted">{user.bio}</p>
+          </>
+        ) : null}
+      </section>
+    </div>
+  );
+}
