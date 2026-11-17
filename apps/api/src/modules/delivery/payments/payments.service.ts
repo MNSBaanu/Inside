@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NotificationType, PaymentStatus, Prisma } from '@inside/database';
+import { formatLkr } from '../../../common/format';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
@@ -31,11 +32,17 @@ export class PaymentsService {
     const project = await this.requireParty(projectId, user);
     const items = await this.prisma.milestonePayment.findMany({
       where: { projectId: project.id },
-      orderBy: { createdAt: 'asc' },
+      include: { stage: { select: { name: true } } },
+      orderBy: [{ stage: { stageOrder: 'asc' } }, { createdAt: 'asc' }],
     });
     return {
       success: true,
-      data: { items: items.map((p) => this.serialize(p)) },
+      data: {
+        items: items.map((p) => ({
+          ...this.serialize(p),
+          stageName: p.stage.name,
+        })),
+      },
     };
   }
 
@@ -62,10 +69,7 @@ export class PaymentsService {
       .catch(() => {
         throw new BadRequestException('Invalid payment');
       });
-    if (
-      intent.metadata?.paymentId !== id ||
-      intent.status !== 'succeeded'
-    ) {
+    if (intent.metadata?.paymentId !== id || intent.status !== 'succeeded') {
       throw new BadRequestException('Payment has not been completed');
     }
     const intentId = intent.id;
@@ -84,7 +88,7 @@ export class PaymentsService {
         userId: payment.project.designerId,
         type: NotificationType.PAYMENT,
         title: 'Milestone paid',
-        message: `Client paid ${Number(payment.amount)} for a stage`,
+        message: `Client paid ${formatLkr(payment.amount)} for "${payment.project.title}"`,
         metadata: { projectId: payment.projectId, paymentId: id },
       });
 

@@ -4,10 +4,15 @@ import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import {
+  EmptyState,
+  ErrorNotice,
+  Skeleton,
+  SuccessNotice,
+} from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
-import { formatDate, formatMoney } from '@/lib/utils/format';
+import { formatDate, formatMoney, titleCase } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
 import type { MilestonePayment } from '@/lib/types';
 import {
@@ -32,6 +37,7 @@ export function PaymentList({
   }>(`/projects/${projectId}/payments`);
 
   const [actionError, setActionError] = useState<string | null>(null);
+  const [paidMessage, setPaidMessage] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
   const [checkout, setCheckout] = useState<{
     paymentId: string;
@@ -41,6 +47,7 @@ export function PaymentList({
 
   async function pay(paymentId: string) {
     setActionError(null);
+    setPaidMessage(null);
     if (!stripePromise) {
       setActionError('Payments are not configured. Add the Stripe publishable key.');
       return;
@@ -79,6 +86,7 @@ export function PaymentList({
         money and releases it to the designer when you approve the stage.
       </p>
       {actionError ? <ErrorNotice message={actionError} /> : null}
+      {paidMessage ? <SuccessNotice message={paidMessage} /> : null}
 
       <ul className="mt-4 flex flex-col gap-4">
         {data.items.map((payment) => (
@@ -87,6 +95,11 @@ export function PaymentList({
             className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-6')}
           >
             <div>
+              {payment.stageName ? (
+                <p className="text-sm font-semibold text-ink">
+                  {titleCase(payment.stageName)} stage
+                </p>
+              ) : null}
               <p className="font-display text-2xl font-semibold text-brand">
                 {formatMoney(payment.amount)}
               </p>
@@ -127,6 +140,9 @@ export function PaymentList({
                 paymentIntentId: intentId,
               });
               await reload();
+              setPaidMessage(
+                `Payment of ${checkout.amount} received. The designer can start this stage.`,
+              );
             } catch (cause) {
               setActionError(errorMessage(cause));
             } finally {

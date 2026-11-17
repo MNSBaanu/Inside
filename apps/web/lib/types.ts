@@ -241,6 +241,7 @@ export type MilestonePayment = {
   id: string;
   projectId: string;
   stageId: string;
+  stageName?: string;
   amount: number | null;
   status: PaymentStatus;
   stripeIntentId: string | null;
