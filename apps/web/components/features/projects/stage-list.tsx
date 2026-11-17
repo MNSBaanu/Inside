@@ -3,6 +3,7 @@
 import { cardSurface } from '@/components/ui/card';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { FileUpload } from '@/components/ui/file-upload';
@@ -32,8 +33,11 @@ export function StageList({
   isDesigner: boolean;
   onChanged: () => void;
 }) {
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ stageId: string; message: string } | null>(
+    null,
+  );
   const [pending, setPending] = useState<string | null>(null);
+  const [confirmApprove, setConfirmApprove] = useState<ProjectStage | null>(null);
   const [openStage, setOpenStage] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [reason, setReason] = useState('');
@@ -41,6 +45,7 @@ export function StageList({
   const { data: payments } = useApi<{ items: MilestonePayment[] }>(
     projectId ? `/projects/${projectId}/payments` : null,
   );
+  const currentStageId = stages.find((stage) => stage.status !== 'APPROVED')?.id;
   const unpaidStageIds = new Set(
     payments?.items
       .filter((payment) => payment.status === 'PENDING')
@@ -62,7 +67,7 @@ export function StageList({
       }
       onChanged();
     } catch (cause) {
-      setError(errorMessage(cause));
+      setError({ stageId, message: errorMessage(cause) });
     } finally {
       setPending(null);
     }
@@ -70,8 +75,6 @@ export function StageList({
 
   return (
     <div>
-      {error ? <ErrorNotice message={error} /> : null}
-
       <ol className="mt-4 flex flex-col gap-3">
         {stages.map((stage) => {
           const busy = pending === stage.id;
@@ -92,7 +95,8 @@ export function StageList({
                       {titleCase(stage.name)}
                     </p>
                     <p className="text-sm text-muted">
-                      {formatMoney(stage.fee)} · Due {formatDate(stage.dueDate)}
+                      {stage.fee ? formatMoney(stage.fee) : 'No fee'} · Due{' '}
+                      {formatDate(stage.dueDate)}
                     </p>
                     {awaitingPayment ? (
                       <p className="text-sm text-muted">
@@ -104,7 +108,9 @@ export function StageList({
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  {isDesigner && stage.status === 'PENDING' ? (
+                  {isDesigner &&
+                  stage.status === 'PENDING' &&
+                  stage.id === currentStageId ? (
                     <Button
                       size="sm"
                       disabled={busy || awaitingPayment}
@@ -133,7 +139,11 @@ export function StageList({
                       <Button
                         size="sm"
                         disabled={busy}
-                        onClick={() => act(stage.id, 'approve')}
+                        onClick={() =>
+                          stage.fee
+                            ? setConfirmApprove(stage)
+                            : void act(stage.id, 'approve')
+                        }
                       >
                         Approve
                       </Button>
@@ -162,6 +172,12 @@ export function StageList({
                   <StatusBadge status={stage.status} />
                 </div>
               </div>
+
+              {error?.stageId === stage.id ? (
+                <div className="mt-3">
+                  <ErrorNotice message={error.message} />
+                </div>
+              ) : null}
 
               <StageTasks
                 stageId={stage.id}
@@ -212,6 +228,21 @@ export function StageList({
           );
         })}
       </ol>
+
+      {confirmApprove ? (
+        <ConfirmDialog
+          title={`Approve the ${titleCase(confirmApprove.name)} stage?`}
+          description={`This releases ${formatMoney(confirmApprove.fee)} to the designer. It cannot be undone.`}
+          confirmLabel="Approve and release payment"
+          busy={pending === confirmApprove.id}
+          onConfirm={() =>
+            void act(confirmApprove.id, 'approve').finally(() =>
+              setConfirmApprove(null),
+            )
+          }
+          onCancel={() => setConfirmApprove(null)}
+        />
+      ) : null}
     </div>
   );
 }
