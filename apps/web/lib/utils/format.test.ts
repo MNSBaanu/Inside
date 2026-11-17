@@ -45,7 +45,7 @@ describe('formatDate', () => {
 
 describe('titleCase', () => {
   it('turns an enum value into readable words', () => {
-    expect(titleCase('IN_PROGRESS')).toBe('in progress');
-    expect(titleCase('COMPLETION')).toBe('completion');
+    expect(titleCase('IN_PROGRESS')).toBe('In progress');
+    expect(titleCase('COMPLETION')).toBe('Completion');
   });
 });

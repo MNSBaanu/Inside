@@ -32,5 +32,6 @@ export function formatBudgetRange(
 }
 
 export function titleCase(value: string) {
-  return value.toLowerCase().replace(/_/g, ' ');
+  const text = value.toLowerCase().replace(/_/g, ' ');
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }

@@ -23,14 +23,23 @@ export function Rating({
   count?: number;
   className?: string;
 }) {
-  const rounded = Math.round(value ?? 0);
+  const halves = Math.round((value ?? 0) * 2) / 2;
 
   return (
     <span className={cn('inline-flex items-center gap-2', className)}>
       <span className="flex text-highlight" aria-hidden>
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star key={star} filled={star <= rounded} />
-        ))}
+        {[1, 2, 3, 4, 5].map((star) =>
+          star - 0.5 === halves ? (
+            <span key={star} className="relative inline-flex">
+              <Star filled={false} />
+              <span className="absolute inset-y-0 left-0 w-1/2 overflow-hidden">
+                <Star filled />
+              </span>
+            </span>
+          ) : (
+            <Star key={star} filled={star <= halves} />
+          ),
+        )}
       </span>
       <span className="text-sm text-muted">
         {value === null || value === 0

@@ -31,7 +31,7 @@ export function ErrorNotice({ message }: { message: string }) {
   return (
     <p
       role="alert"
-      className="rounded-card bg-brand-soft px-4 py-3 text-sm text-brand-deep"
+      className="rounded-card border border-error/20 bg-error/5 px-4 py-3 text-sm text-error"
     >
       {message}
     </p>
