@@ -181,24 +181,24 @@ export default function HomePage() {
           </Reveal>
         </div>
 
-        <dl className="mt-16 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="mt-16 grid grid-cols-2 gap-3 lg:grid-cols-4">
           {stats.map((stat, index) => (
             <Reveal key={stat.label} delay={index * 80}>
               <div className="h-full rounded-card bg-sand p-5 sm:p-6">
-                <dt className="sr-only">{stat.label}</dt>
-                <dd className="flex items-baseline gap-2">
+                <span className="sr-only">{stat.label}</span>
+                <div className="flex items-baseline gap-2">
                   <span className="text-heading font-medium leading-none tracking-[-0.03em]">
                     <CountUp value={stat.value} />
                   </span>
                   <span className={`text-xs ${muted}`}>{stat.unit}</span>
-                </dd>
+                </div>
                 <p aria-hidden className="mt-6 border-t border-ink/10 pt-4 text-sm">
                   {stat.label}
                 </p>
               </div>
             </Reveal>
           ))}
-        </dl>
+        </div>
       </section>
 
       <section aria-labelledby="steps-title" className="shell pb-16 md:pb-24">
