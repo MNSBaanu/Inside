@@ -5,12 +5,13 @@ const apiOrigin = new URL(
 
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
+  `script-src 'self' 'unsafe-inline' https://js.stripe.com${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
   // User images outside the optimizer allowlist are loaded directly.
   "img-src 'self' data: blob: https:",
   "font-src 'self'",
-  `connect-src 'self' ${apiOrigin} https://api.cloudinary.com${isDev ? ' ws: wss:' : ''}`,
+  `connect-src 'self' ${apiOrigin} https://api.cloudinary.com https://api.stripe.com${isDev ? ' ws: wss:' : ''}`,
+  "frame-src https://js.stripe.com https://hooks.stripe.com",
   "frame-ancestors 'none'",
   "form-action 'self'",
   "base-uri 'self'",
