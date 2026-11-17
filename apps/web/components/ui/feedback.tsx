@@ -42,7 +42,7 @@ export function SuccessNotice({ message }: { message: string }) {
   return (
     <p
       role="status"
-      className="rounded-card bg-support-soft px-4 py-3 text-sm text-success"
+      className="rounded-card bg-brand-soft px-4 py-3 text-sm text-success"
     >
       {message}
     </p>
