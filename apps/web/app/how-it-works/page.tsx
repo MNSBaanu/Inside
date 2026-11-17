@@ -88,7 +88,7 @@ export default function HowItWorksPage() {
               <br />
               one workspace
             </h2>
-            <p className="mt-6 max-w-sm text-muted">
+            <p className="mt-6 max-w-sm text-ink/70">
               Open a stage to see what happens and what you control at each step.
             </p>
           </Reveal>
@@ -113,7 +113,7 @@ export default function HowItWorksPage() {
                     className="object-cover"
                   />
                 </div>
-                <p className="mt-4 max-w-lg text-xs leading-relaxed text-muted">{stage.body}</p>
+                <p className="mt-4 max-w-lg text-xs leading-relaxed text-ink/70">{stage.body}</p>
               </details>
             ))}
           </Reveal>
@@ -133,7 +133,7 @@ export default function HowItWorksPage() {
                 <h3 className="font-display text-2xl font-semibold">
                   {item.title}
                 </h3>
-                <p className="mt-4 text-muted">{item.body}</p>
+                <p className="mt-4 text-ink/70">{item.body}</p>
               </Reveal>
             ))}
           </div>
