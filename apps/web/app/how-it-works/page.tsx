@@ -97,7 +97,7 @@ export default function HowItWorksPage() {
             {stages.map((stage, index) => (
               <details key={stage.number} open={index === 0} className="group py-5 first:pt-0">
                 <summary className="flex cursor-pointer list-none items-baseline gap-3">
-                  <span className="text-xs text-muted">{stage.number}</span>
+                  <span className="text-xs text-ink/70">{stage.number}</span>
                   <span className="text-xl font-medium tracking-[-0.02em]">{stage.title}</span>
                   <Plus
                     aria-hidden
