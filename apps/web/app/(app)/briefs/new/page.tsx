@@ -68,6 +68,11 @@ export default function NewBriefPage() {
       setStep(0);
       return;
     }
+    if (budgetRange && !/\d/.test(budgetRange)) {
+      setError('Enter the budget as numbers, e.g. 400000-800000.');
+      setStep(2);
+      return;
+    }
     setStep(next);
   }
 
@@ -76,6 +81,11 @@ export default function NewBriefPage() {
     if (rooms.length === 0) {
       setError('Add at least one room so designers know what to quote for.');
       setStep(0);
+      return;
+    }
+    if (budgetRange && !/\d/.test(budgetRange)) {
+      setError('Enter the budget as numbers, e.g. 400000-800000.');
+      setStep(2);
       return;
     }
     setSubmitting(true);

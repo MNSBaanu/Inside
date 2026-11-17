@@ -49,6 +49,11 @@ function BriefForm({ brief }: { brief: Brief }) {
       return;
     }
 
+    if (budgetRange && !/\d/.test(budgetRange)) {
+      setSaveError('Enter the budget as numbers, e.g. 400000-800000.');
+      return;
+    }
+
     setSaving(true);
     try {
       await api.patch(`/briefs/${brief.id}`, {
