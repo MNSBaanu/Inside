@@ -57,16 +57,13 @@ describe('Workspace flow (e2e)', () => {
     })
       .overrideProvider(STRIPE)
       .useValue({
-        checkout: {
-          sessions: {
-            retrieve: (sessionId: string) =>
-              Promise.resolve({
-                id: sessionId,
-                metadata: { paymentId: sessionId.replace('cs_test_', '') },
-                payment_status: 'paid',
-                payment_intent: `pi_${sessionId}`,
-              }),
-          },
+        paymentIntents: {
+          retrieve: (intentId: string) =>
+            Promise.resolve({
+              id: intentId,
+              metadata: { paymentId: intentId.replace('pi_test_', '') },
+              status: 'succeeded',
+            }),
         },
       })
       .compile();
@@ -256,7 +253,7 @@ describe('Workspace flow (e2e)', () => {
       const paid = await request(app.getHttpServer())
         .patch(`/payments/${pending.id}/pay`)
         .set(authHeader(clientToken))
-        .send({ sessionId: `cs_test_${pending.id}` })
+        .send({ paymentIntentId: `pi_test_${pending.id}` })
         .expect(200);
       expect(paid.body.data.payment.status).toBe(PaymentStatus.PAID);
 
