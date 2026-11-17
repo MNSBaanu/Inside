@@ -304,6 +304,7 @@ export type Notification = {
   type: string;
   title: string;
   message: string | null;
+  metadata: Record<string, unknown> | null;
   readAt: string | null;
   createdAt: string;
 };

@@ -2,6 +2,7 @@
 
 import { cardSurface } from '@/components/ui/card';
 import { Check } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
@@ -11,6 +12,15 @@ import { cn } from '@/lib/utils/cn';
 import { formatDate } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
 import type { Notification } from '@/lib/types';
+
+function notificationHref(item: Notification): string | null {
+  const meta = item.metadata ?? {};
+  if (typeof meta.href === 'string' && meta.href.startsWith('/')) return meta.href;
+  if (typeof meta.projectId === 'string') return `/projects/${meta.projectId}`;
+  if (typeof meta.requestId === 'string') return `/requests/${meta.requestId}`;
+  if (item.type === 'VERIFICATION') return '/verification';
+  return null;
+}
 
 export default function NotificationsPage() {
   const { data, error, loading, reload } =
@@ -34,6 +44,14 @@ export default function NotificationsPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  function openOne(item: Notification) {
+    if (item.readAt !== null) return;
+    void api
+      .patch(`/notifications/${item.id}/read`, {})
+      .then(() => window.dispatchEvent(new Event('inside:notifications-changed')))
+      .catch(() => undefined);
   }
 
   async function markOne(id: string) {
@@ -112,15 +130,31 @@ export default function NotificationsPage() {
                         item.readAt === null ? 'bg-brand' : 'bg-hairline',
                       )}
                     />
-                    <div className="min-w-0 flex-1">
-                      <p className="font-semibold">{item.title}</p>
-                      {item.message ? (
-                        <p className="mt-0.5 text-sm text-muted">{item.message}</p>
-                      ) : null}
-                      <p className="mt-0.5 text-xs text-muted">
-                        {formatDate(item.createdAt)}
-                      </p>
-                    </div>
+                    {(() => {
+                      const href = notificationHref(item);
+                      const content = (
+                        <>
+                          <p className="font-semibold group-hover:text-brand group-hover:underline">{item.title}</p>
+                          {item.message ? (
+                            <p className="mt-0.5 text-sm text-muted">{item.message}</p>
+                          ) : null}
+                          <p className="mt-0.5 text-xs text-muted">
+                            {formatDate(item.createdAt)}
+                          </p>
+                        </>
+                      );
+                      return href ? (
+                        <Link
+                          href={href}
+                          onClick={() => openOne(item)}
+                          className="group min-w-0 flex-1"
+                        >
+                          {content}
+                        </Link>
+                      ) : (
+                        <div className="min-w-0 flex-1">{content}</div>
+                      );
+                    })()}
                     {item.readAt === null ? (
                       <button
                         type="button"
