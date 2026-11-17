@@ -15,5 +15,7 @@ export {
   VerificationStatus,
   ReportStatus,
   ReportTargetType,
+  ContactTopic,
+  ContactStatus,
 } from '@prisma/client';
 export type * from '@prisma/client';
