@@ -57,6 +57,13 @@ export class VerificationsService {
       },
     });
 
+    await this.notifications.notifyAdmins({
+      type: NotificationType.VERIFICATION,
+      title: 'New verification request',
+      message: `${user.name} asked to be verified`,
+      metadata: { verificationId: created.id, href: '/admin/verifications' },
+    });
+
     return { success: true, data: { verification: this.serialize(created) } };
   }
 

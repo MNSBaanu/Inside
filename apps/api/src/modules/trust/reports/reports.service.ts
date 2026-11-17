@@ -3,14 +3,22 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ReportStatus, ReportTargetType } from '@inside/database';
+import {
+  NotificationType,
+  ReportStatus,
+  ReportTargetType,
+} from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { CreateReportDto } from './dto/create-report.dto';
 
 @Injectable()
 export class ReportsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   async create(user: AuthUser, dto: CreateReportDto) {
     if (
@@ -32,6 +40,13 @@ export class ReportsService {
         reason: dto.reason,
         details: dto.details,
       },
+    });
+
+    await this.notifications.notifyAdmins({
+      type: NotificationType.SYSTEM,
+      title: 'New report',
+      message: `${user.name} reported a ${dto.targetType.toLowerCase()}: "${dto.reason}"`,
+      metadata: { reportId: report.id, href: '/admin/reports' },
     });
 
     return { success: true, data: { report: this.serialize(report) } };

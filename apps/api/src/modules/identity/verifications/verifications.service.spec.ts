@@ -26,7 +26,7 @@ describe('VerificationsService', () => {
     ),
   };
 
-  const notifications = { notify: jest.fn() };
+  const notifications = { notify: jest.fn(), notifyAdmins: jest.fn() };
   const activity = { log: jest.fn() };
 
   const designer = {

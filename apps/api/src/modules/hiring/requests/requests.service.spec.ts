@@ -22,13 +22,14 @@ describe('RequestsService', () => {
       findUnique: jest.fn(),
       update: jest.fn(),
     },
+    proposal: { findMany: jest.fn().mockResolvedValue([]) },
   };
 
   const blocks = {
     assertNotBlocked: jest.fn(),
     listBlockedCounterpartIds: jest.fn().mockResolvedValue(new Set()),
   };
-  const notifications = { notify: jest.fn() };
+  const notifications = { notify: jest.fn(), notifyMany: jest.fn() };
 
   const client = {
     id: 'c1',
@@ -213,8 +214,54 @@ describe('RequestsService', () => {
       _count: { proposals: 0 },
     });
 
+    prisma.proposal.findMany.mockResolvedValueOnce([{ designerId: 'd2' }]);
+
     const result = await service.close(client, 'r1');
     expect(result.data.request.status).toBe(RequestStatus.CLOSED);
+    expect(notifications.notifyMany).toHaveBeenCalledWith(
+      ['d2'],
+      expect.objectContaining({
+        title: 'Request closed',
+        metadata: { requestId: 'r1' },
+      }),
+    );
+  });
+
+  it('notifies the designer when a direct request is cancelled', async () => {
+    const base = {
+      id: 'r2',
+      clientId: 'c1',
+      designerId: 'd1',
+      briefId: null,
+      title: 'Bathroom',
+      description: null,
+      type: RequestType.DIRECT,
+      budget: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      brief: null,
+      designer: { id: 'd1', name: 'Designer', avatarUrl: null },
+      client: { id: 'c1', name: 'Client', avatarUrl: null },
+      _count: { proposals: 0 },
+    };
+    prisma.projectRequest.findUnique.mockResolvedValue({
+      ...base,
+      status: RequestStatus.PENDING,
+    });
+    prisma.projectRequest.update.mockResolvedValue({
+      ...base,
+      status: RequestStatus.CANCELLED,
+    });
+
+    const result = await service.cancel(client, 'r2');
+    expect(result.data.request.status).toBe(RequestStatus.CANCELLED);
+    expect(notifications.notifyMany).toHaveBeenCalledWith(
+      ['d1'],
+      expect.objectContaining({
+        title: 'Request cancelled',
+        metadata: { requestId: 'r2' },
+      }),
+    );
   });
 
   it('rejects close on non-existent request', async () => {

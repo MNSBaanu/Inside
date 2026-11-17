@@ -270,6 +270,19 @@ export class RequestsService {
       include: requestInclude,
     });
 
+    await this.notifications.notifyMany(
+      [
+        ...(request.designerId ? [request.designerId] : []),
+        ...(await this.pendingProposalDesignerIds(id)),
+      ],
+      {
+        type: NotificationType.REQUEST,
+        title: 'Request cancelled',
+        message: `The client cancelled "${request.title}"`,
+        metadata: { requestId: id },
+      },
+    );
+
     return { success: true, data: { request: this.serialize(updated) } };
   }
 
@@ -288,7 +301,25 @@ export class RequestsService {
       include: requestInclude,
     });
 
+    await this.notifications.notifyMany(
+      await this.pendingProposalDesignerIds(id),
+      {
+        type: NotificationType.REQUEST,
+        title: 'Request closed',
+        message: `"${request.title}" is no longer taking proposals`,
+        metadata: { requestId: id },
+      },
+    );
+
     return { success: true, data: { request: this.serialize(updated) } };
+  }
+
+  private async pendingProposalDesignerIds(requestId: string) {
+    const proposals = await this.prisma.proposal.findMany({
+      where: { requestId, status: ProposalStatus.PENDING },
+      select: { designerId: true },
+    });
+    return proposals.map((proposal) => proposal.designerId);
   }
 
   async decline(user: AuthUser, id: string) {

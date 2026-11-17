@@ -13,6 +13,7 @@ describe('NotificationsService', () => {
       update: jest.fn(),
       updateMany: jest.fn(),
     },
+    user: { findMany: jest.fn() },
   };
 
   const user = {
@@ -37,6 +38,32 @@ describe('NotificationsService', () => {
       message: 'World',
     });
     expect(prisma.notification.create).toHaveBeenCalled();
+  });
+
+  it('notifyAdmins notifies each active admin once', async () => {
+    prisma.user.findMany.mockResolvedValue([{ id: 'a1' }, { id: 'a2' }]);
+    prisma.notification.create.mockResolvedValue({});
+    await service.notifyAdmins({
+      type: NotificationType.SYSTEM,
+      title: 'New report',
+      message: 'Someone reported a user',
+    });
+    expect(prisma.user.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ role: Role.ADMIN }),
+      }),
+    );
+    expect(prisma.notification.create).toHaveBeenCalledTimes(2);
+  });
+
+  it('notifyMany skips duplicate users', async () => {
+    prisma.notification.create.mockResolvedValue({});
+    await service.notifyMany(['d1', 'd1', 'd2'], {
+      type: NotificationType.REQUEST,
+      title: 'Request closed',
+      message: 'Closed',
+    });
+    expect(prisma.notification.create).toHaveBeenCalledTimes(2);
   });
 
   it('notify swallows database errors', async () => {

@@ -4,7 +4,12 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { NotificationType, Prisma } from '@inside/database';
+import {
+  AccountStatus,
+  NotificationType,
+  Prisma,
+  Role,
+} from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
 
@@ -44,6 +49,31 @@ export class NotificationsService {
           error instanceof Error ? error.message : String(error)
         }`,
       );
+    }
+  }
+
+  async notifyAdmins(input: Omit<NotifyInput, 'userId'>) {
+    try {
+      const admins = await this.prisma.user.findMany({
+        where: { role: Role.ADMIN, status: AccountStatus.ACTIVE },
+        select: { id: true },
+      });
+      await this.notifyMany(
+        admins.map((admin) => admin.id),
+        input,
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Failed to notify admins: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
+  async notifyMany(userIds: string[], input: Omit<NotifyInput, 'userId'>) {
+    for (const userId of new Set(userIds)) {
+      await this.notify({ ...input, userId });
     }
   }
 

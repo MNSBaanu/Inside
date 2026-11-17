@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { ReportStatus, ReportTargetType, Role } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { ReportsService } from './reports.service';
 
 describe('ReportsService', () => {
@@ -17,6 +18,8 @@ describe('ReportsService', () => {
     message: { count: jest.fn().mockResolvedValue(1) },
   };
 
+  const notifications = { notifyAdmins: jest.fn() };
+
   const client = {
     id: 'c1',
     role: Role.CLIENT,
@@ -27,7 +30,10 @@ describe('ReportsService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new ReportsService(prisma as unknown as PrismaService);
+    service = new ReportsService(
+      prisma as unknown as PrismaService,
+      notifications as unknown as NotificationsService,
+    );
   });
 
   it('creates a report', async () => {
@@ -62,6 +68,12 @@ describe('ReportsService', () => {
           reporterId: 'c1',
           targetId: 'd1',
         }),
+      }),
+    );
+    expect(notifications.notifyAdmins).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'New report',
+        metadata: { reportId: 'r1', href: '/admin/reports' },
       }),
     );
   });
