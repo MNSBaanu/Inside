@@ -264,24 +264,21 @@ function StageDeliverables({
   } = useApi<{ items: Deliverable[] }>(`/stages/${stageId}/deliverables`);
   const items = data?.items ?? null;
   const [error, setError] = useState<string | null>(null);
-  const [fileUrl, setFileUrl] = useState('');
-  const [fileName, setFileName] = useState('');
   const [notes, setNotes] = useState('');
   const [busy, setBusy] = useState(false);
+  const [uploadKey, setUploadKey] = useState(0);
 
-  async function onUpload(event: React.FormEvent) {
-    event.preventDefault();
+  async function onUpload(file: { url: string; fileName: string }) {
     setError(null);
     setBusy(true);
     try {
       await api.post(`/stages/${stageId}/deliverables`, {
-        fileUrl,
-        fileName: fileName || undefined,
+        fileUrl: file.url,
+        fileName: file.fileName || undefined,
         notes: notes || undefined,
       });
-      setFileUrl('');
-      setFileName('');
       setNotes('');
+      setUploadKey((key) => key + 1);
       await load();
     } catch (cause) {
       setError(errorMessage(cause));
@@ -345,29 +342,23 @@ function StageDeliverables({
       )}
 
       {canUpload ? (
-        <form onSubmit={onUpload} className="mt-6 flex flex-col gap-4">
-          <FileUpload
-            folder="deliverables"
-            accept="image/*,.pdf,.dwg,.dxf,.zip"
-            label="File"
-            onUploaded={(file) => {
-              setFileUrl(file.url);
-              setFileName(file.fileName);
-            }}
-          />
-          <Field label="Notes" htmlFor={`notes-${stageId}`}>
+        <div className="mt-6 flex flex-col gap-4">
+          <Field label="Notes (optional)" htmlFor={`notes-${stageId}`}>
             <Textarea
               id={`notes-${stageId}`}
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
             />
           </Field>
-          <div>
-            <Button type="submit" size="sm" disabled={busy || !fileUrl}>
-              {busy ? 'Adding…' : 'Add deliverable'}
-            </Button>
-          </div>
-        </form>
+          <FileUpload
+            key={uploadKey}
+            folder="deliverables"
+            accept="image/*,.pdf,.dwg,.dxf,.zip"
+            label="Add a file. It's shared with the client as soon as it uploads."
+            onUploaded={(file) => void onUpload(file)}
+          />
+          {busy ? <p className="text-sm text-muted">Adding…</p> : null}
+        </div>
       ) : null}
     </div>
   );
