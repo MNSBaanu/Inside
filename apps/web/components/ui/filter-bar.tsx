@@ -7,11 +7,13 @@ import { cn } from '@/lib/utils/cn';
 export function FilterBar({
   onSubmit,
   action,
+  compact = false,
   className,
   children,
 }: {
   onSubmit?: FormEventHandler<HTMLFormElement>;
   action?: string;
+  compact?: boolean;
   className?: string;
   children: ReactNode;
 }) {
@@ -24,6 +26,8 @@ export function FilterBar({
       action={action}
       className={cn(
         'flex flex-col rounded-card border border-hairline bg-surface p-2 shadow-card lg:flex-row lg:items-stretch lg:rounded-pill',
+        compact &&
+          'lg:!p-1 [&_div:has(>label)]:!py-2 lg:[&_div:has(>label)]:!py-1.5',
         className,
       )}
     >
