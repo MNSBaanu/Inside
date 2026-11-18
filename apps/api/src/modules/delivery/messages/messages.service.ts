@@ -126,6 +126,7 @@ export class MessagesService {
     senderId: string;
     receiverId: string;
     content: string;
+    isHidden?: boolean;
     attachmentUrl: string | null;
     attachmentType: string | null;
     isRead: boolean;
@@ -137,9 +138,10 @@ export class MessagesService {
       projectId: m.projectId,
       senderId: m.senderId,
       receiverId: m.receiverId,
-      content: m.content,
-      attachmentUrl: m.attachmentUrl,
-      attachmentType: m.attachmentType,
+      content: m.isHidden ? 'This message was removed by an admin.' : m.content,
+      isHidden: m.isHidden ?? false,
+      attachmentUrl: m.isHidden ? null : m.attachmentUrl,
+      attachmentType: m.isHidden ? null : m.attachmentType,
       isRead: m.isRead,
       readAt: m.readAt,
       sentAt: m.sentAt,

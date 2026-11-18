@@ -15,6 +15,7 @@ import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { paginate } from '../../../common/dto/pagination-query.dto';
+import { PaymentsService } from '../../delivery/payments/payments.service';
 import { PrismaService } from '../../../database/prisma.service';
 import type {
   AdminCreateProductDto,
@@ -48,6 +49,7 @@ export class AdminManageService {
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
     private readonly activity: ActivityService,
+    private readonly payments: PaymentsService,
   ) {}
 
   // Projects
@@ -198,11 +200,15 @@ export class AdminManageService {
     ) {
       throw new BadRequestException('Project is already closed');
     }
+    const refunded = await this.payments.refundCancelledProject(project.id);
+    const refundNote = refunded
+      ? `. ${refunded} paid milestone${refunded === 1 ? ' was' : 's were'} refunded`
+      : '';
     return this.changeProjectStatus(admin, project, ProjectStatus.CANCELLED, {
       action: 'PROJECT_CANCELLED',
       title: 'Project cancelled',
-      message: `An administrator cancelled "${project.title}": ${reason}`,
-      metadata: { reason },
+      message: `An administrator cancelled "${project.title}": ${reason}${refundNote}`,
+      metadata: { reason, refunded },
     });
   }
 

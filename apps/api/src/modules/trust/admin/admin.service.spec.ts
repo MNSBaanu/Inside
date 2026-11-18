@@ -29,6 +29,7 @@ describe('AdminService', () => {
       findUnique: jest.fn(),
       update: jest.fn(),
     },
+    portfolio: { updateMany: jest.fn() },
     $transaction: jest.fn(async (fn: (t: typeof tx) => Promise<unknown>) =>
       fn(tx),
     ),
@@ -101,5 +102,36 @@ describe('AdminService', () => {
     const result = await service.resolveReport(admin, 'r1');
     expect(result.data.report.status).toBe(ReportStatus.RESOLVED);
     expect(result.data.report.resolvedById).toBe('a1');
+  });
+
+  it('resolveReport can unpublish a reported portfolio and keep a note', async () => {
+    prisma.report.findUnique.mockResolvedValue({
+      id: 'r2',
+      reporterId: 'u2',
+      targetType: ReportTargetType.PORTFOLIO,
+      targetId: 'p1',
+      status: ReportStatus.OPEN,
+    });
+    prisma.report.update.mockImplementation(({ data }) => ({
+      id: 'r2',
+      reporterId: 'u2',
+      reportedUserId: null,
+      targetType: ReportTargetType.PORTFOLIO,
+      targetId: 'p1',
+      reason: 'copied',
+      details: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ...data,
+    }));
+    const result = await service.resolveReport(admin, 'r2', {
+      note: 'Copied images',
+      removeContent: true,
+    });
+    expect(prisma.portfolio.updateMany).toHaveBeenCalledWith({
+      where: { id: 'p1' },
+      data: { isPublished: false },
+    });
+    expect(result.data.report.resolution).toBe('Copied images');
   });
 });

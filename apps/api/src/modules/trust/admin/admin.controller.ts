@@ -24,11 +24,13 @@ import {
   AdminActivityQueryDto,
   AdminReportsQueryDto,
   AdminReviewsQueryDto,
+  AdminSearchQueryDto,
   AdminUsersQueryDto,
 } from './dto/admin-list-query.dto';
 import { AdminCreateUserDto } from './dto/create-user.dto';
 import { SetReviewVisibilityDto } from './dto/set-review-visibility.dto';
 import { AdminService } from './admin.service';
+import { ReportDecisionDto } from './dto/report-decision.dto';
 
 @ApiTags('admin')
 @ApiBearerAuth()
@@ -42,6 +44,15 @@ export class AdminController {
   @ApiOkResponse({ description: 'Counts' })
   stats() {
     return this.admin.getStats();
+  }
+
+  @Get('analytics')
+  @ApiOperation({
+    summary: 'Growth, revenue and activity trends for the admin',
+  })
+  @ApiOkResponse({ description: 'Analytics for the last 12 months' })
+  analytics() {
+    return this.admin.getAnalytics();
   }
 
   @Get('users')
@@ -125,8 +136,9 @@ export class AdminController {
   resolveReport(
     @CurrentUser() admin: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: ReportDecisionDto,
   ) {
-    return this.admin.resolveReport(admin, id);
+    return this.admin.resolveReport(admin, id, dto);
   }
 
   @Patch('reports/:id/dismiss')
@@ -135,8 +147,9 @@ export class AdminController {
   dismissReport(
     @CurrentUser() admin: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: ReportDecisionDto,
   ) {
-    return this.admin.dismissReport(admin, id);
+    return this.admin.dismissReport(admin, id, dto);
   }
 
   @Get('reviews')
@@ -155,6 +168,13 @@ export class AdminController {
     @Body() dto: SetReviewVisibilityDto,
   ) {
     return this.admin.setReviewVisibility(user, id, dto.isVisible);
+  }
+
+  @Get('newsletter')
+  @ApiOperation({ summary: 'Newsletter subscribers' })
+  @ApiOkResponse({ description: 'Subscribers' })
+  newsletter(@Query() query: AdminSearchQueryDto) {
+    return this.admin.listNewsletter(query);
   }
 
   @Get('activity')

@@ -8,7 +8,12 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NotificationType, PaymentStatus, Prisma } from '@inside/database';
+import {
+  NotificationType,
+  PaymentStatus,
+  Prisma,
+  ProjectStatus,
+} from '@inside/database';
 import { formatLkr } from '../../../common/format';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
@@ -111,6 +116,25 @@ export class PaymentsService {
     }
   }
 
+  /** Refunds money paid but not yet released when a project is cancelled. */
+  async refundCancelledProject(projectId: string) {
+    const paid = await this.prisma.milestonePayment.findMany({
+      where: { projectId, status: PaymentStatus.PAID },
+    });
+    for (const payment of paid) {
+      if (payment.stripeIntentId) {
+        await this.requireStripe().refunds.create({
+          payment_intent: payment.stripeIntentId,
+        });
+      }
+      await this.prisma.milestonePayment.update({
+        where: { id: payment.id },
+        data: { status: PaymentStatus.REFUNDED },
+      });
+    }
+    return paid.length;
+  }
+
   private async requirePendingForClient(user: AuthUser, id: string) {
     const payment = await this.requirePayment(id);
     if (payment.project.clientId !== user.id) {
@@ -118,6 +142,9 @@ export class PaymentsService {
     }
     if (payment.status !== PaymentStatus.PENDING) {
       throw new BadRequestException('Payment is not pending');
+    }
+    if (payment.project.status === ProjectStatus.CANCELLED) {
+      throw new BadRequestException('This project was cancelled');
     }
     return payment;
   }
@@ -136,7 +163,13 @@ export class PaymentsService {
       where: { id },
       include: {
         project: {
-          select: { id: true, clientId: true, designerId: true, title: true },
+          select: {
+            id: true,
+            clientId: true,
+            designerId: true,
+            title: true,
+            status: true,
+          },
         },
       },
     });

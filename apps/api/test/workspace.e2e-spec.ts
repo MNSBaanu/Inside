@@ -266,7 +266,9 @@ describe('Workspace flow (e2e)', () => {
       const deliv = await request(app.getHttpServer())
         .post(`/stages/${stageId}/deliverables`)
         .set(authHeader(designerToken))
-        .send({ fileUrl: `https://res.cloudinary.com/e2e/stage-${i + 1}-v1.pdf` })
+        .send({
+          fileUrl: `https://res.cloudinary.com/e2e/stage-${i + 1}-v1.pdf`,
+        })
         .expect(201);
       expect(deliv.body.data.deliverable.version).toBe(1);
 
@@ -403,6 +405,23 @@ describe('Workspace flow (e2e)', () => {
       .delete(`/blocks/${otherId}`)
       .set(authHeader(clientToken))
       .expect(200);
+  });
+
+  it('admin analytics returns 12 months of trends', async () => {
+    await request(app.getHttpServer())
+      .get('/admin/analytics')
+      .set(authHeader(clientToken))
+      .expect(403);
+
+    const res = await request(app.getHttpServer())
+      .get('/admin/analytics')
+      .set(authHeader(adminToken))
+      .expect(200);
+    const data = res.body.data;
+    expect(data.months).toHaveLength(12);
+    expect(data.months.at(-1).projects).toBeGreaterThanOrEqual(1);
+    expect(data.totals.revenue).toBeGreaterThanOrEqual(0);
+    expect(data.projectsByStatus.length).toBeGreaterThan(0);
   });
 
   it('admin can suspend a user and approve a verification', async () => {

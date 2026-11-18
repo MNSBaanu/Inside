@@ -8,7 +8,9 @@ import * as bcrypt from 'bcryptjs';
 import {
   AccountStatus,
   NotificationType,
+  PaymentStatus,
   Prisma,
+  ProposalStatus,
   ProjectStatus,
   ReportStatus,
   ReportTargetType,
@@ -22,9 +24,11 @@ import type {
   AdminActivityQueryDto,
   AdminReportsQueryDto,
   AdminReviewsQueryDto,
+  AdminSearchQueryDto,
   AdminUsersQueryDto,
 } from './dto/admin-list-query.dto';
 import type { AdminCreateUserDto } from './dto/create-user.dto';
+import type { ReportDecisionDto } from './dto/report-decision.dto';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
 
@@ -73,6 +77,136 @@ export class AdminService {
         openReports,
         hiddenReviews,
         activeProjects,
+      },
+    };
+  }
+
+  async getAnalytics() {
+    const since = new Date();
+    since.setUTCDate(1);
+    since.setUTCHours(0, 0, 0, 0);
+    since.setUTCMonth(since.getUTCMonth() - 11);
+    const paid: PaymentStatus[] = [PaymentStatus.PAID, PaymentStatus.RELEASED];
+
+    const [
+      users,
+      projects,
+      revenue,
+      projectsByStatus,
+      paymentsByStatus,
+      requestsByType,
+      proposals,
+      rating,
+      topStyles,
+    ] = await Promise.all([
+      this.prisma.$queryRaw<{ month: Date; role: Role; count: bigint }[]>`
+        SELECT date_trunc('month', "createdAt") AS month, role, COUNT(*) AS count
+        FROM "User" WHERE "createdAt" >= ${since} AND role <> 'ADMIN'
+        GROUP BY 1, 2`,
+      this.prisma.$queryRaw<{ month: Date; count: bigint }[]>`
+        SELECT date_trunc('month', "createdAt") AS month, COUNT(*) AS count
+        FROM "Project" WHERE "createdAt" >= ${since}
+        GROUP BY 1`,
+      this.prisma.$queryRaw<{ month: Date; amount: Prisma.Decimal }[]>`
+        SELECT date_trunc('month', "paidAt") AS month, SUM(amount) AS amount
+        FROM "MilestonePayment"
+        WHERE "paidAt" >= ${since} AND status IN ('PAID', 'RELEASED')
+        GROUP BY 1`,
+      this.prisma.project.groupBy({ by: ['status'], _count: { _all: true } }),
+      this.prisma.milestonePayment.groupBy({
+        by: ['status'],
+        _count: { _all: true },
+        _sum: { amount: true },
+      }),
+      this.prisma.projectRequest.groupBy({
+        by: ['type'],
+        _count: { _all: true },
+      }),
+      this.prisma.proposal.groupBy({ by: ['status'], _count: { _all: true } }),
+      this.prisma.review.aggregate({
+        where: { isVisible: true },
+        _avg: { rating: true },
+        _count: { _all: true },
+      }),
+      this.prisma.portfolio.groupBy({
+        by: ['style'],
+        where: { isPublished: true },
+        _count: { _all: true },
+        orderBy: { _count: { style: 'desc' } },
+        take: 6,
+      }),
+    ]);
+
+    const key = (date: Date) => date.toISOString().slice(0, 7);
+    const months = Array.from({ length: 12 }, (_, i) => {
+      const date = new Date(since);
+      date.setUTCMonth(since.getUTCMonth() + i);
+      return {
+        month: key(date),
+        clients: 0,
+        designers: 0,
+        projects: 0,
+        revenue: 0,
+      };
+    });
+    const byMonth = new Map(months.map((m) => [m.month, m]));
+    for (const row of users) {
+      const entry = byMonth.get(key(row.month));
+      if (!entry) continue;
+      if (row.role === Role.DESIGNER) entry.designers += Number(row.count);
+      else entry.clients += Number(row.count);
+    }
+    for (const row of projects) {
+      const entry = byMonth.get(key(row.month));
+      if (entry) entry.projects += Number(row.count);
+    }
+    for (const row of revenue) {
+      const entry = byMonth.get(key(row.month));
+      if (entry) entry.revenue += Number(row.amount);
+    }
+
+    const proposalCount = (status: ProposalStatus) =>
+      proposals.find((p) => p.status === status)?._count._all ?? 0;
+    const decided =
+      proposalCount(ProposalStatus.ACCEPTED) +
+      proposalCount(ProposalStatus.REJECTED);
+
+    return {
+      success: true,
+      data: {
+        totals: {
+          revenue: paymentsByStatus
+            .filter((p) => paid.includes(p.status))
+            .reduce((sum, p) => sum + Number(p._sum.amount ?? 0), 0),
+          completedProjects:
+            projectsByStatus.find((p) => p.status === ProjectStatus.COMPLETED)
+              ?._count._all ?? 0,
+          proposalAcceptance: decided
+            ? Math.round(
+                (proposalCount(ProposalStatus.ACCEPTED) / decided) * 100,
+              )
+            : null,
+          averageRating: rating._avg.rating,
+          reviews: rating._count._all,
+        },
+        months,
+        projectsByStatus: projectsByStatus.map((p) => ({
+          key: p.status,
+          count: p._count._all,
+        })),
+        paymentsByStatus: paymentsByStatus.map((p) => ({
+          key: p.status,
+          count: p._count._all,
+          amount: Number(p._sum.amount ?? 0),
+        })),
+        requestsByType: requestsByType.map((r) => ({
+          key: r.type,
+          count: r._count._all,
+        })),
+        topStyles: topStyles.map((s) => ({
+          key: s.style,
+          count: s._count._all,
+        })),
       },
     };
   }
@@ -361,20 +495,30 @@ export class AdminService {
     };
   }
 
-  async resolveReport(admin: AuthUser, id: string) {
+  async resolveReport(
+    admin: AuthUser,
+    id: string,
+    dto: ReportDecisionDto = {},
+  ) {
     const report = await this.requireOpenReport(id);
+    if (dto.removeContent) await this.removeReportedContent(admin, report);
     const updated = await this.prisma.report.update({
       where: { id },
       data: {
         status: ReportStatus.RESOLVED,
         resolvedById: admin.id,
         resolvedAt: new Date(),
+        resolution: dto.note?.trim() || null,
       },
     });
     await this.activity.log({
       userId: admin.id,
       action: 'REPORT_RESOLVED',
-      metadata: { reportId: id },
+      metadata: {
+        reportId: id,
+        note: dto.note?.trim() || null,
+        contentRemoved: !!dto.removeContent,
+      },
     });
     await this.notifications.notify({
       userId: report.reporterId,
@@ -386,7 +530,11 @@ export class AdminService {
     return { success: true, data: { report: this.serializeReport(updated) } };
   }
 
-  async dismissReport(admin: AuthUser, id: string) {
+  async dismissReport(
+    admin: AuthUser,
+    id: string,
+    dto: ReportDecisionDto = {},
+  ) {
     const report = await this.requireOpenReport(id);
     const updated = await this.prisma.report.update({
       where: { id },
@@ -394,12 +542,13 @@ export class AdminService {
         status: ReportStatus.DISMISSED,
         resolvedById: admin.id,
         resolvedAt: new Date(),
+        resolution: dto.note?.trim() || null,
       },
     });
     await this.activity.log({
       userId: admin.id,
       action: 'REPORT_DISMISSED',
-      metadata: { reportId: id },
+      metadata: { reportId: id, note: dto.note?.trim() || null },
     });
     await this.notifications.notify({
       userId: report.reporterId,
@@ -528,6 +677,58 @@ export class AdminService {
     };
   }
 
+  private async removeReportedContent(
+    admin: AuthUser,
+    report: { targetType: ReportTargetType; targetId: string },
+  ) {
+    const id = report.targetId;
+    switch (report.targetType) {
+      case ReportTargetType.PORTFOLIO:
+        await this.prisma.portfolio.updateMany({
+          where: { id },
+          data: { isPublished: false },
+        });
+        break;
+      case ReportTargetType.MESSAGE:
+        await this.prisma.message.updateMany({
+          where: { id },
+          data: { isHidden: true },
+        });
+        break;
+      case ReportTargetType.REVIEW:
+        await this.prisma.review.updateMany({
+          where: { id },
+          data: { isVisible: false },
+        });
+        break;
+      case ReportTargetType.USER:
+        await this.suspend(admin, id);
+        break;
+      default:
+        throw new BadRequestException(
+          'Projects are paused or cancelled from the Projects page',
+        );
+    }
+  }
+
+  async listNewsletter(query: AdminSearchQueryDto) {
+    const { page, pageSize, skip } = paginate(query, 20);
+    const search = query.search?.trim();
+    const where: Prisma.NewsletterSubscriberWhereInput = search
+      ? { email: { contains: search, mode: 'insensitive' } }
+      : {};
+    const [items, total] = await Promise.all([
+      this.prisma.newsletterSubscriber.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: pageSize,
+      }),
+      this.prisma.newsletterSubscriber.count({ where }),
+    ]);
+    return { success: true, data: { items, page, pageSize, total } };
+  }
+
   private async requireOpenReport(id: string) {
     const report = await this.prisma.report.findUnique({ where: { id } });
     if (!report) {
@@ -625,6 +826,7 @@ export class AdminService {
     status: ReportStatus;
     resolvedById: string | null;
     resolvedAt: Date | null;
+    resolution?: string | null;
     createdAt: Date;
     updatedAt: Date;
     reporter?: { id: string; name: string; email: string };
@@ -641,6 +843,7 @@ export class AdminService {
       status: r.status,
       resolvedById: r.resolvedById,
       resolvedAt: r.resolvedAt,
+      resolution: r.resolution ?? null,
       createdAt: r.createdAt,
       updatedAt: r.updatedAt,
       reporter: r.reporter ?? null,
