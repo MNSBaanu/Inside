@@ -18,6 +18,14 @@ const unsplash = (id: string, width: number, height: number) =>
 
 export const heroImage = unsplash('1600210491892-03d54c0aaf87', 2400, 1100);
 export const heroImageAspect = 2400 / 1100;
+export const heroThumbImage = unsplash('1600210491892-03d54c0aaf87', 400, 800);
+
+/** A wide, cropped copy of a Cloudinary image for banners. Other hosts are returned unchanged. */
+export function bannerImage(src: string) {
+  return src.startsWith('https://res.cloudinary.com/')
+    ? src.replace('/upload/', '/upload/c_fill,g_auto,w_2000,h_400/')
+    : src;
+}
 
 // Points on the hero photo (percent of the full image): room elements and Inside features.
 export const heroHotspots: Hotspot[] = [

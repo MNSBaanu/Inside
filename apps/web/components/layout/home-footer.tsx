@@ -5,7 +5,7 @@ import { Reveal } from '@/components/features/home/reveal';
 import { ArrowButton } from '@/components/layout/arrow-button';
 import { fetchPublic } from '@/lib/api/server-api';
 import type { DesignerSummary, Paginated } from '@/lib/types';
-import { heroImage, isOptimizableImage } from '@/lib/utils/images';
+import { heroThumbImage, isOptimizableImage } from '@/lib/utils/images';
 import { columns } from '@/components/layout/site-footer';
 
 export async function HomeFooter() {
@@ -110,7 +110,7 @@ export async function HomeFooter() {
           >
             <span>Ins</span>
             <span className="relative mb-[0.02em] h-[0.74em] w-[0.36em] shrink-0 overflow-hidden rounded-full">
-              <Image src={heroImage} alt="" fill sizes="20vw" className="object-cover" />
+              <Image src={heroThumbImage} alt="" fill sizes="20vw" className="object-cover" />
             </span>
             <span>de</span>
           </p>

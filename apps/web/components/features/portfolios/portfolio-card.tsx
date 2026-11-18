@@ -7,12 +7,14 @@ import { isOptimizableImage } from '@/lib/utils/images';
 export function PortfolioCard({
   portfolio,
   sizes = '(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw',
+  priority = false,
 }: {
   portfolio: Pick<Portfolio, 'id' | 'title' | 'style' | 'budget'> & {
     images: Pick<PortfolioImage, 'imageUrl'>[];
     designer?: Pick<Portfolio['designer'], 'name'>;
   };
   sizes?: string;
+  priority?: boolean;
 }) {
   const cover = portfolio.images[0];
   const meta = [
@@ -31,6 +33,7 @@ export function PortfolioCard({
           unoptimized={!isOptimizableImage(cover.imageUrl)}
           alt={portfolio.title}
           fill
+          priority={priority}
           sizes={sizes}
           className="object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.04]"
         />

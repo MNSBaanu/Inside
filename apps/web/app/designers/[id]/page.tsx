@@ -12,7 +12,7 @@ import { ReportDialog } from '@/components/features/moderation/report-dialog';
 import { AutoRefresh } from '@/components/layout/auto-refresh';
 import { fetchPublic } from '@/lib/api/server-api';
 import type { DesignerProfile, PortfolioImage } from '@/lib/types';
-import { isOptimizableImage } from '@/lib/utils/images';
+import { bannerImage, isOptimizableImage } from '@/lib/utils/images';
 import { availabilityLabel } from '@/lib/utils/format';
 
 type ProfilePortfolio = {
@@ -58,7 +58,7 @@ export default async function DesignerProfilePage({
           <div className="relative h-28 bg-brand-soft md:h-40">
             {cover ? (
               <Image
-                src={cover.imageUrl}
+                src={bannerImage(cover.imageUrl)}
                 unoptimized={!isOptimizableImage(cover.imageUrl)}
                 alt=""
                 fill
@@ -156,12 +156,12 @@ export default async function DesignerProfilePage({
           </div>
         ) : (
           <div className="mt-6 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2">
-            {portfolios.map((portfolio) => (
+            {portfolios.map((portfolio, index) => (
               <div
                 key={portfolio.id}
                 className="w-[85%] shrink-0 snap-start sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]"
               >
-                <PortfolioCard portfolio={portfolio} />
+                <PortfolioCard portfolio={portfolio} priority={index < 3} />
               </div>
             ))}
           </div>
