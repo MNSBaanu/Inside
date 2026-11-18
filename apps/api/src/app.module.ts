@@ -4,6 +4,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AdminModule } from './modules/trust/admin/admin.module';
 import { AnnouncementsModule } from './modules/platform/announcements/announcements.module';
+import {
+  RealtimeCoreModule,
+  RealtimeModule,
+} from './modules/platform/realtime/realtime.module';
 import { AuthModule } from './modules/identity/auth/auth.module';
 import { BlocksModule } from './modules/trust/blocks/blocks.module';
 import { BriefsModule } from './modules/discovery/briefs/briefs.module';
@@ -43,6 +47,8 @@ import { VerificationsModule } from './modules/identity/verifications/verificati
           'GET',
     }),
     PrismaModule,
+    RealtimeCoreModule,
+    RealtimeModule,
     AuthModule,
     UsersModule,
     PortfoliosModule,

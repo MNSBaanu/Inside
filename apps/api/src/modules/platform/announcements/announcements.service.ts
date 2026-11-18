@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import {
   AccountStatus,
@@ -16,6 +17,7 @@ import {
 } from '../../../common/dto/pagination-query.dto';
 import { PrismaService } from '../../../database/prisma.service';
 import { ActivityService } from '../activity/activity.service';
+import { RealtimeService } from '../realtime/realtime.service';
 import { CreateAnnouncementDto } from './dto/announcement.dto';
 
 const AUDIENCE_ROLE: Record<AnnouncementAudience, Role | null> = {
@@ -29,6 +31,7 @@ export class AnnouncementsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly activity: ActivityService,
+    @Optional() private readonly realtime?: RealtimeService,
   ) {}
 
   async active(user: AuthUser) {
@@ -102,6 +105,14 @@ export class AnnouncementsService {
         metadata: { announcementId: announcement.id },
       })),
     });
+
+    for (const r of recipients) {
+      this.realtime?.toUser(r.id, 'notification:new', {
+        type: NotificationType.SYSTEM,
+        title: announcement.title,
+      });
+      this.realtime?.toUser(r.id, 'announcement:new', { id: announcement.id });
+    }
 
     await this.activity.log({
       userId: admin.id,

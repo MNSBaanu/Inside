@@ -3,6 +3,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import {
   AccountStatus,
@@ -12,6 +13,7 @@ import {
 } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { RealtimeService } from '../realtime/realtime.service';
 
 export type NotifyInput = {
   userId: string;
@@ -25,7 +27,10 @@ export type NotifyInput = {
 export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly realtime?: RealtimeService,
+  ) {}
 
   /**
    * Create a notification for a user. Safe to fire-and-forget from other services.
@@ -41,6 +46,10 @@ export class NotificationsService {
           message: input.message,
           metadata: (input.metadata ?? undefined) as Prisma.InputJsonValue,
         },
+      });
+      this.realtime?.toUser(input.userId, 'notification:new', {
+        type: input.type,
+        title: input.title,
       });
     } catch (error) {
       // Best-effort: log instead of failing the caller.

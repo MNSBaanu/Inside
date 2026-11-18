@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import { NotificationType } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
@@ -12,6 +13,7 @@ import {
 } from '../../../common/dto/pagination-query.dto';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { RealtimeService } from '../../platform/realtime/realtime.service';
 import { SendMessageDto } from './dto/send-message.dto';
 
 @Injectable()
@@ -20,6 +22,7 @@ export class MessagesService {
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
     private readonly blocks: BlocksService,
+    @Optional() private readonly realtime?: RealtimeService,
   ) {}
 
   /** Page 1 holds the newest messages; each page is returned oldest first. */
@@ -71,7 +74,9 @@ export class MessagesService {
       metadata: { projectId, messageId: created.id },
     });
 
-    return { success: true, data: { message: this.serialize(created) } };
+    const message = this.serialize(created);
+    this.realtime?.toProject(projectId, 'message:new', message);
+    return { success: true, data: { message } };
   }
 
   async markRead(user: AuthUser, id: string) {
@@ -89,6 +94,10 @@ export class MessagesService {
       where: { id },
       data: { isRead: true, readAt: new Date() },
     });
+    this.realtime?.toProject(updated.projectId, 'message:read', {
+      projectId: updated.projectId,
+      readerId: user.id,
+    });
     return { success: true, data: { message: this.serialize(updated) } };
   }
 
@@ -98,6 +107,12 @@ export class MessagesService {
       where: { projectId, receiverId: user.id, isRead: false },
       data: { isRead: true, readAt: new Date() },
     });
+    if (result.count > 0) {
+      this.realtime?.toProject(projectId, 'message:read', {
+        projectId,
+        readerId: user.id,
+      });
+    }
     return { success: true, data: { updated: result.count } };
   }
 
