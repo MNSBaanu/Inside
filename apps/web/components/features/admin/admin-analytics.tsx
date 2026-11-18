@@ -1,6 +1,10 @@
 'use client';
 
+import { Download } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { Select } from '@/components/ui/select';
 import { PageHeader } from '@/components/ui/page-header';
 import { cardSurface } from '@/components/ui/card';
 import { useApi } from '@/lib/api/use-api';
@@ -38,8 +42,28 @@ const monthLabel = (month: string) =>
     timeZone: 'UTC',
   });
 
+const RANGES = [
+  { value: '3', label: 'Last 3 months' },
+  { value: '6', label: 'Last 6 months' },
+  { value: '12', label: 'Last 12 months' },
+  { value: '24', label: 'Last 24 months' },
+];
+
 export function AnalyticsSection() {
-  const { data, error, loading } = useApi<Analytics>('/admin/analytics');
+  const [range, setRange] = useState('12');
+  const [exporting, setExporting] = useState(false);
+  const { data, error, loading } = useApi<Analytics>(`/admin/analytics?months=${range}`);
+  const rangeLabel = RANGES.find((r) => r.value === range)?.label ?? '';
+
+  async function exportPdf() {
+    if (!data) return;
+    setExporting(true);
+    try {
+      await downloadPdf(data, rangeLabel);
+    } finally {
+      setExporting(false);
+    }
+  }
 
   return (
     <>
@@ -47,8 +71,30 @@ export function AnalyticsSection() {
         variant="app"
         eyebrow="Admin"
         title="Analytics."
-        description="Growth, revenue and activity over the last 12 months."
+        description={`Growth, revenue and activity for the ${rangeLabel.toLowerCase()}.`}
       />
+
+      <div className="mt-6 flex flex-wrap items-end gap-3">
+        <div className="w-56">
+          <label htmlFor="analytics-range" className="mb-1.5 block text-sm text-muted">
+            Date range
+          </label>
+          <Select
+            id="analytics-range"
+            value={range}
+            options={RANGES}
+            onChange={(value) => setRange(value || range)}
+          />
+        </div>
+        <Button
+          variant="outline"
+          onClick={exportPdf}
+          disabled={!data || loading || exporting}
+        >
+          <Download aria-hidden className="h-4 w-4" />
+          {exporting ? 'Exporting…' : 'Export PDF'}
+        </Button>
+      </div>
 
       {error ? (
         <div className="mt-6">
@@ -116,6 +162,72 @@ export function AnalyticsSection() {
       </div>
     </>
   );
+}
+
+async function downloadPdf(data: Analytics, rangeLabel: string) {
+  const [{ jsPDF }, { default: autoTable }] = await Promise.all([
+    import('jspdf'),
+    import('jspdf-autotable'),
+  ]);
+  const doc = new jsPDF();
+  const { totals } = data;
+  let y = 20;
+
+  doc.setFontSize(18);
+  doc.text('Inside analytics report', 14, y);
+  doc.setFontSize(10);
+  doc.text(`${rangeLabel} · generated ${new Date().toLocaleString('en-GB')}`, 14, (y += 7));
+
+  const table = (title: string, head: string[], body: (string | number)[][]) => {
+    autoTable(doc, {
+      startY: y + 6,
+      head: [[title, ...head.slice(1)]],
+      body,
+      headStyles: { fillColor: [60, 60, 60] },
+      styles: { fontSize: 9 },
+      columnStyles: { 0: { cellWidth: head.length > 2 ? 40 : 90 } },
+    });
+    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
+  };
+
+  table('Summary', ['', 'Value'], [
+    ['Revenue paid', formatMoney(totals.revenue)],
+    ['Completed projects', totals.completedProjects],
+    ['Proposal acceptance', totals.proposalAcceptance === null ? '-' : `${totals.proposalAcceptance}%`],
+    ['Average rating', totals.averageRating === null ? '-' : totals.averageRating.toFixed(1)],
+    ['Reviews', totals.reviews],
+  ]);
+  table(
+    'Month',
+    ['', 'Clients', 'Designers', 'Projects', 'Revenue'],
+    data.months.map((m) => [
+      `${monthLabel(m.month)} ${m.month.slice(0, 4)}`,
+      m.clients,
+      m.designers,
+      m.projects,
+      formatMoney(m.revenue),
+    ]),
+  );
+  const breakdown = (title: string, items: Breakdown[], keepCase = false) =>
+    table(
+      title,
+      ['', 'Count'],
+      items.length
+        ? items.map((i) => [keepCase ? i.key : titleCase(i.key), i.count])
+        : [['No data', '']],
+    );
+  breakdown('Projects by status', data.projectsByStatus);
+  table(
+    'Payments by status',
+    ['', 'Count', 'Amount'],
+    data.paymentsByStatus.length
+      ? data.paymentsByStatus.map((p) => [titleCase(p.key), p.count, formatMoney(p.amount ?? 0)])
+      : [['No data', '', '']],
+  );
+  breakdown('Requests by type', data.requestsByType);
+  breakdown('Top portfolio styles', data.topStyles, true);
+
+  doc.save(`inside-analytics-${new Date().toISOString().slice(0, 10)}.pdf`);
 }
 
 function Kpi({ label, value, note }: { label: string; value?: string; note?: string }) {
