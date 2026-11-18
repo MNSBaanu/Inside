@@ -16,48 +16,48 @@ export const metadata: Metadata = {
 const stages = [
   {
     number: '01',
-    title: 'Write your brief',
-    body: 'Set out the room, the budget range, the timeline and the feeling you want. Attach a moodboard so designers can read your taste, not guess it.',
+    title: 'Open or invite',
+    body: 'Post a brief to every designer, or send it straight to one designer you already like. A direct brief goes only to that designer, who can reply with a proposal or decline.',
     image: authImage,
   },
   {
     number: '02',
-    title: 'Get matched',
-    body: 'We rank designers against your brief by style, room type, budget fit and availability. You can also invite a specific designer directly.',
+    title: 'How matching scores',
+    body: 'Each designer gets a score out of 100: style 30, room type 25, budget fit 20, how well their work matches your description 15, and availability 10. You see the breakdown, not just the rank.',
     image: heroImage,
   },
   {
     number: '03',
-    title: 'Compare proposals',
-    body: 'Each proposal carries scope, cost and a timeline in weeks. Read them side by side, then accept the one that fits.',
+    title: 'Accepting closes the brief',
+    body: 'When you accept a proposal, the brief closes and the other proposals are declined for you. Its stage fees become the project milestones.',
     image: featuredWork[1].src,
   },
   {
     number: '04',
-    title: 'Work in stages',
-    body: 'Accepted proposals become a project split into stages - concept, design, revision, completion. Each stage is submitted and approved in the workspace.',
+    title: 'Submit, approve, move on',
+    body: 'The designer submits each stage with its files. Approve it and the next stage starts. Send it back and it returns to the designer for changes.',
     image: spotlightImage,
   },
   {
     number: '05',
-    title: 'Pay per milestone',
-    body: 'Pay each milestone once its stage is approved, then release it to confirm you are happy with the work.',
+    title: 'Paid, then released',
+    body: 'Paying a milestone holds the money against the stage. Releasing it tells the designer the work is signed off.',
     image: featuredWork[2].src,
   },
 ];
 
 const assurances = [
   {
-    title: 'Verified designers',
-    body: 'Designers submit proof of qualification and past work. An admin reviews every submission before the verified badge appears.',
+    title: 'If you cancel',
+    body: 'Milestones you paid but have not released are refunded to your card when the project is cancelled.',
   },
   {
-    title: 'Everything in one thread',
-    body: 'Messages, deliverables, approvals and payments all live against the project, so nothing gets lost in email.',
+    title: 'If something is wrong',
+    body: 'Report a designer, portfolio, message or review. An admin reviews it, records the outcome and can remove the content.',
   },
   {
-    title: 'You stay in control',
-    body: 'Reject a stage and ask for revisions, put a project on hold, or cancel - the status is always explicit.',
+    title: 'If a designer is busy',
+    body: 'Designers set the date they are next free. Sooner availability scores higher, so you are not matched with someone booked for months.',
   },
 ];
 
@@ -84,12 +84,12 @@ export default function HowItWorksPage() {
               id="stages-title"
               className="text-heading font-medium leading-[1.05] tracking-[-0.03em]"
             >
-              Five stages,
+              What happens
               <br />
-              one workspace
+              behind each step
             </h2>
             <p className="mt-6 max-w-sm text-ink/70">
-              Open a stage to see what happens and what you control at each step.
+              The rules the platform follows, from the moment a brief goes out.
             </p>
           </Reveal>
 
@@ -122,9 +122,9 @@ export default function HowItWorksPage() {
 
       <section className="mt-24 bg-sand py-24 md:mt-32 md:py-32">
         <div className="shell">
-          <Badge className="bg-canvas">What you can rely on</Badge>
+          <Badge className="bg-canvas">When plans change</Badge>
           <h2 className="mt-6 max-w-2xl font-display text-section font-semibold">
-            Structure, not good intentions.
+            What happens if things don&apos;t go to plan.
           </h2>
 
           <div className="mt-14 grid gap-10 md:grid-cols-3">
