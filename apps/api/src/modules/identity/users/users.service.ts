@@ -41,6 +41,13 @@ export class UsersService {
         ...(dto.isAvailable !== undefined
           ? { isAvailable: dto.isAvailable }
           : {}),
+        ...(dto.availableFrom !== undefined
+          ? {
+              availableFrom: dto.availableFrom
+                ? new Date(dto.availableFrom)
+                : null,
+            }
+          : {}),
       },
     });
 

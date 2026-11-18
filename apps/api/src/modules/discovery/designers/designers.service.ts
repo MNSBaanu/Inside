@@ -11,6 +11,7 @@ const designerSelect = {
   location: true,
   isVerified: true,
   isAvailable: true,
+  availableFrom: true,
   createdAt: true,
 } satisfies Prisma.UserSelect;
 
@@ -110,6 +111,7 @@ export class DesignersService {
           location: designer.location,
           isVerified: designer.isVerified,
           isAvailable: designer.isAvailable,
+          availableFrom: designer.availableFrom,
           portfolioCount: designer._count.portfolios,
           previews: designer.portfolios.map((portfolio) => ({
             id: portfolio.id,

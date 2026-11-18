@@ -34,6 +34,7 @@ export type AuthUser = Pick<
   | 'phone'
   | 'location'
   | 'isAvailable'
+  | 'availableFrom'
   | 'createdAt'
 > & { emailVerified: boolean };
 
@@ -356,6 +357,7 @@ export class AuthService {
       phone: user.phone,
       location: user.location,
       isAvailable: user.isAvailable,
+      availableFrom: user.availableFrom,
       createdAt: user.createdAt,
     };
   }

@@ -2,6 +2,7 @@ import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsDateString,
   IsOptional,
   IsString,
   IsUrl,
@@ -46,4 +47,9 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsBoolean()
   isAvailable?: boolean;
+
+  @ApiPropertyOptional({ example: '2026-12-01', description: 'Date the designer can start new work' })
+  @IsOptional()
+  @IsDateString()
+  availableFrom?: string | null;
 }
