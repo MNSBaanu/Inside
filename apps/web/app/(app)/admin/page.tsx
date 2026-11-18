@@ -6,12 +6,7 @@ import {
   CheckCircle2,
   Eye,
   FileText,
-  FolderKanban,
-  Inbox,
   X,
-  Users,
-  UserX,
-  type LucideIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
@@ -154,7 +149,6 @@ export default function AdminOverviewPage() {
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatTile
           href="/admin/users"
-          icon={Users}
           label="Users"
           value={data?.users}
           note={
@@ -165,19 +159,16 @@ export default function AdminOverviewPage() {
         />
         <StatTile
           href="/admin/activity"
-          icon={FolderKanban}
           label="Active projects"
           value={data?.activeProjects}
         />
         <StatTile
           href="/admin/users"
-          icon={UserX}
           label="Suspended"
           value={data?.suspended}
         />
         <StatTile
           href="/admin/reports"
-          icon={Inbox}
           label="Waiting on you"
           value={
             data
@@ -589,14 +580,12 @@ function actionButton(variant: 'primary' | 'outline') {
 
 function StatTile({
   href,
-  icon: Icon,
   label,
   value,
   note,
   urgent = false,
 }: {
   href: string;
-  icon: LucideIcon;
   label: string;
   value: number | undefined;
   note?: string;
@@ -607,20 +596,12 @@ function StatTile({
     <Link
       href={href}
       className={cn(
-        'group flex items-center gap-4 rounded-card p-5 transition-colors duration-300',
+        'group flex items-center rounded-card p-5 transition-colors duration-300',
         highlighted
           ? 'bg-highlight-soft hover:bg-highlight-soft/70'
           : 'bg-sand hover:bg-brand-soft',
       )}
     >
-      <span
-        className={cn(
-          'grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-canvas',
-          highlighted ? 'text-status-action' : 'text-brand',
-        )}
-      >
-        <Icon aria-hidden className="h-5 w-5" />
-      </span>
       <span className="min-w-0">
         {value === undefined ? (
           <Skeleton className="h-8 w-10 bg-canvas" />
