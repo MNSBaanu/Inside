@@ -21,6 +21,8 @@ export function SaveToMoodboard({ product }: { product: Product }) {
     );
   }
 
+  if (user.role === 'ADMIN' || user.activeRole !== 'CLIENT') return null;
+
   return <SaveForm product={product} />;
 }
 
