@@ -204,7 +204,7 @@ export default function AdminOverviewPage() {
             />
           </div>
         ) : (
-          <div className="mt-3 grid items-start gap-4 xl:grid-cols-3">
+          <div className="mt-3 grid gap-4 xl:grid-cols-3">
             <Queue
               title="Verifications"
               href="/admin/verifications"
@@ -531,8 +531,8 @@ function Queue({
   const items = Array.isArray(children) ? children.filter(Boolean) : children;
   const hasItems = Array.isArray(items) ? items.length > 0 : Boolean(items);
   return (
-    <div className={cn(cardSurface, 'flex flex-col overflow-hidden')}>
-      <div className="flex items-center justify-between gap-3 border-b border-hairline bg-sand/40 px-5 py-3">
+    <div className={cn(cardSurface, 'flex h-[26rem] flex-col overflow-hidden')}>
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-hairline bg-sand/40 px-5 py-3">
         <p className="flex items-center gap-2 font-semibold">
           {title}
           {total !== undefined ? (
@@ -561,7 +561,9 @@ function Queue({
           <ErrorNotice message={error} />
         </div>
       ) : hasItems ? (
-        <ul className="flex flex-col divide-y divide-hairline">{items}</ul>
+        <ul className="flex min-h-0 flex-1 flex-col divide-y divide-hairline overflow-y-auto">
+          {items}
+        </ul>
       ) : (
         <p className="flex items-center gap-2 px-5 py-6 text-sm text-muted">
           <CheckCircle2 aria-hidden className="h-4 w-4 text-brand" />
