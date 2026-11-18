@@ -14,6 +14,7 @@ import { ReviewForm } from '@/components/features/reviews/review-form';
 import { ReviewList } from '@/components/features/reviews/review-list';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Field, Textarea } from '@/components/ui/field';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -46,6 +47,7 @@ export default function ProjectWorkspacePage({
   const [busy, setBusy] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+  const { confirm, dialog } = useConfirm();
 
   if (project.loading) return <Skeleton className="h-64" />;
   if (project.error || !project.data) {
@@ -60,6 +62,23 @@ export default function ProjectWorkspacePage({
     action: 'cancel' | 'on-hold' | 'resume',
     body: { reason?: string } = {},
   ) {
+    if (action !== 'cancel') {
+      const ok = await confirm(
+        action === 'on-hold'
+          ? {
+              title: 'Put this project on hold?',
+              description: 'Work pauses until you resume it. The designer is notified.',
+              confirmLabel: 'Put on hold',
+            }
+          : {
+              title: 'Resume this project?',
+              description: 'Work continues from the current stage. The designer is notified.',
+              confirmLabel: 'Resume',
+              tone: 'default',
+            },
+      );
+      if (!ok) return;
+    }
     setActionError(null);
     setBusy(true);
     try {
@@ -83,6 +102,7 @@ export default function ProjectWorkspacePage({
 
   return (
     <div>
+      {dialog}
       <Link
         href="/projects"
         className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-brand"

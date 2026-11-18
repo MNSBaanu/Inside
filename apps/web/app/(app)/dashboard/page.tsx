@@ -2,14 +2,7 @@
 
 import { cn } from '@/lib/utils/cn';
 import { cardSurface } from '@/components/ui/card';
-import {
-  ArrowRight,
-  Bell,
-  ChevronRight,
-  FolderKanban,
-  Inbox,
-  type LucideIcon,
-} from 'lucide-react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -86,21 +79,18 @@ export default function DashboardPage() {
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         <StatTile
           href="/projects"
-          icon={FolderKanban}
           label="Active projects"
           value={activeProjects.length}
           loading={projects.loading}
         />
         <StatTile
           href="/requests"
-          icon={Inbox}
           label="Open requests"
           value={openRequests.length}
           loading={requests.loading}
         />
         <StatTile
           href="/notifications"
-          icon={Bell}
           label="Unread alerts"
           value={unread.length}
           loading={notifications.loading}
@@ -281,13 +271,11 @@ function LoadError({ message, onRetry }: { message: string; onRetry: () => void 
 
 function StatTile({
   href,
-  icon: Icon,
   label,
   value,
   loading,
 }: {
   href: string;
-  icon: LucideIcon;
   label: string;
   value: number;
   loading: boolean;
@@ -295,11 +283,8 @@ function StatTile({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-4 rounded-card bg-sand p-5 transition-colors hover:bg-brand-soft"
+      className="group flex items-center rounded-card bg-sand p-5 transition-colors hover:bg-brand-soft"
     >
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-canvas text-brand">
-        <Icon aria-hidden className="h-5 w-5" />
-      </span>
       <span className="min-w-0">
         {loading ? (
           <Skeleton className="h-8 w-10 bg-canvas" />

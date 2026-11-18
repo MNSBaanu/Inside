@@ -27,6 +27,7 @@ test.describe('Hiring and the project workspace', () => {
     await signIn(page, accounts.ravi);
     await openFromList(page, '/requests', 'Dining room lighting plan');
     await page.getByRole('button', { name: 'Decline request' }).click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'Decline' }).click();
     await expect(page.getByText('Rejected', { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Decline request' })).toBeHidden();
   });
@@ -69,6 +70,7 @@ test.describe('Hiring and the project workspace', () => {
       .getByRole('listitem')
       .filter({ hasText: /^3\s*design/i });
     await clientDesign.getByRole('button', { name: 'Approve' }).click();
+    await clientPage.getByRole('alertdialog').getByRole('button', { name: /^Approve/ }).click();
     await expect(clientDesign.getByText('Approved', { exact: true })).toBeVisible();
     await clientContext.close();
   });

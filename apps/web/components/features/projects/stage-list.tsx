@@ -3,7 +3,7 @@
 import { cardSurface } from '@/components/ui/card';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ConfirmDialog, useConfirm } from '@/components/ui/confirm-dialog';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { FileUpload } from '@/components/ui/file-upload';
@@ -38,6 +38,7 @@ export function StageList({
   );
   const [pending, setPending] = useState<string | null>(null);
   const [confirmApprove, setConfirmApprove] = useState<ProjectStage | null>(null);
+  const { confirm, dialog } = useConfirm();
   const [openStage, setOpenStage] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [reason, setReason] = useState('');
@@ -75,6 +76,7 @@ export function StageList({
 
   return (
     <div>
+      {dialog}
       <ol className="mt-4 flex flex-col gap-3">
         {stages.map((stage) => {
           const busy = pending === stage.id;
@@ -126,7 +128,17 @@ export function StageList({
                     <Button
                       size="sm"
                       disabled={busy}
-                      onClick={() => act(stage.id, 'submit')}
+                      onClick={() =>
+                        void confirm({
+                          title: `Submit ${titleCase(stage.name)} for review?`,
+                          description:
+                            'The client is asked to approve this stage. Make sure your files are uploaded.',
+                          confirmLabel: 'Submit',
+                          tone: 'default',
+                        }).then((ok) => {
+                          if (ok) void act(stage.id, 'submit');
+                        })
+                      }
                     >
                       {stage.status === 'REJECTED'
                         ? 'Resubmit for review'
@@ -142,7 +154,15 @@ export function StageList({
                         onClick={() =>
                           stage.fee
                             ? setConfirmApprove(stage)
-                            : void act(stage.id, 'approve')
+                            : void confirm({
+                                title: `Approve ${titleCase(stage.name)}?`,
+                                description:
+                                  'The stage is marked complete and the next stage can start.',
+                                confirmLabel: 'Approve',
+                                tone: 'default',
+                              }).then((ok) => {
+                                if (ok) void act(stage.id, 'approve');
+                              })
                         }
                       >
                         Approve

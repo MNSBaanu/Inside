@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
@@ -20,8 +21,16 @@ export default function SafetyPage() {
 
   const [actionError, setActionError] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
+  const { confirm, dialog } = useConfirm();
 
   async function unblock(designerId: string) {
+    const ok = await confirm({
+      title: 'Unblock this person?',
+      description: 'They can see you in search and message you again.',
+      confirmLabel: 'Unblock',
+      tone: 'default',
+    });
+    if (!ok) return;
     setActionError(null);
     setPending(designerId);
     try {
@@ -36,6 +45,7 @@ export default function SafetyPage() {
 
   return (
     <div>
+      {dialog}
       <PageHeader
         variant="app"
         eyebrow="Safety"

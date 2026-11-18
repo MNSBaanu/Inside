@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
@@ -27,8 +28,24 @@ function AuthenticatedBlockButton({ userId }: { userId: string }) {
     false;
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const { confirm, dialog } = useConfirm();
 
   async function toggle() {
+    const ok = await confirm(
+      blocked
+        ? {
+            title: 'Unblock this person?',
+            description: 'You can message and work with each other again.',
+            confirmLabel: 'Unblock',
+            tone: 'default',
+          }
+        : {
+            title: 'Block this person?',
+            description: 'Neither of you can message the other. You can unblock them later from Safety.',
+            confirmLabel: 'Block',
+          },
+    );
+    if (!ok) return;
     setBusy(true);
     setActionError(null);
     try {
@@ -48,6 +65,7 @@ function AuthenticatedBlockButton({ userId }: { userId: string }) {
 
   return (
     <div>
+      {dialog}
       {error || actionError ? (
         <ErrorNotice message={error ?? actionError!} />
       ) : null}

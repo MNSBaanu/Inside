@@ -10,7 +10,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ConfirmDialog, useConfirm } from '@/components/ui/confirm-dialog';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
@@ -34,6 +34,7 @@ export default function RequestDetailPage({
   const [actionError, setActionError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [confirmAccept, setConfirmAccept] = useState<Proposal | null>(null);
+  const { confirm, dialog } = useConfirm();
 
   if (request.loading) return <Skeleton className="h-64" />;
   if (request.error || !request.data) {
@@ -58,6 +59,26 @@ export default function RequestDetailPage({
     (item.type === 'OPEN' || item.designerId === user?.id);
 
   async function changeRequest(action: 'cancel' | 'close' | 'decline') {
+    const ok = await confirm(
+      action === 'close'
+        ? {
+            title: 'Close to new proposals?',
+            description: 'Designers can no longer send proposals. Proposals you already have stay.',
+            confirmLabel: 'Close',
+          }
+        : action === 'cancel'
+          ? {
+              title: 'Cancel this request?',
+              description: 'The request is withdrawn and designers can no longer respond to it.',
+              confirmLabel: 'Cancel request',
+            }
+          : {
+              title: 'Decline this request?',
+              description: 'The client is told you are not taking it on. This cannot be undone.',
+              confirmLabel: 'Decline',
+            },
+    );
+    if (!ok) return;
     setActionError(null);
     setPendingId(item.id);
     try {
@@ -74,6 +95,22 @@ export default function RequestDetailPage({
     proposalId: string,
     action: 'accept' | 'reject' | 'withdraw',
   ) {
+    if (action !== 'accept') {
+      const ok = await confirm(
+        action === 'reject'
+          ? {
+              title: 'Reject this proposal?',
+              description: 'The designer is told it was not chosen.',
+              confirmLabel: 'Reject',
+            }
+          : {
+              title: 'Withdraw your proposal?',
+              description: 'The client can no longer accept it.',
+              confirmLabel: 'Withdraw',
+            },
+      );
+      if (!ok) return;
+    }
     setActionError(null);
     setPendingId(proposalId);
     try {
@@ -95,6 +132,7 @@ export default function RequestDetailPage({
 
   return (
     <div>
+      {dialog}
       <Link
         href="/requests"
         className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-brand"

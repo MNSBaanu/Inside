@@ -187,6 +187,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
       await expect(card.getByRole('link', { name: `${name}.pdf` })).toBeVisible();
 
       await submit.click();
+      await designer.getByRole('alertdialog').getByRole('button', { name: 'Submit' }).click();
       await expect(card.getByText('Submitted', { exact: true })).toBeVisible();
     });
 
@@ -195,6 +196,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
       const card = stageCard(page, index);
       await expect(card.getByText('1/1 done')).toBeVisible();
       await card.getByRole('button', { name: 'Approve' }).click();
+      await page.getByRole('alertdialog').getByRole('button', { name: /^Approve/ }).click();
       await expect(card.getByText('Approved', { exact: true })).toBeVisible();
     });
 
