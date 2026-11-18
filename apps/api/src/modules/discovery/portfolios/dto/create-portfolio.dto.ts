@@ -1,3 +1,4 @@
+import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
@@ -17,6 +18,7 @@ import { MAX_AMOUNT } from '../../../../common/money';
 export class CreatePortfolioImageDto {
   @ApiProperty({ example: 'https://picsum.photos/seed/room/1200/800' })
   @IsUrl({ require_tld: false })
+  @IsCloudinaryUrl()
   imageUrl!: string;
 
   @ApiPropertyOptional()

@@ -1,3 +1,4 @@
+import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsOptional,
@@ -17,6 +18,7 @@ export class SendMessageDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsUrl({ protocols: ['https'], require_protocol: true })
+  @IsCloudinaryUrl()
   @MaxLength(2000)
   attachmentUrl?: string;
 

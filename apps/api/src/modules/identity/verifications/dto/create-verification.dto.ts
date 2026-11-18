@@ -1,3 +1,4 @@
+import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsOptional,
@@ -10,6 +11,7 @@ import {
 export class CreateVerificationDto {
   @ApiProperty({ example: 'https://cdn.example.com/id.pdf' })
   @IsUrl({ protocols: ['https'], require_protocol: true })
+  @IsCloudinaryUrl()
   @MinLength(4)
   @MaxLength(2000)
   evidenceUrl!: string;

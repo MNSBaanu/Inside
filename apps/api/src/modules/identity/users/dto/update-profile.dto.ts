@@ -1,3 +1,4 @@
+import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
@@ -25,6 +26,7 @@ export class UpdateProfileDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsUrl({ protocols: ['https'], require_protocol: true })
+  @IsCloudinaryUrl()
   @MaxLength(500)
   avatarUrl?: string | null;
 

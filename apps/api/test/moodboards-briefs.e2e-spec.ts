@@ -68,7 +68,7 @@ describe('Moodboards & Briefs (e2e)', () => {
       .post(`/moodboards/${moodboardId}/items`)
       .set('Authorization', `Bearer ${token}`)
       .send({
-        imageUrl: 'https://picsum.photos/seed/mood-e2e/800/600',
+        imageUrl: 'https://res.cloudinary.com/e2e/seed/mood-e2e/800/600',
         note: 'Soft blues',
       })
       .expect(201);

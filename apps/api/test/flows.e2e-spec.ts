@@ -322,7 +322,7 @@ describe('Platform flows (e2e)', () => {
       await request(server())
         .post(`/stages/${stageId}/deliverables`)
         .set(auth(designer.token))
-        .send({ fileUrl: 'https://cdn.test/proposal-v1.pdf' })
+        .send({ fileUrl: 'https://res.cloudinary.com/e2e/proposal-v1.pdf' })
         .expect(201);
       await request(server())
         .patch(`/stages/${stageId}/submit`)
@@ -348,7 +348,7 @@ describe('Platform flows (e2e)', () => {
       await request(server())
         .post(`/stages/${stageId}/deliverables`)
         .set(auth(designer.token))
-        .send({ fileUrl: 'https://cdn.test/proposal-v2.pdf' })
+        .send({ fileUrl: 'https://res.cloudinary.com/e2e/proposal-v2.pdf' })
         .expect(201);
       await request(server())
         .patch(`/stages/${stageId}/submit`)

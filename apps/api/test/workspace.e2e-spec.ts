@@ -266,7 +266,7 @@ describe('Workspace flow (e2e)', () => {
       const deliv = await request(app.getHttpServer())
         .post(`/stages/${stageId}/deliverables`)
         .set(authHeader(designerToken))
-        .send({ fileUrl: `https://cdn.test/stage-${i + 1}-v1.pdf` })
+        .send({ fileUrl: `https://res.cloudinary.com/e2e/stage-${i + 1}-v1.pdf` })
         .expect(201);
       expect(deliv.body.data.deliverable.version).toBe(1);
 
@@ -410,7 +410,7 @@ describe('Workspace flow (e2e)', () => {
     const submitted = await request(app.getHttpServer())
       .post('/verifications')
       .set(authHeader(designerToken))
-      .send({ evidenceUrl: 'https://cdn.test/id.pdf' })
+      .send({ evidenceUrl: 'https://res.cloudinary.com/e2e/id.pdf' })
       .expect(201);
     const verificationId: string = submitted.body.data.verification.id;
 

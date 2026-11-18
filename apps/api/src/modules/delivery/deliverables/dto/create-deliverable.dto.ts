@@ -1,9 +1,11 @@
+import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 
 export class CreateDeliverableDto {
   @ApiProperty({ example: 'https://cdn.example.com/proposal-v1.pdf' })
   @IsUrl({ protocols: ['https'], require_protocol: true })
+  @IsCloudinaryUrl()
   @MaxLength(2000)
   fileUrl!: string;
 

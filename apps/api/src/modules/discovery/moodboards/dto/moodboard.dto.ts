@@ -1,3 +1,4 @@
+import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
@@ -30,6 +31,7 @@ export const IMAGE_REACTIONS = ['love', 'dislike'];
 export class MoodboardItemDto {
   @ApiProperty({ example: 'https://picsum.photos/seed/inspo/800/600' })
   @IsUrl({ require_tld: false })
+  @IsCloudinaryUrl()
   imageUrl!: string;
 
   @ApiPropertyOptional({ example: 'Warm neutrals' })

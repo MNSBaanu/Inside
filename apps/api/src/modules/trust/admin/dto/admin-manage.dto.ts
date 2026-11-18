@@ -1,3 +1,4 @@
+import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
@@ -86,6 +87,7 @@ export class AdminCreateProductDto {
 
   @ApiProperty()
   @IsUrl({ require_protocol: true })
+  @IsCloudinaryUrl()
   @MaxLength(1000)
   imageUrl!: string;
 

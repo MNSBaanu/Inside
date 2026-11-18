@@ -65,7 +65,7 @@ describe('PortfoliosController (e2e)', () => {
         budget: 320000,
         images: [
           {
-            imageUrl: 'https://picsum.photos/seed/e2e-bed/800/600',
+            imageUrl: 'https://res.cloudinary.com/e2e/seed/e2e-bed/800/600',
             caption: 'Main',
           },
         ],
