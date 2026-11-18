@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { cloudinaryCredentials, loadEnvFiles, migrateImages } from './cloudinary-images';
 import { PRODUCT_SEED } from './products';
 
 // Adds or refreshes the sample shop products without touching any other data.
@@ -14,6 +15,11 @@ async function main() {
       create: { id: id as string, ...data },
       update: data,
     });
+  }
+  loadEnvFiles();
+  if (cloudinaryCredentials()) {
+    const images = await migrateImages(prisma, { apply: true });
+    console.log(`Images copied to Cloudinary: ${images.uploaded}, failed: ${images.failed.length}`);
   }
   console.log(`Sample products ready: ${PRODUCT_SEED.length}`);
 }

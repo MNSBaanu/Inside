@@ -16,6 +16,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:seed:products": "tsx prisma/seed-products.ts",
+    "db:migrate-images": "tsx prisma/migrate-images.ts",
     "db:studio": "prisma studio"
   },
   "dependencies": {

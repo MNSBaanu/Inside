@@ -7,6 +7,7 @@
  * all other data is left alone. Refuses to run with NODE_ENV=production.
  * Accounts and scenarios are documented in docs/SEED_DATA.md.
  */
+import { cloudinaryCredentials, loadEnvFiles, migrateImages } from './cloudinary-images';
 import {
   AccountStatus,
   AuthTokenType,
@@ -1235,6 +1236,12 @@ async function main() {
       create: { id: id as string, ...data },
       update: data,
     });
+  }
+
+  loadEnvFiles();
+  if (cloudinaryCredentials()) {
+    const images = await migrateImages(prisma, { apply: true });
+    console.log(`Images copied to Cloudinary: ${images.uploaded}, failed: ${images.failed.length}`);
   }
 
   console.log('Seed complete.');
