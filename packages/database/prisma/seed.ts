@@ -204,6 +204,7 @@ function stageFees(total: number) {
 }
 
 const TABLES = [
+  'Announcement',
   'Product',
   'ActivityLog',
   'Block',

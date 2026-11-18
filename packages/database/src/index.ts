@@ -17,5 +17,7 @@ export {
   ReportTargetType,
   ContactTopic,
   ContactStatus,
+  AnnouncementAudience,
+  AnnouncementTone,
 } from '@prisma/client';
 export type * from '@prisma/client';

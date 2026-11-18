@@ -565,6 +565,30 @@ model ActivityLog {
   @@index([action])
 }
 
+enum AnnouncementAudience {
+  ALL
+  CLIENTS
+  DESIGNERS
+}
+
+enum AnnouncementTone {
+  INFO
+  WARNING
+}
+
+model Announcement {
+  id          String               @id @default(uuid())
+  title       String
+  message     String
+  audience    AnnouncementAudience @default(ALL)
+  tone        AnnouncementTone     @default(INFO)
+  createdById String?
+  endsAt      DateTime?
+  createdAt   DateTime             @default(now())
+
+  @@index([createdAt])
+}
+
 model NewsletterSubscriber {
   id        String   @id @default(uuid())
   email     String   @unique
