@@ -57,7 +57,7 @@ export function SiteFooter() {
             </nav>
           ))}
 
-          <div className="min-w-0 rounded-card bg-canvas p-5 text-ink">
+          <div className="min-w-0">
             <NewsletterForm />
           </div>
         </div>
