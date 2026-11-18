@@ -10,6 +10,7 @@ import { useSession } from '@/components/providers/session-provider';
 import { Avatar } from '@/components/ui/avatar';
 import { api } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
+import { useSocketEvent } from '@/lib/realtime/socket';
 import type { Notification, ProjectListItem, User } from '@/lib/types';
 
 function useUnreadCounts() {
@@ -29,6 +30,11 @@ function useUnreadCounts() {
     window.addEventListener('inside:notifications-changed', onChange);
     return () => window.removeEventListener('inside:notifications-changed', onChange);
   }, [reloadNotifications]);
+
+  useSocketEvent<{ type: string }>('notification:new', (event) => {
+    void reloadNotifications();
+    if (event.type === 'MESSAGE') void reloadProjects();
+  });
 
   return {
     alerts: notifications.data?.items.filter((item) => item.readAt === null).length ?? 0,

@@ -4,6 +4,7 @@ import { AlertTriangle, Megaphone, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { useApi } from '@/lib/api/use-api';
+import { useSocketEvent } from '@/lib/realtime/socket';
 import { cn } from '@/lib/utils/cn';
 
 export type AnnouncementTone = 'INFO' | 'WARNING';
@@ -81,10 +82,12 @@ export function AnnouncementCard({
 
 export function AnnouncementBanner() {
   const { user } = useSession();
-  const { data } = useApi<{ items: Announcement[] }>(
+  const { data, reload } = useApi<{ items: Announcement[] }>(
     user ? '/announcements/active' : null,
   );
   const [dismissed, setDismissed] = useState<string[]>([]);
+
+  useSocketEvent('announcement:new', () => void reload());
 
   useEffect(() => setDismissed(readDismissed()), []);
 

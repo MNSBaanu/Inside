@@ -10,7 +10,7 @@ const contentSecurityPolicy = [
   // User images outside the optimizer allowlist are loaded directly.
   "img-src 'self' data: blob: https:",
   "font-src 'self'",
-  `connect-src 'self' ${apiOrigin} https://api.cloudinary.com https://api.stripe.com${isDev ? ' ws: wss:' : ''}`,
+  `connect-src 'self' ${apiOrigin} ${apiOrigin.replace(/^http/, 'ws')} https://api.cloudinary.com https://api.stripe.com${isDev ? ' ws: wss:' : ''}`,
   "frame-src https://js.stripe.com https://hooks.stripe.com",
   "frame-ancestors 'none'",
   "form-action 'self'",

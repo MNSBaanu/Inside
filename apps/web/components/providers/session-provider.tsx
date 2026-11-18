@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { api, setSessionExpiredHandler } from '@/lib/api/client';
 import { authStorage } from '@/lib/auth/auth-storage';
+import { connectSocket, disconnectSocket } from '@/lib/realtime/socket';
 import type { AuthPayload, Role, User } from '@/lib/types';
 
 type SessionStatus = 'loading' | 'authenticated' | 'unauthenticated';
@@ -135,6 +136,13 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     setStatus('unauthenticated');
   }, []);
+
+  const socketUserId = hasSession ? user?.id : undefined;
+  useEffect(() => {
+    if (!socketUserId) return;
+    connectSocket();
+    return () => disconnectSocket();
+  }, [socketUserId]);
 
   const value = useMemo<SessionValue>(
     () => ({
