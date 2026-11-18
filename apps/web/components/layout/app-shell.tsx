@@ -18,6 +18,7 @@ import {
   Mail,
   Megaphone,
   Newspaper,
+  Radio,
   Palette,
   ShieldCheck,
   ShoppingBag,
@@ -29,6 +30,7 @@ import {
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { AnnouncementBanner } from '@/components/features/announcements/announcement-banner';
 import { useSession } from '@/components/providers/session-provider';
 import { Skeleton } from '@/components/ui/feedback';
 import { api } from '@/lib/api/client';
@@ -75,6 +77,7 @@ const navigation: NavItem[] = [
   { href: '/admin/reports', label: 'Reports', icon: Flag, roles: ['ADMIN'] },
   { href: '/admin/reviews', label: 'Reviews', icon: Star, roles: ['ADMIN'] },
   { href: '/admin/contact', label: 'Contact', icon: Mail, roles: ['ADMIN'] },
+  { href: '/admin/announcements', label: 'Announce', icon: Radio, roles: ['ADMIN'] },
   { href: '/admin/newsletter', label: 'Newsletter', icon: Newspaper, roles: ['ADMIN'] },
   { href: '/admin/activity', label: 'Activity', icon: Activity, roles: ['ADMIN'] },
   { href: '/account', label: 'Account', icon: UserRound },
@@ -168,6 +171,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             </div>
           )}
+          <AnnouncementBanner />
           <SignOutContext.Provider value={onSignOut}>
             {children}
           </SignOutContext.Provider>

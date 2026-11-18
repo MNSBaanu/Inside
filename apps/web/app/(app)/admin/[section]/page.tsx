@@ -17,6 +17,7 @@ import {
   ShopSection,
 } from '@/components/features/admin/admin-manage';
 import { AnalyticsSection } from '@/components/features/admin/admin-analytics';
+import { AnnouncementsSection } from '@/components/features/admin/admin-announcements';
 import { PageHeader } from '@/components/ui/page-header';
 
 const sections: Record<
@@ -39,6 +40,7 @@ const sections: Record<
     description: 'Client reviews. Hidden ones do not appear on designer profiles.',
     Section: ReviewsSection,
   },
+  announcements: { Section: AnnouncementsSection },
   newsletter: { Section: NewsletterSection },
   activity: { Section: ActivitySection },
   contact: { Section: ContactSection },
