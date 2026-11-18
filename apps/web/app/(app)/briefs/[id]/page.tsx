@@ -17,7 +17,7 @@ import { Pagination } from '@/components/ui/pagination';
 import { Rating } from '@/components/ui/rating';
 import { FavouriteButton } from '@/components/features/designers/favourite-button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { formatDate } from '@/lib/utils/format';
+import { availabilityLabel, formatDate } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
 import { isOptimizableImage } from '@/lib/utils/images';
 import type { Brief, PartySummary } from '@/lib/types';
@@ -25,7 +25,10 @@ import type { Brief, PartySummary } from '@/lib/types';
 const MATCHES_PER_PAGE = 4;
 
 type Match = {
-  designer: PartySummary & { isAvailable?: boolean };
+  designer: PartySummary & {
+    isAvailable?: boolean;
+    availableFrom?: string | null;
+  };
   rating: number | null;
   score: number;
   factors: { key: string; label: string; points: number; max: number }[];
@@ -259,7 +262,9 @@ export default function BriefDetailPage({
                       <Badge tone="support">Verified</Badge>
                     ) : null}
                     {match.designer.isAvailable ? (
-                      <Badge>Available</Badge>
+                      <Badge>
+                        {availabilityLabel(true, match.designer.availableFrom)}
+                      </Badge>
                     ) : null}
                     <Rating value={match.rating} />
                   </div>

@@ -54,6 +54,7 @@ export type User = {
   phone: string | null;
   location: string | null;
   isAvailable: boolean;
+  availableFrom?: string | null;
   createdAt: string;
 };
 
@@ -109,6 +110,7 @@ export type DesignerSummary = {
   location: string | null;
   isVerified: boolean;
   isAvailable: boolean;
+  availableFrom?: string | null;
   portfolioCount: number;
   previews: DesignerPreview[];
   rating: Rating;
@@ -124,6 +126,7 @@ export type DesignerProfile = {
   location: string | null;
   isVerified: boolean;
   isAvailable: boolean;
+  availableFrom?: string | null;
   createdAt: string;
   rating: Rating;
 };

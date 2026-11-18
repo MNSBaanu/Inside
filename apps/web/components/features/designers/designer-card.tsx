@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Avatar } from '@/components/ui/avatar';
 import type { DesignerSummary } from '@/lib/types';
-import { formatMoney } from '@/lib/utils/format';
+import { availabilityLabel, formatMoney } from '@/lib/utils/format';
 import { Tag } from '@/components/ui/tag';
 import { isOptimizableImage } from '@/lib/utils/images';
 
@@ -87,7 +87,7 @@ export function DesignerCard({ designer }: { designer: DesignerSummary }) {
                   designer.isAvailable ? 'bg-brand' : 'bg-muted',
                 )}
               />
-              {designer.isAvailable ? 'Available' : 'Not taking work'}
+              {availabilityLabel(designer.isAvailable, designer.availableFrom)}
             </span>
             <div className="min-w-0 text-right">
               <p className="text-xs text-muted">

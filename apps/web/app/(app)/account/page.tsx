@@ -36,6 +36,9 @@ function AccountForm({ user }: { user: User }) {
     avatarUrl: user.avatarUrl ?? '',
   });
   const [isAvailable, setIsAvailable] = useState(user.isAvailable);
+  const [availableFrom, setAvailableFrom] = useState(
+    user.availableFrom?.slice(0, 10) ?? '',
+  );
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
   const [saving, setSaving] = useState(false);
@@ -52,6 +55,7 @@ function AccountForm({ user }: { user: User }) {
         location: form.location || undefined,
         avatarUrl: form.avatarUrl || null,
         isAvailable,
+        ...(isDesigner ? { availableFrom: availableFrom || null } : {}),
       });
       await refreshUser();
       toast('Profile updated.');
@@ -166,17 +170,33 @@ function AccountForm({ user }: { user: User }) {
           </div>
 
           {isDesigner ? (
-            <label className="flex items-center gap-3 rounded-card bg-sand px-5 py-4">
-              <input
-                type="checkbox"
-                checked={isAvailable}
-                onChange={(event) => setIsAvailable(event.target.checked)}
-                className="h-4 w-4 accent-brand"
-              />
-              <span className="text-sm">
-                I am available to take on new projects
-              </span>
-            </label>
+            <div className="flex flex-col gap-4 rounded-card bg-sand px-5 py-4">
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={isAvailable}
+                  onChange={(event) => setIsAvailable(event.target.checked)}
+                  className="h-4 w-4 accent-brand"
+                />
+                <span className="text-sm">
+                  I am available to take on new projects
+                </span>
+              </label>
+              {isAvailable ? (
+                <Field
+                  label="Available from"
+                  htmlFor="available-from"
+                  hint="Leave empty if you can start now. Clients see this date and it affects your match score."
+                >
+                  <Input
+                    id="available-from"
+                    type="date"
+                    value={availableFrom}
+                    onChange={(event) => setAvailableFrom(event.target.value)}
+                  />
+                </Field>
+              ) : null}
+            </div>
           ) : null}
 
           <div>

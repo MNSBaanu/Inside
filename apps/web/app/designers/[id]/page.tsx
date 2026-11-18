@@ -13,6 +13,7 @@ import { AutoRefresh } from '@/components/layout/auto-refresh';
 import { fetchPublic } from '@/lib/api/server-api';
 import type { DesignerProfile, PortfolioImage } from '@/lib/types';
 import { isOptimizableImage } from '@/lib/utils/images';
+import { availabilityLabel } from '@/lib/utils/format';
 
 type ProfilePortfolio = {
   id: string;
@@ -88,7 +89,9 @@ export default async function DesignerProfilePage({
                     <Badge tone="support">Verified</Badge>
                   ) : null}
                   {designer.isAvailable ? (
-                    <Badge tone="highlight">Available</Badge>
+                    <Badge tone="highlight">
+                      {availabilityLabel(true, designer.availableFrom)}
+                    </Badge>
                   ) : (
                     <Badge>Not taking work</Badge>
                   )}
