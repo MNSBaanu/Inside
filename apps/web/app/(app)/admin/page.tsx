@@ -22,7 +22,7 @@ import {
 } from '@/components/features/admin/admin-sections';
 import { Avatar } from '@/components/ui/avatar';
 import { cardSurface } from '@/components/ui/card';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ConfirmDialog, useConfirm } from '@/components/ui/confirm-dialog';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { Rating } from '@/components/ui/rating';
@@ -98,13 +98,16 @@ export default function AdminOverviewPage() {
     report: QueueReport;
     action: 'resolve' | 'dismiss';
   } | null>(null);
+  const confirmAction = useConfirm();
 
   async function act(
     id: string,
     path: string,
     reload: () => void,
     body: unknown = {},
+    confirmation?: Parameters<typeof confirmAction.confirm>[0],
   ) {
+    if (confirmation && !(await confirmAction.confirm(confirmation))) return;
     setActionError(null);
     setPending(id);
     try {
@@ -246,6 +249,14 @@ export default function AdminOverviewPage() {
                           item.id,
                           `/verifications/${item.id}/approve`,
                           verifications.reload,
+                          {},
+                          {
+                            title: `Verify ${item.designer?.name ?? 'this designer'}?`,
+                            description:
+                              'They get the verified badge on their profile and in search.',
+                            confirmLabel: 'Approve',
+                            tone: 'default',
+                          },
                         )
                       }
                     >
@@ -261,6 +272,13 @@ export default function AdminOverviewPage() {
                           item.id,
                           `/verifications/${item.id}/reject`,
                           verifications.reload,
+                          {},
+                          {
+                            title: `Reject ${item.designer?.name ?? 'this designer'}'s verification?`,
+                            description:
+                              'They are told it was rejected and can submit new evidence.',
+                            confirmLabel: 'Reject',
+                          },
                         )
                       }
                     >
@@ -335,6 +353,7 @@ export default function AdminOverviewPage() {
               ))}
             </Queue>
 
+            {confirmAction.dialog}
             {confirm ? (
               <ConfirmDialog
                 title={
@@ -387,6 +406,12 @@ export default function AdminOverviewPage() {
                           `/admin/reviews/${review.id}/visibility`,
                           reviews.reload,
                           { isVisible: true },
+                          {
+                            title: 'Show this review?',
+                            description: `It appears on ${review.designer?.name ?? 'the designer'}'s profile and counts toward their rating.`,
+                            confirmLabel: 'Show review',
+                            tone: 'default',
+                          },
                         )
                       }
                     >

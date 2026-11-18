@@ -20,7 +20,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cardSurface } from '@/components/ui/card';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ConfirmDialog, useConfirm } from '@/components/ui/confirm-dialog';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { BareInput } from '@/components/ui/field';
 import { FilterBar, FilterField } from '@/components/ui/filter-bar';
@@ -52,6 +52,7 @@ type AdminUser = {
   role: Role;
   status: AccountStatus;
   isVerified: boolean;
+  isOwner: boolean;
   avatarUrl: string | null;
   createdAt: string;
 };
@@ -151,13 +152,16 @@ export function useAdminList<T>(endpoint: string, filters: Record<string, string
 export function useAdminAction() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
+  const { confirm, dialog } = useConfirm();
 
   async function run(
     id: string,
     path: string,
     reload: () => void,
     body: unknown = {},
+    confirmation?: Parameters<typeof confirm>[0],
   ) {
+    if (confirmation && !(await confirm(confirmation))) return;
     setError(null);
     setPending(id);
     try {
@@ -170,7 +174,7 @@ export function useAdminAction() {
     }
   }
 
-  return { error, pending, run };
+  return { error, pending, run, dialog };
 }
 
 export function Filters({ children }: { children: ReactNode }) {
@@ -357,11 +361,12 @@ export function UsersSection() {
   const [status, setStatus] = useState('');
   const { list, search, setSearch, page, setPage, filtered } =
     useAdminList<AdminUser>('/admin/users', { role, status });
-  const { error, pending, run } = useAdminAction();
+  const { error, pending, run, dialog } = useAdminAction();
   const [adding, setAdding] = useState(false);
 
   return (
     <>
+      {dialog}
       <SectionHeader
         title="Users."
         description="Every account on the platform. Suspend, reactivate or remove a verified badge."
@@ -459,7 +464,9 @@ export function UsersSection() {
                 <Badge>{titleCase(user.role)}</Badge>
               </div>
               <div>
-                {user.role === 'DESIGNER' && user.isVerified ? (
+                {user.isOwner ? (
+                  <Badge tone="support">Owner</Badge>
+                ) : user.role === 'DESIGNER' && user.isVerified ? (
                   <Badge tone="support">Verified</Badge>
                 ) : null}
               </div>
@@ -480,19 +487,33 @@ export function UsersSection() {
                       user.id,
                       `/admin/users/${user.id}/revoke-verification`,
                       list.reload,
+                      {},
+                      {
+                        title: `Revoke verification for ${user.name}?`,
+                        description:
+                          'The verified badge is removed until they submit new evidence and it is approved.',
+                        confirmLabel: 'Revoke',
+                      },
                     )
                   }
                 >
                   Revoke
                 </Button>
               ) : null}
-              {user.id === me?.id ? null : user.status === 'ACTIVE' ? (
+              {user.id === me?.id ||
+              user.isOwner ||
+              (user.role === 'ADMIN' && !me?.isOwner) ? null : user.status === 'ACTIVE' ? (
                 <Button
                   size="sm"
                   variant="outline"
                   disabled={pending === user.id}
                   onClick={() =>
-                    run(user.id, `/admin/users/${user.id}/suspend`, list.reload)
+                    run(user.id, `/admin/users/${user.id}/suspend`, list.reload, {}, {
+                      title: `Suspend ${user.name}?`,
+                      description:
+                        'They are signed out everywhere and cannot sign in until reactivated.',
+                      confirmLabel: 'Suspend',
+                    })
                   }
                 >
                   Suspend
@@ -506,6 +527,13 @@ export function UsersSection() {
                       user.id,
                       `/admin/users/${user.id}/reactivate`,
                       list.reload,
+                      {},
+                      {
+                        title: `Reactivate ${user.name}?`,
+                        description: 'They can sign in and use Inside again.',
+                        confirmLabel: 'Reactivate',
+                        tone: 'default',
+                      },
                     )
                   }
                 >
@@ -523,10 +551,11 @@ export function UsersSection() {
 export function VerificationsSection() {
   const { list, search, setSearch, page, setPage, filtered } =
     useAdminList<PendingVerification>('/verifications/admin/pending', {});
-  const { error, pending, run } = useAdminAction();
+  const { error, pending, run, dialog } = useAdminAction();
 
   return (
     <>
+      {dialog}
       <Filters>
         <SearchField
           id="verification-search"
@@ -580,7 +609,12 @@ export function VerificationsSection() {
                 size="sm"
                 disabled={pending === item.id}
                 onClick={() =>
-                  run(item.id, `/verifications/${item.id}/approve`, list.reload)
+                  run(item.id, `/verifications/${item.id}/approve`, list.reload, {}, {
+                    title: `Verify ${item.designer?.name ?? 'this designer'}?`,
+                    description: 'They get the verified badge on their profile and in search.',
+                    confirmLabel: 'Approve',
+                    tone: 'default',
+                  })
                 }
               >
                 Approve
@@ -590,7 +624,11 @@ export function VerificationsSection() {
                 variant="outline"
                 disabled={pending === item.id}
                 onClick={() =>
-                  run(item.id, `/verifications/${item.id}/reject`, list.reload)
+                  run(item.id, `/verifications/${item.id}/reject`, list.reload, {}, {
+                    title: `Reject ${item.designer?.name ?? 'this designer'}'s verification?`,
+                    description: 'They are told it was rejected and can submit new evidence.',
+                    confirmLabel: 'Reject',
+                  })
                 }
               >
                 Reject
@@ -850,10 +888,11 @@ export function ReviewsSection() {
   const [rating, setRating] = useState('');
   const { list, search, setSearch, page, setPage, filtered } =
     useAdminList<AdminReview>('/admin/reviews', { visibility, rating });
-  const { error, pending, run } = useAdminAction();
+  const { error, pending, run, dialog } = useAdminAction();
 
   return (
     <>
+      {dialog}
       <Filters>
         <SearchField
           id="review-search"
@@ -936,6 +975,18 @@ export function ReviewsSection() {
                     `/admin/reviews/${review.id}/visibility`,
                     list.reload,
                     { isVisible: !review.isVisible },
+                    review.isVisible
+                      ? {
+                          title: 'Hide this review?',
+                          description: `It is removed from ${review.designer?.name ?? 'the designer'}'s profile and rating until shown again.`,
+                          confirmLabel: 'Hide review',
+                        }
+                      : {
+                          title: 'Show this review?',
+                          description: `It appears on ${review.designer?.name ?? 'the designer'}'s profile and counts toward their rating.`,
+                          confirmLabel: 'Show review',
+                          tone: 'default',
+                        },
                   )
                 }
               >

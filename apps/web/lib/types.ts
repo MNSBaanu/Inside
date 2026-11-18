@@ -47,6 +47,7 @@ export type User = {
   activeRole: Role;
   hasClientAccount: boolean;
   isVerified: boolean;
+  isOwner?: boolean;
   emailVerified: boolean;
   status: AccountStatus;
   bio: string | null;

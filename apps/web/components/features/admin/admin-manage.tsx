@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useEffect, useState, type FormEvent } from 'react';
 import {
   downloadCsv,
@@ -22,7 +22,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cardSurface } from '@/components/ui/card';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ConfirmDialog, useConfirm } from '@/components/ui/confirm-dialog';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { FileUpload } from '@/components/ui/file-upload';
@@ -96,7 +96,7 @@ const PROJECT_STATUSES = ['ACTIVE', 'ON_HOLD', 'COMPLETED', 'CANCELLED'];
 const STAGES = ['PROPOSAL', 'CONCEPT', 'DESIGN', 'REVISION', 'COMPLETION'];
 
 const projectsGrid =
-  'lg:grid lg:grid-cols-[minmax(0,1fr)_12rem_7rem_7rem_7.5rem] lg:items-center lg:gap-x-4';
+  'lg:grid lg:grid-cols-[minmax(0,1fr)_9rem_7rem_9rem_13rem] lg:items-center lg:gap-x-4';
 
 function CancelProjectDialog({
   title,
@@ -162,16 +162,37 @@ function ProjectActions({
   run: (action: 'hold' | 'resume') => void;
   onCancel: () => void;
 }) {
+  const { confirm, dialog } = useConfirm();
   const closed = project.status === 'COMPLETED' || project.status === 'CANCELLED';
   if (closed) return null;
+
+  async function confirmRun(action: 'hold' | 'resume') {
+    const ok = await confirm(
+      action === 'hold'
+        ? {
+            title: 'Put this project on hold?',
+            description: 'The project is paused until an admin resumes it. Both parties are notified.',
+            confirmLabel: 'Hold project',
+          }
+        : {
+            title: 'Resume this project?',
+            description: 'The project becomes active again and both parties are notified.',
+            confirmLabel: 'Resume project',
+            tone: 'default',
+          },
+    );
+    if (ok) run(action);
+  }
+
   return (
     <>
+      {dialog}
       {project.status === 'ACTIVE' ? (
-        <Button size="sm" variant="outline" disabled={pending} onClick={() => run('hold')}>
+        <Button size="sm" variant="outline" disabled={pending} onClick={() => void confirmRun('hold')}>
           Hold
         </Button>
       ) : (
-        <Button size="sm" disabled={pending} onClick={() => run('resume')}>
+        <Button size="sm" disabled={pending} onClick={() => void confirmRun('resume')}>
           Resume
         </Button>
       )}
@@ -371,24 +392,7 @@ export function AdminProjectDetail({ id }: { id: string }) {
     }
   }
 
-  const back = (
-    <Link
-      href="/admin/projects"
-      className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink"
-    >
-      <ArrowLeft aria-hidden className="h-4 w-4" />
-      All projects
-    </Link>
-  );
-
-  if (error) {
-    return (
-      <div className="flex flex-col gap-4">
-        {back}
-        <ErrorNotice message={error} />
-      </div>
-    );
-  }
+  if (error) return <ErrorNotice message={error} />;
   if (!data) return <Skeleton className="h-64" />;
 
   const project = data.project;
@@ -400,7 +404,6 @@ export function AdminProjectDetail({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      {back}
       {actionError ? <ErrorNotice message={actionError} /> : null}
 
       <section className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-5 md:p-6')}>
@@ -657,7 +660,7 @@ export function ShopSection() {
   const [visibility, setVisibility] = useState('');
   const { list, search, setSearch, page, setPage, filtered } =
     useAdminList<AdminProduct>('/admin/products', { category, seller, visibility });
-  const { error, pending, run } = useAdminAction();
+  const { error, pending, run, dialog } = useAdminAction();
   const [editing, setEditing] = useState<AdminProduct | 'new' | null>(null);
   const [deleting, setDeleting] = useState<AdminProduct | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -713,6 +716,7 @@ export function ShopSection() {
 
   return (
     <>
+      {dialog}
       <SectionHeader
         title="Shop."
         description="Items in the public shop and the providers that sell them."
@@ -826,9 +830,24 @@ export function ShopSection() {
                 variant="ghost"
                 disabled={pending === product.id}
                 onClick={() =>
-                  void run(product.id, `/admin/products/${product.id}`, list.reload, {
-                    isPublished: !product.isPublished,
-                  })
+                  void run(
+                    product.id,
+                    `/admin/products/${product.id}`,
+                    list.reload,
+                    { isPublished: !product.isPublished },
+                    product.isPublished
+                      ? {
+                          title: `Hide ${product.name}?`,
+                          description: 'It is removed from the shop until shown again.',
+                          confirmLabel: 'Hide',
+                        }
+                      : {
+                          title: `Show ${product.name}?`,
+                          description: 'It appears in the shop for everyone.',
+                          confirmLabel: 'Show',
+                          tone: 'default',
+                        },
+                  )
                 }
               >
                 {product.isPublished ? 'Hide' : 'Show'}
@@ -895,12 +914,35 @@ export function OpenProjectsSection() {
   const [status, setStatus] = useState('');
   const { list, search, setSearch, page, setPage, filtered } =
     useAdminList<AdminOpenRequest>('/admin/open-projects', { status });
-  const { error, pending, run } = useAdminAction();
+  const { error, pending, run, dialog } = useAdminAction();
 
   function setRequestStatus(request: AdminOpenRequest, next: string) {
-    void run(request.id, `/admin/open-projects/${request.id}/status`, list.reload, {
-      status: next,
-    });
+    const confirmation =
+      next === 'CLOSED'
+        ? {
+            title: `Close "${request.title}"?`,
+            description: 'Designers can no longer send proposals. You can reopen it later.',
+            confirmLabel: 'Close',
+          }
+        : next === 'CANCELLED'
+          ? {
+              title: `Remove "${request.title}"?`,
+              description: 'It is taken down from open projects and the client is notified.',
+              confirmLabel: 'Remove',
+            }
+          : {
+              title: `Reopen "${request.title}"?`,
+              description: 'Designers can see it and send proposals again.',
+              confirmLabel: 'Reopen',
+              tone: 'default' as const,
+            };
+    void run(
+      request.id,
+      `/admin/open-projects/${request.id}/status`,
+      list.reload,
+      { status: next },
+      confirmation,
+    );
   }
 
   async function exportRequests() {
@@ -925,6 +967,7 @@ export function OpenProjectsSection() {
 
   return (
     <>
+      {dialog}
       <SectionHeader
         title="Open projects."
         description="Public requests clients posted for any designer. Close or remove ones that should not be listed."

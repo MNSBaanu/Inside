@@ -11,6 +11,7 @@ test.describe('Admin', () => {
       .filter({ hasText: 'Great ideas for the indoor-outdoor flow.' });
     await expect(review.getByText('Hidden', { exact: true })).toBeVisible();
     await review.getByRole('button', { name: 'Show review' }).click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'Show review' }).click();
     await expect(review.getByText('Visible', { exact: true })).toBeVisible();
   });
 

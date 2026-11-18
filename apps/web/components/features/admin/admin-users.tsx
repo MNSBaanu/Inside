@@ -1,7 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState, type FormEvent } from 'react';
 import { downloadCsv, fetchExport } from '@/components/features/admin/admin-export';
 import { useSession } from '@/components/providers/session-provider';
@@ -9,8 +7,10 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cardSurface } from '@/components/ui/card';
+import { useConfirm } from '@/components/ui/confirm-dialog';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Field, Input } from '@/components/ui/field';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Select } from '@/components/ui/select';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
@@ -140,9 +140,8 @@ export function AddUserDialog({
           htmlFor="new-user-password"
           hint="At least 8 characters, with a letter and a number. Share it with the user."
         >
-          <Input
+          <PasswordInput
             id="new-user-password"
-            type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
@@ -173,6 +172,7 @@ type AdminUserDetail = {
   activeRole: Role;
   hasClientAccount: boolean;
   isVerified: boolean;
+  isOwner: boolean;
   emailVerified: string | null;
   status: AccountStatus;
   bio: string | null;
@@ -189,8 +189,49 @@ type AdminUserDetail = {
     reviewsReceived: number;
     reviewsWritten: number;
     reportsAgainst: number;
+    reportsFiled: number;
+    requestsMade: number;
+    proposals: number;
+    verificationsReviewed: number;
+    reportsResolved: number;
+    activityLogs: number;
   };
 };
+
+const USER_ACTIONS = {
+  suspend: {
+    title: 'Suspend',
+    label: 'Suspend',
+    description: 'They are signed out everywhere and cannot sign in until reactivated.',
+    tone: 'danger',
+  },
+  reactivate: {
+    title: 'Reactivate',
+    label: 'Reactivate',
+    description: 'They can sign in and use Inside again.',
+    tone: 'default',
+  },
+  'revoke-verification': {
+    title: 'Revoke verification for',
+    label: 'Revoke',
+    description: 'The verified badge is removed until they submit new evidence and it is approved.',
+    tone: 'danger',
+  },
+  'make-admin': {
+    title: 'Give admin access to',
+    label: 'Make admin',
+    description:
+      'They get full access to the admin area. They are signed out and must sign in again. Their designer or client features are replaced by admin access.',
+    tone: 'danger',
+  },
+  'remove-admin': {
+    title: 'Remove admin access from',
+    label: 'Remove admin',
+    description:
+      'They lose access to the admin area and become a client account. They are signed out and must sign in again.',
+    tone: 'danger',
+  },
+} as const;
 
 export function AdminUserDetail({ id }: { id: string }) {
   const { user: me } = useSession();
@@ -199,8 +240,21 @@ export function AdminUserDetail({ id }: { id: string }) {
   );
   const [actionError, setActionError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const { confirm, dialog } = useConfirm();
 
-  async function run(action: string) {
+  async function run(action: keyof typeof USER_ACTIONS) {
+    const name = data?.user.name ?? 'this user';
+    const options = USER_ACTIONS[action];
+    if (
+      !(await confirm({
+        title: `${options.title} ${name}?`,
+        description: options.description,
+        confirmLabel: options.label,
+        tone: options.tone,
+      }))
+    ) {
+      return;
+    }
     setActionError(null);
     setPending(true);
     try {
@@ -213,41 +267,34 @@ export function AdminUserDetail({ id }: { id: string }) {
     }
   }
 
-  const back = (
-    <Link
-      href="/admin/users"
-      className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink"
-    >
-      <ArrowLeft aria-hidden className="h-4 w-4" />
-      All users
-    </Link>
-  );
-
-  if (error) {
-    return (
-      <div className="flex flex-col gap-4">
-        {back}
-        <ErrorNotice message={error} />
-      </div>
-    );
-  }
+  if (error) return <ErrorNotice message={error} />;
   if (!data) return <Skeleton className="h-64" />;
 
   const user = data.user;
   const isDesigner = user.role === 'DESIGNER';
-  const counts = [
-    isDesigner
-      ? { label: 'Portfolios', value: user._count.portfolios }
-      : null,
-    isDesigner
-      ? { label: 'Projects as designer', value: user._count.projectsAsDesigner }
-      : null,
-    { label: 'Projects as client', value: user._count.projectsAsClient },
-    isDesigner
-      ? { label: 'Reviews received', value: user._count.reviewsReceived }
-      : { label: 'Reviews written', value: user._count.reviewsWritten },
-    { label: 'Reports against', value: user._count.reportsAgainst },
-  ].filter((item): item is { label: string; value: number } => item !== null);
+  const c = user._count;
+  const counts =
+    user.role === 'ADMIN'
+      ? [
+          { label: 'Verifications reviewed', value: c.verificationsReviewed },
+          { label: 'Reports resolved', value: c.reportsResolved },
+          { label: 'Actions logged', value: c.activityLogs },
+        ]
+      : isDesigner
+        ? [
+            { label: 'Portfolios', value: c.portfolios },
+            { label: 'Proposals sent', value: c.proposals },
+            { label: 'Projects', value: c.projectsAsDesigner },
+            { label: 'Reviews received', value: c.reviewsReceived },
+            { label: 'Reports against', value: c.reportsAgainst },
+          ]
+        : [
+            { label: 'Requests posted', value: c.requestsMade },
+            { label: 'Projects', value: c.projectsAsClient },
+            { label: 'Reviews written', value: c.reviewsWritten },
+            { label: 'Reports filed', value: c.reportsFiled },
+            { label: 'Reports against', value: c.reportsAgainst },
+          ];
 
   const details = [
     { label: 'Email', value: user.email },
@@ -266,7 +313,7 @@ export function AdminUserDetail({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      {back}
+      {dialog}
       {actionError ? <ErrorNotice message={actionError} /> : null}
 
       <section className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-5 md:p-6')}>
@@ -276,6 +323,7 @@ export function AdminUserDetail({ id }: { id: string }) {
             <h2 className="font-display text-2xl font-semibold">{user.name}</h2>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <Badge>{titleCase(user.role)}</Badge>
+              {user.isOwner ? <Badge tone="support">Owner</Badge> : null}
               {isDesigner && user.isVerified ? (
                 <Badge tone="support">Verified</Badge>
               ) : null}
@@ -295,7 +343,30 @@ export function AdminUserDetail({ id }: { id: string }) {
               Revoke
             </Button>
           ) : null}
-          {user.id === me?.id ? null : user.status === 'ACTIVE' ? (
+          {me?.isOwner && !user.isOwner && user.role === 'ADMIN' ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className={revokeButtonClass}
+              disabled={pending}
+              onClick={() => run('remove-admin')}
+            >
+              Remove admin
+            </Button>
+          ) : null}
+          {me?.isOwner && user.role !== 'ADMIN' && user.status === 'ACTIVE' ? (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={pending}
+              onClick={() => run('make-admin')}
+            >
+              Make admin
+            </Button>
+          ) : null}
+          {user.id === me?.id ||
+          user.isOwner ||
+          (user.role === 'ADMIN' && !me?.isOwner) ? null : user.status === 'ACTIVE' ? (
             <Button
               size="sm"
               variant="outline"
@@ -312,7 +383,12 @@ export function AdminUserDetail({ id }: { id: string }) {
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-3 md:grid-cols-5">
+      <section
+        className={cn(
+          'grid grid-cols-2 gap-3 md:grid-cols-3',
+          counts.length === 5 && 'xl:grid-cols-5',
+        )}
+      >
         {counts.map((item) => (
           <div key={item.label} className={cn(cardSurface, 'p-4')}>
             <p className="font-display text-2xl font-semibold">{item.value}</p>

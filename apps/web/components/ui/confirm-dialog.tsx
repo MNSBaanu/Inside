@@ -1,12 +1,47 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
+
+type ConfirmOptions = {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  tone?: 'danger' | 'default';
+};
+
+export function useConfirm() {
+  const [request, setRequest] = useState<
+    (ConfirmOptions & { resolve: (ok: boolean) => void }) | null
+  >(null);
+
+  const confirm = (options: ConfirmOptions) =>
+    new Promise<boolean>((resolve) => setRequest({ ...options, resolve }));
+
+  const close = (ok: boolean) => {
+    request?.resolve(ok);
+    setRequest(null);
+  };
+
+  const dialog = request ? (
+    <ConfirmDialog
+      title={request.title}
+      description={request.description}
+      confirmLabel={request.confirmLabel}
+      tone={request.tone}
+      onConfirm={() => close(true)}
+      onCancel={() => close(false)}
+    />
+  ) : null;
+
+  return { confirm, dialog };
+}
 
 export function ConfirmDialog({
   title,
   description,
   confirmLabel = 'Delete',
+  tone = 'danger',
   busy = false,
   onConfirm,
   onCancel,
@@ -15,6 +50,7 @@ export function ConfirmDialog({
   title: string;
   description: string;
   confirmLabel?: string;
+  tone?: 'danger' | 'default';
   busy?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -56,7 +92,7 @@ export function ConfirmDialog({
           <Button
             onClick={onConfirm}
             disabled={busy}
-            className="!bg-error hover:!bg-error/90"
+            className={tone === 'danger' ? '!bg-error hover:!bg-error/90' : undefined}
           >
             {busy ? 'Deleting…' : confirmLabel}
           </Button>
