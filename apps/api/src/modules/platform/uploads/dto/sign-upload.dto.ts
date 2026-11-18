@@ -7,6 +7,7 @@ export enum UploadFolder {
   DELIVERABLES = 'deliverables',
   ATTACHMENTS = 'attachments',
   AVATARS = 'avatars',
+  PRODUCTS = 'products',
 }
 
 export class SignUploadDto {

@@ -25,6 +25,7 @@ import { cardSurface } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Field, Input, Textarea } from '@/components/ui/field';
+import { FileUpload } from '@/components/ui/file-upload';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
@@ -607,7 +608,16 @@ function ProductDialog({
         <Textarea id="product-description" value={form.description} onChange={set('description')} required minLength={10} maxLength={2000} rows={3} />
       </Field>
       <Field label="Image URL" htmlFor="product-image">
-        <Input id="product-image" type="url" value={form.imageUrl} onChange={set('imageUrl')} required placeholder="https://" />
+        <div className="flex flex-wrap items-center gap-3">
+          {form.imageUrl ? (
+            <div className="h-16 w-16 rounded-lg bg-cover bg-center" style={{ backgroundImage: `url("${form.imageUrl}")` }} />
+          ) : null}
+          <FileUpload
+            folder="products"
+            label={form.imageUrl ? 'Change image' : 'Upload image'}
+            onUploaded={(file) => setForm((current) => ({ ...current, imageUrl: file.url }))}
+          />
+        </div>
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Provider" htmlFor="product-seller" hint="The shop that sells this item.">

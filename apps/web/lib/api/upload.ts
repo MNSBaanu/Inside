@@ -5,7 +5,8 @@ export type UploadFolder =
   | 'moodboards'
   | 'deliverables'
   | 'attachments'
-  | 'avatars';
+  | 'avatars'
+  | 'products';
 
 type SignedUpload = {
   cloudName: string;
