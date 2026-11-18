@@ -1,8 +1,14 @@
 'use client';
 
 import {
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  Eye,
+  FileText,
   FolderKanban,
   Inbox,
+  X,
   Users,
   UserX,
   type LucideIcon,
@@ -15,7 +21,6 @@ import {
   useIsAdmin,
 } from '@/components/features/admin/admin-sections';
 import { Avatar } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { cardSurface } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
@@ -196,7 +201,7 @@ export default function AdminOverviewPage() {
             />
           </div>
         ) : (
-          <div className="mt-3 grid gap-4 xl:grid-cols-3">
+          <div className="mt-3 grid items-start gap-4 xl:grid-cols-3">
             <Queue
               title="Verifications"
               href="/admin/verifications"
@@ -213,18 +218,28 @@ export default function AdminOverviewPage() {
                       src={item.designer?.avatarUrl ?? null}
                       size={36}
                     />
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold">
                         {item.designer?.name ?? 'Designer'}
                       </p>
-                      <p className="text-sm text-muted">
+                      <p className="text-xs text-muted">
                         Submitted {formatDate(item.createdAt)}
                       </p>
                     </div>
+                    <a
+                      href={safeHref(item.evidenceUrl)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-brand hover:underline"
+                    >
+                      <FileText aria-hidden className="h-4 w-4" />
+                      Evidence
+                    </a>
                   </div>
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <Button
-                      size="sm"
+                  <div className="mt-3 flex gap-2 pl-12">
+                    <button
+                      type="button"
+                      className={actionButton('primary')}
                       disabled={pending === item.id}
                       onClick={() =>
                         act(
@@ -234,11 +249,12 @@ export default function AdminOverviewPage() {
                         )
                       }
                     >
+                      <Check aria-hidden className="h-4 w-4" />
                       Approve
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
+                    </button>
+                    <button
+                      type="button"
+                      className={actionButton('outline')}
                       disabled={pending === item.id}
                       onClick={() =>
                         act(
@@ -248,16 +264,9 @@ export default function AdminOverviewPage() {
                         )
                       }
                     >
+                      <X aria-hidden className="h-4 w-4" />
                       Reject
-                    </Button>
-                    <a
-                      href={safeHref(item.evidenceUrl)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="link-underline text-sm"
-                    >
-                      Evidence
-                    </a>
+                    </button>
                   </div>
                 </QueueItem>
               ))}
@@ -273,48 +282,54 @@ export default function AdminOverviewPage() {
             >
               {reports.data?.items.map((report) => (
                 <QueueItem key={report.id}>
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="font-semibold">
-                        {titleCase(report.targetType)} reported
-                      </p>
-                      {report.target ? (
-                        report.target.href ? (
-                          <Link
-                            href={report.target.href}
-                            target="_blank"
-                            className="text-sm font-medium text-brand hover:underline"
-                          >
-                            {report.target.label}
-                          </Link>
-                        ) : (
-                          <p className="text-sm font-medium">{report.target.label}</p>
-                        )
-                      ) : null}
-                      <p className="text-sm text-muted">
-                        {report.reporter ? `By ${report.reporter.name} · ` : ''}
-                        {formatDate(report.createdAt)}
-                      </p>
-                    </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="truncate font-semibold">
+                      {titleCase(report.targetType)} reported
+                    </p>
                     <StatusBadge status={report.status} />
                   </div>
-                  <p className="mt-2 line-clamp-2 text-sm">{report.reason}</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Button
-                      size="sm"
-                      disabled={pending === report.id}
-                      onClick={() => setConfirm({ report, action: 'resolve' })}
-                    >
-                      Resolve
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={pending === report.id}
-                      onClick={() => setConfirm({ report, action: 'dismiss' })}
-                    >
-                      Dismiss
-                    </Button>
+                  {report.target ? (
+                    report.target.href ? (
+                      <Link
+                        href={report.target.href}
+                        target="_blank"
+                        title={report.target.label}
+                        className="mt-0.5 block truncate text-sm font-medium text-brand hover:underline"
+                      >
+                        {report.target.label}
+                      </Link>
+                    ) : (
+                      <p className="mt-0.5 truncate text-sm font-medium">
+                        {report.target.label}
+                      </p>
+                    )
+                  ) : null}
+                  <p className="mt-2 line-clamp-2 border-l-2 border-hairline pl-3 text-sm">
+                    {report.reason}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <p className="min-w-0 truncate text-xs text-muted">
+                      {report.reporter ? `${report.reporter.name} · ` : ''}
+                      {formatDate(report.createdAt)}
+                    </p>
+                    <div className="flex shrink-0 gap-2">
+                      <button
+                        type="button"
+                        className={actionButton('primary')}
+                        disabled={pending === report.id}
+                        onClick={() => setConfirm({ report, action: 'resolve' })}
+                      >
+                        Resolve
+                      </button>
+                      <button
+                        type="button"
+                        className={actionButton('outline')}
+                        disabled={pending === report.id}
+                        onClick={() => setConfirm({ report, action: 'dismiss' })}
+                      >
+                        Dismiss
+                      </button>
+                    </div>
                   </div>
                 </QueueItem>
               ))}
@@ -362,8 +377,9 @@ export default function AdminOverviewPage() {
                     </p>
                   ) : null}
                   <div className="mt-3">
-                    <Button
-                      size="sm"
+                    <button
+                      type="button"
+                      className={actionButton('outline')}
                       disabled={pending === review.id}
                       onClick={() =>
                         act(
@@ -374,8 +390,9 @@ export default function AdminOverviewPage() {
                         )
                       }
                     >
+                      <Eye aria-hidden className="h-4 w-4" />
                       Show review
-                    </Button>
+                    </button>
                   </div>
                 </QueueItem>
               ))}
@@ -490,15 +507,26 @@ function Queue({
   const hasItems = Array.isArray(items) ? items.length > 0 : Boolean(items);
   return (
     <div className={cn(cardSurface, 'flex flex-col overflow-hidden')}>
-      <div className="flex items-center justify-between gap-3 border-b border-hairline px-5 py-4">
-        <p className="font-semibold">
+      <div className="flex items-center justify-between gap-3 border-b border-hairline bg-sand/40 px-5 py-3">
+        <p className="flex items-center gap-2 font-semibold">
           {title}
           {total !== undefined ? (
-            <span className="ml-2 text-muted">{total}</span>
+            <span
+              className={cn(
+                'rounded-full px-2 py-0.5 text-xs font-semibold',
+                total > 0 ? 'bg-brand text-canvas' : 'bg-sand text-muted',
+              )}
+            >
+              {total}
+            </span>
           ) : null}
         </p>
-        <Link href={href} className="text-sm font-semibold text-brand hover:underline">
+        <Link
+          href={href}
+          className="inline-flex items-center gap-1 text-sm font-semibold text-brand hover:underline"
+        >
           View all
+          <ArrowRight aria-hidden className="h-3.5 w-3.5" />
         </Link>
       </div>
       {loading ? (
@@ -510,14 +538,26 @@ function Queue({
       ) : hasItems ? (
         <ul className="flex flex-col divide-y divide-hairline">{items}</ul>
       ) : (
-        <p className="px-5 py-6 text-sm text-muted">{empty}</p>
+        <p className="flex items-center gap-2 px-5 py-6 text-sm text-muted">
+          <CheckCircle2 aria-hidden className="h-4 w-4 text-brand" />
+          {empty}
+        </p>
       )}
     </div>
   );
 }
 
 function QueueItem({ children }: { children: ReactNode }) {
-  return <li className="px-5 py-3">{children}</li>;
+  return <li className="px-5 py-4 transition-colors hover:bg-sand/30">{children}</li>;
+}
+
+function actionButton(variant: 'primary' | 'outline') {
+  return cn(
+    'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+    variant === 'primary'
+      ? 'bg-brand text-canvas hover:bg-brand-deep'
+      : 'border border-ink/15 text-ink hover:border-ink/40 hover:bg-sand',
+  );
 }
 
 function StatTile({
