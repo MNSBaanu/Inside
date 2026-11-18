@@ -82,7 +82,7 @@ export default function ProductDetailPage({
           <p className="mt-4 text-2xl font-semibold">
             {formatMoney(product.price)}
           </p>
-          <ShopDiscount price={product.price} slug={product.slug} />
+          <ShopDiscount price={product.price} />
           <p className="mt-6 max-w-xl text-lg text-muted">
             {product.description}
           </p>

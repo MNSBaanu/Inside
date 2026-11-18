@@ -1,26 +1,16 @@
 'use client';
 
 import { Check, Copy, Tag as TagIcon } from 'lucide-react';
-import Link from 'next/link';
 import { useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { SHOP_DISCOUNT, discountedPrice } from '@/lib/shop';
 import { formatMoney } from '@/lib/utils/format';
 
-export function ShopDiscount({ price, slug }: { price: number; slug: string }) {
+export function ShopDiscount({ price }: { price: number }) {
   const { user } = useSession();
   const [copied, setCopied] = useState(false);
 
-  if (!user) {
-    return (
-      <p className="mt-6 text-sm text-muted">
-        <Link href={`/login?next=/shop/${slug}`} className="link-underline">
-          Sign in
-        </Link>{' '}
-        to get {SHOP_DISCOUNT.percent}% off when you buy through Inside.
-      </p>
-    );
-  }
+  if (!user) return null;
 
   async function copy() {
     try {
