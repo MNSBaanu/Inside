@@ -433,6 +433,7 @@ model Message {
   senderId       String
   receiverId     String
   content        String
+  isHidden       Boolean       @default(false)
   attachmentUrl  String?
   attachmentType String?
   isRead         Boolean   @default(false)
@@ -518,6 +519,7 @@ model Report {
   status         ReportStatus     @default(OPEN)
   resolvedById   String?
   resolvedAt     DateTime?
+  resolution     String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 

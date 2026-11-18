@@ -1,0 +1,2 @@
+ALTER TABLE "Report" ADD COLUMN "resolution" TEXT;
+ALTER TABLE "Message" ADD COLUMN "isHidden" BOOLEAN NOT NULL DEFAULT false;
