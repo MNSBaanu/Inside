@@ -22,6 +22,7 @@ import { AdminGuard } from '../../identity/auth/guards/admin.guard';
 import { JwtAuthGuard } from '../../identity/auth/guards/jwt-auth.guard';
 import {
   AdminActivityQueryDto,
+  AdminAnalyticsQueryDto,
   AdminReportsQueryDto,
   AdminReviewsQueryDto,
   AdminSearchQueryDto,
@@ -50,9 +51,9 @@ export class AdminController {
   @ApiOperation({
     summary: 'Growth, revenue and activity trends for the admin',
   })
-  @ApiOkResponse({ description: 'Analytics for the last 12 months' })
-  analytics() {
-    return this.admin.getAnalytics();
+  @ApiOkResponse({ description: 'Analytics for the selected months' })
+  analytics(@Query() query: AdminAnalyticsQueryDto) {
+    return this.admin.getAnalytics(query.months);
   }
 
   @Get('users')

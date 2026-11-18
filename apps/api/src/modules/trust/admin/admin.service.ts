@@ -81,11 +81,12 @@ export class AdminService {
     };
   }
 
-  async getAnalytics() {
+  async getAnalytics(range = 12) {
     const since = new Date();
     since.setUTCDate(1);
     since.setUTCHours(0, 0, 0, 0);
-    since.setUTCMonth(since.getUTCMonth() - 11);
+    since.setUTCMonth(since.getUTCMonth() - (range - 1));
+    const inRange = { createdAt: { gte: since } };
     const paid: PaymentStatus[] = [PaymentStatus.PAID, PaymentStatus.RELEASED];
 
     const [
@@ -112,25 +113,35 @@ export class AdminService {
         FROM "MilestonePayment"
         WHERE "paidAt" >= ${since} AND status IN ('PAID', 'RELEASED')
         GROUP BY 1`,
-      this.prisma.project.groupBy({ by: ['status'], _count: { _all: true } }),
+      this.prisma.project.groupBy({
+        by: ['status'],
+        where: inRange,
+        _count: { _all: true },
+      }),
       this.prisma.milestonePayment.groupBy({
         by: ['status'],
+        where: inRange,
         _count: { _all: true },
         _sum: { amount: true },
       }),
       this.prisma.projectRequest.groupBy({
         by: ['type'],
+        where: inRange,
         _count: { _all: true },
       }),
-      this.prisma.proposal.groupBy({ by: ['status'], _count: { _all: true } }),
+      this.prisma.proposal.groupBy({
+        by: ['status'],
+        where: { submittedAt: { gte: since } },
+        _count: { _all: true },
+      }),
       this.prisma.review.aggregate({
-        where: { isVisible: true },
+        where: { isVisible: true, ...inRange },
         _avg: { rating: true },
         _count: { _all: true },
       }),
       this.prisma.portfolio.groupBy({
         by: ['style'],
-        where: { isPublished: true },
+        where: { isPublished: true, ...inRange },
         _count: { _all: true },
         orderBy: { _count: { style: 'desc' } },
         take: 6,
@@ -138,7 +149,7 @@ export class AdminService {
     ]);
 
     const key = (date: Date) => date.toISOString().slice(0, 7);
-    const months = Array.from({ length: 12 }, (_, i) => {
+    const months = Array.from({ length: range }, (_, i) => {
       const date = new Date(since);
       date.setUTCMonth(since.getUTCMonth() + i);
       return {

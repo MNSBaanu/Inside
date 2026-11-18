@@ -64,6 +64,14 @@ export class AdminReviewsQueryDto extends AdminSearchQueryDto {
   rating?: number;
 }
 
+export class AdminAnalyticsQueryDto {
+  @ApiPropertyOptional({ enum: [3, 6, 12, 24], default: 12 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsIn([3, 6, 12, 24])
+  months?: number;
+}
+
 export class AdminActivityQueryDto extends AdminSearchQueryDto {
   @ApiPropertyOptional({ description: 'Activity action, e.g. USER_SUSPENDED' })
   @IsOptional()
