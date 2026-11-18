@@ -825,6 +825,7 @@ async function main() {
       isVerified: user.isVerified ?? false,
       emailVerified: user.emailVerified === false ? null : daysAgo(user.joinedDaysAgo),
       status: user.status ?? AccountStatus.ACTIVE,
+      isOwner: user.key === 'admin',
       isAvailable: user.isAvailable ?? true,
       location: user.location ?? null,
       phone: user.phone ?? null,

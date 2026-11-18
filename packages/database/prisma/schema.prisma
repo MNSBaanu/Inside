@@ -121,6 +121,7 @@ model User {
   isVerified   Boolean       @default(false)
   emailVerified DateTime?
   status       AccountStatus @default(ACTIVE)
+  isOwner      Boolean       @default(false)
   bio          String?
   avatarUrl    String?
   phone        String?
