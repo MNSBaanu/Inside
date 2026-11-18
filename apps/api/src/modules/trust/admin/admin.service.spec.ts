@@ -1,4 +1,8 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   AccountStatus,
   ReportStatus,
@@ -77,6 +81,73 @@ describe('AdminService', () => {
     const result = await service.suspend(admin, 'u1');
     expect(result.data.user.status).toBe(AccountStatus.SUSPENDED);
     expect(tx.session.updateMany).toHaveBeenCalled();
+  });
+
+  it('suspend refuses the platform owner', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'u1',
+      role: Role.ADMIN,
+      isOwner: true,
+      status: AccountStatus.ACTIVE,
+    });
+    await expect(service.suspend(admin, 'u1')).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+  });
+
+  it('only the owner can suspend another admin', async () => {
+    prisma.user.findUnique
+      .mockResolvedValueOnce({
+        id: 'u1',
+        role: Role.ADMIN,
+        isOwner: false,
+        status: AccountStatus.ACTIVE,
+      })
+      .mockResolvedValueOnce({ isOwner: false });
+    await expect(service.suspend(admin, 'u1')).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+  });
+
+  it('makeAdmin is refused for admins who are not the owner', async () => {
+    prisma.user.findUnique.mockResolvedValueOnce({ isOwner: false });
+    await expect(service.makeAdmin(admin, 'u1')).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+    expect(tx.user.update).not.toHaveBeenCalled();
+  });
+
+  it('makeAdmin by the owner promotes the user and signs them out', async () => {
+    prisma.user.findUnique
+      .mockResolvedValueOnce({ isOwner: true })
+      .mockResolvedValueOnce({
+        id: 'u1',
+        role: Role.CLIENT,
+        status: AccountStatus.ACTIVE,
+      });
+    tx.user.update.mockResolvedValue({ id: 'u1', role: Role.ADMIN });
+
+    const result = await service.makeAdmin(admin, 'u1');
+    expect(result.data.user.role).toBe(Role.ADMIN);
+    expect(tx.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: {
+          role: Role.ADMIN,
+          activeRole: Role.ADMIN,
+          hasClientAccount: false,
+        },
+      }),
+    );
+    expect(tx.session.updateMany).toHaveBeenCalled();
+  });
+
+  it('removeAdmin cannot demote the owner', async () => {
+    prisma.user.findUnique
+      .mockResolvedValueOnce({ isOwner: true })
+      .mockResolvedValueOnce({ id: 'a1', role: Role.ADMIN, isOwner: true });
+    await expect(service.removeAdmin(admin, 'a1')).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
   });
 
   it('resolveReport sets status RESOLVED with admin', async () => {

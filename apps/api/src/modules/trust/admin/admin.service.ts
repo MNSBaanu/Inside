@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -239,6 +240,7 @@ export class AdminService {
           role: true,
           activeRole: true,
           isVerified: true,
+          isOwner: true,
           status: true,
           avatarUrl: true,
           createdAt: true,
@@ -279,6 +281,7 @@ export class AdminService {
         activeRole: true,
         hasClientAccount: true,
         isVerified: true,
+        isOwner: true,
         emailVerified: true,
         status: true,
         bio: true,
@@ -296,6 +299,12 @@ export class AdminService {
             reviewsReceived: true,
             reviewsWritten: true,
             reportsAgainst: true,
+            reportsFiled: true,
+            requestsMade: true,
+            proposals: true,
+            verificationsReviewed: true,
+            reportsResolved: true,
+            activityLogs: true,
           },
         },
       },
@@ -361,6 +370,12 @@ export class AdminService {
     if (user.status === AccountStatus.SUSPENDED) {
       throw new BadRequestException('User is already suspended');
     }
+    if (user.isOwner) {
+      throw new ForbiddenException('The platform owner cannot be suspended');
+    }
+    if (user.role === Role.ADMIN) {
+      await this.requireOwner(admin);
+    }
 
     const updated = await this.prisma.$transaction(async (tx) => {
       const u = await tx.user.update({
@@ -423,6 +438,94 @@ export class AdminService {
       success: true,
       data: { user: { id: updated.id, status: updated.status } },
     };
+  }
+
+  async makeAdmin(admin: AuthUser, userId: string) {
+    await this.requireOwner(admin);
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.role === Role.ADMIN) {
+      throw new BadRequestException('User is already an admin');
+    }
+    if (user.status !== AccountStatus.ACTIVE) {
+      throw new BadRequestException(
+        'Reactivate the account before making it an admin',
+      );
+    }
+    return this.changeRole(admin, userId, Role.ADMIN, {
+      action: 'ADMIN_GRANTED',
+      title: 'You are now an admin',
+      message:
+        'The platform owner gave you admin access. Sign in again to open the admin area.',
+    });
+  }
+
+  async removeAdmin(admin: AuthUser, userId: string) {
+    await this.requireOwner(admin);
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.role !== Role.ADMIN) {
+      throw new BadRequestException('User is not an admin');
+    }
+    if (user.isOwner) {
+      throw new ForbiddenException(
+        'The platform owner cannot lose admin access',
+      );
+    }
+    return this.changeRole(admin, userId, Role.CLIENT, {
+      action: 'ADMIN_REMOVED',
+      title: 'Admin access removed',
+      message:
+        'The platform owner removed your admin access. Your account is now a client account.',
+    });
+  }
+
+  private async requireOwner(admin: AuthUser) {
+    const actor = await this.prisma.user.findUnique({
+      where: { id: admin.id },
+      select: { isOwner: true },
+    });
+    if (!actor?.isOwner) {
+      throw new ForbiddenException('Only the platform owner can do this');
+    }
+  }
+
+  private async changeRole(
+    admin: AuthUser,
+    userId: string,
+    role: Role,
+    event: { action: string; title: string; message: string },
+  ) {
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const u = await tx.user.update({
+        where: { id: userId },
+        data: { role, activeRole: role, hasClientAccount: false },
+        select: { id: true, role: true },
+      });
+      await tx.session.updateMany({
+        where: { userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      return u;
+    });
+
+    await this.notifications.notify({
+      userId,
+      type: NotificationType.SYSTEM,
+      title: event.title,
+      message: event.message,
+    });
+    await this.activity.log({
+      userId: admin.id,
+      action: event.action,
+      metadata: { targetUserId: userId },
+    });
+
+    return { success: true, data: { user: updated } };
   }
 
   async revokeVerification(admin: AuthUser, userId: string) {

@@ -104,6 +104,26 @@ export class AdminController {
     return this.admin.reactivate(admin, id);
   }
 
+  @Patch('users/:id/make-admin')
+  @ApiOperation({ summary: 'Give a user admin access (platform owner only)' })
+  @ApiOkResponse({ description: 'Now an admin' })
+  makeAdmin(
+    @CurrentUser() admin: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.admin.makeAdmin(admin, id);
+  }
+
+  @Patch('users/:id/remove-admin')
+  @ApiOperation({ summary: 'Remove admin access (platform owner only)' })
+  @ApiOkResponse({ description: 'Admin access removed' })
+  removeAdmin(
+    @CurrentUser() admin: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.admin.removeAdmin(admin, id);
+  }
+
   @Patch('users/:id/revoke-verification')
   @ApiOperation({ summary: "Remove a designer's verified badge" })
   @ApiOkResponse({ description: 'Badge removed' })

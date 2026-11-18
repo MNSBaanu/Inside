@@ -28,6 +28,7 @@ export type AuthUser = Pick<
   | 'activeRole'
   | 'hasClientAccount'
   | 'isVerified'
+  | 'isOwner'
   | 'status'
   | 'bio'
   | 'avatarUrl'
@@ -350,6 +351,7 @@ export class AuthService {
       activeRole: user.activeRole,
       hasClientAccount: user.hasClientAccount,
       isVerified: user.isVerified,
+      isOwner: user.isOwner,
       emailVerified: user.emailVerified !== null,
       status: user.status,
       bio: user.bio,
