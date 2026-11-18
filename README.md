@@ -44,6 +44,21 @@ Inside is a full-stack platform that connects **clients** and **interior designe
 
 ---
 
+## Database backups
+
+- **Nightly dump:** the `Backup database` workflow runs `pg_dump` against the live Neon database every night at 02:00 Sri Lanka time, and on demand from the Actions tab.
+- **Where it is stored:** each dump is saved as a workflow artifact (`inside-<date>.dump`) on that run's page in GitHub Actions, kept for 30 days, and visible only to repository collaborators.
+- **Point-in-time restore:** Neon's own history restore covers very recent mistakes.
+- **Not included:** uploaded files live in Cloudinary and are not part of the dump.
+
+To restore, download the artifact, unzip it, then load it into an empty database (a new Neon branch or local Postgres):
+
+```bash
+pg_restore --no-owner --no-acl --clean --if-exists -d "<database url>" inside-<date>.dump
+```
+
+---
+
 ## License
 
 All rights reserved. Academic project
