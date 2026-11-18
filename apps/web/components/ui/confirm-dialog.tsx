@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 
 export function ConfirmDialog({
@@ -10,6 +10,7 @@ export function ConfirmDialog({
   busy = false,
   onConfirm,
   onCancel,
+  children,
 }: {
   title: string;
   description: string;
@@ -17,6 +18,7 @@ export function ConfirmDialog({
   busy?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
+  children?: ReactNode;
 }) {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -46,6 +48,7 @@ export function ConfirmDialog({
         <p id="confirm-dialog-description" className="mt-2 text-sm text-muted">
           {description}
         </p>
+        {children}
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="ghost" onClick={onCancel} disabled={busy} autoFocus>
             Cancel

@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import {
   ActivitySection,
   ContactSection,
+  NewsletterSection,
   AdminOnly,
   ReportsSection,
   ReviewsSection,
@@ -15,12 +16,14 @@ import {
   ProjectsSection,
   ShopSection,
 } from '@/components/features/admin/admin-manage';
+import { AnalyticsSection } from '@/components/features/admin/admin-analytics';
 import { PageHeader } from '@/components/ui/page-header';
 
 const sections: Record<
   string,
   { title?: string; description?: string; Section: () => JSX.Element }
 > = {
+  analytics: { Section: AnalyticsSection },
   users: { Section: UsersSection },
   verifications: {
     title: 'Verifications.',
@@ -36,6 +39,7 @@ const sections: Record<
     description: 'Client reviews. Hidden ones do not appear on designer profiles.',
     Section: ReviewsSection,
   },
+  newsletter: { Section: NewsletterSection },
   activity: { Section: ActivitySection },
   contact: { Section: ContactSection },
 };

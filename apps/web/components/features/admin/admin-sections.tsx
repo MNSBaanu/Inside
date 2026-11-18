@@ -603,6 +603,13 @@ export function VerificationsSection() {
   );
 }
 
+const REMOVABLE: Record<string, string | undefined> = {
+  PORTFOLIO: 'Also unpublish this portfolio',
+  MESSAGE: 'Also hide this message',
+  REVIEW: 'Also hide this review',
+  USER: 'Also suspend this account',
+};
+
 export function ReportsSection() {
   const [status, setStatus] = useState('');
   const [targetType, setTargetType] = useState('');
@@ -613,6 +620,14 @@ export function ReportsSection() {
     report: AdminReport;
     action: 'resolve' | 'dismiss';
   } | null>(null);
+  const [note, setNote] = useState('');
+  const [removeContent, setRemoveContent] = useState(false);
+
+  function openDecision(report: AdminReport, action: 'resolve' | 'dismiss') {
+    setNote('');
+    setRemoveContent(false);
+    setConfirm({ report, action });
+  }
 
   async function exportReports() {
     const items = await fetchAllPages<AdminReport>('/admin/reports', {
@@ -756,7 +771,7 @@ export function ReportsSection() {
               <Button
                 size="sm"
                 disabled={pending === report.id}
-                onClick={() => setConfirm({ report, action: 'resolve' })}
+                onClick={() => openDecision(report, 'resolve')}
               >
                 Resolve
               </Button>
@@ -764,7 +779,7 @@ export function ReportsSection() {
                 size="sm"
                 variant="outline"
                 disabled={pending === report.id}
-                onClick={() => setConfirm({ report, action: 'dismiss' })}
+                onClick={() => openDecision(report, 'dismiss')}
               >
                 Dismiss
               </Button>
@@ -788,10 +803,43 @@ export function ReportsSection() {
               confirm.report.id,
               `/admin/reports/${confirm.report.id}/${confirm.action}`,
               list.reload,
+              {
+                note: note.trim() || undefined,
+                ...(confirm.action === 'resolve' && removeContent
+                  ? { removeContent: true }
+                  : {}),
+              },
             ).finally(() => setConfirm(null))
           }
           onCancel={() => setConfirm(null)}
-        />
+        >
+          <div className="mt-4 flex flex-col gap-3">
+            <label htmlFor="report-note" className="text-sm font-semibold">
+              Outcome note <span className="font-normal text-muted">(optional)</span>
+            </label>
+            <textarea
+              id="report-note"
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              maxLength={1000}
+              rows={3}
+              className="rounded-lg border border-hairline bg-canvas px-3 py-2 text-sm"
+              placeholder="What you decided and why"
+            />
+            {confirm.action === 'resolve' &&
+            REMOVABLE[confirm.report.targetType] ? (
+              <label className="flex items-center gap-3 text-sm">
+                <input
+                  type="checkbox"
+                  checked={removeContent}
+                  onChange={(event) => setRemoveContent(event.target.checked)}
+                  className="h-4 w-4 accent-brand"
+                />
+                {REMOVABLE[confirm.report.targetType]}
+              </label>
+            ) : null}
+          </div>
+        </ConfirmDialog>
       ) : null}
     </>
   );
@@ -1159,6 +1207,57 @@ export function ContactSection() {
             </li>
           );
         }}
+      </Results>
+    </>
+  );
+}
+
+type NewsletterSubscriber = { id: string; email: string; createdAt: string };
+
+export function NewsletterSection() {
+  const { list, search, setSearch, page, setPage, filtered } =
+    useAdminList<NewsletterSubscriber>('/admin/newsletter', {});
+
+  async function exportSubscribers() {
+    const items = await fetchAllPages<NewsletterSubscriber>('/admin/newsletter', {
+      search: search.trim(),
+    });
+    downloadCsv(
+      'newsletter-subscribers',
+      ['Email', 'Subscribed'],
+      items.map((item) => [item.email, item.createdAt.slice(0, 10)]),
+    );
+  }
+
+  return (
+    <>
+      <SectionHeader
+        title="Newsletter."
+        description="People who subscribed from the site footer."
+        action={<ExportButton onExport={exportSubscribers} />}
+      />
+      <Filters>
+        <SearchField
+          id="newsletter-search"
+          value={search}
+          onChange={setSearch}
+          placeholder="Email"
+        />
+      </Filters>
+      <Results
+        state={list}
+        page={page}
+        onPageChange={setPage}
+        filtered={filtered}
+        noun="subscribers"
+        empty="No subscribers yet."
+      >
+        {(item) => (
+          <li key={item.id} className={cn(gridRow, 'sm:grid-cols-[1fr_auto]')}>
+            <p className="min-w-0 break-words font-semibold">{item.email}</p>
+            <p className="text-sm text-muted">{formatDate(item.createdAt)}</p>
+          </li>
+        )}
       </Results>
     </>
   );
