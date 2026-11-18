@@ -5,6 +5,7 @@ import { Suspense, useState } from 'react';
 import { AuthFooterLink, AuthLayout } from '@/components/features/auth/auth-layout';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
+import { PasswordInput } from '@/components/ui/password-input';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
 
@@ -57,9 +58,8 @@ function ResetForm() {
         htmlFor="newPassword"
         hint="At least 8 characters."
       >
-        <Input
+        <PasswordInput
           id="newPassword"
-          type="password"
           autoComplete="new-password"
           required
           minLength={8}

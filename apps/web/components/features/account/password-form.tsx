@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
-import { Field, Input } from '@/components/ui/field';
+import { Field } from '@/components/ui/field';
+import { PasswordInput } from '@/components/ui/password-input';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
 import { useToast } from '@/components/ui/toast';
@@ -39,9 +40,8 @@ export function PasswordForm() {
         {error ? <ErrorNotice message={error} /> : null}
 
         <Field label="Current password" htmlFor="currentPassword">
-          <Input
+          <PasswordInput
             id="currentPassword"
-            type="password"
             autoComplete="current-password"
             required
             minLength={8}
@@ -55,9 +55,8 @@ export function PasswordForm() {
           htmlFor="newPassword"
           hint="At least 8 characters."
         >
-          <Input
+          <PasswordInput
             id="newPassword"
-            type="password"
             autoComplete="new-password"
             required
             minLength={8}
