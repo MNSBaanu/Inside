@@ -66,7 +66,6 @@ export class ReviewsService {
           designerId: project.designerId,
           rating: dto.rating,
           comment: dto.comment,
-          isVisible: false,
         },
         include: { reviewer: { select: reviewerSelect } },
       });

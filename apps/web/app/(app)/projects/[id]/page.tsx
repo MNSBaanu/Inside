@@ -252,7 +252,7 @@ export default function ProjectWorkspacePage({
           ) : reviewed ? (
             <EmptyState
               title="Thanks for your review."
-              description="It will appear on the designer's profile once an admin approves it."
+              description="It now appears on the designer's profile."
             />
           ) : (
             <ReviewForm

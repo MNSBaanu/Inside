@@ -221,16 +221,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
     await expect(page.getByText('Thanks for your review.')).toBeVisible();
   });
 
-  await test.step('admin approves the review and it shows on the profile', async () => {
-    const adminContext = await browser.newContext();
-    const admin = await adminContext.newPage();
-    await signIn(admin, accounts.admin);
-    await admin.goto('/admin/reviews');
-    const review = admin.getByRole('listitem').filter({ hasText: reviewText });
-    await review.getByRole('button', { name: 'Show review' }).click();
-    await expect(review.getByText('Visible', { exact: true })).toBeVisible();
-    await adminContext.close();
-
+  await test.step('the review shows on the profile straight away', async () => {
     const guestContext = await browser.newContext();
     const guest = await guestContext.newPage();
     await guest.goto('/designers');
