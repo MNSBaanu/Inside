@@ -40,6 +40,35 @@ const isExternal = (url: string | null | undefined): url is string => {
 const isUnsplash = (url: string | null | undefined): url is string =>
   !!url && /^https?:\/\/images\.unsplash\.com\//i.test(url);
 
+const SEED_FILE = /^https:\/\/example\.com\/seed\/(.+)$/i;
+
+const isSeedFile = (url: string | null | undefined): url is string =>
+  !!url && SEED_FILE.test(url);
+
+/** A one-page PDF naming the sample file, standing in for seed placeholders. */
+function samplePdf(url: string) {
+  const name = (SEED_FILE.exec(url)?.[1] ?? 'sample').replace(/[^\w.-]/g, '');
+  const text = `BT /F1 20 Tf 72 720 Td (Inside sample file) Tj 0 -32 Td /F1 12 Tf (${name}) Tj 0 -20 Td (Demo data - not a real document.) Tj ET`;
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
+    `<< /Length ${text.length} >>\nstream\n${text}\nendstream`,
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+  ];
+  let pdf = '%PDF-1.4\n';
+  const offsets = objects.map((body, i) => {
+    const offset = pdf.length;
+    pdf += `${i + 1} 0 obj\n${body}\nendobj\n`;
+    return offset;
+  });
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  for (const offset of offsets) pdf += `${String(offset).padStart(10, '0')} 00000 n \n`;
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return `data:application/pdf;base64,${Buffer.from(pdf).toString('base64')}`;
+}
+
 async function uploadFromUrl(url: string, folder: string, creds: Credentials) {
   const params: Record<string, string> = {
     folder: `inside/${folder}`,
@@ -58,7 +87,7 @@ async function uploadFromUrl(url: string, folder: string, creds: Credentials) {
     .digest('hex');
 
   const form = new FormData();
-  form.append('file', url);
+  form.append('file', isSeedFile(url) ? samplePdf(url) : url);
   form.append('api_key', creds.apiKey);
   form.append('signature', signature);
   for (const [key, value] of Object.entries(params)) form.append(key, value);
@@ -96,10 +125,13 @@ export async function migrateImages(
     if (isExternal(row.avatarUrl)) targets.push({ table: 'User.avatarUrl', url: row.avatarUrl, folder: 'avatars' });
   }
   for (const row of await prisma.deliverable.findMany({ select: { fileUrl: true } })) {
-    if (isUnsplash(row.fileUrl)) targets.push({ table: 'Deliverable', url: row.fileUrl, folder: 'deliverables' });
+    if (isUnsplash(row.fileUrl) || isSeedFile(row.fileUrl)) targets.push({ table: 'Deliverable', url: row.fileUrl, folder: 'deliverables' });
   }
   for (const row of await prisma.message.findMany({ where: { attachmentUrl: { not: null } }, select: { attachmentUrl: true } })) {
-    if (isUnsplash(row.attachmentUrl)) targets.push({ table: 'Message', url: row.attachmentUrl, folder: 'attachments' });
+    if (isUnsplash(row.attachmentUrl) || isSeedFile(row.attachmentUrl)) targets.push({ table: 'Message', url: row.attachmentUrl, folder: 'attachments' });
+  }
+  for (const row of await prisma.verification.findMany({ select: { evidenceUrl: true } })) {
+    if (isSeedFile(row.evidenceUrl)) targets.push({ table: 'Verification', url: row.evidenceUrl, folder: 'attachments' });
   }
   const boards = await prisma.moodboard.findMany({ select: { id: true, savedItems: true } });
   for (const board of boards) {
@@ -136,6 +168,7 @@ export async function migrateImages(
     await prisma.user.updateMany({ where: { avatarUrl: from }, data: { avatarUrl: to } });
     await prisma.deliverable.updateMany({ where: { fileUrl: from }, data: { fileUrl: to } });
     await prisma.message.updateMany({ where: { attachmentUrl: from }, data: { attachmentUrl: to } });
+    await prisma.verification.updateMany({ where: { evidenceUrl: from }, data: { evidenceUrl: to } });
   }
   for (const board of boards) {
     const items = (board.savedItems as SavedItem[] | null) ?? [];
