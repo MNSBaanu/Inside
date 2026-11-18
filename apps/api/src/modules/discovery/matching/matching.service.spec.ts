@@ -59,13 +59,41 @@ describe('MatchingService', () => {
 
     const result = await service.matchDesigners(user, 'b1');
     expect(result.data.items[0].score).toBe(100);
-    expect(result.data.items[0].breakdown.style).toBe(35);
+    expect(result.data.items[0].breakdown.style).toBe(30);
+    expect(result.data.items[0].breakdown.availability).toBe(10);
     expect(result.data.items[0].breakdown.description).toBeNull();
     expect(result.data.items[0].factors.map((f) => f.key)).toEqual([
       'style',
       'room',
       'budget',
+      'availability',
     ]);
+  });
+
+  it('gives fewer availability points when the designer starts later', async () => {
+    const later = new Date(Date.now() + 45 * 86_400_000);
+    prisma.portfolio.findMany.mockResolvedValue([
+      {
+        id: 'p1',
+        designerId: 'd1',
+        title: 'Living',
+        style: 'Scandinavian',
+        roomType: 'Living Room',
+        budget: 450000,
+        designer: {
+          id: 'd1',
+          name: 'Ravi',
+          avatarUrl: null,
+          location: null,
+          isVerified: true,
+          isAvailable: true,
+          availableFrom: later,
+          bio: null,
+        },
+      },
+    ]);
+    const result = await service.matchDesigners(user, 'b1');
+    expect(result.data.items[0].breakdown.availability).toBe(3);
   });
 
   describe('relevance and consistency (FR-AI-6)', () => {

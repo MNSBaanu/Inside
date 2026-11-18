@@ -5,13 +5,20 @@ import { BlocksService } from '../../trust/blocks/blocks.service';
 import { PrismaService } from '../../../database/prisma.service';
 import { similarities } from './text-similarity';
 
-const WEIGHTS = { style: 35, room: 30, budget: 20, description: 15 };
+const WEIGHTS = {
+  style: 30,
+  room: 25,
+  budget: 20,
+  description: 15,
+  availability: 10,
+};
 
 type Breakdown = {
   style: number;
   room: number;
   budget: number;
   description: number | null;
+  availability: number;
 };
 
 @Injectable()
@@ -67,6 +74,7 @@ export class MatchingService {
             location: true,
             isVerified: true,
             isAvailable: true,
+            availableFrom: true,
             bio: true,
           },
         },
@@ -118,10 +126,13 @@ export class MatchingService {
             WEIGHTS.description * Math.min(1, descriptionSimilarity[index] * 2),
           )
         : null;
+      const availability = this.availabilityPoints(p.designer.availableFrom);
       // Without a brief description, score against the other factors only.
       const possible = description === null ? 100 - WEIGHTS.description : 100;
       const score = Math.round(
-        ((style + room + budgetScore + (description ?? 0)) / possible) * 100,
+        ((style + room + budgetScore + availability + (description ?? 0)) /
+          possible) *
+          100,
       );
       if (score < 15) continue;
 
@@ -137,7 +148,13 @@ export class MatchingService {
         byDesigner.set(p.designerId, {
           designer: p.designer,
           score,
-          breakdown: { style, room, budget: budgetScore, description },
+          breakdown: {
+            style,
+            room,
+            budget: budgetScore,
+            description,
+            availability,
+          },
           matchedPortfolios: existing
             ? [...existing.matchedPortfolios, entry]
             : [entry],
@@ -193,6 +210,12 @@ export class MatchingService {
         points: breakdown.budget,
         max: WEIGHTS.budget,
       },
+      {
+        key: 'availability',
+        label: 'Availability',
+        points: breakdown.availability,
+        max: WEIGHTS.availability,
+      },
       ...(breakdown.description !== null
         ? [
             {
@@ -204,6 +227,16 @@ export class MatchingService {
           ]
         : []),
     ];
+  }
+
+  /** Full points when free now, fewer the later the designer can start. */
+  private availabilityPoints(availableFrom: Date | null): number {
+    if (!availableFrom) return WEIGHTS.availability;
+    const days = (availableFrom.getTime() - Date.now()) / 86_400_000;
+    if (days <= 0) return WEIGHTS.availability;
+    if (days <= 30) return 6;
+    if (days <= 60) return 3;
+    return 0;
   }
 
   private async averageRatings(designerIds: string[]) {
