@@ -18,7 +18,9 @@ const socketData = (socket: Socket) => socket.data as { user?: SocketUser };
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+    origin: (process.env.CORS_ORIGIN ?? 'http://localhost:3000')
+      .split(',')
+      .map((origin) => origin.trim()),
     credentials: true,
   },
 })
