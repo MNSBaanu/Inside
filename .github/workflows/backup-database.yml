@@ -36,7 +36,7 @@ jobs:
           echo "Saved $file ($size bytes)"
 
       - name: Store backup
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.BACKUP_FILE }}
           path: ${{ env.BACKUP_FILE }}
