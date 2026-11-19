@@ -25,6 +25,10 @@ jobs:
     env:
       DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
       SEED_MODE: ${{ inputs.reset && 'reset' || 'sync' }}
+      DEMO_ADMIN_EMAIL: ${{ secrets.DEMO_ADMIN_EMAIL }}
+      DEMO_DESIGNER_EMAIL: ${{ secrets.DEMO_DESIGNER_EMAIL }}
+      DEMO_CLIENT_EMAIL: ${{ secrets.DEMO_CLIENT_EMAIL }}
+      DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
 
     steps:
       - name: Checkout

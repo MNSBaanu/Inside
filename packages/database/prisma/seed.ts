@@ -279,6 +279,9 @@ const U = {
   naveen: seedId(1, 55),
   ishara: seedId(1, 56),
   zainab: seedId(1, 57),
+  demoAdmin: seedId(1, 90),
+  demoDesigner: seedId(1, 91),
+  demoClient: seedId(1, 92),
 };
 type UserKey = keyof typeof U;
 
@@ -569,6 +572,15 @@ const PROJECTS: ProjectPlan[] = [
 
 const projectId = (n: number) => seedId(10, n);
 
+// Demo-day accounts with real inboxes. Added only when the DEMO_* variables are set.
+const DEMO_PROJECTS: ProjectPlan[] = [
+  { n: 100, title: 'Open-plan apartment refresh', client: 'demoClient', designer: 'demoDesigner', total: 850000, timeline: '12 weeks', scope: 'Concept boards, 3D visuals, a furniture schedule and site visits for the living, dining and kitchen area.', startedDaysAgo: 28, stages: [A, S, P, P, P] },
+  { n: 101, title: 'Calm master bedroom', client: 'demoClient', designer: 'demoDesigner', total: 420000, timeline: '6 weeks', scope: 'Bedroom layout, wardrobe design, lighting and styling.', startedDaysAgo: 110, stages: [A, A, A, A, A], status: ProjectStatus.COMPLETED },
+  { n: 102, title: 'Garden-facing home office', client: 'demoClient', designer: 'tharushi', total: 300000, timeline: '6 weeks', scope: 'Desk wall, storage and a reading corner looking onto the garden.', startedDaysAgo: 45, stages: [A, A, R, P, P], rejection: { reason: 'The desk faces away from the window. Could we turn it so I can see the garden?', revised: true } },
+  { n: 103, title: 'Coastal guest bedroom', client: 'sam', designer: 'demoDesigner', total: 260000, timeline: '5 weeks', scope: 'Guest bedroom concept, soft furnishings and a sourcing list.', startedDaysAgo: 18, stages: [A, I, P, P, P] },
+  { n: 104, title: 'Family kitchen with island', client: 'kasun', designer: 'demoDesigner', total: 950000, timeline: '14 weeks', scope: 'Kitchen layout, joinery drawings and an appliance schedule.', startedDaysAgo: 150, stages: [A, A, A, A, A], status: ProjectStatus.COMPLETED },
+];
+
 async function seedProject(plan: ProjectPlan) {
   const client = U[plan.client];
   const designer = U[plan.designer];
@@ -768,7 +780,7 @@ type Line = {
 };
 
 async function seedThread(n: number, lines: Line[]) {
-  const plan = PROJECTS.find((p) => p.n === n);
+  const plan = [...PROJECTS, ...DEMO_PROJECTS].find((p) => p.n === n);
   if (!plan) throw new Error(`No project ${n}`);
   const people = { client: U[plan.client], designer: U[plan.designer] };
   await upsertById(
@@ -1241,6 +1253,8 @@ async function main() {
   }
 
   loadEnvFiles();
+  const demoAdded = await seedDemoAccounts();
+
   if (cloudinaryCredentials()) {
     const images = await migrateImages(prisma, { apply: true });
     console.log(`Images copied to Cloudinary: ${images.uploaded}, failed: ${images.failed.length}`);
@@ -1251,6 +1265,178 @@ async function main() {
   for (const user of USERS) {
     console.log(`  ${user.email.padEnd(32)} ${user.role.padEnd(8)} ${user.name}`);
   }
+  if (demoAdded) {
+    console.log('Demo accounts (admin, designer, client) added from DEMO_* variables, using DEMO_PASSWORD.');
+  }
+}
+
+async function seedDemoAccounts() {
+  const emails = {
+    demoAdmin: process.env.DEMO_ADMIN_EMAIL?.trim().toLowerCase(),
+    demoDesigner: process.env.DEMO_DESIGNER_EMAIL?.trim().toLowerCase(),
+    demoClient: process.env.DEMO_CLIENT_EMAIL?.trim().toLowerCase(),
+  };
+  const set = Object.values(emails).filter(Boolean).length;
+  if (set === 0) return false;
+  if (set < 3) throw new Error('Set all three DEMO_*_EMAIL variables, or none of them.');
+  const password = process.env.DEMO_PASSWORD ?? '';
+  if (password.length < 12) throw new Error('Set DEMO_PASSWORD (12+ characters) for the demo accounts.');
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  const people: { key: 'demoAdmin' | 'demoDesigner' | 'demoClient'; name: string; role: Role; isVerified?: boolean; location?: string; bio?: string; joinedDaysAgo: number }[] = [
+    { key: 'demoAdmin', name: 'Inside Admin', role: Role.ADMIN, joinedDaysAgo: 200 },
+    { key: 'demoDesigner', name: 'Kavya Senanayake', role: Role.DESIGNER, isVerified: true, location: 'Colombo', bio: 'Warm contemporary homes with natural materials and clever storage. 8 years experience.', joinedDaysAgo: 190 },
+    { key: 'demoClient', name: 'Rashmi Perera', role: Role.CLIENT, location: 'Colombo', bio: 'Renovating a family apartment, one room at a time.', joinedDaysAgo: 130 },
+  ];
+  for (const person of people) {
+    const email = emails[person.key]!;
+    const existing = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+    if (existing && existing.id !== U[person.key]) {
+      throw new Error(`${email} already belongs to another account. Delete that account first.`);
+    }
+    const data = {
+      id: U[person.key],
+      email,
+      passwordHash,
+      name: person.name,
+      role: person.role,
+      activeRole: person.role,
+      isVerified: person.isVerified ?? false,
+      emailVerified: daysAgo(person.joinedDaysAgo),
+      status: AccountStatus.ACTIVE,
+      location: person.location ?? null,
+      bio: person.bio ?? null,
+      createdAt: daysAgo(person.joinedDaysAgo),
+    };
+    await prisma.user.upsert({ where: { id: data.id }, create: data, update: data });
+  }
+
+  // Portfolio
+  const portfolios: Omit<PortfolioSeed, 'designer'>[] = [
+    { title: 'Warm Contemporary Living Room', description: 'Linen sofas, oak joinery and layered evening lighting.', style: 'Contemporary', roomType: 'Living Room', budget: 520000, images: [['scandiLiving', 'Living room'], ['seating', 'Seating corner']], createdDaysAgo: 160 },
+    { title: 'Handleless Oak Kitchen', description: 'A clean oak kitchen with a long island and hidden storage.', style: 'Minimalist', roomType: 'Kitchen', budget: 900000, images: [['kitchen', 'Island']], createdDaysAgo: 120 },
+    { title: 'Quiet Master Bedroom', description: 'Soft neutrals, a built-in wardrobe and warm bedside lights.', style: 'Japandi', roomType: 'Bedroom', budget: 400000, images: [['retreat', 'Bedroom'], ['neutrals', 'Material palette']], createdDaysAgo: 80 },
+    { title: 'Courtyard Dining Room', description: 'A dining room that opens onto a planted courtyard.', style: 'Tropical Modern', roomType: 'Dining Room', budget: 650000, images: [['loft', 'Dining area'], ['villa', 'Courtyard view']], createdDaysAgo: 40 },
+  ];
+  for (const [index, item] of portfolios.entries()) {
+    const data = {
+      id: seedId(2, 900 + index),
+      designerId: U.demoDesigner,
+      title: item.title,
+      description: item.description,
+      style: item.style,
+      roomType: item.roomType,
+      budget: item.budget,
+      isPublished: true,
+      createdAt: daysAgo(item.createdDaysAgo),
+    };
+    const images = item.images.map(([key, caption], order) => ({ imageUrl: photo(key), caption, displayOrder: order }));
+    await prisma.portfolio.upsert({
+      where: { id: data.id },
+      create: { ...data, images: { create: images } },
+      update: { ...data, images: { deleteMany: {}, create: images } },
+    });
+  }
+
+  await upsertById(
+    (args) => prisma.verification.upsert(args),
+    withIds(21, [
+      { designerId: U.demoDesigner, status: VerificationStatus.APPROVED, evidenceUrl: seedFile('kavya-credentials.pdf'), notes: 'Interior design degree and four client references.', reviewedById: U.demoAdmin, reviewedAt: daysAgo(180), createdAt: daysAgo(185) },
+    ], 900),
+  );
+
+  // Client planning
+  await upsertById(
+    (args) => prisma.moodboard.upsert(args),
+    [{ id: seedId(3, 90), clientId: U.demoClient, name: 'Family Apartment', savedItems: [['neutrals', 'Warm neutrals'], ['shelving', 'Open shelving'], ['kitchen', 'Oak kitchen']].map(([key, note]) => ({ imageUrl: photo(key as PhotoKey, 800), note })) }],
+  );
+  await upsertById(
+    (args) => prisma.brief.upsert(args),
+    [{ id: seedId(4, 90), clientId: U.demoClient, moodboardId: seedId(3, 90), styles: ['Contemporary', 'Japandi'], rooms: ['Bathroom'], budgetRange: '250000-400000', description: 'A bright family bathroom with a walk-in shower and more storage.' }],
+  );
+  for (const data of [
+    { clientId: U.demoClient, designerId: U.demoDesigner },
+    { clientId: U.demoClient, designerId: U.tharushi },
+  ]) {
+    await prisma.favourite.upsert({ where: { clientId_designerId: data }, create: data, update: {} });
+  }
+
+  // Projects
+  for (const plan of DEMO_PROJECTS) {
+    await seedProject(plan);
+  }
+
+  // Requests: an open one from the client, a pending one for the designer
+  await upsertById(
+    (args) => prisma.projectRequest.upsert(args),
+    [
+      { id: seedId(8, 91), clientId: U.demoClient, briefId: seedId(4, 90), title: 'Family bathroom renovation', description: 'Open to proposals: a bright family bathroom with a walk-in shower.', timeline: '5 weeks', budget: 350000, type: RequestType.OPEN, status: RequestStatus.OPEN, createdDaysAgo: 3 },
+      { id: seedId(8, 92), clientId: U.amaya, designerId: U.demoDesigner, title: 'Townhouse living room', description: 'Would love your take on our townhouse living room.', timeline: '8 weeks', budget: 600000, type: RequestType.DIRECT, status: RequestStatus.PENDING, createdDaysAgo: 2 },
+    ].map(({ createdDaysAgo, ...row }) => ({ designerId: null, briefId: null, ...row, createdAt: daysAgo(createdDaysAgo) })),
+  );
+  await upsertById(
+    (args) => prisma.proposal.upsert(args),
+    [
+      { id: seedId(9, 910), requestId: seedId(8, 91), designerId: U.ravi, scope: 'Layout, tiling plan, lighting and a fittings schedule.', timeline: '5 weeks', stageFees: stageFees(340000), totalAmount: 340000, status: ProposalStatus.PENDING, submittedAt: daysAgo(2) },
+      { id: seedId(9, 911), requestId: seedId(8, 91), designerId: U.shenali, scope: 'Japandi wet room concept with a sourcing list.', timeline: '4 weeks', stageFees: stageFees(310000), totalAmount: 310000, status: ProposalStatus.PENDING, submittedAt: daysAgo(1) },
+    ],
+  );
+
+  // Messages
+  await seedThread(100, [
+    { from: 'designer', text: 'Hi Rashmi, the proposal stage is signed off. I am starting on the concept boards now.', daysAgo: 22 },
+    { from: 'client', text: 'Lovely. Please keep the teak dining chairs, they were my grandmother\'s.', daysAgo: 21 },
+    { from: 'designer', text: 'Of course, they will set the tone for the whole room.', daysAgo: 21 },
+    { from: 'designer', text: 'Concept boards are uploaded. Option A is lighter, option B is warmer.', daysAgo: 2, attachment: { url: photo('samples'), type: 'jpg' } },
+    { from: 'designer', text: 'Let me know which way you lean and I will start on the 3D visuals.', daysAgo: 1, unread: true },
+  ]);
+  await seedThread(101, [
+    { from: 'designer', text: 'Everything is styled and photographed. Thank you for a lovely project.', daysAgo: 30 },
+    { from: 'client', text: 'We are sleeping so much better. Thank you, Kavya!', daysAgo: 29 },
+  ]);
+  await seedThread(102, [
+    { from: 'client', text: 'I left feedback on the design stage about the desk position.', daysAgo: 6 },
+    { from: 'designer', text: 'Thanks Rashmi, revised drawings with the desk facing the garden are uploaded as v2.', daysAgo: 1 },
+  ]);
+  await seedThread(103, [
+    { from: 'client', text: 'Hi Kavya, can we keep the existing bed frame?', daysAgo: 10 },
+    { from: 'designer', text: 'Yes, I have built the concept around it.', daysAgo: 9 },
+  ]);
+
+  // Reviews
+  await upsertById(
+    (args) => prisma.review.upsert(args),
+    [
+      { id: seedId(12, 90), projectId: projectId(101), reviewerId: U.demoClient, designerId: U.demoDesigner, rating: 5, comment: 'Kavya listened to every detail and the bedroom feels like a hotel suite.', isVisible: true, createdAt: daysAgo(28) },
+      { id: seedId(12, 91), projectId: projectId(104), reviewerId: U.kasun, designerId: U.demoDesigner, rating: 5, comment: 'Brilliant kitchen, finished on time and on budget.', isVisible: true, createdAt: daysAgo(60) },
+    ],
+  );
+
+  // Notifications
+  const demoNotes: { user: UserKey; type: NotificationType; title: string; message: string; daysAgo: number; read?: boolean; metadata?: Prisma.InputJsonValue }[] = [
+    { user: 'demoClient', type: NotificationType.STAGE, title: 'Stage submitted', message: 'CONCEPT stage is awaiting your approval', daysAgo: 2, metadata: { projectId: projectId(100) } },
+    { user: 'demoClient', type: NotificationType.MESSAGE, title: 'New message', message: 'Kavya Senanayake sent a message on "Open-plan apartment refresh"', daysAgo: 1, metadata: { projectId: projectId(100) } },
+    { user: 'demoClient', type: NotificationType.PROPOSAL, title: 'New proposal', message: 'Shenali De Silva sent a proposal for "Family bathroom renovation"', daysAgo: 1, metadata: { requestId: seedId(8, 91) } },
+    { user: 'demoClient', type: NotificationType.PAYMENT, title: 'Milestone released', message: 'Your PROPOSAL stage payment was released', daysAgo: 20, read: true },
+    { user: 'demoDesigner', type: NotificationType.REQUEST, title: 'New project request', message: 'Amaya Fernando sent you a request: "Townhouse living room"', daysAgo: 2, metadata: { requestId: seedId(8, 92) } },
+    { user: 'demoDesigner', type: NotificationType.REVIEW, title: 'New review', message: 'You received a 5-star review', daysAgo: 28, read: true },
+    { user: 'demoDesigner', type: NotificationType.MESSAGE, title: 'New message', message: 'Sam Client sent a message on "Coastal guest bedroom"', daysAgo: 10, read: true, metadata: { projectId: projectId(103) } },
+  ];
+  await upsertById(
+    (args) => prisma.notification.upsert(args),
+    withIds(24, demoNotes.map((note) => ({
+      userId: U[note.user],
+      type: note.type,
+      title: note.title,
+      message: note.message,
+      metadata: note.metadata,
+      isRead: Boolean(note.read),
+      readAt: note.read ? daysAgo(Math.max(0, note.daysAgo - 0.5)) : null,
+      createdAt: daysAgo(note.daysAgo),
+    })), 900),
+  );
+
+  return true;
 }
 
 main()
