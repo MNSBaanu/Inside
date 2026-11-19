@@ -5,6 +5,9 @@ on:
     - cron: '30 20 * * *' # 02:00 Sri Lanka time
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: backup-database
   cancel-in-progress: false

@@ -6,12 +6,20 @@ on:
     paths:
       - 'packages/database/prisma/seed.ts'
       - 'packages/database/prisma/products.ts'
+      - 'packages/database/prisma/migrations/**'
   workflow_dispatch:
     inputs:
       reset:
         description: Wipe all data first, then load the sample data
         type: boolean
         default: false
+      confirm:
+        description: To wipe, also type WIPE here
+        type: string
+        default: ''
+
+permissions:
+  contents: read
 
 concurrency:
   group: seed-production
@@ -24,7 +32,7 @@ jobs:
 
     env:
       DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
-      SEED_MODE: ${{ inputs.reset && 'reset' || 'sync' }}
+      SEED_MODE: ${{ inputs.reset && inputs.confirm == 'WIPE' && 'reset' || 'sync' }}
       DEMO_ADMIN_EMAIL: ${{ secrets.DEMO_ADMIN_EMAIL }}
       DEMO_DESIGNER_EMAIL: ${{ secrets.DEMO_DESIGNER_EMAIL }}
       DEMO_CLIENT_EMAIL: ${{ secrets.DEMO_CLIENT_EMAIL }}
