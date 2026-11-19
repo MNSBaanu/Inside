@@ -46,7 +46,7 @@ export default function MessagesPage() {
               return (
                 <li key={project.id}>
                   <Link
-                    href={`/projects/${project.id}`}
+                    href={`/projects/${project.id}?tab=messages`}
                     className="group flex items-center gap-4 px-5 py-3.5 transition-colors duration-200 hover:bg-sand/50"
                   >
                     <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-soft text-brand">

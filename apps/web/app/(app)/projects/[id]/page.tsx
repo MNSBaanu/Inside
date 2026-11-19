@@ -40,7 +40,11 @@ export default function ProjectWorkspacePage({
 
   const searchParams = useSearchParams();
   const [tab, setTab] = useState<Tab>(
-    searchParams.has('payment') ? 'Payments' : 'Stages',
+    searchParams.has('payment')
+      ? 'Payments'
+      : searchParams.get('tab') === 'messages'
+        ? 'Messages'
+        : 'Stages',
   );
   const [reviewed, setReviewed] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
