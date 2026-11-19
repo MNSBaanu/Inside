@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { NewsletterForm } from '@/components/features/home/newsletter-form';
 
@@ -34,8 +35,8 @@ export function SiteFooter() {
       <div className="shell py-12 md:py-14">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1.4fr]">
           <div>
-            <Link href="/" aria-label="Inside home" className="text-2xl font-semibold tracking-tight">
-              Inside<span className="text-brand-soft">.</span>
+            <Link href="/" aria-label="Inside home" className="inline-block">
+              <Image src="/logo.png" alt="Inside" width={226} height={265} className="h-16 w-auto invert" />
             </Link>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-canvas/70">
               Good spaces start with a little inspiration.

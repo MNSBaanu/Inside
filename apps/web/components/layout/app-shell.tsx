@@ -27,6 +27,7 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
@@ -125,9 +126,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link
             href="/"
             aria-label="Inside - home"
-            className="mb-6 hidden font-display text-3xl font-semibold leading-none tracking-tight text-canvas lg:block"
+            className="mb-6 hidden lg:block"
           >
-            I<span className="text-brand-soft">.</span>
+            <Image src="/logo.png" alt="Inside" width={226} height={265} className="h-14 w-auto invert" />
           </Link>
 
           <nav className="flex flex-1 gap-0.5 overflow-x-auto [scrollbar-width:none] lg:min-h-0 lg:w-full lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden [&::-webkit-scrollbar]:hidden">
