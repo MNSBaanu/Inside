@@ -4,6 +4,7 @@ import type { AuthUser } from '../../identity/auth/auth.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
 import { ActivityService } from '../../platform/activity/activity.service';
+import { PaymentsService } from '../payments/payments.service';
 import { ProjectsService } from './projects.service';
 
 describe('ProjectsService', () => {
@@ -59,6 +60,9 @@ describe('ProjectsService', () => {
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
       activity as unknown as ActivityService,
+      {
+        refundCancelledProject: jest.fn().mockResolvedValue(0),
+      } as unknown as PaymentsService,
     );
   });
 

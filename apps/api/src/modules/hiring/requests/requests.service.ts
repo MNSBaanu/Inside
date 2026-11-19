@@ -265,7 +265,7 @@ export class RequestsService {
     }
 
     const updated = await this.prisma.projectRequest.update({
-      where: { id },
+      where: { id, status: request.status },
       data: { status: RequestStatus.CANCELLED },
       include: requestInclude,
     });
@@ -282,6 +282,7 @@ export class RequestsService {
         metadata: { requestId: id },
       },
     );
+    await this.rejectPendingProposals(id);
 
     return { success: true, data: { request: this.serialize(updated) } };
   }
@@ -296,7 +297,7 @@ export class RequestsService {
     }
 
     const updated = await this.prisma.projectRequest.update({
-      where: { id },
+      where: { id, status: RequestStatus.OPEN },
       data: { status: RequestStatus.CLOSED },
       include: requestInclude,
     });
@@ -310,8 +311,16 @@ export class RequestsService {
         metadata: { requestId: id },
       },
     );
+    await this.rejectPendingProposals(id);
 
     return { success: true, data: { request: this.serialize(updated) } };
+  }
+
+  private rejectPendingProposals(requestId: string) {
+    return this.prisma.proposal.updateMany({
+      where: { requestId, status: ProposalStatus.PENDING },
+      data: { status: ProposalStatus.REJECTED },
+    });
   }
 
   private async pendingProposalDesignerIds(requestId: string) {

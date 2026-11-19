@@ -15,6 +15,7 @@ import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { PaymentsService } from '../payments/payments.service';
 
 const projectInclude = {
   stages: { orderBy: { stageOrder: 'asc' } },
@@ -68,6 +69,7 @@ export class ProjectsService {
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
     private readonly activity: ActivityService,
+    private readonly payments: PaymentsService,
   ) {}
 
   async listMine(user: AuthUser) {
@@ -139,6 +141,7 @@ export class ProjectsService {
       throw new BadRequestException('Project is already closed');
     }
 
+    await this.payments.refundCancelledProject(id);
     const updated = await this.prisma.project.update({
       where: { id },
       data: { status: ProjectStatus.CANCELLED },

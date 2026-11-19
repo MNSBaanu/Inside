@@ -216,7 +216,7 @@ export class StagesService {
     }
 
     const updated = await this.prisma.projectStage.update({
-      where: { id: stageId },
+      where: { id: stageId, status: stage.status },
       data: { status: StageStatus.SUBMITTED, submittedAt: new Date() },
     });
 
@@ -380,7 +380,7 @@ export class StagesService {
     }
 
     const updated = await this.prisma.projectStage.update({
-      where: { id: stageId },
+      where: { id: stageId, status: StageStatus.SUBMITTED },
       data: { status: StageStatus.REJECTED },
     });
 

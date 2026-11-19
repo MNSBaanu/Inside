@@ -1,5 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { config as loadEnv } from 'dotenv';
 import helmet from 'helmet';
@@ -15,7 +16,8 @@ async function bootstrap() {
     override: process.env.NODE_ENV === 'development',
   });
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.set('trust proxy', 1);
 
   app.use(helmet());
   app.enableCors({

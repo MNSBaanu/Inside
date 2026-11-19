@@ -159,7 +159,7 @@ export class ProposalsService {
     }
 
     const updated = await this.prisma.proposal.update({
-      where: { id },
+      where: { id, status: ProposalStatus.PENDING },
       data: { status: ProposalStatus.WITHDRAWN },
       include: proposalInclude,
     });
@@ -182,7 +182,7 @@ export class ProposalsService {
     }
 
     const updated = await this.prisma.proposal.update({
-      where: { id },
+      where: { id, status: ProposalStatus.PENDING },
       data: { status: ProposalStatus.REJECTED },
       include: proposalInclude,
     });

@@ -22,7 +22,10 @@ describe('RequestsService', () => {
       findUnique: jest.fn(),
       update: jest.fn(),
     },
-    proposal: { findMany: jest.fn().mockResolvedValue([]) },
+    proposal: {
+      findMany: jest.fn().mockResolvedValue([]),
+      updateMany: jest.fn().mockResolvedValue({ count: 0 }),
+    },
   };
 
   const blocks = {

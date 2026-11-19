@@ -81,7 +81,7 @@ export class PaymentsService {
 
     try {
       const updated = await this.prisma.milestonePayment.update({
-        where: { id },
+        where: { id, status: PaymentStatus.PENDING },
         data: {
           status: PaymentStatus.PAID,
           paidAt: new Date(),
@@ -108,7 +108,7 @@ export class PaymentsService {
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2002'
+        (error.code === 'P2002' || error.code === 'P2025')
       ) {
         throw new ConflictException('This payment was already recorded');
       }
