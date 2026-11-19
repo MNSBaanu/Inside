@@ -40,7 +40,9 @@ export function AuthLayout({
         />
         <div className="absolute inset-0 bg-ink/45" />
         <div className="absolute inset-x-0 bottom-0 p-10 text-canvas">
-          <Image src="/logo.png" alt="Inside" width={226} height={265} className="h-20 w-auto invert" />
+          <p className="font-display text-3xl font-semibold">
+            Inside<span className="text-highlight">.</span>
+          </p>
           <p className="mt-3 max-w-sm text-canvas/80">
             Brief your project, compare verified designers, and follow the work
             through to handover.

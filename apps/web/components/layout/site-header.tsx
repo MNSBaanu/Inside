@@ -1,7 +1,6 @@
 'use client';
 
 import { Menu, X } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
 import { useEffect, useState, useSyncExternalStore } from 'react';
@@ -76,10 +75,12 @@ function HeaderContent({ pathname }: { pathname: string }) {
       >
         <Link
           href="/"
-          className={workspace ? 'lg:hidden' : ''}
+          className={`font-display text-2xl font-semibold tracking-tight text-ink ${
+            workspace ? 'lg:hidden' : ''
+          }`}
           aria-label="Inside - home"
         >
-          <Image src="/logo.png" alt="Inside" width={226} height={265} className="h-12 w-auto" priority />
+          Inside<span className="text-brand">.</span>
         </Link>
 
         {workspace ? null : (
