@@ -2,11 +2,12 @@ import Image from 'next/image';
 import { Avatar } from '@/components/ui/avatar';
 import { BackLink } from '@/components/ui/back-link';
 import { Badge } from '@/components/ui/badge';
-import { Button, ButtonLink } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { EmptyState, ErrorNotice } from '@/components/ui/feedback';
 import { PortfolioCard } from '@/components/features/portfolios/portfolio-card';
 import { ReviewList } from '@/components/features/reviews/review-list';
 import { FavouriteButton } from '@/components/features/designers/favourite-button';
+import { RequestDesignerButton } from '@/components/features/designers/request-designer-button';
 import { BlockButton } from '@/components/features/moderation/block-button';
 import { ReportDialog } from '@/components/features/moderation/report-dialog';
 import { AutoRefresh } from '@/components/layout/auto-refresh';
@@ -107,11 +108,7 @@ export default async function DesignerProfilePage({
 
             <div className="flex flex-wrap items-center gap-3">
               {designer.isAvailable ? (
-                <ButtonLink
-                  href={`/requests/new?designerId=${designer.id}`}
-                >
-                  Request this designer
-                </ButtonLink>
+                <RequestDesignerButton designerId={designer.id} />
               ) : (
                 <Button disabled>
                   Not taking new requests

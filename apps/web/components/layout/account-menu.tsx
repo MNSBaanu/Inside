@@ -8,7 +8,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { Avatar } from '@/components/ui/avatar';
-import { api } from '@/lib/api/client';
+import { api, errorMessage } from '@/lib/api/client';
+import { useToast } from '@/components/ui/toast';
 import { useApi } from '@/lib/api/use-api';
 import { useSocketEvent } from '@/lib/realtime/socket';
 import type { Notification, ProjectListItem, User } from '@/lib/types';
@@ -69,6 +70,7 @@ export function AccountMenu({ user }: { user: User }) {
   }, [open]);
 
   const otherRole = user.activeRole === 'DESIGNER' ? 'CLIENT' : 'DESIGNER';
+  const toast = useToast();
 
   async function onSwitchRole() {
     setSwitching(true);
@@ -77,6 +79,8 @@ export function AccountMenu({ user }: { user: User }) {
       await refreshUser();
       setOpen(false);
       router.push('/dashboard');
+    } catch (cause) {
+      toast(errorMessage(cause));
     } finally {
       setSwitching(false);
     }

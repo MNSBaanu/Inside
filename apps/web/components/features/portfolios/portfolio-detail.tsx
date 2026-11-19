@@ -7,6 +7,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { BackLink } from '@/components/ui/back-link';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
+import { RequestDesignerButton } from '@/components/features/designers/request-designer-button';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Rating } from '@/components/ui/rating';
 import { formatDate, formatMoney } from '@/lib/utils/format';
@@ -245,12 +246,10 @@ export function PortfolioDetail({
 
             <div className="mt-6 flex flex-col gap-3">
               {designer?.isAvailable === false ? null : (
-                <ButtonLink
-                  href={`/requests/new?designerId=${portfolio.designer.id}`}
+                <RequestDesignerButton
+                  designerId={portfolio.designer.id}
                   fullWidth
-                >
-                  Request this designer
-                </ButtonLink>
+                />
               )}
               <ButtonLink
                 href={`/designers/${portfolio.designer.id}`}

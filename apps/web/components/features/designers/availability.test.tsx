@@ -10,6 +10,9 @@ vi.mock('@/components/ui/back-link', () => ({ BackLink: () => null }));
 vi.mock('@/components/features/designers/favourite-button', () => ({
   FavouriteButton: () => null,
 }));
+vi.mock('@/components/providers/session-provider', () => ({
+  useSession: () => ({ user: null, status: 'unauthenticated' }),
+}));
 vi.mock('@/components/features/moderation/block-button', () => ({
   BlockButton: () => null,
 }));

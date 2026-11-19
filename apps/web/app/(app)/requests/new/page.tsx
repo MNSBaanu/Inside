@@ -8,7 +8,8 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Field, Input, Textarea } from '@/components/ui/field';
-import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { useSession } from '@/components/providers/session-provider';
 import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
 import { cn } from '@/lib/utils/cn';
@@ -178,6 +179,20 @@ function NewRequestForm() {
 }
 
 export default function NewRequestPage() {
+  const { user } = useSession();
+  if (user && user.activeRole !== 'CLIENT') {
+    return (
+      <EmptyState
+        title="Requests are sent by clients."
+        description={
+          user.role === 'DESIGNER'
+            ? 'Switch to your client view to request a designer.'
+            : 'Sign in with a client account to send a request.'
+        }
+      />
+    );
+  }
+
   return (
     <div>
       <Link

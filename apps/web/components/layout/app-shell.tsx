@@ -33,7 +33,8 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { AnnouncementBanner } from '@/components/features/announcements/announcement-banner';
 import { useSession } from '@/components/providers/session-provider';
 import { Skeleton } from '@/components/ui/feedback';
-import { api } from '@/lib/api/client';
+import { api, errorMessage } from '@/lib/api/client';
+import { useToast } from '@/components/ui/toast';
 import { cn } from '@/lib/utils/cn';
 import type { Role } from '@/lib/types';
 
@@ -91,7 +92,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const signingOut = useRef(false);
   useEffect(() => {
     if (status === 'unauthenticated' && !signingOut.current) {
-      router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+      router.replace(
+        `/login?next=${encodeURIComponent(pathname + window.location.search)}`,
+      );
     }
   }, [status, router, pathname]);
 
@@ -240,6 +243,7 @@ function RoleSwitch({ activeRole }: { activeRole: Role }) {
   const { refreshUser } = useSession();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const toast = useToast();
   const target: Role = activeRole === 'DESIGNER' ? 'CLIENT' : 'DESIGNER';
 
   async function switchRole() {
@@ -248,6 +252,8 @@ function RoleSwitch({ activeRole }: { activeRole: Role }) {
       await api.patch('/users/me/active-role', { activeRole: target });
       await refreshUser();
       router.push('/dashboard');
+    } catch (cause) {
+      toast(errorMessage(cause));
     } finally {
       setBusy(false);
     }

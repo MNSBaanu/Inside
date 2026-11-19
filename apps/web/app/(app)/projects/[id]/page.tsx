@@ -3,7 +3,7 @@
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { MessageThread } from '@/components/features/projects/message-thread';
 import { PaymentList } from '@/components/features/projects/payment-list';
@@ -46,6 +46,10 @@ export default function ProjectWorkspacePage({
         ? 'Messages'
         : 'Stages',
   );
+  const tabParam = searchParams.get('tab');
+  useEffect(() => {
+    if (tabParam === 'messages') setTab('Messages');
+  }, [tabParam]);
   const [reviewed, setReviewed] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
