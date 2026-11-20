@@ -164,10 +164,12 @@ export class BriefAssistantService {
       return [...found];
     };
 
-    const budget =
+    const rawBudget =
       typeof raw.budgetRange === 'string'
         ? raw.budgetRange.replace(/[\s,]/g, '')
         : '';
+    const [low, high] = rawBudget.split('-');
+    const budget = low && low === high ? low : rawBudget;
     const description =
       typeof raw.description === 'string'
         ? raw.description.trim().slice(0, 1500)
