@@ -28,7 +28,7 @@ jobs:
           url="${DATABASE_URL%%\?*}"
           export BACKUP_URL="${url/-pooler./.}?sslmode=require"
           file="inside-$(date -u +%Y-%m-%dT%H%MZ).dump"
-          docker run --rm -e BACKUP_URL postgres:17 \
+          docker run --rm -e BACKUP_URL postgres:18 \
             sh -c 'pg_dump "$BACKUP_URL" --format=custom --no-owner --no-acl' > "$file"
           size=$(stat -c %s "$file")
           if [ "$size" -lt 1024 ]; then
