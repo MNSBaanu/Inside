@@ -79,7 +79,7 @@ describe('BriefAssistantService', () => {
   it('reports a friendly error when the provider fails or answers badly', async () => {
     const service = serviceWith({ GEMINI_API_KEY: 'k' });
 
-    fetchMock.mockResolvedValueOnce({
+    fetchMock.mockResolvedValue({
       ok: false,
       status: 429,
       json: () => ({}),
@@ -88,12 +88,12 @@ describe('BriefAssistantService', () => {
       service.suggest('Some long enough description text.'),
     ).rejects.toBeInstanceOf(ServiceUnavailableException);
 
-    fetchMock.mockRejectedValueOnce(new Error('network down'));
+    fetchMock.mockRejectedValue(new Error('network down'));
     await expect(
       service.suggest('Some long enough description text.'),
     ).rejects.toBeInstanceOf(ServiceUnavailableException);
 
-    fetchMock.mockResolvedValueOnce({
+    fetchMock.mockResolvedValue({
       ok: true,
       status: 200,
       json: () =>

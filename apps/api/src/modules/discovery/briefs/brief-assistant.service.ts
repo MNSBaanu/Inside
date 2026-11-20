@@ -60,11 +60,44 @@ export class BriefAssistantService {
     if (!key) {
       throw new ServiceUnavailableException(UNAVAILABLE);
     }
-    const model =
-      this.config.get<string>('GEMINI_MODEL') || 'gemini-flash-latest';
+    const configured = this.config.get<string>('GEMINI_MODEL')?.trim();
+    const models = [
+      ...new Set([
+        configured || 'gemini-flash-latest',
+        'gemini-2.5-flash-lite',
+        'gemini-3.5-flash',
+      ]),
+    ];
 
     let payload: unknown;
-    try {
+    for (const model of models) {
+      try {
+        payload = await this.request(key, model, text);
+        break;
+      } catch (error) {
+        this.logger.warn(
+          `Brief assistant request failed on ${model}: ${error instanceof Error ? error.message : 'unknown'}`,
+        );
+      }
+    }
+    if (payload === undefined) {
+      throw new ServiceUnavailableException(UNAVAILABLE);
+    }
+
+    const suggestion = this.parse(payload);
+    if (!suggestion) {
+      this.logger.warn('Brief assistant returned an unusable answer');
+      throw new ServiceUnavailableException(UNAVAILABLE);
+    }
+    return suggestion;
+  }
+
+  private async request(
+    key: string,
+    model: string,
+    text: string,
+  ): Promise<unknown> {
+    {
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
         {
@@ -98,20 +131,8 @@ export class BriefAssistantService {
         this.logger.warn(`Provider answered ${response.status}`);
         throw new Error(`status ${response.status}`);
       }
-      payload = await response.json();
-    } catch (error) {
-      this.logger.warn(
-        `Brief assistant request failed: ${error instanceof Error ? error.message : 'unknown'}`,
-      );
-      throw new ServiceUnavailableException(UNAVAILABLE);
+      return response.json();
     }
-
-    const suggestion = this.parse(payload);
-    if (!suggestion) {
-      this.logger.warn('Brief assistant returned an unusable answer');
-      throw new ServiceUnavailableException(UNAVAILABLE);
-    }
-    return suggestion;
   }
 
   private parse(payload: unknown): BriefSuggestion | null {
