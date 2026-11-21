@@ -40,3 +40,6 @@ Thumbs.db
 .idea/
 
 packages/database/prisma/image-migration-*.json
+
+# Personal project note (kept on disk only)
+Inside.md
