@@ -20,13 +20,13 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.0"
+    "@prisma/client": "^6.19.3"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
-    "bcryptjs": "^3.0.2",
-    "prisma": "^6.19.0",
-    "tsx": "^4.19.2",
-    "typescript": "^5.8.3"
+    "@types/node": "^22.20.5",
+    "bcryptjs": "^3.0.3",
+    "prisma": "^6.19.3",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
   }
 }

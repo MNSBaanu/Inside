@@ -19,8 +19,8 @@
     "bonto-start": "npx --yes pnpm@10.25.0 install && npx --yes pnpm@10.25.0 --filter @inside/database exec prisma generate && npx --yes pnpm@10.25.0 --filter api build && node apps/api/dist/main.js"
   },
   "devDependencies": {
-    "turbo": "^2.5.4",
-    "typescript": "^5.8.3"
+    "turbo": "^2.11.13",
+    "typescript": "^5.9.3"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
