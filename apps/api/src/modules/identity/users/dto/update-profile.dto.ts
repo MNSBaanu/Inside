@@ -48,7 +48,10 @@ export class UpdateProfileDto {
   @IsBoolean()
   isAvailable?: boolean;
 
-  @ApiPropertyOptional({ example: '2026-12-01', description: 'Date the designer can start new work' })
+  @ApiPropertyOptional({
+    example: '2026-12-01',
+    description: 'Date the designer can start new work',
+  })
   @IsOptional()
   @IsDateString()
   availableFrom?: string | null;
