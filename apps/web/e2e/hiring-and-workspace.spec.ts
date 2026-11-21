@@ -19,6 +19,10 @@ test.describe('Hiring and the project workspace', () => {
       .filter({ hasText: 'Shenali De Silva' })
       .getByRole('button', { name: 'Accept proposal' })
       .click();
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: 'Accept and start project' })
+      .click();
     await expect(page).toHaveURL(/\/projects\//);
     await expect(page.getByRole('heading', { name: 'Japandi living room' })).toBeVisible();
   });
@@ -60,6 +64,7 @@ test.describe('Hiring and the project workspace', () => {
     await openFromList(page, '/projects', 'Master bedroom makeover');
     const design = page.getByRole('listitem').filter({ hasText: /^3\s*design/i });
     await design.getByRole('button', { name: 'Resubmit for review' }).click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'Submit' }).click();
     await expect(design.getByText('Submitted', { exact: true })).toBeVisible();
 
     const clientContext = await browser.newContext();

@@ -150,6 +150,10 @@ test('a new client goes from the landing page to a completed, reviewed project',
       .filter({ hasText: 'Ravi Jayasinghe' })
       .getByRole('button', { name: 'Accept proposal' })
       .click();
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: 'Accept and start project' })
+      .click();
     await expect(page).toHaveURL(/\/projects\/[0-9a-f-]+$/);
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
     projectUrl = page.url();
