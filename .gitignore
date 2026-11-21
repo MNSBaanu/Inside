@@ -26,9 +26,6 @@ playwright-report/
 *.drawio.bkp
 *.bkp
 
-# Academic documentation - kept on disk only, not in version control
-docs/
-
 # Test coverage
 coverage/
 
