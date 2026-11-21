@@ -37,6 +37,13 @@ Inside is a full-stack platform that connects **clients** and **interior designe
 
 ---
 
+## Documentation
+
+- [User Manual](docs/User_Manual.docx) — how clients, designers, and administrators use the platform
+- [Technical Documentation](docs/Technical_Documentation.docx) — architecture, setup, security, data model, API reference, testing, and deployment
+
+---
+
 ## Tech Stack
 
 | Layer | Stack |
