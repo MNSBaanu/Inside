@@ -2,11 +2,13 @@
 
 **Interior design marketplace — portfolio discovery, visual briefs, staged collaboration, milestone payments.**
 
-[![Project Status](https://img.shields.io/badge/status-in%20development-yellow)]()
+[![Project Status](https://img.shields.io/badge/status-deployed%20(academic%20demo)-green)]()
 [![Web](https://img.shields.io/badge/web-Next.js%2014-black?logo=next.js)]()
-[![API](https://img.shields.io/badge/api-NestJS-E0234E?logo=nestjs)]()
-[![Mobile](https://img.shields.io/badge/mobile-React%20Native-61DAFB?logo=react)]()
+[![API](https://img.shields.io/badge/api-NestJS%2011-E0234E?logo=nestjs)]()
+[![Mobile](https://img.shields.io/badge/mobile-Expo%20%2F%20React%20Native-61DAFB?logo=react)]()
 [![Database](https://img.shields.io/badge/database-PostgreSQL-4169E1?logo=postgresql)]()
+
+**Live demo:** [www.insidesign.me](https://www.insidesign.me)
 
 **Done by MNSBaanu**
 
@@ -14,19 +16,24 @@
 
 Inside is a full-stack platform that connects **clients** and **interior designers** in one workflow. Clients browse completed room projects, build moodboards, submit structured briefs, hire designers, and approve work at each stage. Designers publish portfolios, respond to requests, and deliver concepts through a stage-gated workspace. Milestone payments are a Stripe test-mode demonstration; releasing a milestone records approval and does not transfer money to a designer.
 
+![Inside home page](assets/readme/home.jpg)
+
 ---
 
 ## Features
 
 - **Portfolio discovery** — search and filter designers by style, room type, and budget
-- **Moodboards & briefs** — visual inspiration boards that generate editable project briefs
-- **Designer matching** — fit scoring and ranked recommendations
+- **Moodboards & briefs** — visual inspiration boards that generate editable project briefs, with an optional AI brief assistant (Gemini)
+- **Designer matching** — fit scoring and ranked, explainable recommendations
 - **Hiring** — open requests, direct invites, proposals, and side-by-side comparison
-- **Project workspace** — staged flow (Proposal → Concept → Design → Revision → Completion)
-- **Messaging & notifications** — in-app and email alerts; push on mobile
+- **Project workspace** — staged flow (Proposal → Concept → Design → Revision → Completion) with files, tasks, history, and reviews
+- **Messaging & notifications** — live chat (Socket.IO), in-app notifications, and transactional email (Resend); push on mobile
 - **Milestone payment demo** — Stripe test-mode Checkout and approval records; no escrow or designer payouts
+- **Shop** — product catalogue and product pages
 - **Opt-in dual-role accounts** — every account starts with one role; a designer can create a client account and a client can create a designer account from Account, then switch `activeRole` CLIENT ↔ DESIGNER
-- **Trust & admin** — verification, reviews, moderation, and platform oversight
+- **Trust & admin** — verification, reviews, reports, moderation, analytics with PDF export, announcements, and newsletter
+
+![Project workspace with stage approval](assets/readme/project-workspace.jpg)
 
 ---
 
@@ -36,11 +43,60 @@ Inside is a full-stack platform that connects **clients** and **interior designe
 |-------|-------|
 | Web | Next.js 14, TypeScript, Tailwind CSS |
 | Mobile | Expo / React Native, TypeScript |
-| API | Node.js, NestJS, Prisma |
+| API | Node.js, NestJS 11, Prisma, Socket.IO |
 | Database | PostgreSQL |
 | Media | Cloudinary |
-| Payments | Stripe |
-| Tooling | pnpm, Turborepo, Git, GitHub Actions, Postman, Swagger |
+| Email | Resend |
+| AI | Google Gemini (brief assistant) |
+| Payments | Stripe (test mode) |
+| Hosting | Vercel (web), Render (API), Neon (database) |
+| Tooling | pnpm, Turborepo, Git, GitHub Actions, Jest, Vitest, Playwright, Postman, Swagger |
+
+---
+
+## Project Structure
+
+```
+apps/
+  api/       NestJS API (src/modules: identity, discovery, hiring, delivery, trust, platform)
+  web/       Next.js web app (app/, components/, lib/)
+  mobile/    Expo mobile companion
+packages/
+  database/  Prisma schema, migrations, seed
+  eslint-config/
+```
+
+---
+
+## Getting Started
+
+Requires Node.js, pnpm, and a local PostgreSQL database. Copy the example environment files in `apps/api`, `apps/web`, and `packages/database`, then set the database URL and any service keys you want to use.
+
+```bash
+pnpm install
+pnpm --filter @inside/database exec prisma migrate dev
+pnpm --filter @inside/database db:seed   # demo accounts
+pnpm dev                                 # run all apps
+```
+
+| Command | Purpose |
+|---------|---------|
+| `pnpm typecheck` | Type-check the workspace |
+| `pnpm lint` | Lint the workspace |
+| `pnpm test` | Unit tests (Jest for the API, Vitest for the web) |
+| `pnpm --filter api test:e2e` | API integration tests (needs Postgres) |
+| `pnpm --filter web exec playwright test` | Browser tests |
+| `pnpm build` | Production build |
+
+The API serves Swagger documentation for its routes.
+
+---
+
+## CI and deployment
+
+- **CI:** GitHub Actions runs typecheck, lint, tests, and build on pushes to `main` and on pull requests.
+- **Deploy:** pushes to `main` deploy the web app to Vercel and the API to Render, against a Neon PostgreSQL database.
+- **Seeding:** the `Seed production` workflow loads demo data; resetting production requires typing `WIPE` to confirm.
 
 ---
 
