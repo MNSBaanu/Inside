@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { AuthFooterLink, AuthLayout } from '@/components/features/auth/auth-layout';
+import { GoogleSignInButton } from '@/components/features/auth/google-sign-in-button';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
@@ -13,7 +14,7 @@ import { errorMessage } from '@/lib/api/client';
 import { safeRedirectPath } from '@/lib/utils/url';
 
 function LoginForm() {
-  const { login } = useSession();
+  const { login, loginWithGoogle } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = safeRedirectPath(searchParams.get('next'), '/dashboard');
@@ -29,6 +30,18 @@ function LoginForm() {
     setSubmitting(true);
     try {
       await login(email, password);
+      router.push(redirectTo);
+    } catch (cause) {
+      setError(errorMessage(cause));
+      setSubmitting(false);
+    }
+  }
+
+  async function onGoogleToken(accessToken: string) {
+    setError(null);
+    setSubmitting(true);
+    try {
+      await loginWithGoogle(accessToken);
       router.push(redirectTo);
     } catch (cause) {
       setError(errorMessage(cause));
@@ -76,6 +89,13 @@ function LoginForm() {
       >
         Forgot your password?
       </Link>
+
+      <GoogleSignInButton
+        label="Continue with Google"
+        disabled={submitting}
+        onAccessToken={onGoogleToken}
+        onError={setError}
+      />
     </form>
   );
 }

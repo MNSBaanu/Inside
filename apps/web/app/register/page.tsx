@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { AuthFooterLink, AuthLayout } from '@/components/features/auth/auth-layout';
+import { GoogleSignInButton } from '@/components/features/auth/google-sign-in-button';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
@@ -25,7 +26,7 @@ const roles = [
 ];
 
 export default function RegisterPage() {
-  const { register } = useSession();
+  const { register, loginWithGoogle } = useSession();
   const router = useRouter();
 
   const [role, setRole] = useState<'CLIENT' | 'DESIGNER'>('CLIENT');
@@ -41,6 +42,18 @@ export default function RegisterPage() {
     setSubmitting(true);
     try {
       await register({ name, email, password, role });
+      router.push('/dashboard');
+    } catch (cause) {
+      setError(errorMessage(cause));
+      setSubmitting(false);
+    }
+  }
+
+  async function onGoogleToken(accessToken: string) {
+    setError(null);
+    setSubmitting(true);
+    try {
+      await loginWithGoogle(accessToken, role);
       router.push('/dashboard');
     } catch (cause) {
       setError(errorMessage(cause));
@@ -141,6 +154,13 @@ export default function RegisterPage() {
         <Button type="submit" size="lg" fullWidth disabled={submitting}>
           {submitting ? 'Creating account…' : 'Create account'}
         </Button>
+
+        <GoogleSignInButton
+          label="Sign up with Google"
+          disabled={submitting}
+          onAccessToken={onGoogleToken}
+          onError={setError}
+        />
       </form>
     </AuthLayout>
   );

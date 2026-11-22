@@ -27,6 +27,10 @@ type SessionValue = {
     password: string;
     role: Extract<Role, 'CLIENT' | 'DESIGNER'>;
   }) => Promise<User>;
+  loginWithGoogle: (
+    accessToken: string,
+    role?: Extract<Role, 'CLIENT' | 'DESIGNER'>,
+  ) => Promise<User>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 };
@@ -124,6 +128,18 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     [adopt],
   );
 
+  const loginWithGoogle = useCallback<SessionValue['loginWithGoogle']>(
+    async (accessToken, role) => {
+      const payload = await api.post<AuthPayload>(
+        '/auth/google',
+        { accessToken, role },
+        { auth: false },
+      );
+      return adopt(payload);
+    },
+    [adopt],
+  );
+
   const logout = useCallback(async () => {
     latest.current++;
     const refreshToken = authStorage.getRefreshToken();
@@ -155,10 +171,20 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
             : 'unauthenticated',
       login,
       register,
+      loginWithGoogle,
       logout,
       refreshUser: loadUser,
     }),
-    [hasSession, user, status, login, register, logout, loadUser],
+    [
+      hasSession,
+      user,
+      status,
+      login,
+      register,
+      loginWithGoogle,
+      logout,
+      loadUser,
+    ],
   );
 
   return (

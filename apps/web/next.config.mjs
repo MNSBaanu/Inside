@@ -5,13 +5,13 @@ const apiOrigin = new URL(
 
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' https://js.stripe.com${isDev ? " 'unsafe-eval'" : ''}`,
-  "style-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline' https://js.stripe.com https://accounts.google.com/gsi/client${isDev ? " 'unsafe-eval'" : ''}`,
+  "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
   // User images outside the optimizer allowlist are loaded directly.
   "img-src 'self' data: blob: https:",
   "font-src 'self'",
-  `connect-src 'self' ${apiOrigin} ${apiOrigin.replace(/^http/, 'ws')} https://api.cloudinary.com https://api.stripe.com${isDev ? ' ws: wss:' : ''}`,
-  "frame-src https://js.stripe.com https://hooks.stripe.com",
+  `connect-src 'self' ${apiOrigin} ${apiOrigin.replace(/^http/, 'ws')} https://api.cloudinary.com https://api.stripe.com https://accounts.google.com/gsi/${isDev ? ' ws: wss:' : ''}`,
+  "frame-src https://js.stripe.com https://hooks.stripe.com https://accounts.google.com/gsi/",
   "frame-ancestors 'none'",
   "form-action 'self'",
   "base-uri 'self'",
