@@ -14,10 +14,12 @@ import {
   type User,
 } from '@inside/database';
 import * as bcrypt from 'bcryptjs';
+import { OAuth2Client, type TokenInfo } from 'google-auth-library';
 import { PrismaService } from '../../../database/prisma.service';
 import { EmailService } from '../../platform/email/email.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
 
 export type AuthUser = Pick<
   User,
@@ -59,6 +61,7 @@ export class AuthService {
     this.bcryptRounds,
   );
   private readonly refreshTtlMs: number;
+  private readonly googleClient = new OAuth2Client();
 
   constructor(
     private readonly prisma: PrismaService,
@@ -135,6 +138,96 @@ export class AuthService {
     const ok = await bcrypt.compare(dto.password, user.passwordHash);
     if (!ok) {
       throw new UnauthorizedException('Invalid email or password');
+    }
+
+    if (user.status === AccountStatus.SUSPENDED) {
+      throw new UnauthorizedException('Account suspended');
+    }
+
+    const tokens = await this.issueTokens(user, meta);
+    return {
+      success: true,
+      data: {
+        user: this.toPublicUser(user),
+        ...tokens,
+      },
+    };
+  }
+
+  async loginWithGoogle(
+    dto: GoogleLoginDto,
+    meta?: { userAgent?: string; ipAddress?: string },
+  ) {
+    const clientId = this.config.get<string>('GOOGLE_CLIENT_ID');
+    if (!clientId) {
+      throw new BadRequestException('Google sign-in is not configured');
+    }
+
+    let tokenInfo: TokenInfo;
+    try {
+      tokenInfo = await this.googleClient.getTokenInfo(dto.accessToken);
+    } catch {
+      throw new UnauthorizedException('Invalid Google credential');
+    }
+    if (
+      tokenInfo.aud !== clientId ||
+      !tokenInfo.sub ||
+      !tokenInfo.email ||
+      !tokenInfo.email_verified
+    ) {
+      throw new UnauthorizedException('Invalid Google credential');
+    }
+
+    type GoogleProfile = { name?: string; picture?: string };
+    const profile: GoogleProfile = await fetch(
+      'https://www.googleapis.com/oauth2/v3/userinfo',
+      { headers: { Authorization: `Bearer ${dto.accessToken}` } },
+    )
+      .then((res) => (res.ok ? (res.json() as Promise<GoogleProfile>) : {}))
+      .catch(() => ({}));
+    const payload = {
+      sub: tokenInfo.sub,
+      name: profile.name,
+      picture: profile.picture,
+    };
+
+    const email = tokenInfo.email.toLowerCase();
+    let user =
+      (await this.prisma.user.findUnique({
+        where: { googleId: payload.sub },
+      })) ?? (await this.prisma.user.findUnique({ where: { email } }));
+
+    if (user) {
+      if (user.googleId && user.googleId !== payload.sub) {
+        throw new UnauthorizedException('Invalid Google credential');
+      }
+      if (!user.googleId || !user.emailVerified) {
+        user = await this.prisma.user.update({
+          where: { id: user.id },
+          data: {
+            googleId: payload.sub,
+            emailVerified: user.emailVerified ?? new Date(),
+          },
+        });
+      }
+    } else {
+      const role = dto.role === 'DESIGNER' ? Role.DESIGNER : Role.CLIENT;
+      user = await this.prisma.user.create({
+        data: {
+          email,
+          passwordHash: await bcrypt.hash(
+            randomBytes(32).toString('hex'),
+            this.bcryptRounds,
+          ),
+          googleId: payload.sub,
+          name: payload.name ?? email.split('@')[0],
+          avatarUrl: payload.picture,
+          role,
+          activeRole: role,
+          isVerified: false,
+          emailVerified: new Date(),
+        },
+      });
     }
 
     if (user.status === AccountStatus.SUSPENDED) {

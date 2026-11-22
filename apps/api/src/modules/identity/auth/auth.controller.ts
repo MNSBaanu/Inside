@@ -11,6 +11,7 @@ import type { Request } from 'express';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -40,6 +41,17 @@ export class AuthController {
   @ApiOkResponse({ description: 'Access and refresh tokens' })
   login(@Body() dto: LoginDto, @Req() req: Request) {
     return this.authService.login(dto, {
+      userAgent: req.headers['user-agent'],
+      ipAddress: req.ip,
+    });
+  }
+
+  @Post('google')
+  @Throttle(AUTH_THROTTLE)
+  @ApiOperation({ summary: 'Sign in or sign up with a Google ID token' })
+  @ApiOkResponse({ description: 'Access and refresh tokens' })
+  google(@Body() dto: GoogleLoginDto, @Req() req: Request) {
+    return this.authService.loginWithGoogle(dto, {
       userAgent: req.headers['user-agent'],
       ipAddress: req.ip,
     });
