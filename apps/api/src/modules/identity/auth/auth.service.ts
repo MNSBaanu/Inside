@@ -89,7 +89,7 @@ export class AuthService {
     }
     const user = await this.findOrLinkClerkUser(clerkUserId);
     if (user.status === AccountStatus.SUSPENDED) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Account suspended');
     }
     return this.toPublicUser(user);
   }

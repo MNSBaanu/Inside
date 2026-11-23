@@ -4,25 +4,32 @@ import { SignIn } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { AuthFooterLink, AuthLayout } from '@/components/features/auth/auth-layout';
+import { ErrorNotice } from '@/components/ui/feedback';
 import { safeRedirectPath } from '@/lib/utils/url';
 
 function LoginForm() {
   const searchParams = useSearchParams();
   const clerkRedirect = searchParams.get('redirect_url');
+  const origin = typeof window === 'undefined' ? null : window.location.origin;
   const redirectTo = safeRedirectPath(
     searchParams.get('next') ??
-      (clerkRedirect?.startsWith(window.location.origin)
-        ? clerkRedirect.slice(window.location.origin.length)
+      (origin && clerkRedirect?.startsWith(origin)
+        ? clerkRedirect.slice(origin.length)
         : null),
     '/dashboard',
   );
 
   return (
-    <SignIn
-      routing="hash"
-      signUpUrl="/register"
-      forceRedirectUrl={redirectTo}
-    />
+    <div className="flex flex-col gap-6">
+      {searchParams.get('suspended') ? (
+        <ErrorNotice message="Account suspended" />
+      ) : null}
+      <SignIn
+        routing="hash"
+        signUpUrl="/register"
+        forceRedirectUrl={redirectTo}
+      />
+    </div>
   );
 }
 

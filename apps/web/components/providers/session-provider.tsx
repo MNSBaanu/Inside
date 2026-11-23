@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { api, setTokenGetter } from '@/lib/api/client';
+import { ApiError, api, setTokenGetter } from '@/lib/api/client';
 import { connectSocket, disconnectSocket } from '@/lib/realtime/socket';
 import type { User } from '@/lib/types';
 
@@ -45,12 +45,20 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         setUser(data.user);
         setStatus('authenticated');
       })
-      .catch(() => {
+      .catch((cause) => {
         if (request !== latest.current) return;
         setUser(null);
+        // Signed in with Clerk but refused by the API: sign out, or /login bounces straight back.
+        if (cause instanceof ApiError && cause.statusCode === 401) {
+          const suspended = cause.message === 'Account suspended';
+          void signOut({
+            redirectUrl: suspended ? '/login?suspended=1' : '/login',
+          });
+          return;
+        }
         setStatus('unauthenticated');
       });
-  }, []);
+  }, [signOut]);
 
   useEffect(() => {
     if (!isLoaded) return;

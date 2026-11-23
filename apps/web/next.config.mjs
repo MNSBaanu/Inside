@@ -2,16 +2,24 @@ const isDev = process.env.NODE_ENV !== 'production';
 const apiOrigin = new URL(
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
 ).origin;
+// The publishable key encodes the Clerk Frontend API host the browser talks to.
+const clerkOrigin = `https://${Buffer.from(
+  (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? '').split('_')[2] ?? '',
+  'base64',
+)
+  .toString()
+  .replace(/\$$/, '')}`;
 
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' https://js.stripe.com https://accounts.google.com/gsi/client${isDev ? " 'unsafe-eval'" : ''}`,
-  "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
+  `script-src 'self' 'unsafe-inline' https://js.stripe.com ${clerkOrigin} https://challenges.cloudflare.com${isDev ? " 'unsafe-eval'" : ''}`,
+  "style-src 'self' 'unsafe-inline'",
   // User images outside the optimizer allowlist are loaded directly.
   "img-src 'self' data: blob: https:",
   "font-src 'self'",
-  `connect-src 'self' ${apiOrigin} ${apiOrigin.replace(/^http/, 'ws')} https://api.cloudinary.com https://api.stripe.com https://accounts.google.com/gsi/${isDev ? ' ws: wss:' : ''}`,
-  "frame-src https://js.stripe.com https://hooks.stripe.com https://accounts.google.com/gsi/",
+  "worker-src 'self' blob:",
+  `connect-src 'self' ${apiOrigin} ${apiOrigin.replace(/^http/, 'ws')} https://api.cloudinary.com https://api.stripe.com ${clerkOrigin}${isDev ? ' ws: wss:' : ''}`,
+  "frame-src https://js.stripe.com https://hooks.stripe.com https://challenges.cloudflare.com",
   "frame-ancestors 'none'",
   "form-action 'self'",
   "base-uri 'self'",
