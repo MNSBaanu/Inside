@@ -1,22 +1,23 @@
+import { clerk } from '@clerk/testing/playwright';
 import { expect, type Page } from '@playwright/test';
 
-/** Password shared by every seeded account (packages/database/prisma/seed.ts). */
+/** Password shared by every seeded account (packages/database/prisma/seed.ts) and its Clerk user. */
 export const PASSWORD = 'Password123!';
 
 export const accounts = {
-  admin: 'admin@inside.test',
-  nadia: 'client@inside.test',
-  kasun: 'client3@inside.test',
-  suspended: 'suspended.client@inside.test',
-  ravi: 'designer@inside.test',
-  tharushi: 'designer3@inside.test',
+  admin: 'admin@insidesign.me',
+  nadia: 'client@insidesign.me',
+  kasun: 'client3@insidesign.me',
+  suspended: 'suspended.client@insidesign.me',
+  ravi: 'designer@insidesign.me',
+  tharushi: 'designer3@insidesign.me',
 };
 
+/** Signs in through Clerk with a sign-in token, then opens `next` (or the dashboard). */
 export async function signIn(page: Page, email: string, next?: string) {
-  await page.goto(next ? `/login?next=${encodeURIComponent(next)}` : '/login');
-  await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Password', { exact: true }).fill(PASSWORD);
-  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.goto('/login');
+  await clerk.signIn({ page, emailAddress: email });
+  await page.goto(next ?? '/dashboard');
   await expect(page).toHaveURL(next ?? /\/(dashboard|admin)/);
 }
 

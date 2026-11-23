@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { parseEnv } from 'node:util';
 import { defineConfig, devices } from '@playwright/test';
 
 /**
@@ -6,6 +8,21 @@ import { defineConfig, devices } from '@playwright/test';
  * on ports 3101 and 3100, so a local dev setup on 3000/3001 is never touched.
  * Needs Postgres running (docker compose up -d postgres).
  */
+// Only the Clerk keys come from .env.local; CI passes them as environment variables instead.
+let localEnv: Record<string, string | undefined> = {};
+try {
+  localEnv = parseEnv(readFileSync('.env.local', 'utf8'));
+} catch {
+  // No .env.local.
+}
+const CLERK_PUBLISHABLE_KEY =
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ??
+  localEnv.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ??
+  '';
+const CLERK_SECRET_KEY =
+  process.env.CLERK_SECRET_KEY ?? localEnv.CLERK_SECRET_KEY ?? '';
+process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = CLERK_PUBLISHABLE_KEY;
+process.env.CLERK_SECRET_KEY = CLERK_SECRET_KEY;
 const WEB_PORT = 3100;
 const API_PORT = 3101;
 const DATABASE_URL =
@@ -14,6 +31,7 @@ const DATABASE_URL =
 
 export default defineConfig({
   testDir: './e2e',
+  globalSetup: './e2e/global.setup.ts',
   // Tests share one seeded database, so they run one at a time.
   workers: 1,
   fullyParallel: false,
@@ -55,6 +73,7 @@ export default defineConfig({
         JWT_REFRESH_DAYS: '30',
         CORS_ORIGIN: `http://localhost:${WEB_PORT}`,
         THROTTLE_DISABLED: 'true',
+        CLERK_SECRET_KEY,
       },
     },
     {
@@ -67,6 +86,10 @@ export default defineConfig({
         NEXT_PUBLIC_SITE_URL: `http://localhost:${WEB_PORT}`,
         // Separate build folder so a running `next dev` on 3000 is unaffected.
         NEXT_DIST_DIR: '.next-ui',
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: CLERK_PUBLISHABLE_KEY,
+        // As in CI: no payment provider, even when .env.local has a Stripe key.
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: '',
+        CLERK_SECRET_KEY,
       },
     },
   ],

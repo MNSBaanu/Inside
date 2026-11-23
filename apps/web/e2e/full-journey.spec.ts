@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
+import { setupClerkTestingToken } from '@clerk/testing/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, accounts, openFromList, signIn } from './helpers';
+import { accounts, openFromList, signIn } from './helpers';
 
 const WEB_ORIGIN = 'http://localhost:3100';
 const STAGES = ['proposal', 'concept', 'design', 'revision', 'completion'];
@@ -68,16 +69,20 @@ test('a new client goes from the landing page to a completed, reviewed project',
   const reviewText = `Smooth project from start to finish (${run}).`;
 
   await test.step('guest starts from the landing page and creates an account', async () => {
+    await setupClerkTestingToken({ page });
     await page.goto('/');
     await page.getByRole('link', { name: 'Start a brief' }).first().click();
-    await expect(page).toHaveURL(/\/login\?next=/);
+    await expect(page).toHaveURL(/\/login\?/);
     await page.getByRole('link', { name: /Create an account/ }).click();
     await expect(page).toHaveURL(/\/register/);
     await page.getByRole('button', { name: /I have a space/ }).click();
-    await page.getByLabel('Full name').fill('Journey Client');
-    await page.getByLabel('Email').fill(`journey-${run}@inside.test`);
-    await page.getByLabel('Password', { exact: true }).fill(PASSWORD);
-    await page.getByRole('button', { name: 'Create account' }).click();
+    await page.getByLabel('First name').fill('Journey');
+    await page.getByLabel('Last name').fill('Client');
+    await page.getByLabel('Email address').fill(`journey-${run}+clerk_test@example.com`);
+    await page.getByLabel('Password', { exact: true }).fill(`Inside-${run}-pw!`);
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await expect(page.getByText(/verify your email/i)).toBeVisible();
+    await page.keyboard.type('424242');
     await expect(page).toHaveURL(/\/dashboard/);
   });
 
@@ -135,7 +140,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
     await designer.getByLabel('Scope').fill('Layout, concept boards, full design and a revision round.');
     await designer.getByLabel('Timeline').fill('6 weeks');
     for (const stage of STAGES.slice(1)) {
-      await designer.getByLabel(stage, { exact: true }).fill('100000');
+      await designer.getByLabel(new RegExp(`^${stage}$`, 'i')).fill('100000');
     }
     await designer.getByRole('button', { name: 'Send proposal' }).click();
     await expect(designer.getByRole('button', { name: 'Send proposal' })).toBeHidden();
@@ -149,6 +154,10 @@ test('a new client goes from the landing page to a completed, reviewed project',
       .getByRole('listitem')
       .filter({ hasText: 'Ravi Jayasinghe' })
       .getByRole('button', { name: 'Accept proposal' })
+      .click();
+    await page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: 'Accept and start project' })
       .click();
     await expect(page).toHaveURL(/\/projects\/[0-9a-f-]+$/);
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
@@ -177,13 +186,11 @@ test('a new client goes from the landing page to a completed, reviewed project',
       await expect(card.getByText('1/1 done')).toBeVisible();
 
       await card.getByRole('button', { name: 'Files' }).click();
-      await card.getByLabel('File', { exact: true }).setInputFiles({
+      await card.getByLabel(/^Add a file/).setInputFiles({
         name: `${name}.pdf`,
         mimeType: 'application/pdf',
         buffer: Buffer.from('%PDF-1.4 journey test'),
       });
-      await expect(card.getByText(`Uploaded ${name}.pdf`)).toBeVisible();
-      await card.getByRole('button', { name: 'Add deliverable' }).click();
       await expect(card.getByRole('link', { name: `${name}.pdf` })).toBeVisible();
 
       await submit.click();

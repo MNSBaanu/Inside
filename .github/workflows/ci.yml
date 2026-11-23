@@ -201,3 +201,6 @@ jobs:
 
       - name: Browser tests
         run: pnpm --filter web exec playwright test
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
