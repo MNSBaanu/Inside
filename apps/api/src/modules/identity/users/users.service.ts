@@ -59,7 +59,9 @@ export class UsersService {
 
   async changePassword(userId: string, dto: ChangePasswordDto) {
     const user = await this.requireActiveUser(userId);
-    const ok = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    const ok =
+      !!user.passwordHash &&
+      (await bcrypt.compare(dto.currentPassword, user.passwordHash));
     if (!ok) {
       throw new UnauthorizedException('Current password is incorrect');
     }
@@ -89,7 +91,7 @@ export class UsersService {
 
   async switchActiveRole(
     userId: string,
-    sessionId: string,
+    sessionId: string | undefined,
     dto: SwitchActiveRoleDto,
   ) {
     const user = await this.requireActiveUser(userId);
@@ -126,10 +128,9 @@ export class UsersService {
       data: { activeRole: nextRole },
     });
 
-    const accessToken = await this.authService.signAccessToken(
-      updated,
-      sessionId,
-    );
+    const accessToken = sessionId
+      ? await this.authService.signAccessToken(updated, sessionId)
+      : undefined;
 
     return {
       success: true,
@@ -160,7 +161,7 @@ export class UsersService {
     };
   }
 
-  async createDesignerAccount(userId: string, sessionId: string) {
+  async createDesignerAccount(userId: string, sessionId?: string) {
     const user = await this.requireActiveUser(userId);
     if (user.role !== Role.CLIENT) {
       throw new ForbiddenException('Only clients can add a designer account');
@@ -175,10 +176,9 @@ export class UsersService {
       },
     });
 
-    const accessToken = await this.authService.signAccessToken(
-      updated,
-      sessionId,
-    );
+    const accessToken = sessionId
+      ? await this.authService.signAccessToken(updated, sessionId)
+      : undefined;
 
     return {
       success: true,

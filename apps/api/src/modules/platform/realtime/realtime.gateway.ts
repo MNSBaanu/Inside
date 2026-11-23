@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import {
   ConnectedSocket,
   MessageBody,
@@ -9,7 +8,7 @@ import {
 } from '@nestjs/websockets';
 import type { Server, Socket } from 'socket.io';
 import { PrismaService } from '../../../database/prisma.service';
-import { AuthService, type JwtPayload } from '../../identity/auth/auth.service';
+import { AuthService } from '../../identity/auth/auth.service';
 import { RealtimeService, projectRoom, userRoom } from './realtime.service';
 
 type SocketUser = { id: string; name: string };
@@ -28,7 +27,6 @@ export class RealtimeGateway implements OnGatewayInit {
   private readonly logger = new Logger(RealtimeGateway.name);
 
   constructor(
-    private readonly jwt: JwtService,
     private readonly auth: AuthService,
     private readonly prisma: PrismaService,
     private readonly realtime: RealtimeService,
@@ -46,8 +44,7 @@ export class RealtimeGateway implements OnGatewayInit {
   private async authenticate(socket: Socket) {
     const token = (socket.handshake.auth as { token?: unknown }).token;
     if (typeof token !== 'string' || !token) throw new Error('missing token');
-    const payload = await this.jwt.verifyAsync<JwtPayload>(token);
-    const user = await this.auth.validateJwtPayload(payload);
+    const user = await this.auth.authenticateToken(token);
     socketData(socket).user = { id: user.id, name: user.name };
     await socket.join(userRoom(user.id));
   }

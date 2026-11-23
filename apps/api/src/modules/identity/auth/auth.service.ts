@@ -13,6 +13,7 @@ import {
   AccountStatus,
   type User,
 } from '@inside/database';
+import { createClerkClient, verifyToken } from '@clerk/backend';
 import * as bcrypt from 'bcryptjs';
 import { OAuth2Client, type TokenInfo } from 'google-auth-library';
 import { PrismaService } from '../../../database/prisma.service';
@@ -41,8 +42,8 @@ export type AuthUser = Pick<
   | 'createdAt'
 > & { emailVerified: boolean };
 
-/** The authenticated user plus the refresh session its access token belongs to. */
-export type RequestUser = AuthUser & { sessionId: string };
+/** The authenticated user plus the refresh session its access token belongs to (none for Clerk sign-ins). */
+export type RequestUser = AuthUser & { sessionId?: string };
 
 export type JwtPayload = {
   sub: string;
@@ -71,6 +72,84 @@ export class AuthService {
   ) {
     const days = Number(this.config.get('JWT_REFRESH_DAYS') ?? 30);
     this.refreshTtlMs = days * 24 * 60 * 60 * 1000;
+    this.clerkSecretKey = this.config.get<string>('CLERK_SECRET_KEY');
+  }
+
+  private readonly clerkSecretKey: string | undefined;
+
+  /** Accepts a Clerk session token, or a legacy Inside access token until those are retired. */
+  async authenticateToken(token: string): Promise<RequestUser> {
+    const clerkUserId = await this.verifyClerkToken(token);
+    if (!clerkUserId) {
+      const payload = await this.jwt
+        .verifyAsync<JwtPayload>(token)
+        .catch(() => null);
+      if (!payload) throw new UnauthorizedException();
+      return this.validateJwtPayload(payload);
+    }
+    const user = await this.findOrLinkClerkUser(clerkUserId);
+    if (user.status === AccountStatus.SUSPENDED) {
+      throw new UnauthorizedException();
+    }
+    return this.toPublicUser(user);
+  }
+
+  private async verifyClerkToken(token: string): Promise<string | null> {
+    if (!this.clerkSecretKey) return null;
+    try {
+      const payload = await verifyToken(token, {
+        secretKey: this.clerkSecretKey,
+      });
+      return payload.sub;
+    } catch {
+      return null;
+    }
+  }
+
+  private async findOrLinkClerkUser(clerkId: string): Promise<User> {
+    const linked = await this.prisma.user.findUnique({ where: { clerkId } });
+    if (linked) return linked;
+
+    const clerkUser = await createClerkClient({
+      secretKey: this.clerkSecretKey,
+    }).users.getUser(clerkId);
+    const email = clerkUser.primaryEmailAddress?.emailAddress.toLowerCase();
+    if (!email) throw new UnauthorizedException();
+    const emailVerified =
+      clerkUser.primaryEmailAddress?.verification?.status === 'verified'
+        ? new Date()
+        : null;
+
+    const existing = await this.prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return this.prisma.user.update({
+        where: { id: existing.id },
+        data: {
+          clerkId,
+          emailVerified: existing.emailVerified ?? emailVerified,
+        },
+      });
+    }
+
+    const role =
+      clerkUser.unsafeMetadata.role === 'DESIGNER'
+        ? Role.DESIGNER
+        : Role.CLIENT;
+    return this.prisma.user.create({
+      data: {
+        email,
+        clerkId,
+        name:
+          clerkUser.fullName?.trim() ||
+          clerkUser.username ||
+          email.split('@')[0],
+        avatarUrl: clerkUser.hasImage ? clerkUser.imageUrl : null,
+        role,
+        activeRole: role,
+        isVerified: false,
+        emailVerified,
+      },
+    });
   }
 
   async register(dto: RegisterDto) {
@@ -130,7 +209,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase() },
     });
-    if (!user) {
+    if (!user?.passwordHash) {
       await bcrypt.compare(dto.password, this.dummyHash);
       throw new UnauthorizedException('Invalid email or password');
     }
