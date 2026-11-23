@@ -113,8 +113,9 @@ enum AuthTokenType {
 model User {
   id           String        @id @default(uuid())
   email        String        @unique
-  passwordHash String
+  passwordHash String?
   googleId     String?       @unique
+  clerkId      String?       @unique
   name         String
   role         Role          @default(CLIENT)
   activeRole   Role          @default(CLIENT)
