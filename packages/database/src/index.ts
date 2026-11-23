@@ -2,7 +2,6 @@ export {
   PrismaClient,
   Prisma,
   Role,
-  AuthTokenType,
   AccountStatus,
   RequestType,
   RequestStatus,

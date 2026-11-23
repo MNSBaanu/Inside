@@ -10,7 +10,6 @@
 import { cloudinaryCredentials, loadEnvFiles, migrateImages } from './cloudinary-images';
 import {
   AccountStatus,
-  AuthTokenType,
   NotificationType,
   PaymentStatus,
   Prisma,
@@ -225,7 +224,6 @@ const TABLES = [
   'PortfolioImage',
   'Portfolio',
   'Session',
-  'AuthToken',
   'NewsletterSubscriber',
   'User',
 ];
@@ -848,14 +846,7 @@ async function main() {
     })),
   );
 
-  // Demo auth tokens with known raw values (see docs/SEED_DATA.md), and one session.
-  for (const data of [
-      { userId: U.ayesha, tokenHash: hashToken('seed-email-verify-pending-designer'), type: AuthTokenType.EMAIL_VERIFY, expiresAt: daysFromNow(1) },
-      { userId: U.ishan, tokenHash: hashToken('seed-email-verify-new-client'), type: AuthTokenType.EMAIL_VERIFY, expiresAt: daysFromNow(1) },
-      { userId: U.nadia, tokenHash: hashToken('seed-password-reset-client'), type: AuthTokenType.PASSWORD_RESET, expiresAt: new Date(NOW + 60 * 60 * 1000) },
-    ]) {
-    await prisma.authToken.upsert({ where: { tokenHash: data.tokenHash }, create: data, update: data });
-  }
+  // One demo refresh session (see docs/SEED_DATA.md).
   const session = {
     userId: U.nadia,
     refreshTokenHash: hashToken('seed-client-refresh'),
