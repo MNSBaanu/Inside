@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useSignOut } from '@/components/layout/app-shell';
 import { useSession } from '@/components/providers/session-provider';
-import { PasswordForm } from '@/components/features/account/password-form';
 import { RoleSwitch } from '@/components/features/account/role-switch';
 import { PageHeader } from '@/components/ui/page-header';
 import { Avatar } from '@/components/ui/avatar';
@@ -209,7 +208,6 @@ function AccountForm({ user }: { user: User }) {
 
       <div className="flex flex-col gap-6">
         <RoleSwitch />
-        <PasswordForm />
         <Card>
           <CardHeader title="Sign out" description="End your session on this device." />
           <Button type="button" variant="outline" onClick={onSignOut}>

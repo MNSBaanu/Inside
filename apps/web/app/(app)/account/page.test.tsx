@@ -11,9 +11,6 @@ vi.mock('@/components/providers/session-provider', () => ({
   useSession: () => session,
 }));
 vi.mock('@/components/layout/app-shell', () => ({ useSignOut: () => vi.fn() }));
-vi.mock('@/components/features/account/password-form', () => ({
-  PasswordForm: () => null,
-}));
 vi.mock('@/components/features/account/role-switch', () => ({ RoleSwitch: () => null }));
 vi.mock('@/components/ui/file-upload', () => ({ FileUpload: () => null }));
 
