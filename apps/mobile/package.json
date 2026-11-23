@@ -3,11 +3,11 @@
   "version": "0.0.1",
   "main": "expo-router/entry",
   "dependencies": {
-    "expo": "~57.0.24",
-    "expo-constants": "~57.0.19",
-    "expo-document-picker": "~57.0.2",
-    "expo-linking": "~57.0.10",
-    "expo-router": "~57.0.22",
+    "expo": "~57.0.33",
+    "expo-constants": "~57.0.24",
+    "expo-document-picker": "~57.0.3",
+    "expo-linking": "~57.0.14",
+    "expo-router": "~57.0.31",
     "expo-secure-store": "~57.0.4",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
@@ -16,7 +16,7 @@
     "react-native-screens": "~4.26.2"
   },
   "devDependencies": {
-    "@types/react": "~19.2.2",
+    "@types/react": "~19.2.18",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~57.0.2",
     "typescript": "~6.0.3"
