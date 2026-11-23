@@ -66,7 +66,7 @@ describe('AuthService', () => {
     prisma.user.findUnique.mockResolvedValue(null);
     prisma.user.create.mockResolvedValue({
       id: 'u1',
-      email: 'new@inside.test',
+      email: 'new@insidesign.me',
       name: 'New User',
       role: Role.CLIENT,
       activeRole: Role.CLIENT,
@@ -81,7 +81,7 @@ describe('AuthService', () => {
     prisma.session.create.mockResolvedValue({ id: 's1' });
 
     const result = await service.register({
-      email: 'new@inside.test',
+      email: 'new@insidesign.me',
       password: 'Password123!',
       name: 'New User',
     });
@@ -101,7 +101,7 @@ describe('AuthService', () => {
     prisma.user.findUnique.mockResolvedValue({ id: 'u1' });
     await expect(
       service.register({
-        email: 'dup@inside.test',
+        email: 'dup@insidesign.me',
         password: 'Password123!',
         name: 'Dup',
       }),
@@ -111,13 +111,13 @@ describe('AuthService', () => {
   it('rejects invalid login password', async () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'u1',
-      email: 'client@inside.test',
+      email: 'client@insidesign.me',
       passwordHash: await bcrypt.hash('Password123!', 10),
       status: AccountStatus.ACTIVE,
     });
 
     await expect(
-      service.login({ email: 'client@inside.test', password: 'WrongPass1!' }),
+      service.login({ email: 'client@insidesign.me', password: 'WrongPass1!' }),
     ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
@@ -147,7 +147,7 @@ describe('AuthService', () => {
     prisma.user.findUnique.mockResolvedValue(null);
     prisma.user.create.mockResolvedValue({
       id: 'u1',
-      email: 'prod@inside.test',
+      email: 'prod@insidesign.me',
       name: 'Prod',
       role: Role.CLIENT,
       activeRole: Role.CLIENT,
@@ -162,7 +162,7 @@ describe('AuthService', () => {
     prisma.session.create.mockResolvedValue({});
 
     const result = await service.register({
-      email: 'prod@inside.test',
+      email: 'prod@insidesign.me',
       password: 'Password123!',
       name: 'Prod',
     });

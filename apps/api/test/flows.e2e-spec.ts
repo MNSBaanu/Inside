@@ -36,10 +36,10 @@ describe('Platform flows (e2e)', () => {
   let prisma: PrismaService;
   const suffix = Date.now();
   const emails = {
-    client: `flow-client-${suffix}@inside.test`,
-    designer: `flow-designer-${suffix}@inside.test`,
-    designer2: `flow-designer2-${suffix}@inside.test`,
-    admin: `flow-admin-${suffix}@inside.test`,
+    client: `flow-client-${suffix}@insidesign.me`,
+    designer: `flow-designer-${suffix}@insidesign.me`,
+    designer2: `flow-designer2-${suffix}@insidesign.me`,
+    admin: `flow-admin-${suffix}@insidesign.me`,
   };
   const newsletterEmail = `flow-news-${suffix}@example.com`;
 

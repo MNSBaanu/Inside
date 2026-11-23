@@ -10,7 +10,7 @@ describe('AuthController (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
   const suffix = Date.now();
-  const email = `auth-e2e-${suffix}@inside.test`;
+  const email = `auth-e2e-${suffix}@insidesign.me`;
   const password = 'Password123!';
 
   beforeAll(async () => {

@@ -10,7 +10,7 @@ describe('Moodboards & Briefs (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
   const suffix = Date.now();
-  const email = `mood-brief-${suffix}@inside.test`;
+  const email = `mood-brief-${suffix}@insidesign.me`;
   const password = 'Password123!';
   let token = '';
   let moodboardId = '';

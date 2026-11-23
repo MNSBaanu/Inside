@@ -24,10 +24,10 @@ describe('Workspace flow (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
   const suffix = Date.now();
-  const clientEmail = `ws-client-${suffix}@inside.test`;
-  const designerEmail = `ws-designer-${suffix}@inside.test`;
-  const adminEmail = `ws-admin-${suffix}@inside.test`;
-  const otherEmail = `ws-other-${suffix}@inside.test`;
+  const clientEmail = `ws-client-${suffix}@insidesign.me`;
+  const designerEmail = `ws-designer-${suffix}@insidesign.me`;
+  const adminEmail = `ws-admin-${suffix}@insidesign.me`;
+  const otherEmail = `ws-other-${suffix}@insidesign.me`;
 
   let clientToken = '';
   let designerToken = '';

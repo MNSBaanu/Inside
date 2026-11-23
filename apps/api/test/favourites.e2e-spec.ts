@@ -11,8 +11,8 @@ describe('FavouritesController (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
   const suffix = Date.now();
-  const clientEmail = `fav-client-${suffix}@inside.test`;
-  const designerEmail = `fav-designer-${suffix}@inside.test`;
+  const clientEmail = `fav-client-${suffix}@insidesign.me`;
+  const designerEmail = `fav-designer-${suffix}@insidesign.me`;
   const password = 'Password123!';
   let clientToken = '';
   let designerId = '';

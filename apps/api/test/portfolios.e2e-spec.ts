@@ -10,7 +10,7 @@ describe('PortfoliosController (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
   const suffix = Date.now();
-  const email = `portfolio-e2e-${suffix}@inside.test`;
+  const email = `portfolio-e2e-${suffix}@insidesign.me`;
   const password = 'Password123!';
   let accessToken = '';
   let portfolioId = '';
@@ -97,7 +97,7 @@ describe('PortfoliosController (e2e)', () => {
   });
 
   it('rejects portfolio create for clients', async () => {
-    const clientEmail = `portfolio-client-${suffix}@inside.test`;
+    const clientEmail = `portfolio-client-${suffix}@insidesign.me`;
     const client = await request(app.getHttpServer())
       .post('/auth/register')
       .send({

@@ -11,8 +11,8 @@ describe('Hiring flow (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
   const suffix = Date.now();
-  const clientEmail = `hire-client-${suffix}@inside.test`;
-  const designerEmail = `hire-designer-${suffix}@inside.test`;
+  const clientEmail = `hire-client-${suffix}@insidesign.me`;
+  const designerEmail = `hire-designer-${suffix}@insidesign.me`;
   const password = 'Password123!';
   let clientToken = '';
   let designerToken = '';

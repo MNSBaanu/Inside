@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 
 export class AdminCreateUserDto {
-  @ApiProperty({ example: 'newuser@inside.test' })
+  @ApiProperty({ example: 'newuser@insidesign.me' })
   @IsEmail()
   email!: string;
 

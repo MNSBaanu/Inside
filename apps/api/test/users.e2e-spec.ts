@@ -10,8 +10,8 @@ describe('UsersController (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
   const suffix = Date.now();
-  const designerEmail = `designer-users-${suffix}@inside.test`;
-  const clientEmail = `client-users-${suffix}@inside.test`;
+  const designerEmail = `designer-users-${suffix}@insidesign.me`;
+  const clientEmail = `client-users-${suffix}@insidesign.me`;
   const password = 'Password123!';
 
   beforeAll(async () => {

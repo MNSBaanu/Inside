@@ -11,8 +11,8 @@ describe('Matching (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaService;
   const suffix = Date.now();
-  const clientEmail = `match-client-${suffix}@inside.test`;
-  const designerEmail = `match-designer-${suffix}@inside.test`;
+  const clientEmail = `match-client-${suffix}@insidesign.me`;
+  const designerEmail = `match-designer-${suffix}@insidesign.me`;
   const password = 'Password123!';
   let clientToken = '';
   let clientId = '';

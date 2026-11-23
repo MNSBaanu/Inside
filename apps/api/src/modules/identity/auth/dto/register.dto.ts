@@ -10,7 +10,7 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class RegisterDto {
-  @ApiProperty({ example: 'newuser@inside.test' })
+  @ApiProperty({ example: 'newuser@insidesign.me' })
   @IsEmail()
   email!: string;
 
