@@ -1,56 +1,32 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-const protectedPrefixes = [
-  '/dashboard',
-  '/briefs',
-  '/moodboards',
-  '/favourites',
-  '/requests',
-  '/projects',
-  '/schedule',
-  '/messages',
-  '/notifications',
-  '/account',
-  '/safety',
-  '/admin',
-  '/verification',
-  '/portfolios/manage',
-];
+const isProtected = createRouteMatcher([
+  '/dashboard(.*)',
+  '/briefs(.*)',
+  '/moodboards(.*)',
+  '/favourites(.*)',
+  '/requests(.*)',
+  '/projects(.*)',
+  '/schedule(.*)',
+  '/messages(.*)',
+  '/notifications(.*)',
+  '/account(.*)',
+  '/safety(.*)',
+  '/admin(.*)',
+  '/verification(.*)',
+  '/portfolios/manage(.*)',
+]);
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const guarded = protectedPrefixes.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
-
-  // A prefetched redirect is cached by the router and replayed after sign-in,
-  // so prefetches get the page shell; the app shell still guards the page.
-  const prefetch = request.headers.has('next-router-prefetch');
-
-  if (!guarded || prefetch || request.cookies.has('inside.session')) {
-    return NextResponse.next();
-  }
-
-  const login = new URL('/login', request.url);
-  login.searchParams.set('next', pathname);
-  return NextResponse.redirect(login);
-}
+export default clerkMiddleware(
+  async (auth, request) => {
+    if (isProtected(request)) await auth.protect();
+  },
+  { signInUrl: '/login', signUpUrl: '/register' },
+);
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/briefs/:path*',
-    '/moodboards/:path*',
-    '/favourites/:path*',
-    '/requests/:path*',
-    '/projects/:path*',
-    '/schedule/:path*',
-    '/messages/:path*',
-    '/notifications/:path*',
-    '/account/:path*',
-    '/safety/:path*',
-    '/admin/:path*',
-    '/verification/:path*',
-    '/portfolios/manage/:path*',
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/(api|trpc)(.*)',
   ],
 };

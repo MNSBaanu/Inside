@@ -2,8 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { io, type Socket } from 'socket.io-client';
-import { api } from '@/lib/api/client';
-import { authStorage } from '@/lib/auth/auth-storage';
+import { getAccessToken } from '@/lib/api/client';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -15,7 +14,9 @@ export function getSocket(): Socket {
   const created = io(baseUrl, {
     autoConnect: false,
     transports: ['websocket', 'polling'],
-    auth: (cb) => cb({ token: authStorage.getAccessToken() ?? '' }),
+    auth: (cb) => {
+      void getAccessToken().then((token) => cb({ token: token ?? '' }));
+    },
   });
   created.on('connect', () => {
     authRetries = 0;
@@ -23,11 +24,7 @@ export function getSocket(): Socket {
   created.on('connect_error', (error) => {
     if (error.message !== 'unauthorized' || authRetries >= 2) return;
     authRetries += 1;
-    // A normal API call refreshes an expired access token, then reconnect.
-    void api
-      .get('/users/me')
-      .then(() => created.connect())
-      .catch(() => undefined);
+    created.connect();
   });
   socket = created;
   return created;

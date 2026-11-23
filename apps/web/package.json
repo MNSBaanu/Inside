@@ -12,6 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.39.9",
     "@stripe/stripe-js": "^7.10.0",
     "jspdf": "^3.0.4",
     "jspdf-autotable": "^5.0.9",

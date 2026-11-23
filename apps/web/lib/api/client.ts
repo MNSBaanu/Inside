@@ -1,5 +1,3 @@
-import { authStorage } from '../auth/auth-storage';
-
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 type ApiSuccess<T> = { success: true; data: T };
@@ -25,42 +23,14 @@ type RequestOptions = {
   signal?: AbortSignal;
 };
 
-type RefreshPayload = { accessToken: string; refreshToken: string };
+let tokenGetter: (() => Promise<string | null>) | null = null;
 
-let refreshInFlight: Promise<string | null> | null = null;
-let onSessionExpired: (() => void) | null = null;
-
-export function setSessionExpiredHandler(handler: (() => void) | null) {
-  onSessionExpired = handler;
+export function setTokenGetter(getter: (() => Promise<string | null>) | null) {
+  tokenGetter = getter;
 }
 
-async function refreshAccessToken(): Promise<string | null> {
-  const refreshToken = authStorage.getRefreshToken();
-  if (!refreshToken) return null;
-
-  const response = await fetch(`${baseUrl}/auth/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refreshToken }),
-  });
-
-  const payload = (await response
-    .json()
-    .catch(() => null)) as ApiSuccess<RefreshPayload> | ApiFailure | null;
-
-  if (!response.ok || !payload || !payload.success) {
-    return null;
-  }
-
-  authStorage.save(payload.data.accessToken, payload.data.refreshToken);
-  return payload.data.accessToken;
-}
-
-function refreshOnce() {
-  refreshInFlight ??= refreshAccessToken().finally(() => {
-    refreshInFlight = null;
-  });
-  return refreshInFlight;
+export function getAccessToken(): Promise<string | null> {
+  return tokenGetter?.() ?? Promise.resolve(null);
 }
 
 async function send<T>(
@@ -108,33 +78,11 @@ async function request<T>(
   options: RequestOptions = {},
 ): Promise<T> {
   const { auth = true } = options;
-  const explicitToken = options.token !== undefined;
   const browser = typeof window !== 'undefined';
   const token =
-    options.token ?? (auth && browser ? authStorage.getAccessToken() : null);
+    options.token ?? (auth && browser ? await getAccessToken() : null);
 
-  try {
-    return await send<T>(method, path, options, token);
-  } catch (cause) {
-    const canRetry =
-      cause instanceof ApiError &&
-      cause.statusCode === 401 &&
-      auth &&
-      browser &&
-      !explicitToken &&
-      !path.startsWith('/auth/');
-
-    if (!canRetry) throw cause;
-
-    const fresh = await refreshOnce();
-    if (!fresh) {
-      authStorage.clear();
-      onSessionExpired?.();
-      throw cause;
-    }
-
-    return send<T>(method, path, options, fresh);
-  }
+  return send<T>(method, path, options, token);
 }
 
 export const api = {

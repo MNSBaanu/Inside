@@ -59,12 +59,6 @@ export type User = {
   createdAt: string;
 };
 
-export type AuthPayload = {
-  user: User;
-  accessToken: string;
-  refreshToken: string;
-};
-
 export type PortfolioImage = {
   id: string;
   portfolioId: string;
