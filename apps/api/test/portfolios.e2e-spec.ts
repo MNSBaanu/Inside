@@ -48,7 +48,6 @@ describe('PortfoliosController (e2e)', () => {
     if (user) {
       await prisma.portfolio.deleteMany({ where: { designerId: user.id } });
       await prisma.session.deleteMany({ where: { userId: user.id } });
-      await prisma.authToken.deleteMany({ where: { userId: user.id } });
       await prisma.user.delete({ where: { id: user.id } });
     }
     await app.close();
@@ -123,7 +122,6 @@ describe('PortfoliosController (e2e)', () => {
     });
     if (user) {
       await prisma.session.deleteMany({ where: { userId: user.id } });
-      await prisma.authToken.deleteMany({ where: { userId: user.id } });
       await prisma.user.delete({ where: { id: user.id } });
     }
   });

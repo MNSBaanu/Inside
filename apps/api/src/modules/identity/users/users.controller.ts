@@ -5,11 +5,9 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
 import type { AuthUser, RequestUser } from '../auth/auth.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ChangePasswordDto } from './dto/change-password.dto';
 import { SwitchActiveRoleDto } from './dto/switch-active-role.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UsersService } from './users.service';
@@ -33,17 +31,6 @@ export class UsersController {
   @ApiOkResponse({ description: 'Updated profile' })
   updateMe(@CurrentUser() user: AuthUser, @Body() dto: UpdateProfileDto) {
     return this.usersService.updateProfile(user.id, dto);
-  }
-
-  @Patch('me/password')
-  @Throttle({ default: { limit: 10, ttl: 60_000 } })
-  @ApiOperation({ summary: 'Change password (revokes refresh sessions)' })
-  @ApiOkResponse({ description: 'Password changed' })
-  changePassword(
-    @CurrentUser() user: AuthUser,
-    @Body() dto: ChangePasswordDto,
-  ) {
-    return this.usersService.changePassword(user.id, dto);
   }
 
   @Patch('me/active-role')

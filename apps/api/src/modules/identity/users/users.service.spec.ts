@@ -1,6 +1,5 @@
-import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { AccountStatus, Role } from '@inside/database';
-import * as bcrypt from 'bcryptjs';
 import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
 import { UsersService } from './users.service';
@@ -128,20 +127,5 @@ describe('UsersService', () => {
     await expect(
       service.switchActiveRole('c1', 's1', { activeRole: 'DESIGNER' }),
     ).rejects.toBeInstanceOf(ForbiddenException);
-  });
-
-  it('rejects wrong current password', async () => {
-    prisma.user.findUnique.mockResolvedValue({
-      id: 'c1',
-      status: AccountStatus.ACTIVE,
-      passwordHash: await bcrypt.hash('Password123!', 10),
-    });
-
-    await expect(
-      service.changePassword('c1', {
-        currentPassword: 'WrongPass1!',
-        newPassword: 'NewPassword123!',
-      }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 });

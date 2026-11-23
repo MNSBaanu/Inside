@@ -49,7 +49,6 @@ describe('Moodboards & Briefs (e2e)', () => {
       await prisma.brief.deleteMany({ where: { clientId: user.id } });
       await prisma.moodboard.deleteMany({ where: { clientId: user.id } });
       await prisma.session.deleteMany({ where: { userId: user.id } });
-      await prisma.authToken.deleteMany({ where: { userId: user.id } });
       await prisma.user.delete({ where: { id: user.id } });
     }
     await app.close();

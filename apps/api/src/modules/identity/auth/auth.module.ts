@@ -1,7 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, type JwtModuleOptions } from '@nestjs/jwt';
-import { EmailModule } from '../../platform/email/email.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { parseJwtExpiresIn } from './jwt-expires';
@@ -9,7 +8,6 @@ import { parseJwtExpiresIn } from './jwt-expires';
 @Global()
 @Module({
   imports: [
-    EmailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

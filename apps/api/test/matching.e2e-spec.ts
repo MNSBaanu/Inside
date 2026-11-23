@@ -91,7 +91,6 @@ describe('Matching (e2e)', () => {
         where: { OR: [{ blockerId: clientId }, { blockedId: clientId }] },
       });
       await prisma.session.deleteMany({ where: { userId: clientId } });
-      await prisma.authToken.deleteMany({ where: { userId: clientId } });
       await prisma.user
         .delete({ where: { id: clientId } })
         .catch(() => undefined);
@@ -99,7 +98,6 @@ describe('Matching (e2e)', () => {
     if (designerId) {
       await prisma.portfolio.deleteMany({ where: { designerId } });
       await prisma.session.deleteMany({ where: { userId: designerId } });
-      await prisma.authToken.deleteMany({ where: { userId: designerId } });
       await prisma.user
         .delete({ where: { id: designerId } })
         .catch(() => undefined);

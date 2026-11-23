@@ -5,17 +5,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AccountStatus, Role } from '@inside/database';
-import * as bcrypt from 'bcryptjs';
 import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
-import { ChangePasswordDto } from './dto/change-password.dto';
 import { SwitchActiveRoleDto } from './dto/switch-active-role.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UsersService {
-  private readonly bcryptRounds = 10;
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly authService: AuthService,
@@ -54,38 +50,6 @@ export class UsersService {
     return {
       success: true,
       data: { user: this.authService.toPublicUser(user) },
-    };
-  }
-
-  async changePassword(userId: string, dto: ChangePasswordDto) {
-    const user = await this.requireActiveUser(userId);
-    const ok =
-      !!user.passwordHash &&
-      (await bcrypt.compare(dto.currentPassword, user.passwordHash));
-    if (!ok) {
-      throw new UnauthorizedException('Current password is incorrect');
-    }
-    if (dto.currentPassword === dto.newPassword) {
-      throw new BadRequestException(
-        'New password must be different from the current password',
-      );
-    }
-
-    const passwordHash = await bcrypt.hash(dto.newPassword, this.bcryptRounds);
-    await this.prisma.$transaction([
-      this.prisma.user.update({
-        where: { id: userId },
-        data: { passwordHash },
-      }),
-      this.prisma.session.updateMany({
-        where: { userId, revokedAt: null },
-        data: { revokedAt: new Date() },
-      }),
-    ]);
-
-    return {
-      success: true,
-      data: { passwordChanged: true },
     };
   }
 

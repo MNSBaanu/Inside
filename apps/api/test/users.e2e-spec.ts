@@ -36,7 +36,6 @@ describe('UsersController (e2e)', () => {
       const user = await prisma.user.findUnique({ where: { email } });
       if (user) {
         await prisma.session.deleteMany({ where: { userId: user.id } });
-        await prisma.authToken.deleteMany({ where: { userId: user.id } });
         await prisma.user.delete({ where: { id: user.id } });
       }
     }

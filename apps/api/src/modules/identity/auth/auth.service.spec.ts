@@ -1,23 +1,16 @@
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { AccountStatus, AuthTokenType, Role } from '@inside/database';
+import { AccountStatus, Role } from '@inside/database';
 import * as bcrypt from 'bcryptjs';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../../database/prisma.service';
-import { EmailService } from '../../platform/email/email.service';
 
 describe('AuthService', () => {
   const prisma = {
     user: {
       findUnique: jest.fn(),
       create: jest.fn(),
-      update: jest.fn(),
-    },
-    authToken: {
-      create: jest.fn(),
-      deleteMany: jest.fn(),
-      findUnique: jest.fn(),
       update: jest.fn(),
     },
     session: {
@@ -39,15 +32,8 @@ describe('AuthService', () => {
   const config = {
     get: jest.fn((key: string): string | undefined => {
       if (key === 'JWT_REFRESH_DAYS') return '30';
-      if (key === 'NODE_ENV') return 'test';
-      if (key === 'EXPOSE_DEV_AUTH_TOKENS') return 'true';
       return undefined;
     }),
-  };
-
-  const email = {
-    send: jest.fn().mockResolvedValue(true),
-    webUrl: jest.fn((path: string) => `http://localhost:3000${path}`),
   };
 
   let service: AuthService;
@@ -58,7 +44,6 @@ describe('AuthService', () => {
       prisma as unknown as PrismaService,
       jwt as unknown as JwtService,
       config as unknown as ConfigService,
-      email as unknown as EmailService,
     );
   });
 
@@ -77,7 +62,6 @@ describe('AuthService', () => {
       createdAt: new Date(),
       passwordHash: 'hash',
     });
-    prisma.authToken.create.mockResolvedValue({});
     prisma.session.create.mockResolvedValue({ id: 's1' });
 
     const result = await service.register({
@@ -89,12 +73,6 @@ describe('AuthService', () => {
     expect(result.success).toBe(true);
     expect(result.data.accessToken).toBe('access.jwt');
     expect(result.data.refreshToken).toHaveLength(64);
-    expect(result.data.emailVerificationToken).toHaveLength(64);
-    expect(prisma.authToken.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ type: AuthTokenType.EMAIL_VERIFY }),
-      }),
-    );
   });
 
   it('rejects duplicate email on register', async () => {
@@ -135,38 +113,5 @@ describe('AuthService', () => {
     expect(prisma.session.updateMany).not.toHaveBeenCalled();
     expect(prisma.session.create).not.toHaveBeenCalled();
     expect(jwt.signAsync).not.toHaveBeenCalled();
-  });
-
-  it('omits emailVerificationToken in production', async () => {
-    config.get.mockImplementation((key: string): string | undefined => {
-      if (key === 'JWT_REFRESH_DAYS') return '30';
-      if (key === 'NODE_ENV') return 'production';
-      if (key === 'EXPOSE_DEV_AUTH_TOKENS') return 'true';
-      return undefined;
-    });
-    prisma.user.findUnique.mockResolvedValue(null);
-    prisma.user.create.mockResolvedValue({
-      id: 'u1',
-      email: 'prod@insidesign.me',
-      name: 'Prod',
-      role: Role.CLIENT,
-      activeRole: Role.CLIENT,
-      isVerified: false,
-      emailVerified: null,
-      status: AccountStatus.ACTIVE,
-      avatarUrl: null,
-      createdAt: new Date(),
-      passwordHash: 'hash',
-    });
-    prisma.authToken.create.mockResolvedValue({});
-    prisma.session.create.mockResolvedValue({});
-
-    const result = await service.register({
-      email: 'prod@insidesign.me',
-      password: 'Password123!',
-      name: 'Prod',
-    });
-
-    expect(result.data.emailVerificationToken).toBeUndefined();
   });
 });

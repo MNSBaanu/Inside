@@ -1,26 +1,17 @@
 import { createHash, randomBytes } from 'crypto';
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import {
-  AuthTokenType,
-  Role,
-  AccountStatus,
-  type User,
-} from '@inside/database';
+import { Role, AccountStatus, type User } from '@inside/database';
 import { createClerkClient, verifyToken } from '@clerk/backend';
 import * as bcrypt from 'bcryptjs';
-import { OAuth2Client, type TokenInfo } from 'google-auth-library';
 import { PrismaService } from '../../../database/prisma.service';
-import { EmailService } from '../../platform/email/email.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { GoogleLoginDto } from './dto/google-login.dto';
 
 export type AuthUser = Pick<
   User,
@@ -62,13 +53,11 @@ export class AuthService {
     this.bcryptRounds,
   );
   private readonly refreshTtlMs: number;
-  private readonly googleClient = new OAuth2Client();
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
-    private readonly email: EmailService,
   ) {
     const days = Number(this.config.get('JWT_REFRESH_DAYS') ?? 30);
     this.refreshTtlMs = days * 24 * 60 * 60 * 1000;
@@ -174,30 +163,12 @@ export class AuthService {
       },
     });
 
-    const rawVerifyToken = this.createRawToken();
-    await this.prisma.authToken.create({
-      data: {
-        userId: user.id,
-        tokenHash: this.hashToken(rawVerifyToken),
-        type: AuthTokenType.EMAIL_VERIFY,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      },
-    });
-    await this.email.send(
-      user.email,
-      'Confirm your email for Inside',
-      `Hi ${user.name},\n\nConfirm your email address to finish setting up your Inside account:\n${this.email.webUrl(`/verify-email?token=${rawVerifyToken}`)}\n\nThe link expires in 24 hours. If you didn't sign up, you can ignore this email.`,
-    );
-
     const tokens = await this.issueTokens(user);
     return {
       success: true,
       data: {
         user: this.toPublicUser(user),
         ...tokens,
-        ...(this.exposeDevAuthSecrets()
-          ? { emailVerificationToken: rawVerifyToken }
-          : {}),
       },
     };
   }
@@ -217,96 +188,6 @@ export class AuthService {
     const ok = await bcrypt.compare(dto.password, user.passwordHash);
     if (!ok) {
       throw new UnauthorizedException('Invalid email or password');
-    }
-
-    if (user.status === AccountStatus.SUSPENDED) {
-      throw new UnauthorizedException('Account suspended');
-    }
-
-    const tokens = await this.issueTokens(user, meta);
-    return {
-      success: true,
-      data: {
-        user: this.toPublicUser(user),
-        ...tokens,
-      },
-    };
-  }
-
-  async loginWithGoogle(
-    dto: GoogleLoginDto,
-    meta?: { userAgent?: string; ipAddress?: string },
-  ) {
-    const clientId = this.config.get<string>('GOOGLE_CLIENT_ID');
-    if (!clientId) {
-      throw new BadRequestException('Google sign-in is not configured');
-    }
-
-    let tokenInfo: TokenInfo;
-    try {
-      tokenInfo = await this.googleClient.getTokenInfo(dto.accessToken);
-    } catch {
-      throw new UnauthorizedException('Invalid Google credential');
-    }
-    if (
-      tokenInfo.aud !== clientId ||
-      !tokenInfo.sub ||
-      !tokenInfo.email ||
-      !tokenInfo.email_verified
-    ) {
-      throw new UnauthorizedException('Invalid Google credential');
-    }
-
-    type GoogleProfile = { name?: string; picture?: string };
-    const profile: GoogleProfile = await fetch(
-      'https://www.googleapis.com/oauth2/v3/userinfo',
-      { headers: { Authorization: `Bearer ${dto.accessToken}` } },
-    )
-      .then((res) => (res.ok ? (res.json() as Promise<GoogleProfile>) : {}))
-      .catch(() => ({}));
-    const payload = {
-      sub: tokenInfo.sub,
-      name: profile.name,
-      picture: profile.picture,
-    };
-
-    const email = tokenInfo.email.toLowerCase();
-    let user =
-      (await this.prisma.user.findUnique({
-        where: { googleId: payload.sub },
-      })) ?? (await this.prisma.user.findUnique({ where: { email } }));
-
-    if (user) {
-      if (user.googleId && user.googleId !== payload.sub) {
-        throw new UnauthorizedException('Invalid Google credential');
-      }
-      if (!user.googleId || !user.emailVerified) {
-        user = await this.prisma.user.update({
-          where: { id: user.id },
-          data: {
-            googleId: payload.sub,
-            emailVerified: user.emailVerified ?? new Date(),
-          },
-        });
-      }
-    } else {
-      const role = dto.role === 'DESIGNER' ? Role.DESIGNER : Role.CLIENT;
-      user = await this.prisma.user.create({
-        data: {
-          email,
-          passwordHash: await bcrypt.hash(
-            randomBytes(32).toString('hex'),
-            this.bcryptRounds,
-          ),
-          googleId: payload.sub,
-          name: payload.name ?? email.split('@')[0],
-          avatarUrl: payload.picture,
-          role,
-          activeRole: role,
-          isVerified: false,
-          emailVerified: new Date(),
-        },
-      });
     }
 
     if (user.status === AccountStatus.SUSPENDED) {
@@ -383,89 +264,6 @@ export class AuthService {
     return { success: true, data: { user: this.toPublicUser(user) } };
   }
 
-  async forgotPassword(email: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
-    });
-
-    // Always same response to avoid account enumeration
-    const response = {
-      success: true,
-      data: {
-        message: 'If that email exists, a reset token was created',
-      } as { message: string; resetToken?: string },
-    };
-
-    if (!user) {
-      return response;
-    }
-
-    const rawToken = this.createRawToken();
-    await this.prisma.authToken.create({
-      data: {
-        userId: user.id,
-        tokenHash: this.hashToken(rawToken),
-        type: AuthTokenType.PASSWORD_RESET,
-        expiresAt: new Date(Date.now() + 60 * 60 * 1000),
-      },
-    });
-    await this.email.send(
-      user.email,
-      'Reset your Inside password',
-      `Hi ${user.name},\n\nUse this link to choose a new password:\n${this.email.webUrl(`/reset-password?token=${rawToken}`)}\n\nThe link expires in 1 hour. If you didn't ask for this, you can ignore this email.`,
-    );
-
-    if (this.exposeDevAuthSecrets()) {
-      response.data.resetToken = rawToken;
-    }
-    return response;
-  }
-
-  async resetPassword(token: string, newPassword: string) {
-    const authToken = await this.findValidAuthToken(
-      token,
-      AuthTokenType.PASSWORD_RESET,
-    );
-
-    const passwordHash = await bcrypt.hash(newPassword, this.bcryptRounds);
-    await this.prisma.$transaction([
-      this.prisma.user.update({
-        where: { id: authToken.userId },
-        data: { passwordHash },
-      }),
-      this.prisma.authToken.update({
-        where: { id: authToken.id },
-        data: { usedAt: new Date() },
-      }),
-      this.prisma.session.updateMany({
-        where: { userId: authToken.userId, revokedAt: null },
-        data: { revokedAt: new Date() },
-      }),
-    ]);
-
-    return { success: true, data: { reset: true } };
-  }
-
-  async verifyEmail(token: string) {
-    const authToken = await this.findValidAuthToken(
-      token,
-      AuthTokenType.EMAIL_VERIFY,
-    );
-
-    await this.prisma.$transaction([
-      this.prisma.user.update({
-        where: { id: authToken.userId },
-        data: { emailVerified: new Date() },
-      }),
-      this.prisma.authToken.update({
-        where: { id: authToken.id },
-        data: { usedAt: new Date() },
-      }),
-    ]);
-
-    return { success: true, data: { verified: true } };
-  }
-
   /** Access tokens stop working as soon as their session is revoked. */
   async validateJwtPayload(payload: JwtPayload): Promise<RequestUser> {
     if (!payload.sid) {
@@ -485,22 +283,6 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     return { ...this.toPublicUser(session.user), sessionId: session.id };
-  }
-
-  private async findValidAuthToken(rawToken: string, type: AuthTokenType) {
-    const tokenHash = this.hashToken(rawToken);
-    const authToken = await this.prisma.authToken.findUnique({
-      where: { tokenHash },
-    });
-    if (
-      !authToken ||
-      authToken.type !== type ||
-      authToken.usedAt ||
-      authToken.expiresAt < new Date()
-    ) {
-      throw new BadRequestException('Invalid or expired token');
-    }
-    return authToken;
   }
 
   async signAccessToken(user: User, sessionId: string): Promise<string> {
@@ -550,9 +332,6 @@ export class AuthService {
         ],
       },
     });
-    await this.prisma.authToken.deleteMany({
-      where: { userId: user.id, expiresAt: { lt: now } },
-    });
 
     const refreshToken = this.createRawToken();
     const session = await this.prisma.session.create({
@@ -575,13 +354,5 @@ export class AuthService {
 
   private hashToken(raw: string): string {
     return createHash('sha256').update(raw).digest('hex');
-  }
-
-  /** Raw verify/reset tokens in API responses — opt-in, never in production. */
-  private exposeDevAuthSecrets(): boolean {
-    return (
-      this.config.get<string>('EXPOSE_DEV_AUTH_TOKENS') === 'true' &&
-      this.config.get<string>('NODE_ENV') !== 'production'
-    );
   }
 }

@@ -175,7 +175,6 @@ describe('Workspace flow (e2e)', () => {
         },
       });
       await prisma.session.deleteMany({ where: { userId: user.id } });
-      await prisma.authToken.deleteMany({ where: { userId: user.id } });
       await prisma.user.delete({ where: { id: user.id } });
     }
     await app.close();

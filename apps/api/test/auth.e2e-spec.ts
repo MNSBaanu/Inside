@@ -34,13 +34,12 @@ describe('AuthController (e2e)', () => {
     const user = await prisma.user.findUnique({ where: { email } });
     if (user) {
       await prisma.session.deleteMany({ where: { userId: user.id } });
-      await prisma.authToken.deleteMany({ where: { userId: user.id } });
       await prisma.user.delete({ where: { id: user.id } });
     }
     await app.close();
   });
 
-  it('registers, verifies email, and fetches /auth/me', async () => {
+  it('registers and fetches /auth/me', async () => {
     const register = await request(app.getHttpServer())
       .post('/auth/register')
       .send({ email, password, name: 'E2E User', role: 'CLIENT' })
@@ -48,12 +47,6 @@ describe('AuthController (e2e)', () => {
 
     expect(register.body.success).toBe(true);
     expect(register.body.data.accessToken).toBeDefined();
-    expect(register.body.data.emailVerificationToken).toBeDefined();
-
-    await request(app.getHttpServer())
-      .post('/auth/verify-email')
-      .send({ token: register.body.data.emailVerificationToken })
-      .expect(201);
 
     const me = await request(app.getHttpServer())
       .get('/auth/me')
@@ -61,7 +54,7 @@ describe('AuthController (e2e)', () => {
       .expect(200);
 
     expect(me.body.data.user.email).toBe(email);
-    expect(me.body.data.user.emailVerified).toBe(true);
+    expect(me.body.data.user.emailVerified).toBe(false);
   });
 
   it('logs in and refreshes tokens', async () => {
@@ -90,34 +83,5 @@ describe('AuthController (e2e)', () => {
       .post('/auth/login')
       .send({ email, password: 'DefinitelyWrong1!' })
       .expect(401);
-  });
-
-  it('forgot-password and reset-password round trip', async () => {
-    const forgot = await request(app.getHttpServer())
-      .post('/auth/forgot-password')
-      .send({ email })
-      .expect(201);
-
-    expect(forgot.body.success).toBe(true);
-    expect(forgot.body.data.resetToken).toBeDefined();
-
-    const newPassword = 'NewPassword123!';
-    await request(app.getHttpServer())
-      .post('/auth/reset-password')
-      .send({
-        token: forgot.body.data.resetToken,
-        newPassword,
-      })
-      .expect(201);
-
-    await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email, password })
-      .expect(401);
-
-    await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email, password: newPassword })
-      .expect(201);
   });
 });
