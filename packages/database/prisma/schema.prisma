@@ -239,13 +239,27 @@ model Moodboard {
   savedItems Json     @default("[]")
   moodWords  String[] @default([])
   palette    String[] @default([])
+  status          MoodboardStatus @default(OPEN)
+  reviewNote      String?
+  reviewRequestId String?
+  parentId        String?
+  version         Int             @default(1)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  client User    @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  briefs Brief[]
+  client   User        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  briefs   Brief[]
+  parent   Moodboard?  @relation("MoodboardVersions", fields: [parentId], references: [id], onDelete: SetNull)
+  versions Moodboard[] @relation("MoodboardVersions")
 
   @@index([clientId])
+  @@index([parentId])
+}
+
+enum MoodboardStatus {
+  OPEN
+  APPROVED
+  CHANGES_REQUESTED
 }
 
 model Brief {
@@ -392,6 +406,7 @@ model Deliverable {
   version    Int      @default(1)
   fileUrl    String
   fileName   String?
+  fileHash   String?
   notes      String?
   feedback   String?
   uploadedAt DateTime @default(now())

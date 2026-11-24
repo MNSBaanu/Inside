@@ -8,6 +8,7 @@ export {
   ProposalStatus,
   ProjectStatus,
   PortfolioShareStatus,
+  MoodboardStatus,
   StageName,
   StageStatus,
   PaymentStatus,
