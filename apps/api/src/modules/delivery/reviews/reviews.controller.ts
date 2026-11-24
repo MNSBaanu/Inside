@@ -50,4 +50,16 @@ export class ReviewsController {
   ) {
     return this.reviews.listByDesigner(designerId, query);
   }
+
+  @Get('portfolios/:portfolioId/reviews')
+  @ApiOperation({
+    summary: 'Public reviews of jobs requested from a portfolio project',
+  })
+  @ApiOkResponse({ description: 'Reviews with summary' })
+  listForPortfolio(
+    @Param('portfolioId', ParseUUIDPipe) portfolioId: string,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.reviews.listByPortfolio(portfolioId, query);
+  }
 }

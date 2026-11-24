@@ -105,8 +105,51 @@ export class ReviewsService {
       throw new NotFoundException('Designer not found');
     }
 
+    return this.listWhere(
+      { designerId, isVisible: true },
+      page,
+      pageSize,
+      skip,
+      take,
+    );
+  }
+
+  async listByPortfolio(portfolioId: string, query: PaginationQueryDto) {
+    const { page, pageSize, skip, take } = paginate(query);
+    const portfolio = await this.prisma.portfolio.findUnique({
+      where: { id: portfolioId },
+      select: { isPublished: true },
+    });
+    if (!portfolio?.isPublished) {
+      throw new NotFoundException('Portfolio project not found');
+    }
+
+    return this.listWhere(
+      {
+        isVisible: true,
+        project: {
+          OR: [
+            { proposal: { request: { portfolioId } } },
+            { portfolio: { id: portfolioId } },
+          ],
+        },
+      },
+      page,
+      pageSize,
+      skip,
+      take,
+    );
+  }
+
+  private async listWhere(
+    where: Prisma.ReviewWhereInput,
+    page: number,
+    pageSize: number,
+    skip: number,
+    take: number,
+  ) {
     const items = await this.prisma.review.findMany({
-      where: { designerId, isVisible: true },
+      where,
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       include: { reviewer: { select: reviewerSelect } },
       skip,
@@ -114,7 +157,7 @@ export class ReviewsService {
     });
 
     const aggregate = await this.prisma.review.aggregate({
-      where: { designerId, isVisible: true },
+      where,
       _avg: { rating: true },
       _count: { _all: true },
     });
