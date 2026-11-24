@@ -25,15 +25,19 @@ type StageAction = 'start' | 'submit' | 'approve' | 'reject';
 
 export function StageList({
   stages,
-  isClient,
-  isDesigner,
+  isClient: isClientParty,
+  isDesigner: isDesignerParty,
+  active,
   onChanged,
 }: {
   stages: ProjectStage[];
   isClient: boolean;
   isDesigner: boolean;
+  active: boolean;
   onChanged: () => void;
 }) {
+  const isClient = isClientParty && active;
+  const isDesigner = isDesignerParty && active;
   const [error, setError] = useState<{ stageId: string; message: string } | null>(
     null,
   );
@@ -101,7 +105,7 @@ export function StageList({
                       {stage.fee ? formatMoney(stage.fee) : 'No fee'} · Due{' '}
                       {formatDate(stage.dueDate)}
                     </p>
-                    {awaitingPayment ? (
+                    {awaitingPayment && active ? (
                       <p className="text-sm text-muted">
                         {isClient
                           ? 'Pay this milestone under Payments so the designer can start.'
@@ -226,7 +230,7 @@ export function StageList({
                       maxLength={1000}
                     />
                   </Field>
-                  <div>
+                  <div className="flex justify-end">
                     <Button
                       type="submit"
                       size="sm"
@@ -255,7 +259,9 @@ export function StageList({
           title={`Approve the ${titleCase(confirmApprove.name)} stage?`}
           description={`This releases ${formatMoney(confirmApprove.fee)} to the designer. It cannot be undone.`}
           confirmLabel="Approve and release payment"
+          tone="default"
           busy={pending === confirmApprove.id}
+          busyLabel="Approving…"
           onConfirm={() =>
             void act(confirmApprove.id, 'approve').finally(() =>
               setConfirmApprove(null),
@@ -569,7 +575,7 @@ function FeedbackForm({ onSubmit }: { onSubmit: (value: string) => void }) {
         placeholder="Leave feedback on this file."
         className="min-h-20"
       />
-      <div>
+      <div className="flex justify-end">
         <Button type="submit" size="sm" variant="outline">
           Send feedback
         </Button>

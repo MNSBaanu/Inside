@@ -43,6 +43,7 @@ export function ConfirmDialog({
   confirmLabel = 'Delete',
   tone = 'danger',
   busy = false,
+  busyLabel,
   onConfirm,
   onCancel,
   children,
@@ -52,6 +53,7 @@ export function ConfirmDialog({
   confirmLabel?: string;
   tone?: 'danger' | 'default';
   busy?: boolean;
+  busyLabel?: string;
   onConfirm: () => void;
   onCancel: () => void;
   children?: ReactNode;
@@ -94,7 +96,7 @@ export function ConfirmDialog({
             disabled={busy}
             className={tone === 'danger' ? '!bg-error hover:!bg-error/90' : undefined}
           >
-            {busy ? 'Deleting…' : confirmLabel}
+            {busy ? (busyLabel ?? (tone === 'danger' ? 'Deleting…' : 'Working…')) : confirmLabel}
           </Button>
         </div>
       </div>

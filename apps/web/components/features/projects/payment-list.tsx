@@ -20,7 +20,8 @@ import {
   type Stripe,
   type StripeCardElement,
 } from '@stripe/stripe-js';
-import { X } from 'lucide-react';
+import { ReceiptText, X } from 'lucide-react';
+import { InvoiceDialog } from '@/components/features/payments/invoice-dialog';
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
@@ -39,6 +40,7 @@ export function PaymentList({
   const [actionError, setActionError] = useState<string | null>(null);
   const [paidMessage, setPaidMessage] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
+  const [invoiceId, setInvoiceId] = useState<string | null>(null);
   const [checkout, setCheckout] = useState<{
     paymentId: string;
     clientSecret: string;
@@ -54,12 +56,17 @@ export function PaymentList({
     }
     setPending(paymentId);
     try {
-      const intent = await api.post<{ clientSecret: string }>(
+      const intent = await api.post<{ clientSecret?: string; alreadyPaid?: boolean }>(
         `/payments/${paymentId}/checkout`,
       );
       const amount = formatMoney(
         data?.items.find((item) => item.id === paymentId)?.amount ?? 0,
       );
+      if (intent.alreadyPaid || !intent.clientSecret) {
+        await reload();
+        setPaidMessage(`Your payment of ${amount} had already gone through. Nothing more to pay.`);
+        return;
+      }
       setCheckout({ paymentId, clientSecret: intent.clientSecret, amount });
     } catch (cause) {
       setActionError(errorMessage(cause));
@@ -115,6 +122,12 @@ export function PaymentList({
 
             <div className="flex items-center gap-4">
               <StatusBadge status={payment.status} />
+              {payment.status !== 'PENDING' && payment.stripeIntentId ? (
+                <Button size="sm" variant="outline" onClick={() => setInvoiceId(payment.id)}>
+                  <ReceiptText aria-hidden className="h-4 w-4" />
+                  Invoice
+                </Button>
+              ) : null}
               {isClient && payment.status === 'PENDING' ? (
                 <Button
                   size="sm"
@@ -128,6 +141,10 @@ export function PaymentList({
           </li>
         ))}
       </ul>
+
+      {invoiceId ? (
+        <InvoiceDialog paymentId={invoiceId} onClose={() => setInvoiceId(null)} />
+      ) : null}
 
       {checkout && stripePromise ? (
         <CheckoutDialog

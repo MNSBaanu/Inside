@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
+import { Plus, ReceiptText } from 'lucide-react';
+import { InvoiceDialog } from '@/components/features/payments/invoice-dialog';
 import { useEffect, useState, type FormEvent } from 'react';
 import {
   downloadCsv,
@@ -379,6 +380,7 @@ export function AdminProjectDetail({ id }: { id: string }) {
   const [pending, setPending] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
+  const [invoiceId, setInvoiceId] = useState<string | null>(null);
 
   async function act(action: string, body: unknown = {}) {
     setActionError(null);
@@ -406,6 +408,9 @@ export function AdminProjectDetail({ id }: { id: string }) {
   return (
     <div className="flex flex-col gap-6">
       {actionError ? <ErrorNotice message={actionError} /> : null}
+      {invoiceId ? (
+        <InvoiceDialog paymentId={invoiceId} onClose={() => setInvoiceId(null)} />
+      ) : null}
 
       <section className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-5 md:p-6')}>
         <div className="min-w-0">
@@ -474,9 +479,20 @@ export function AdminProjectDetail({ id }: { id: string }) {
                 <div>
                   <StatusBadge status={stage.status} />
                 </div>
-                <p className="text-sm text-muted">
+                <div className="flex items-center gap-2 text-sm text-muted">
                   {payment ? titleCase(payment.status) : 'No payment'}
-                </p>
+                  {payment && payment.status !== 'PENDING' ? (
+                    <button
+                      type="button"
+                      onClick={() => setInvoiceId(payment.id)}
+                      aria-label={`Invoice for the ${titleCase(stage.name)} stage`}
+                      title="Invoice"
+                      className="grid h-8 w-8 place-items-center rounded-full text-ink transition-colors hover:bg-sand hover:text-brand"
+                    >
+                      <ReceiptText aria-hidden className="h-4 w-4" />
+                    </button>
+                  ) : null}
+                </div>
               </li>
             );
           })}

@@ -229,6 +229,7 @@ export type Proposal = {
 
 export type Project = {
   id: string;
+  reviewed?: boolean;
   proposalId: string;
   clientId: string;
   designerId: string;

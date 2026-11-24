@@ -92,12 +92,20 @@ export default function ProjectWorkspacePage({
     setActionError(null);
     setBusy(true);
     try {
-      await api.patch(`/projects/${params.id}/${action}`, body);
+      const result = await api.patch<{ refundFailed?: number }>(
+        `/projects/${params.id}/${action}`,
+        body,
+      );
       if (action === 'cancel') {
         setCancelling(false);
         setCancelReason('');
+        if (result?.refundFailed) {
+          setActionError(
+            `The project is cancelled, but ${result.refundFailed} refund${result.refundFailed === 1 ? '' : 's'} could not be sent. Support will follow up.`,
+          );
+        }
       }
-      await project.reload();
+      await Promise.all([project.reload(), stages.reload()]);
     } catch (cause) {
       setActionError(errorMessage(cause));
     } finally {
@@ -204,15 +212,7 @@ export default function ProjectWorkspacePage({
               maxLength={1000}
             />
           </Field>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="submit"
-              size="sm"
-              disabled={busy || cancelReason.trim().length < 2}
-              className="!bg-error hover:!bg-error/90"
-            >
-              Confirm cancellation
-            </Button>
+          <div className="flex flex-wrap justify-end gap-2">
             <Button
               type="button"
               size="sm"
@@ -220,6 +220,14 @@ export default function ProjectWorkspacePage({
               onClick={() => setCancelling(false)}
             >
               Keep project
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={busy || cancelReason.trim().length < 2}
+              className="!bg-error hover:!bg-error/90"
+            >
+              Confirm cancellation
             </Button>
           </div>
         </form>
@@ -260,6 +268,7 @@ export default function ProjectWorkspacePage({
               stages={stages.data?.items ?? []}
               isClient={isClient}
               isDesigner={isDesigner}
+              active={item.status === 'ACTIVE'}
               onChanged={() => {
                 void stages.reload();
                 void project.reload();
@@ -286,7 +295,7 @@ export default function ProjectWorkspacePage({
             />
           ) : !isClient ? (
             <ReviewList endpoint={`/designers/${item.designerId}/reviews`} />
-          ) : reviewed ? (
+          ) : reviewed || item.reviewed ? (
             <EmptyState
               title="Thanks for your review."
               description="It now appears on the designer's profile."
