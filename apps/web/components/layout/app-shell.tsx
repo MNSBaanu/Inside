@@ -61,8 +61,8 @@ const footerHrefs = ['/account', '/safety'];
 
 const navigation: NavItem[] = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, roles: members },
-  { href: '/briefs', label: 'Briefs', icon: FileText, roles: ['CLIENT'] },
   { href: '/moodboards', label: 'Moodboards', icon: Images, roles: ['CLIENT'] },
+  { href: '/briefs', label: 'Briefs', icon: FileText, roles: ['CLIENT'] },
   { href: '/favourites', label: 'Saved', icon: Heart, roles: ['CLIENT'] },
   { href: '/requests', label: 'Requests', icon: Inbox, roles: members },
   { href: '/projects', label: 'Projects', icon: FolderKanban, roles: members },

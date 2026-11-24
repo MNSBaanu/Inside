@@ -5,17 +5,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader } from '@/components/ui/card';
-import { Field, Input } from '@/components/ui/field';
+import { Button, ButtonLink } from '@/components/ui/button';
+import { cardSurface } from '@/components/ui/card';
+import { Input } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { FileUpload } from '@/components/ui/file-upload';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { api, errorMessage } from '@/lib/api/client';
+import { cn } from '@/lib/utils/cn';
 import { formatDate, formatMoney } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
-import type { Brief, Moodboard } from '@/lib/types';
-import { useRouter } from 'next/navigation';
+import type { Moodboard } from '@/lib/types';
 import { isOptimizableImage } from '@/lib/utils/images';
 import {
   StyleSummary,
@@ -26,7 +26,6 @@ import {
 import { ShopPicker } from '@/components/features/moodboards/shop-picker';
 
 export default function MoodboardsPage() {
-  const router = useRouter();
   const { data, error, loading, reload } =
     useApi<{ items: Moodboard[] }>('/moodboards');
 
@@ -106,26 +105,13 @@ export default function MoodboardsPage() {
     }
   }
 
-  async function generateBrief(moodboardId: string) {
-    setActionError(null);
-    try {
-      const result = await api.post<{ brief: Brief }>(
-        `/moodboards/${moodboardId}/briefs`,
-        {},
-      );
-      router.push(`/briefs/${result.brief.id}`);
-    } catch (cause) {
-      setActionError(errorMessage(cause));
-    }
-  }
-
   return (
     <div>
       <PageHeader
         variant="app"
         eyebrow="Moodboards"
         title="Collect what you like."
-        description="Save images that capture the feeling you want, then turn a board into a brief in one step."
+        description="Save images that capture the feeling you want, then turn a board into a brief so designers can see them."
       />
 
       {actionError ? (
@@ -159,41 +145,35 @@ export default function MoodboardsPage() {
         />
       ) : null}
 
-      <Card className="mt-10">
-        <CardHeader title="New moodboard" />
-        <form onSubmit={onCreate} className="flex flex-wrap items-end gap-4">
-          <div className="min-w-64 flex-1">
-            <Field label="Name" htmlFor="name">
-              <Input
-                id="name"
-                required
-                minLength={2}
-                maxLength={120}
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="Calm living room"
-              />
-            </Field>
-          </div>
-          <Button type="submit" size="lg" disabled={busy}>
-            {busy ? 'Creating…' : 'Create'}
-          </Button>
-        </form>
-      </Card>
+      <form onSubmit={onCreate} className="mt-8 flex flex-wrap items-center gap-3">
+        <Input
+          id="name"
+          aria-label="New moodboard name"
+          required
+          minLength={2}
+          maxLength={120}
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder="Name a new moodboard, e.g. Calm living room"
+          className="min-w-64 flex-1"
+        />
+        <Button type="submit" size="lg" disabled={busy}>
+          {busy ? 'Creating…' : 'Create'}
+        </Button>
+      </form>
 
-      <div className="mt-12">
+      <div className="mt-8">
         {error ? <ErrorNotice message={error} /> : null}
 
         {loading ? (
           <Skeleton className="h-48" />
         ) : data && data.items.length > 0 ? (
-          <ul className="flex flex-col gap-4">
+          <ul className={cn(cardSurface, 'divide-y divide-hairline overflow-hidden p-0')}>
             {data.items.map((saved) => {
               const board = patched[saved.id] ?? saved;
               const open = openId === board.id;
               return (
-              <li key={board.id}>
-                <Card>
+              <li key={board.id} className="px-5 py-4">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <button
                       type="button"
@@ -207,7 +187,7 @@ export default function MoodboardsPage() {
                         className={`h-5 w-5 shrink-0 text-muted transition-transform duration-300 group-hover:text-brand ${open ? 'rotate-180' : ''}`}
                       />
                       <span className="min-w-0">
-                        <span className="block truncate font-display text-xl font-semibold group-hover:text-brand">
+                        <span className="block truncate font-semibold group-hover:text-brand">
                           {board.name}
                         </span>
                         <span className="mt-1 block text-sm text-muted">
@@ -249,9 +229,9 @@ export default function MoodboardsPage() {
                       ) : null}
                     </button>
                     <div className="flex flex-wrap gap-3">
-                      <Button size="sm" onClick={() => generateBrief(board.id)}>
+                      <ButtonLink size="sm" href={`/briefs/new?moodboardId=${board.id}`}>
                         Turn into brief
-                      </Button>
+                      </ButtonLink>
                       <Button
                         size="sm"
                         variant="outline"
@@ -348,7 +328,6 @@ export default function MoodboardsPage() {
                   />
                   </div>
                   ) : null}
-                </Card>
               </li>
               );
             })}
@@ -356,7 +335,7 @@ export default function MoodboardsPage() {
         ) : !error ? (
           <EmptyState
             title="No moodboards yet."
-            description="Create one above and start collecting images."
+            description="Name one above and start collecting images."
           />
         ) : null}
       </div>

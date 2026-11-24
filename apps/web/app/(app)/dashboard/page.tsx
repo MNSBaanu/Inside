@@ -54,10 +54,10 @@ export default function DashboardPage() {
         {...(isClient
           ? {
               eyebrow: 'Start something new',
-              title: 'Describe your space and get matched with designers',
-              body: 'Write a few lines about the room. Our AI assistant fills in the brief, and matching ranks designers whose work fits.',
-              href: '/briefs/new',
-              cta: 'Start a brief',
+              title: 'Collect ideas for your space',
+              body: 'Save rooms and products you love to a moodboard, then turn it into a brief and get matched with designers whose work fits.',
+              href: '/moodboards',
+              cta: 'Start a moodboard',
             }
           : user?.isVerified
             ? {
@@ -123,7 +123,7 @@ export default function DashboardPage() {
               }
               action={
                 isClient ? (
-                  <ButtonLink href="/briefs/new">Start a brief</ButtonLink>
+                  <ButtonLink href="/moodboards">Start a moodboard</ButtonLink>
                 ) : undefined
               }
             />
