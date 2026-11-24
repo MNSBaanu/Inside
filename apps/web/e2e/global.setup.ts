@@ -1,6 +1,6 @@
 import { createClerkClient } from '@clerk/backend';
 import { clerkSetup } from '@clerk/testing/playwright';
-import { PASSWORD, accounts } from './helpers';
+import { accounts, passwordFor } from './helpers';
 
 /** Gives every seeded account the tests sign in as a matching user in the Clerk dev instance. */
 export default async function globalSetup() {
@@ -14,7 +14,7 @@ export default async function globalSetup() {
     if (data.length > 0) continue;
     await clerk.users.createUser({
       emailAddress: [email],
-      password: PASSWORD,
+      password: passwordFor(email),
       skipPasswordChecks: true,
     });
   }

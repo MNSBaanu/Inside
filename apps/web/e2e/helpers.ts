@@ -2,7 +2,11 @@ import { clerk } from '@clerk/testing/playwright';
 import { expect, type Page } from '@playwright/test';
 
 /** Password shared by every seeded account (packages/database/prisma/seed.ts) and its Clerk user. */
-export const PASSWORD = 'Password123!';
+export function passwordFor(email: string) {
+  if (email.startsWith('admin@')) return 'Admin-Inside-2026!';
+  if (email.includes('designer')) return 'Designer-Inside-2026!';
+  return 'Client-Inside-2026!';
+}
 
 export const accounts = {
   admin: 'admin@insidesign.me',
