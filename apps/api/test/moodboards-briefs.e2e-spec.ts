@@ -73,9 +73,10 @@ describe('Moodboards & Briefs (e2e)', () => {
       .expect(201);
 
     const generated = await request(app.getHttpServer())
-      .post(`/moodboards/${moodboardId}/briefs`)
+      .post('/briefs')
       .set('Authorization', `Bearer ${token}`)
       .send({
+        moodboardId,
         styles: ['Coastal'],
         rooms: ['Bedroom'],
         budgetRange: '250000-400000',
@@ -83,7 +84,7 @@ describe('Moodboards & Briefs (e2e)', () => {
       .expect(201);
 
     expect(generated.body.data.brief.moodboardId).toBe(moodboardId);
-    expect(generated.body.data.brief.description).toContain('Soft blues');
+    expect(generated.body.data.brief.moodboard.images).toHaveLength(1);
 
     const briefId = generated.body.data.brief.id as string;
 

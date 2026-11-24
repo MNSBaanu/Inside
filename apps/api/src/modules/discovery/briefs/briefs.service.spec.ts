@@ -86,61 +86,42 @@ describe('BriefsService', () => {
     ).rejects.toBeInstanceOf(BadRequestException);
   });
 
-  it('generates brief from moodboard notes', async () => {
+  it('links a moodboard without adding anything the client did not enter', async () => {
     prisma.moodboard.findUnique.mockResolvedValue({
       id: 'm1',
       clientId: 'c1',
       name: 'Board',
-      savedItems: [{ note: 'Soft blues' }],
-    });
-    prisma.brief.create.mockResolvedValue({
-      id: 'b2',
-      clientId: 'c1',
-      moodboardId: 'm1',
-      styles: ['Mixed'],
-      rooms: ['General'],
-      budgetRange: null,
-      description: 'Generated from moodboard "Board": Soft blues',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      moodboard: { id: 'm1', name: 'Board' },
-    });
-
-    const result = await service.generateFromMoodboard(client, 'm1', {});
-    expect(result.data.brief.description).toContain('Soft blues');
-  });
-
-  it('summarises mood, palette, loves and dislikes into the brief', async () => {
-    prisma.moodboard.findUnique.mockResolvedValue({
-      id: 'm1',
-      clientId: 'c1',
-      name: 'Board',
-      moodWords: ['Calm', 'Warm'],
-      palette: ['Sage', 'Oak'],
-      savedItems: [
-        { note: 'Soft light', reaction: 'love', loves: ['Lighting'] },
-        { loves: ['Lighting', 'Texture'] },
-        { note: 'Heavy pattern', reaction: 'dislike', loves: ['Colour'] },
-      ],
+      moodWords: ['Calm'],
+      savedItems: [{ imageUrl: 'https://res.cloudinary.com/x/a.jpg' }],
     });
     prisma.brief.create.mockImplementation(({ data }) =>
       Promise.resolve({
-        id: 'b3',
+        id: 'b2',
         ...data,
         budgetRange: null,
         createdAt: new Date(),
         updatedAt: new Date(),
-        moodboard: { id: 'm1', name: 'Board' },
+        moodboard: {
+          id: 'm1',
+          name: 'Board',
+          moodWords: ['Calm'],
+          palette: [],
+          savedItems: [{ imageUrl: 'https://res.cloudinary.com/x/a.jpg' }],
+        },
       }),
     );
 
-    await service.generateFromMoodboard(client, 'm1', {});
-    const { description } = prisma.brief.create.mock.calls[0][0].data;
-    expect(description).toContain('Feeling: Calm, Warm.');
-    expect(description).toContain('Palette: Sage, Oak.');
-    expect(description).toContain('Loves: lighting (2), texture (1).');
-    expect(description).toContain('Not for them: 1 image (Heavy pattern).');
-    expect(description).not.toContain('colour');
+    const result = await service.create(client, {
+      moodboardId: 'm1',
+      styles: ['Scandinavian'],
+      rooms: ['Living Room'],
+    });
+    const { data } = prisma.brief.create.mock.calls[0][0];
+    expect(data.moodboardId).toBe('m1');
+    expect(data.description).toBeUndefined();
+    expect(result.data.brief.moodboard?.images).toEqual([
+      'https://res.cloudinary.com/x/a.jpg',
+    ]);
   });
 
   it('forbids access to another client brief', async () => {

@@ -20,11 +20,7 @@ import type { AuthUser } from '../../identity/auth/auth.service';
 import { CurrentUser } from '../../identity/auth/decorators/current-user.decorator';
 import { ClientModeGuard } from '../../identity/auth/guards/client-mode.guard';
 import { JwtAuthGuard } from '../../identity/auth/guards/jwt-auth.guard';
-import {
-  CreateBriefDto,
-  GenerateBriefDto,
-  UpdateBriefDto,
-} from './dto/brief.dto';
+import { CreateBriefDto, UpdateBriefDto } from './dto/brief.dto';
 import { BriefsService } from './briefs.service';
 
 @ApiTags('briefs')
@@ -56,17 +52,6 @@ export class BriefsController {
   @ApiCreatedResponse({ description: 'Created' })
   create(@CurrentUser() user: AuthUser, @Body() dto: CreateBriefDto) {
     return this.briefsService.create(user, dto);
-  }
-
-  @Post('moodboards/:moodboardId/briefs')
-  @ApiOperation({ summary: 'Generate brief from moodboard' })
-  @ApiCreatedResponse({ description: 'Generated brief' })
-  generate(
-    @CurrentUser() user: AuthUser,
-    @Param('moodboardId', ParseUUIDPipe) moodboardId: string,
-    @Body() dto: GenerateBriefDto,
-  ) {
-    return this.briefsService.generateFromMoodboard(user, moodboardId, dto);
   }
 
   @Patch('briefs/:id')

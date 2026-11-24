@@ -8,7 +8,6 @@ import {
   IsUUID,
   Matches,
   MaxLength,
-  MinLength,
 } from 'class-validator';
 
 export class CreateBriefDto {
@@ -81,34 +80,4 @@ export class UpdateBriefDto {
   @IsOptional()
   @IsUUID()
   moodboardId?: string | null;
-}
-
-export class GenerateBriefDto {
-  @ApiPropertyOptional({ type: [String] })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  styles?: string[];
-
-  @ApiPropertyOptional({ type: [String] })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  rooms?: string[];
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(80)
-  @Matches(/^(?=.*\d)[A-Za-z0-9\s.,-]+$/, {
-    message: 'budgetRange must contain a number, e.g. 400000-800000',
-  })
-  budgetRange?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MinLength(2)
-  @MaxLength(4000)
-  description?: string;
 }

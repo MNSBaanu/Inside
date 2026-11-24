@@ -7,11 +7,16 @@ import {
 } from '@nestjs/common';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
-import {
-  CreateBriefDto,
-  GenerateBriefDto,
-  UpdateBriefDto,
-} from './dto/brief.dto';
+import { likedImages } from '../../../common/moodboard';
+import { CreateBriefDto, UpdateBriefDto } from './dto/brief.dto';
+
+const moodboardSelect = {
+  id: true,
+  name: true,
+  moodWords: true,
+  palette: true,
+  savedItems: true,
+} as const;
 
 @Injectable()
 export class BriefsService {
@@ -22,7 +27,7 @@ export class BriefsService {
       where: { clientId: user.id },
       orderBy: { updatedAt: 'desc' },
       include: {
-        moodboard: { select: { id: true, name: true } },
+        moodboard: { select: moodboardSelect },
       },
     });
     return {
@@ -55,40 +60,7 @@ export class BriefsService {
         description: dto.description,
       },
       include: {
-        moodboard: { select: { id: true, name: true } },
-      },
-    });
-
-    return { success: true, data: { brief: this.serialize(brief) } };
-  }
-
-  async generateFromMoodboard(
-    user: AuthUser,
-    moodboardId: string,
-    dto: GenerateBriefDto,
-  ) {
-    const moodboard = await this.requireMoodboardOwned(moodboardId, user.id);
-    const styles = dto.styles?.length ? dto.styles : ['Mixed'];
-    const rooms = dto.rooms?.length ? dto.rooms : ['General'];
-    const description = dto.description ?? this.describeMoodboard(moodboard);
-    await this.assertNotDuplicate(user.id, {
-      styles,
-      rooms,
-      budgetRange: dto.budgetRange,
-      description,
-    });
-
-    const brief = await this.prisma.brief.create({
-      data: {
-        clientId: user.id,
-        moodboardId,
-        styles,
-        rooms,
-        budgetRange: dto.budgetRange,
-        description,
-      },
-      include: {
-        moodboard: { select: { id: true, name: true } },
+        moodboard: { select: moodboardSelect },
       },
     });
 
@@ -117,7 +89,7 @@ export class BriefsService {
           : {}),
       },
       include: {
-        moodboard: { select: { id: true, name: true } },
+        moodboard: { select: moodboardSelect },
       },
     });
 
@@ -167,7 +139,7 @@ export class BriefsService {
     const brief = await this.prisma.brief.findUnique({
       where: { id },
       include: {
-        moodboard: { select: { id: true, name: true } },
+        moodboard: { select: moodboardSelect },
       },
     });
     if (!brief) {
@@ -192,64 +164,6 @@ export class BriefsService {
     return moodboard;
   }
 
-  private describeMoodboard(moodboard: {
-    name: string;
-    savedItems: unknown;
-    moodWords?: string[];
-    palette?: string[];
-  }): string {
-    const items = (
-      Array.isArray(moodboard.savedItems) ? moodboard.savedItems : []
-    ) as { note?: unknown; loves?: unknown; reaction?: unknown }[];
-    const noteOf = (item: (typeof items)[number]) =>
-      typeof item.note === 'string' && item.note.trim()
-        ? item.note.trim()
-        : null;
-    const liked = items.filter((item) => item.reaction !== 'dislike');
-    const disliked = items.filter((item) => item.reaction === 'dislike');
-
-    const loveCounts = new Map<string, number>();
-    for (const item of liked) {
-      if (!Array.isArray(item.loves)) continue;
-      for (const love of item.loves) {
-        if (typeof love === 'string') {
-          loveCounts.set(love, (loveCounts.get(love) ?? 0) + 1);
-        }
-      }
-    }
-
-    const lines = [`Generated from moodboard "${moodboard.name}".`];
-    if (moodboard.moodWords?.length) {
-      lines.push(`Feeling: ${moodboard.moodWords.join(', ')}.`);
-    }
-    if (moodboard.palette?.length) {
-      lines.push(`Palette: ${moodboard.palette.join(', ')}.`);
-    }
-    if (loveCounts.size) {
-      const loves = [...loveCounts.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .map(([love, count]) => `${love.toLowerCase()} (${count})`);
-      lines.push(`Loves: ${loves.join(', ')}.`);
-    }
-    const likedNotes = liked
-      .map(noteOf)
-      .filter((note): note is string => !!note);
-    if (likedNotes.length) {
-      lines.push(`Notes: ${likedNotes.join('; ')}.`);
-    }
-    if (disliked.length) {
-      const dislikedNotes = disliked
-        .map(noteOf)
-        .filter((note): note is string => !!note);
-      lines.push(
-        `Not for them: ${disliked.length} ${disliked.length === 1 ? 'image' : 'images'}${
-          dislikedNotes.length ? ` (${dislikedNotes.join('; ')})` : ''
-        }.`,
-      );
-    }
-    return lines.join('\n').slice(0, 4000);
-  }
-
   private serialize(brief: {
     id: string;
     clientId: string;
@@ -260,7 +174,13 @@ export class BriefsService {
     description: string | null;
     createdAt: Date;
     updatedAt: Date;
-    moodboard?: { id: string; name: string } | null;
+    moodboard?: {
+      id: string;
+      name: string;
+      moodWords?: string[];
+      palette?: string[];
+      savedItems?: unknown;
+    } | null;
   }) {
     return {
       id: brief.id,
@@ -272,7 +192,15 @@ export class BriefsService {
       description: brief.description,
       createdAt: brief.createdAt,
       updatedAt: brief.updatedAt,
-      moodboard: brief.moodboard ?? null,
+      moodboard: brief.moodboard
+        ? {
+            id: brief.moodboard.id,
+            name: brief.moodboard.name,
+            moodWords: brief.moodboard.moodWords ?? [],
+            palette: brief.moodboard.palette ?? [],
+            images: likedImages(brief.moodboard.savedItems),
+          }
+        : null,
     };
   }
 }
