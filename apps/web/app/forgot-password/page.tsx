@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { PasswordInput } from '@/components/ui/password-input';
 import { ErrorNotice } from '@/components/ui/feedback';
-import { clerkErrorMessage } from '@/lib/auth/clerk-error';
+import { clerkErrorMessage, navigateTo } from '@/lib/auth/clerk-flow';
 
 export default function ForgotPasswordPage() {
-  const { isLoaded, signIn, setActive } = useSignIn();
+  const { signIn, fetchStatus } = useSignIn();
   const router = useRouter();
 
   const [email, setEmail] = useState('');
@@ -19,37 +19,40 @@ export default function ForgotPasswordPage() {
   const [password, setPassword] = useState('');
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const busy = submitting || fetchStatus === 'fetching';
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (!isLoaded) return;
     setError(null);
-    setBusy(true);
+    setSubmitting(true);
     try {
       if (!sent) {
-        await signIn.create({
-          strategy: 'reset_password_email_code',
-          identifier: email,
-        });
+        const created = await signIn.create({ identifier: email });
+        if (created.error) throw created.error;
+        const sentCode = await signIn.resetPasswordEmailCode.sendCode();
+        if (sentCode.error) throw sentCode.error;
         setSent(true);
-        setBusy(false);
+        setSubmitting(false);
         return;
       }
 
-      const result = await signIn.attemptFirstFactor({
-        strategy: 'reset_password_email_code',
-        code,
+      if (signIn.status !== 'needs_new_password') {
+        const verified = await signIn.resetPasswordEmailCode.verifyCode({ code });
+        if (verified.error) throw verified.error;
+      }
+      const saved = await signIn.resetPasswordEmailCode.submitPassword({
         password,
+        signOutOfOtherSessions: true,
       });
-      if (result.status !== 'complete') {
+      if (saved.error) throw saved.error;
+      if (signIn.status !== 'complete') {
         throw new Error('That code did not work. Try again.');
       }
-      await setActive?.({ session: result.createdSessionId });
-      router.push('/dashboard');
+      await signIn.finalize({ navigate: navigateTo(router, '/dashboard') });
     } catch (cause) {
       setError(clerkErrorMessage(cause));
-      setBusy(false);
+      setSubmitting(false);
     }
   }
 
@@ -117,7 +120,7 @@ export default function ForgotPasswordPage() {
           </Field>
         )}
 
-        <Button type="submit" size="lg" fullWidth disabled={busy || !isLoaded}>
+        <Button type="submit" size="lg" fullWidth disabled={busy}>
           {busy
             ? sent
               ? 'Saving…'

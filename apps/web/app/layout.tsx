@@ -29,23 +29,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider signInUrl="/login" signUpUrl="/register">
     <html lang="en" className={brand.variable}>
       <body>
-        <SessionProvider>
-          <ToastProvider>
-          <a href="#main" className="skip-link">
-            Skip to content
-          </a>
-          <SiteHeader />
-          <main id="main">{children}</main>
-          <FooterGate>
-            <SiteFooter />
-          </FooterGate>
-          </ToastProvider>
-        </SessionProvider>
+        <ClerkProvider signInUrl="/login" signUpUrl="/register">
+          <SessionProvider>
+            <ToastProvider>
+              <a href="#main" className="skip-link">
+                Skip to content
+              </a>
+              <SiteHeader />
+              <main id="main">{children}</main>
+              <FooterGate>
+                <SiteFooter />
+              </FooterGate>
+            </ToastProvider>
+          </SessionProvider>
+        </ClerkProvider>
       </body>
     </html>
-    </ClerkProvider>
   );
 }

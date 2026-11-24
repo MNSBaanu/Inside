@@ -10,11 +10,11 @@ import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { PasswordInput } from '@/components/ui/password-input';
 import { ErrorNotice } from '@/components/ui/feedback';
-import { clerkErrorMessage } from '@/lib/auth/clerk-error';
+import { clerkErrorMessage, navigateTo } from '@/lib/auth/clerk-flow';
 import { safeRedirectPath } from '@/lib/utils/url';
 
 function LoginForm() {
-  const { isLoaded, signIn, setActive } = useSignIn();
+  const { signIn, fetchStatus } = useSignIn();
   const router = useRouter();
   const searchParams = useSearchParams();
   const clerkRedirect = searchParams.get('redirect_url');
@@ -35,31 +35,30 @@ function LoginForm() {
     searchParams.get('suspended') ? 'Account suspended' : null,
   );
   const [submitting, setSubmitting] = useState(false);
-
-  async function finish(sessionId: string | null) {
-    await setActive?.({ session: sessionId });
-    router.push(redirectTo);
-  }
+  const busy = submitting || fetchStatus === 'fetching';
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (!isLoaded) return;
     setError(null);
     setSubmitting(true);
     try {
-      if (needsCode) {
-        const result = await signIn.attemptSecondFactor({
-          strategy: 'email_code',
-          code,
-        });
-        if (result.status === 'complete') return await finish(result.createdSessionId);
-        throw new Error('That code did not work. Try again.');
-      }
+      const { error } = needsCode
+        ? await signIn.mfa.verifyEmailCode({ code })
+        : await signIn.password({ emailAddress: email, password });
+      if (error) throw error;
 
-      const result = await signIn.create({ identifier: email, password });
-      if (result.status === 'complete') return await finish(result.createdSessionId);
-      if (result.supportedSecondFactors?.some((f) => f.strategy === 'email_code')) {
-        await signIn.prepareSecondFactor({ strategy: 'email_code' });
+      if (signIn.status === 'complete') {
+        await signIn.finalize({ navigate: navigateTo(router, redirectTo) });
+        return;
+      }
+      if (needsCode) throw new Error('That code did not work. Try again.');
+      if (
+        (signIn.status === 'needs_client_trust' ||
+          signIn.status === 'needs_second_factor') &&
+        signIn.supportedSecondFactors.some((f) => f.strategy === 'email_code')
+      ) {
+        const sent = await signIn.mfa.sendEmailCode();
+        if (sent.error) throw sent.error;
         setNeedsCode(true);
         setSubmitting(false);
         return;
@@ -72,17 +71,15 @@ function LoginForm() {
   }
 
   async function onGoogle() {
-    if (!isLoaded) return;
     setError(null);
     setSubmitting(true);
-    try {
-      await signIn.authenticateWithRedirect({
-        strategy: 'oauth_google',
-        redirectUrl: '/sso-callback',
-        redirectUrlComplete: redirectTo,
-      });
-    } catch (cause) {
-      setError(clerkErrorMessage(cause));
+    const { error } = await signIn.sso({
+      strategy: 'oauth_google',
+      redirectCallbackUrl: `/sso-callback?next=${encodeURIComponent(redirectTo)}`,
+      redirectUrl: redirectTo,
+    });
+    if (error) {
+      setError(clerkErrorMessage(error));
       setSubmitting(false);
     }
   }
@@ -137,7 +134,7 @@ function LoginForm() {
         </>
       )}
 
-      <Button type="submit" size="lg" fullWidth disabled={submitting || !isLoaded}>
+      <Button type="submit" size="lg" fullWidth disabled={busy}>
         {submitting ? 'Signing in…' : needsCode ? 'Verify' : 'Sign in'}
       </Button>
 
@@ -152,7 +149,7 @@ function LoginForm() {
 
           <GoogleSignInButton
             label="Continue with Google"
-            disabled={submitting || !isLoaded}
+            disabled={busy}
             onClick={onGoogle}
           />
         </>

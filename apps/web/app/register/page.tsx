@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { PasswordInput } from '@/components/ui/password-input';
 import { ErrorNotice } from '@/components/ui/feedback';
-import { clerkErrorMessage } from '@/lib/auth/clerk-error';
+import { clerkErrorMessage, navigateTo } from '@/lib/auth/clerk-flow';
 import { cn } from '@/lib/utils/cn';
 
 const roles = [
@@ -26,7 +26,7 @@ const roles = [
 ];
 
 export default function RegisterPage() {
-  const { isLoaded, signUp, setActive } = useSignUp();
+  const { signUp, fetchStatus } = useSignUp();
   const router = useRouter();
 
   const [role, setRole] = useState<'CLIENT' | 'DESIGNER'>('CLIENT');
@@ -37,34 +37,35 @@ export default function RegisterPage() {
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-
-  async function finish(sessionId: string | null) {
-    await setActive?.({ session: sessionId });
-    router.push('/dashboard');
-  }
+  const busy = submitting || fetchStatus === 'fetching';
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (!isLoaded) return;
     setError(null);
     setSubmitting(true);
     try {
       if (verifying) {
-        const result = await signUp.attemptEmailAddressVerification({ code });
-        if (result.status === 'complete') return await finish(result.createdSessionId);
-        throw new Error('That code did not work. Try again.');
+        const { error } = await signUp.verifications.verifyEmailCode({ code });
+        if (error) throw error;
+      } else {
+        const [firstName, ...rest] = name.trim().split(/\s+/);
+        const { error } = await signUp.password({
+          emailAddress: email,
+          password,
+          firstName,
+          lastName: rest.join(' ') || undefined,
+          unsafeMetadata: { role },
+        });
+        if (error) throw error;
       }
 
-      const [firstName, ...rest] = name.trim().split(/\s+/);
-      const result = await signUp.create({
-        emailAddress: email,
-        password,
-        firstName,
-        lastName: rest.join(' ') || undefined,
-        unsafeMetadata: { role },
-      });
-      if (result.status === 'complete') return await finish(result.createdSessionId);
-      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+      if (signUp.status === 'complete') {
+        await signUp.finalize({ navigate: navigateTo(router, '/dashboard') });
+        return;
+      }
+      if (verifying) throw new Error('That code did not work. Try again.');
+      const sent = await signUp.verifications.sendEmailCode();
+      if (sent.error) throw sent.error;
       setVerifying(true);
       setSubmitting(false);
     } catch (cause) {
@@ -74,18 +75,16 @@ export default function RegisterPage() {
   }
 
   async function onGoogle() {
-    if (!isLoaded) return;
     setError(null);
     setSubmitting(true);
-    try {
-      await signUp.authenticateWithRedirect({
-        strategy: 'oauth_google',
-        redirectUrl: '/sso-callback',
-        redirectUrlComplete: '/dashboard',
-        unsafeMetadata: { role },
-      });
-    } catch (cause) {
-      setError(clerkErrorMessage(cause));
+    const { error } = await signUp.sso({
+      strategy: 'oauth_google',
+      redirectCallbackUrl: '/sso-callback?next=%2Fdashboard',
+      redirectUrl: '/dashboard',
+      unsafeMetadata: { role },
+    });
+    if (error) {
+      setError(clerkErrorMessage(error));
       setSubmitting(false);
     }
   }
@@ -202,7 +201,7 @@ export default function RegisterPage() {
           </>
         )}
 
-        <Button type="submit" size="lg" fullWidth disabled={submitting || !isLoaded}>
+        <Button type="submit" size="lg" fullWidth disabled={busy}>
           {submitting
             ? verifying
               ? 'Verifying…'
@@ -215,7 +214,7 @@ export default function RegisterPage() {
         {verifying ? null : (
           <GoogleSignInButton
             label="Sign up with Google"
-            disabled={submitting || !isLoaded}
+            disabled={busy}
             onClick={onGoogle}
           />
         )}
