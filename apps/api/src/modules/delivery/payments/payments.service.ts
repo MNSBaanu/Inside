@@ -7,7 +7,6 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   NotificationType,
   PaymentStatus,
@@ -29,7 +28,6 @@ export class PaymentsService {
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
     private readonly activity: ActivityService,
-    private readonly config: ConfigService,
     @Inject(STRIPE) private readonly stripe: Stripe | null,
   ) {}
 

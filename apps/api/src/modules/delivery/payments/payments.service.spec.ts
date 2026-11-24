@@ -1,7 +1,6 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PaymentStatus, Role } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
-import type { ConfigService } from '@nestjs/config';
 import type Stripe from 'stripe';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
@@ -20,7 +19,6 @@ describe('PaymentsService', () => {
 
   const notifications = { notify: jest.fn() };
   const activity = { log: jest.fn() };
-  const config = { get: jest.fn() };
   const stripe = {
     paymentIntents: { create: jest.fn(), retrieve: jest.fn() },
   };
@@ -59,7 +57,6 @@ describe('PaymentsService', () => {
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
       activity as unknown as ActivityService,
-      config as unknown as ConfigService,
       stripe as unknown as Stripe,
     );
   });
