@@ -17,6 +17,7 @@ import { TagInput } from '@/components/ui/tag-input';
 import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
 import { cn } from '@/lib/utils/cn';
+import { formatBudgetRange } from '@/lib/utils/format';
 import { isOptimizableImage } from '@/lib/utils/images';
 import type { Brief, Moodboard } from '@/lib/types';
 
@@ -312,7 +313,7 @@ function NewBriefForm() {
                     <TagList values={styles} empty="Open to ideas" />
                   </ReviewRow>
                   <ReviewRow label="Budget" onEdit={() => goTo(2)}>
-                    {budgetRange || <span className="text-muted">Not set</span>}
+                    {formatBudgetRange(budgetRange) || <span className="text-muted">Not set</span>}
                   </ReviewRow>
                   <ReviewRow label="Description" onEdit={() => goTo(2)}>
                     {description ? (

@@ -20,7 +20,7 @@ import { Pagination } from '@/components/ui/pagination';
 import { Rating } from '@/components/ui/rating';
 import { FavouriteButton } from '@/components/features/designers/favourite-button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { availabilityLabel, formatDate } from '@/lib/utils/format';
+import { availabilityLabel, formatBudgetRange, formatDate } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
 import { isOptimizableImage } from '@/lib/utils/images';
 import type { Brief, PartySummary } from '@/lib/types';
@@ -149,7 +149,7 @@ export default function BriefDetailPage({
           <div>
             <dt className="ui-label text-muted">Budget range</dt>
             <dd className="mt-1.5">
-              {item.budgetRange ?? 'Not specified'}
+              {formatBudgetRange(item.budgetRange) ?? 'Not specified'}
             </dd>
           </div>
         </dl>

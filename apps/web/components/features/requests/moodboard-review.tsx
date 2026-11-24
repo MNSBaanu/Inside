@@ -2,22 +2,38 @@
 
 import { Check } from 'lucide-react';
 import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/field';
+import { MoodboardPreview } from '@/components/features/moodboards/moodboard-preview';
 import { api, errorMessage } from '@/lib/api/client';
-import type { MoodboardReview as Review } from '@/lib/types';
+import { cn } from '@/lib/utils/cn';
+import type { MoodboardReview as Review, MoodboardSummary } from '@/lib/types';
+
+const STATUS = {
+  APPROVED: { label: 'Approved', tone: 'bg-brand-soft text-brand-deep', dot: 'bg-brand' },
+  CHANGES_REQUESTED: {
+    label: 'Changes requested',
+    tone: 'bg-highlight/15 text-ink',
+    dot: 'bg-highlight',
+  },
+  OPEN: { label: 'Not reviewed yet', tone: 'bg-sand text-ink/70', dot: 'bg-muted' },
+};
 
 /**
- * The designer approves the client's moodboard, which locks it, or asks for
- * changes, which lets the client edit it again. The client sees where it stands.
+ * The request's moodboard with its review. The designer approves it, which
+ * locks it, or asks for changes, which lets the client edit it again. The
+ * client sees where it stands.
  */
 export function MoodboardReview({
+  board,
+  clientName,
   requestId,
   review,
   canReview,
   onReviewed,
 }: {
+  board: MoodboardSummary;
+  clientName?: string;
   requestId: string;
   review: Review;
   canReview: boolean;
@@ -27,6 +43,7 @@ export function MoodboardReview({
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const status = STATUS[review.status];
 
   async function send(approve: boolean) {
     setError(null);
@@ -47,38 +64,44 @@ export function MoodboardReview({
   }
 
   return (
-    <div className="mt-4">
-      <div className="flex flex-wrap items-center gap-3">
-        {review.status === 'APPROVED' ? (
-          <Badge tone="brand">Moodboard approved</Badge>
-        ) : review.status === 'CHANGES_REQUESTED' ? (
-          <Badge tone="highlight">Changes requested</Badge>
-        ) : (
-          <Badge>Waiting for the designer to review</Badge>
-        )}
-        {canReview && !asking ? (
+    <MoodboardPreview
+      board={board}
+      clientName={clientName}
+      status={
+        <span
+          className={cn(
+            'inline-flex items-center gap-1.5 rounded-pill px-2.5 py-0.5 text-xs font-medium',
+            status.tone,
+          )}
+        >
+          <span aria-hidden className={cn('h-1.5 w-1.5 rounded-full', status.dot)} />
+          {status.label}
+        </span>
+      }
+      actions={
+        canReview && !asking ? (
           <>
-            {review.status !== 'APPROVED' ? (
-              <Button size="sm" onClick={() => void send(true)} disabled={busy}>
-                <Check aria-hidden className="h-4 w-4" />
-                Approve moodboard
-              </Button>
-            ) : null}
             <Button size="sm" variant="outline" onClick={() => setAsking(true)} disabled={busy}>
               Request changes
             </Button>
+            {review.status !== 'APPROVED' ? (
+              <Button size="sm" onClick={() => void send(true)} disabled={busy}>
+                <Check aria-hidden className="h-4 w-4" />
+                Approve
+              </Button>
+            ) : null}
           </>
-        ) : null}
-      </div>
-
+        ) : null
+      }
+    >
       {review.status === 'CHANGES_REQUESTED' && review.note ? (
-        <p className="mt-2 text-sm text-muted">
-          <span className="font-semibold text-ink">Asked for:</span> {review.note}
+        <p className="mt-3 rounded-lg bg-sand/60 px-4 py-3 text-sm">
+          <span className="font-semibold">Asked for:</span> {review.note}
         </p>
       ) : null}
 
       {asking ? (
-        <div className="mt-3">
+        <div className="mt-4 rounded-lg border border-hairline p-4">
           <Textarea
             aria-label="What would you like changed?"
             rows={3}
@@ -87,7 +110,10 @@ export function MoodboardReview({
             onChange={(event) => setNote(event.target.value)}
             placeholder="What would you like changed? e.g. Add a few lighting ideas."
           />
-          <div className="mt-2 flex gap-3">
+          <div className="mt-3 flex justify-end gap-2">
+            <Button size="sm" variant="ghost" onClick={() => setAsking(false)} disabled={busy}>
+              Cancel
+            </Button>
             <Button
               size="sm"
               onClick={() => void send(false)}
@@ -95,14 +121,11 @@ export function MoodboardReview({
             >
               Send request
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => setAsking(false)} disabled={busy}>
-              Cancel
-            </Button>
           </div>
         </div>
       ) : null}
 
       {error ? <p className="mt-2 text-sm text-error">{error}</p> : null}
-    </div>
+    </MoodboardPreview>
   );
 }

@@ -4,6 +4,7 @@ import { MoodboardReview } from '@/components/features/requests/moodboard-review
 import { Card } from '@/components/ui/card';
 import { Tag } from '@/components/ui/tag';
 import type { RequestBrief } from '@/lib/types';
+import { formatBudgetRange } from '@/lib/utils/format';
 
 /** The client's brief as it was when the request was sent. */
 export function BriefCard({
@@ -13,46 +14,50 @@ export function BriefCard({
 }: {
   brief: RequestBrief;
   clientName?: string;
-  review?: ComponentProps<typeof MoodboardReview>;
+  review?: Omit<ComponentProps<typeof MoodboardReview>, 'board' | 'clientName'>;
 }) {
   const rows: [string, string[]][] = [
     ['Rooms', brief.rooms],
     ['Styles', brief.styles],
   ];
+  const budget = formatBudgetRange(brief.budgetRange);
 
   return (
     <Card className="mt-6">
-      <p className="ui-label text-muted">Brief</p>
+      <h2 className="font-display text-lg font-semibold">Brief</h2>
 
-      <dl className="mt-3 grid gap-3 sm:grid-cols-3">
+      <dl className="mt-4 grid gap-5 sm:grid-cols-3">
         {rows
           .filter(([, values]) => values.length > 0)
           .map(([label, values]) => (
             <div key={label}>
               <dt className="text-sm text-muted">{label}</dt>
-              <dd className="mt-1 flex flex-wrap gap-1.5">
+              <dd className="mt-1.5 flex flex-wrap gap-1.5">
                 {values.map((value) => (
                   <Tag key={value}>{value}</Tag>
                 ))}
               </dd>
             </div>
           ))}
-        {brief.budgetRange ? (
+        {budget ? (
           <div>
-            <dt className="text-sm text-muted">Budget range</dt>
-            <dd className="mt-1 font-semibold">LKR {brief.budgetRange}</dd>
+            <dt className="text-sm text-muted">Budget</dt>
+            <dd className="mt-1.5 font-semibold">{budget}</dd>
           </div>
         ) : null}
       </dl>
 
       {brief.description ? (
-        <p className="mt-4 whitespace-pre-line text-muted">{brief.description}</p>
+        <p className="mt-5 whitespace-pre-line text-muted">{brief.description}</p>
       ) : null}
 
       {brief.moodboard ? (
-        <div className="mt-5 border-t border-hairline pt-4">
-          <MoodboardPreview board={brief.moodboard} clientName={clientName} />
-          {review ? <MoodboardReview {...review} /> : null}
+        <div className="mt-6 border-t border-hairline pt-5">
+          {review ? (
+            <MoodboardReview board={brief.moodboard} clientName={clientName} {...review} />
+          ) : (
+            <MoodboardPreview board={brief.moodboard} clientName={clientName} />
+          )}
         </div>
       ) : null}
     </Card>

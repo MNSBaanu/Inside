@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
-import { formatDate } from '@/lib/utils/format';
+import { formatBudgetRange, formatDate } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
 import type { Brief } from '@/lib/types';
 
@@ -62,7 +62,7 @@ export default function BriefsPage() {
                   </div>
                   <div>
                     {brief.budgetRange ? (
-                      <Badge tone="highlight">{brief.budgetRange}</Badge>
+                      <Badge tone="highlight">{formatBudgetRange(brief.budgetRange)}</Badge>
                     ) : null}
                   </div>
                   <ChevronRight

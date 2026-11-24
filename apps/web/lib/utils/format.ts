@@ -15,6 +15,13 @@ export function formatMoney(value: number | null | undefined) {
   return currency.format(value);
 }
 
+/** "400000-800000" -> "LKR 400,000 – LKR 800,000"; text without figures is returned as typed. */
+export function formatBudgetRange(range: string | null | undefined) {
+  const figures = (range ?? '').match(/\d+/g)?.map(Number) ?? [];
+  if (figures.length === 0) return range?.trim() || null;
+  return figures.map((figure) => currency.format(figure)).join(' – ');
+}
+
 export function availabilityLabel(
   isAvailable: boolean,
   availableFrom?: string | null,
