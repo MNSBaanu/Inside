@@ -114,6 +114,18 @@ export class AdminManageController {
     return this.payments.markOfflineRefunded(admin, id);
   }
 
+  @Patch('payments/:id/retry-refund')
+  @ApiOperation({
+    summary: 'Retry a failed card refund on a cancelled project',
+  })
+  @ApiOkResponse({ description: 'Refunded' })
+  retryCardRefund(
+    @CurrentUser() admin: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.payments.retryCardRefund(admin, id);
+  }
+
   @Get('products')
   @ApiOperation({ summary: 'List shop items, published or not' })
   @ApiOkResponse({ description: 'Products' })

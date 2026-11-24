@@ -20,6 +20,7 @@ describe('PaymentsService', () => {
   const prisma = {
     milestonePayment: {
       findUnique: jest.fn(),
+      findUniqueOrThrow: jest.fn(),
       findMany: jest.fn(),
       update: jest.fn(),
       updateMany: jest.fn(),
@@ -123,7 +124,8 @@ describe('PaymentsService', () => {
 
   it('skips refunding a payment that was released before it was claimed', async () => {
     prisma.project.updateMany.mockResolvedValue({ count: 1 });
-    prisma.milestonePayment.findMany.mockResolvedValue([
+    prisma.milestonePayment.findMany.mockResolvedValueOnce([]);
+    prisma.milestonePayment.findMany.mockResolvedValueOnce([
       { id: 'pay1', stripeIntentId: 'pi_1', method: PaymentMethod.CARD },
     ]);
     prisma.milestonePayment.updateMany.mockResolvedValue({ count: 0 });
@@ -134,7 +136,8 @@ describe('PaymentsService', () => {
 
   it('leaves offline payments for an admin to refund by hand', async () => {
     prisma.project.updateMany.mockResolvedValue({ count: 1 });
-    prisma.milestonePayment.findMany.mockResolvedValue([
+    prisma.milestonePayment.findMany.mockResolvedValueOnce([]);
+    prisma.milestonePayment.findMany.mockResolvedValueOnce([
       { id: 'pay1', stripeIntentId: null, method: PaymentMethod.BANK_TRANSFER },
     ]);
     prisma.user.findMany.mockResolvedValue([{ id: 'admin1' }]);
@@ -221,6 +224,44 @@ describe('PaymentsService', () => {
       );
     });
 
+    it('does not record offline when the card checkout cannot be closed', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue({
+        ...pendingWithProject,
+        stripeIntentId: 'pi_1',
+      });
+      stripe.paymentIntents.retrieve.mockResolvedValue({
+        id: 'pi_1',
+        status: 'requires_payment_method',
+      });
+      stripe.paymentIntents.cancel.mockRejectedValue(new Error('stripe down'));
+      await expect(
+        service.recordOffline(admin, 'pay1', {
+          method: 'CASH',
+          paidOn: '2026-11-20',
+        }),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(prisma.milestonePayment.update).not.toHaveBeenCalled();
+    });
+
+    it('retries a failed card refund on a cancelled project', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue({
+        ...pendingPayment,
+        status: PaymentStatus.PAID,
+        stripeIntentId: 'pi_1',
+        project: { ...pendingPayment.project, status: ProjectStatus.CANCELLED },
+      });
+      prisma.milestonePayment.updateMany.mockResolvedValue({ count: 1 });
+      stripe.refunds.create.mockResolvedValue({});
+      await service.retryCardRefund(admin, 'pay1');
+      expect(stripe.refunds.create).toHaveBeenCalledWith(
+        { payment_intent: 'pi_1' },
+        { idempotencyKey: 'refund-pay1' },
+      );
+      expect(notifications.notify).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: 'c1', title: 'Payment refunded' }),
+      );
+    });
+
     it('rejects a payment date in the future', async () => {
       prisma.milestonePayment.findUnique.mockResolvedValue(pendingWithProject);
       await expect(
@@ -242,6 +283,55 @@ describe('PaymentsService', () => {
         service.markOfflineRefunded(admin, 'pay1'),
       ).rejects.toBeInstanceOf(BadRequestException);
     });
+  });
+
+  it('closes open card checkouts when a project is cancelled', async () => {
+    prisma.project.updateMany.mockResolvedValue({ count: 1 });
+    prisma.milestonePayment.findMany.mockResolvedValueOnce([
+      { ...pendingPayment, stripeIntentId: 'pi_1' },
+    ]);
+    prisma.milestonePayment.findMany.mockResolvedValueOnce([]);
+    stripe.paymentIntents.retrieve.mockResolvedValue({
+      id: 'pi_1',
+      status: 'requires_payment_method',
+    });
+    stripe.paymentIntents.cancel.mockResolvedValue({});
+    await service.cancelAndRefund('p1');
+    expect(stripe.paymentIntents.cancel).toHaveBeenCalledWith('pi_1');
+  });
+
+  it('refunds a card payment that lands after the project was cancelled', async () => {
+    prisma.milestonePayment.findMany.mockResolvedValueOnce([
+      { ...pendingPayment, stripeIntentId: 'pi_1' },
+    ]);
+    prisma.milestonePayment.findMany.mockResolvedValueOnce([]);
+    prisma.project.findUnique
+      .mockResolvedValueOnce({ id: 'p1', clientId: 'c1', designerId: 'd1' })
+      .mockResolvedValueOnce({ status: ProjectStatus.CANCELLED });
+    stripe.paymentIntents.retrieve.mockResolvedValue({
+      id: 'pi_1',
+      status: 'succeeded',
+      metadata: { paymentId: 'pay1' },
+    });
+    prisma.milestonePayment.update.mockResolvedValue({
+      ...pendingPayment,
+      status: PaymentStatus.PAID,
+      stripeIntentId: 'pi_1',
+    });
+    prisma.milestonePayment.updateMany.mockResolvedValue({ count: 1 });
+    prisma.milestonePayment.findUniqueOrThrow.mockResolvedValue({
+      ...pendingPayment,
+      status: PaymentStatus.REFUNDED,
+    });
+    stripe.refunds.create.mockResolvedValue({});
+    await service.listByProject(client, 'p1');
+    expect(stripe.refunds.create).toHaveBeenCalledWith(
+      { payment_intent: 'pi_1' },
+      { idempotencyKey: 'refund-pay1' },
+    );
+    expect(notifications.notify).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 'c1', title: 'Payment refunded' }),
+    );
   });
 
   it('will not cancel and refund a project twice', async () => {

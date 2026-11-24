@@ -295,6 +295,32 @@ export class PaymentsService {
       throw error;
     }
 
+    const project = await this.prisma.project.findUnique({
+      where: { id: payment.projectId },
+      select: { status: true },
+    });
+    if (project?.status === ProjectStatus.CANCELLED) {
+      const outcome = await this.refundCard(updated);
+      if (outcome === 'refunded') {
+        await this.notifications.notify({
+          userId: payment.project.clientId,
+          type: NotificationType.PAYMENT,
+          title: 'Payment refunded',
+          message: `Your ${formatLkr(payment.amount)} payment for "${payment.project.title}" was refunded because the project was cancelled`,
+          metadata: { projectId: payment.projectId, paymentId: payment.id },
+        });
+      } else if (outcome === 'failed') {
+        await this.notifyAdmins({
+          title: 'Card refund failed',
+          message: `A ${formatLkr(payment.amount)} card payment for "${payment.project.title}" came in after the project was cancelled and could not be refunded. Retry the refund from the project's payments.`,
+          metadata: { projectId: payment.projectId, paymentId: payment.id },
+        });
+      }
+      return this.prisma.milestonePayment.findUniqueOrThrow({
+        where: { id: payment.id },
+      });
+    }
+
     await this.notifications.notify({
       userId: payment.project.designerId,
       type: NotificationType.PAYMENT,
@@ -329,6 +355,8 @@ export class PaymentsService {
       throw new ConflictException('Project is already closed');
     }
 
+    await this.closeOpenCheckouts(projectId);
+
     const paid = await this.prisma.milestonePayment.findMany({
       where: { projectId, status: PaymentStatus.PAID },
     });
@@ -340,54 +368,155 @@ export class PaymentsService {
         offline += 1;
         continue;
       }
-      const claimed = await this.prisma.milestonePayment.updateMany({
-        where: { id: payment.id, status: PaymentStatus.PAID },
-        data: { status: PaymentStatus.REFUNDED },
-      });
-      if (claimed.count === 0) continue;
-      if (payment.stripeIntentId) {
-        try {
-          await this.requireStripe().refunds.create(
-            { payment_intent: payment.stripeIntentId },
-            { idempotencyKey: `refund-${payment.id}` },
-          );
-        } catch (error) {
-          await this.prisma.milestonePayment.update({
-            where: { id: payment.id },
-            data: { status: PaymentStatus.PAID },
-          });
-          this.logger.error(
-            `Refund failed for payment ${payment.id}: ${error instanceof Error ? error.message : 'unknown'}`,
-          );
-          failed += 1;
-          continue;
-        }
-      }
-      refunded += 1;
+      const outcome = await this.refundCard(payment);
+      if (outcome === 'refunded') refunded += 1;
+      if (outcome === 'failed') failed += 1;
     }
 
-    if (offline > 0) {
-      const [admins, project] = await Promise.all([
-        this.prisma.user.findMany({
-          where: { role: Role.ADMIN },
-          select: { id: true },
-        }),
-        this.prisma.project.findUnique({
-          where: { id: projectId },
-          select: { title: true },
-        }),
-      ]);
-      await this.notifications.notifyMany(
-        admins.map((admin) => admin.id),
-        {
-          type: NotificationType.PAYMENT,
+    if (offline > 0 || failed > 0) {
+      const project = await this.prisma.project.findUnique({
+        where: { id: projectId },
+        select: { title: true },
+      });
+      const title = project?.title ?? 'A project';
+      if (offline > 0) {
+        await this.notifyAdmins({
           title: 'Offline refund needed',
-          message: `"${project?.title ?? 'A project'}" was cancelled with ${offline} milestone${offline === 1 ? '' : 's'} paid offline. Refund the client by hand, then mark ${offline === 1 ? 'it' : 'them'} refunded.`,
+          message: `"${title}" was cancelled with ${offline} milestone${offline === 1 ? '' : 's'} paid offline. Refund the client by hand, then mark ${offline === 1 ? 'it' : 'them'} refunded.`,
           metadata: { projectId },
-        },
-      );
+        });
+      }
+      if (failed > 0) {
+        await this.notifyAdmins({
+          title: 'Card refund failed',
+          message: `"${title}" was cancelled but ${failed} card refund${failed === 1 ? '' : 's'} failed. Retry the refund from the project's payments.`,
+          metadata: { projectId },
+        });
+      }
     }
     return { refunded, failed, offline };
+  }
+
+  /** An admin retries a card refund that failed when the project was cancelled. */
+  async retryCardRefund(admin: AuthUser, id: string) {
+    const payment = await this.requirePayment(id);
+    if (payment.method !== PaymentMethod.CARD) {
+      throw new BadRequestException(
+        'Offline payments are refunded by hand. Mark them refunded instead.',
+      );
+    }
+    if (payment.project.status !== ProjectStatus.CANCELLED) {
+      throw new BadRequestException(
+        'Only payments on cancelled projects can be refunded',
+      );
+    }
+    const outcome = await this.refundCard(payment);
+    if (outcome === 'skipped') {
+      throw new BadRequestException('Only paid milestones can be refunded');
+    }
+    if (outcome === 'failed') {
+      throw new ServiceUnavailableException(
+        'The card provider could not refund this payment. Try again later.',
+      );
+    }
+    await this.notifications.notify({
+      userId: payment.project.clientId,
+      type: NotificationType.PAYMENT,
+      title: 'Payment refunded',
+      message: `Your ${formatLkr(payment.amount)} payment for "${payment.project.title}" was refunded`,
+      metadata: { projectId: payment.projectId, paymentId: id },
+    });
+    await this.activity.log({
+      projectId: payment.projectId,
+      userId: admin.id,
+      action: 'PAYMENT_REFUNDED',
+      metadata: { paymentId: id, amount: Number(payment.amount) },
+    });
+    return { success: true, data: { refunded: true } };
+  }
+
+  /**
+   * Claims a paid card milestone and refunds it. If the card provider refuses,
+   * the milestone goes back to paid so an admin can retry.
+   */
+  private async refundCard(payment: {
+    id: string;
+    stripeIntentId: string | null;
+  }): Promise<'refunded' | 'failed' | 'skipped'> {
+    const claimed = await this.prisma.milestonePayment.updateMany({
+      where: { id: payment.id, status: PaymentStatus.PAID },
+      data: { status: PaymentStatus.REFUNDED },
+    });
+    if (claimed.count === 0) return 'skipped';
+    if (!payment.stripeIntentId) return 'refunded';
+    try {
+      await this.requireStripe().refunds.create(
+        { payment_intent: payment.stripeIntentId },
+        { idempotencyKey: `refund-${payment.id}` },
+      );
+      return 'refunded';
+    } catch (error) {
+      await this.prisma.milestonePayment.update({
+        where: { id: payment.id },
+        data: { status: PaymentStatus.PAID },
+      });
+      this.logger.error(
+        `Refund failed for payment ${payment.id}: ${error instanceof Error ? error.message : 'unknown'}`,
+      );
+      return 'failed';
+    }
+  }
+
+  /**
+   * Stops unpaid milestones on a cancelled project from being paid by card.
+   * A checkout that already went through is recorded, which refunds it.
+   */
+  private async closeOpenCheckouts(projectId: string) {
+    if (!this.stripe) return;
+    const open = await this.prisma.milestonePayment.findMany({
+      where: {
+        projectId,
+        status: PaymentStatus.PENDING,
+        stripeIntentId: { not: null },
+      },
+      include: {
+        project: { select: { designerId: true, clientId: true, title: true } },
+      },
+    });
+    for (const payment of open) {
+      const intent = await this.stripe.paymentIntents
+        .retrieve(payment.stripeIntentId!)
+        .catch(() => null);
+      if (
+        intent?.status === 'succeeded' &&
+        intent.metadata?.paymentId === payment.id
+      ) {
+        await this.recordPaid(payment, intent.id);
+        continue;
+      }
+      if (intent && intent.status !== 'canceled') {
+        await this.stripe.paymentIntents.cancel(intent.id).catch((error) => {
+          this.logger.error(
+            `Could not cancel checkout for payment ${payment.id}: ${error instanceof Error ? error.message : 'unknown'}`,
+          );
+        });
+      }
+    }
+  }
+
+  private async notifyAdmins(notice: {
+    title: string;
+    message: string;
+    metadata: Record<string, string>;
+  }) {
+    const admins = await this.prisma.user.findMany({
+      where: { role: Role.ADMIN },
+      select: { id: true },
+    });
+    await this.notifications.notifyMany(
+      admins.map((admin) => admin.id),
+      { type: NotificationType.PAYMENT, ...notice },
+    );
   }
 
   /** An admin records a milestone the client paid in cash or by bank transfer. */
@@ -413,25 +542,33 @@ export class PaymentsService {
       throw new BadRequestException('The payment date cannot be in the future');
     }
 
-    if (payment.stripeIntentId && this.stripe) {
-      const intent = await this.stripe.paymentIntents
+    if (payment.stripeIntentId) {
+      const stripe = this.requireStripe();
+      const intent = await stripe.paymentIntents
         .retrieve(payment.stripeIntentId)
         .catch(() => null);
-      if (intent?.status === 'succeeded') {
+      if (!intent) {
+        throw new ServiceUnavailableException(
+          'Could not check the card checkout for this milestone. Try again shortly.',
+        );
+      }
+      if (intent.status === 'succeeded') {
         await this.recordPaid(payment, intent.id);
         throw new ConflictException(
           'The client already paid this milestone by card. That payment is now recorded.',
         );
       }
-      if (intent?.status === 'processing') {
+      if (intent.status === 'processing') {
         throw new ConflictException(
           'A card payment for this milestone is still processing. Wait for it to finish first.',
         );
       }
-      if (intent && intent.status !== 'canceled') {
-        await this.stripe.paymentIntents
-          .cancel(intent.id)
-          .catch(() => undefined);
+      if (intent.status !== 'canceled') {
+        await stripe.paymentIntents.cancel(intent.id).catch(() => {
+          throw new ConflictException(
+            'The card checkout for this milestone could not be closed. It may have just been paid, so refresh and check before recording it offline.',
+          );
+        });
       }
     }
 
