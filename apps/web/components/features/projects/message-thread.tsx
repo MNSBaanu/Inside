@@ -262,7 +262,7 @@ export function MessageThread({
           label="Attach a file (optional)"
           onUploaded={setAttachment}
         />
-        <div>
+        <div className="flex justify-end">
           <Button
             type="submit"
             disabled={sending || (!content.trim() && !attachment)}

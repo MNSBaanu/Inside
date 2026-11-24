@@ -119,16 +119,16 @@ function BriefForm({ brief }: { brief: Brief }) {
             />
           </Field>
 
-          <div className="flex flex-wrap gap-3">
-            <Button type="submit" disabled={saving}>
-              {saving ? 'Saving…' : 'Save changes'}
-            </Button>
+          <div className="flex flex-wrap justify-end gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push(`/briefs/${brief.id}`)}
             >
               Cancel
+            </Button>
+            <Button type="submit" disabled={saving}>
+              {saving ? 'Saving…' : 'Save changes'}
             </Button>
           </div>
         </form>

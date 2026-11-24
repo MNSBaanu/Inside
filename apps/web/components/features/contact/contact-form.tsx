@@ -125,7 +125,7 @@ export function ContactForm() {
           rows={6}
         />
       </Field>
-      <Button type="submit" disabled={sending} className="self-start">
+      <Button type="submit" disabled={sending} className="self-end">
         {sending ? 'Sending…' : 'Send message'}
       </Button>
     </form>

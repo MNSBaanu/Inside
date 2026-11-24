@@ -153,10 +153,7 @@ export function ReportDialog({
                 />
               </Field>
 
-              <div className="flex gap-3">
-                <Button type="submit" size="sm" disabled={busy}>
-                  {busy ? 'Sending…' : 'Submit report'}
-                </Button>
+              <div className="flex justify-end gap-3">
                 <Button
                   type="button"
                   size="sm"
@@ -164,6 +161,9 @@ export function ReportDialog({
                   onClick={() => setOpen(false)}
                 >
                   Cancel
+                </Button>
+                <Button type="submit" size="sm" disabled={busy}>
+                  {busy ? 'Sending…' : 'Submit report'}
                 </Button>
               </div>
             </form>

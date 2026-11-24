@@ -71,7 +71,7 @@ export function BriefAssistant({
             placeholder="Tell us about the room, what you like and what you want to keep."
           />
         </Field>
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-row-reverse flex-wrap items-center gap-4">
           <Button
             type="button"
             onClick={suggest}

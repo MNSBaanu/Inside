@@ -121,7 +121,7 @@ export default function VerificationPage() {
               />
             </Field>
 
-            <div>
+            <div className="flex justify-end">
               <Button type="submit" disabled={busy}>
                 {busy ? 'Submitting…' : 'Submit for review'}
               </Button>

@@ -347,7 +347,7 @@ function DraftForm({
         />
       </Field>
 
-      <div>
+      <div className="flex justify-end">
         <Button type="submit" disabled={busy}>
           {busy ? 'Publishing…' : 'Publish to portfolio'}
         </Button>

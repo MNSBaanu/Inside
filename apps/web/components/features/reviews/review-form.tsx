@@ -72,7 +72,7 @@ export function ReviewForm({
           />
         </Field>
 
-        <div>
+        <div className="flex justify-end">
           <Button type="submit" size="lg" disabled={submitting}>
             {submitting ? 'Publishing…' : 'Publish review'}
           </Button>

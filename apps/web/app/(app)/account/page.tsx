@@ -198,7 +198,7 @@ function AccountForm({ user }: { user: User }) {
             </div>
           ) : null}
 
-          <div>
+          <div className="flex justify-end">
             <Button type="submit" disabled={saving}>
               {saving ? 'Saving…' : 'Save changes'}
             </Button>

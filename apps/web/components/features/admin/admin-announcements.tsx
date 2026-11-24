@@ -172,7 +172,7 @@ export function AnnouncementsSection() {
               {sent}
             </p>
           ) : null}
-          <div className="mt-auto">
+          <div className="mt-auto flex justify-end">
             <Button type="submit" disabled={sending}>
               <Send aria-hidden className="h-4 w-4" />
               {sending ? 'Sending…' : 'Send announcement'}

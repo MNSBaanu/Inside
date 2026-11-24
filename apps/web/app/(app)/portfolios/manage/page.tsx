@@ -173,16 +173,16 @@ export default function ManagePortfoliosPage() {
               />
             </Field>
 
-            <div className="flex flex-wrap gap-3">
-              <Button type="submit" disabled={busy}>
-                {busy ? 'Publishing…' : 'Publish project'}
-              </Button>
+            <div className="flex flex-wrap justify-end gap-3">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setAdding(false)}
               >
                 Cancel
+              </Button>
+              <Button type="submit" disabled={busy}>
+                {busy ? 'Publishing…' : 'Publish project'}
               </Button>
             </div>
           </form>
