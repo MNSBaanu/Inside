@@ -32,6 +32,8 @@ import type { AdminCreateUserDto } from './dto/create-user.dto';
 import type { ReportDecisionDto } from './dto/report-decision.dto';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { serializeReport } from '../reports/report.serializer';
+import { serializeReview } from '../../delivery/reviews/review.serializer';
 
 @Injectable()
 export class AdminService {
@@ -739,16 +741,7 @@ export class AdminService {
         pageSize,
         total,
         items: items.map((r) => ({
-          id: r.id,
-          projectId: r.projectId,
-          reviewerId: r.reviewerId,
-          designerId: r.designerId,
-          rating: r.rating,
-          comment: r.comment,
-          isVisible: r.isVisible,
-          createdAt: r.createdAt,
-          updatedAt: r.updatedAt,
-          reviewer: r.reviewer ?? null,
+          ...serializeReview(r),
           designer: r.designer ?? null,
         })),
       },
@@ -947,19 +940,8 @@ export class AdminService {
     reportedUser?: { id: string; name: string; email: string } | null;
   }) {
     return {
-      id: r.id,
-      reporterId: r.reporterId,
-      reportedUserId: r.reportedUserId,
-      targetType: r.targetType,
-      targetId: r.targetId,
-      reason: r.reason,
-      details: r.details,
-      status: r.status,
-      resolvedById: r.resolvedById,
-      resolvedAt: r.resolvedAt,
+      ...serializeReport(r),
       resolution: r.resolution ?? null,
-      createdAt: r.createdAt,
-      updatedAt: r.updatedAt,
       reporter: r.reporter ?? null,
       reportedUser: r.reportedUser ?? null,
     };

@@ -3,13 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  NotificationType,
-  ReportStatus,
-  ReportTargetType,
-} from '@inside/database';
+import { NotificationType, ReportTargetType } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { serializeReport } from './report.serializer';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { CreateReportDto } from './dto/create-report.dto';
 
@@ -49,7 +46,7 @@ export class ReportsService {
       metadata: { reportId: report.id, href: '/admin/reports' },
     });
 
-    return { success: true, data: { report: this.serialize(report) } };
+    return { success: true, data: { report: serializeReport(report) } };
   }
 
   async listMine(user: AuthUser) {
@@ -59,7 +56,7 @@ export class ReportsService {
     });
     return {
       success: true,
-      data: { items: items.map((r) => this.serialize(r)) },
+      data: { items: items.map(serializeReport) },
     };
   }
 
@@ -76,35 +73,5 @@ export class ReportsService {
         this.prisma.message.count({ where: { id } }),
     };
     return (await counters[type]()) > 0;
-  }
-
-  serialize(r: {
-    id: string;
-    reporterId: string;
-    reportedUserId: string | null;
-    targetType: ReportTargetType;
-    targetId: string;
-    reason: string;
-    details: string | null;
-    status: ReportStatus;
-    resolvedById: string | null;
-    resolvedAt: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
-  }) {
-    return {
-      id: r.id,
-      reporterId: r.reporterId,
-      reportedUserId: r.reportedUserId,
-      targetType: r.targetType,
-      targetId: r.targetId,
-      reason: r.reason,
-      details: r.details,
-      status: r.status,
-      resolvedById: r.resolvedById,
-      resolvedAt: r.resolvedAt,
-      createdAt: r.createdAt,
-      updatedAt: r.updatedAt,
-    };
   }
 }

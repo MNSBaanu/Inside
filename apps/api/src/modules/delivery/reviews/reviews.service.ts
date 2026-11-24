@@ -20,6 +20,7 @@ import {
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
+import { serializeReview } from './review.serializer';
 
 const reviewerSelect = {
   id: true,
@@ -78,7 +79,7 @@ export class ReviewsService {
         metadata: { projectId, reviewId: created.id },
       });
 
-      return { success: true, data: { review: this.serialize(created) } };
+      return { success: true, data: { review: serializeReview(created) } };
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -121,7 +122,7 @@ export class ReviewsService {
     return {
       success: true,
       data: {
-        items: items.map((r) => this.serialize(r)),
+        items: items.map(serializeReview),
         page,
         pageSize,
         summary: {
@@ -129,32 +130,6 @@ export class ReviewsService {
           averageRating: aggregate._avg.rating ?? 0,
         },
       },
-    };
-  }
-
-  private serialize(r: {
-    id: string;
-    projectId: string;
-    reviewerId: string;
-    designerId: string;
-    rating: number;
-    comment: string | null;
-    isVisible: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    reviewer?: { id: string; name: string; avatarUrl: string | null };
-  }) {
-    return {
-      id: r.id,
-      projectId: r.projectId,
-      reviewerId: r.reviewerId,
-      designerId: r.designerId,
-      rating: r.rating,
-      comment: r.comment,
-      isVisible: r.isVisible,
-      createdAt: r.createdAt,
-      updatedAt: r.updatedAt,
-      reviewer: r.reviewer ?? null,
     };
   }
 }
