@@ -13,9 +13,11 @@ export function AutoRefresh() {
     };
     const timer = setInterval(refresh, REFRESH_INTERVAL_MS);
     window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', refresh);
     return () => {
       clearInterval(timer);
       window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', refresh);
     };
   }, [router]);
 
