@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { use, useState } from 'react';
 import { api, errorMessage } from '@/lib/api/client';
+import { MoodboardPreview } from '@/components/features/moodboards/moodboard-preview';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button, ButtonLink } from '@/components/ui/button';
@@ -167,6 +168,12 @@ export default function BriefDetailPage({
             <p className="mt-1.5 whitespace-pre-line text-sm text-muted">
               {item.description}
             </p>
+          </div>
+        ) : null}
+
+        {item.moodboard ? (
+          <div className="mt-4 border-t border-hairline pt-4">
+            <MoodboardPreview board={item.moodboard} />
           </div>
         ) : null}
       </div>

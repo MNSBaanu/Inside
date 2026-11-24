@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { use, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { ProposalForm } from '@/components/features/proposals/proposal-form';
+import { BriefCard } from '@/components/features/requests/brief-card';
 import { PortfolioReferenceCard } from '@/components/features/requests/portfolio-reference';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -203,6 +204,8 @@ export default function RequestDetailPage({
           <PortfolioReferenceCard portfolio={item.portfolio} />
         </div>
       ) : null}
+
+      {item.brief ? <BriefCard brief={item.brief} /> : null}
 
       {item.description ? (
         <Card className="mt-6">

@@ -1,21 +1,24 @@
 'use client';
 
 import { Check, ChevronLeft, Pencil, Sparkles } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { BriefAssistant } from '@/components/features/briefs/brief-assistant';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { Select } from '@/components/ui/select';
 import { Tag } from '@/components/ui/tag';
 import { TagInput } from '@/components/ui/tag-input';
 import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
 import { cn } from '@/lib/utils/cn';
-import type { Brief } from '@/lib/types';
+import { isOptimizableImage } from '@/lib/utils/images';
+import type { Brief, Moodboard } from '@/lib/types';
 
 const styleSuggestions = [
   'Scandinavian',
@@ -39,7 +42,23 @@ const STEPS = ['Rooms', 'Style', 'Budget & details', 'Review'] as const;
 const AI_STEP = -1;
 
 export default function NewBriefPage() {
+  return (
+    <Suspense fallback={<Skeleton className="h-72" />}>
+      <NewBriefForm />
+    </Suspense>
+  );
+}
+
+function NewBriefForm() {
   const router = useRouter();
+  const [moodboardId, setMoodboardId] = useState(
+    useSearchParams().get('moodboardId') ?? '',
+  );
+  const boards = useApi<{ items: Moodboard[] }>('/moodboards');
+  const board = boards.data?.items.find((item) => item.id === moodboardId);
+  const boardImages = (board?.savedItems ?? []).filter(
+    (item) => item.reaction !== 'dislike',
+  );
   const assistant = useApi<{ enabled: boolean }>('/briefs/assistant');
   const assistantOn = assistant.data?.enabled === true;
 
@@ -91,6 +110,7 @@ export default function NewBriefPage() {
     setSubmitting(true);
     try {
       const data = await api.post<{ brief: Brief }>('/briefs', {
+        moodboardId: board ? moodboardId : undefined,
         styles,
         rooms,
         budgetRange: budgetRange || undefined,
@@ -118,6 +138,49 @@ export default function NewBriefPage() {
         title="Tell us about the space."
         description="The more specific you are, the closer the proposals will be to what you actually want."
       />
+
+      {boards.data && boards.data.items.length > 0 ? (
+        <Card className="mt-6">
+          <CardHeader title="Moodboard" />
+          <Field
+            label="Attach a moodboard"
+            htmlFor="moodboard"
+            hint="Optional. Designers see its images with your brief."
+          >
+            <Select
+              id="moodboard"
+              value={moodboardId}
+              onChange={setMoodboardId}
+              options={[
+                { value: '', label: 'No moodboard' },
+                ...boards.data.items.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                })),
+              ]}
+            />
+          </Field>
+          {boardImages.length > 0 ? (
+            <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-6">
+              {boardImages.slice(0, 12).map((item, index) => (
+                <span
+                  key={`${item.imageUrl}-${index}`}
+                  className="relative aspect-square overflow-hidden rounded-[8px] bg-sand"
+                >
+                  <Image
+                    src={item.imageUrl}
+                    unoptimized={!isOptimizableImage(item.imageUrl)}
+                    alt=""
+                    fill
+                    sizes="96px"
+                    className="object-cover"
+                  />
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </Card>
+      ) : null}
 
       {!statusKnown ? (
         <Skeleton className="mt-6 h-72" />

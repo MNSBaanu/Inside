@@ -157,6 +157,14 @@ export type Brief = {
   description: string | null;
   createdAt: string;
   updatedAt: string;
+  moodboard: (MoodboardSummary & { id: string }) | null;
+};
+
+export type MoodboardSummary = {
+  name: string;
+  moodWords: string[];
+  palette: string[];
+  images: string[];
 };
 
 export type PartySummary = Pick<User, 'id' | 'name' | 'avatarUrl'> & {
@@ -171,6 +179,7 @@ export type ProjectRequest = {
   briefId: string | null;
   portfolioId: string | null;
   portfolio: PortfolioReference | null;
+  brief?: RequestBrief | null;
   title: string;
   description: string | null;
   timeline: string | null;
@@ -181,6 +190,15 @@ export type ProjectRequest = {
   updatedAt: string;
   client?: PartySummary;
   designer?: PartySummary | null;
+};
+
+export type RequestBrief = {
+  id: string;
+  styles: string[];
+  rooms: string[];
+  budgetRange: string | null;
+  description: string | null;
+  moodboard: MoodboardSummary | null;
 };
 
 export type PortfolioReference = {
