@@ -92,6 +92,12 @@ enum ReportStatus {
   DISMISSED
 }
 
+enum PortfolioShareStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+
 enum NotificationType {
   REQUEST
   PROPOSAL
@@ -183,11 +189,14 @@ model Portfolio {
   roomType    String
   budget      Decimal? @db.Decimal(12, 2)
   isPublished Boolean  @default(true)
+  projectId   String?  @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   designer User             @relation(fields: [designerId], references: [id], onDelete: Cascade)
+  project  Project?         @relation(fields: [projectId], references: [id], onDelete: SetNull)
   images   PortfolioImage[]
+  requests ProjectRequest[]
 
   @@index([designerId])
   @@index([style])
@@ -263,6 +272,7 @@ model ProjectRequest {
   clientId    String
   designerId  String?
   briefId     String?
+  portfolioId String?
   title       String
   description String?
   timeline    String?
@@ -275,11 +285,13 @@ model ProjectRequest {
   client    User       @relation("RequestClient", fields: [clientId], references: [id], onDelete: Cascade)
   designer  User?      @relation("RequestDesigner", fields: [designerId], references: [id], onDelete: SetNull)
   brief     Brief?     @relation(fields: [briefId], references: [id], onDelete: SetNull)
+  portfolio Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   proposals Proposal[]
 
   @@index([clientId])
   @@index([designerId])
   @@index([briefId])
+  @@index([portfolioId])
   @@index([status])
   @@index([type])
 }
@@ -314,12 +326,14 @@ model Project {
   title        String
   currentStage StageName     @default(PROPOSAL)
   status       ProjectStatus @default(ACTIVE)
+  portfolioShare PortfolioShareStatus?
   startedAt    DateTime?
   completedAt  DateTime?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
   proposal     Proposal           @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  portfolio    Portfolio?
   client       User               @relation("ProjectClient", fields: [clientId], references: [id], onDelete: Cascade)
   designer     User               @relation("ProjectDesigner", fields: [designerId], references: [id], onDelete: Cascade)
   stages       ProjectStage[]

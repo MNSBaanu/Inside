@@ -7,6 +7,7 @@ export {
   RequestStatus,
   ProposalStatus,
   ProjectStatus,
+  PortfolioShareStatus,
   StageName,
   StageStatus,
   PaymentStatus,
