@@ -83,11 +83,3 @@ export function FilterField({
     </div>
   );
 }
-
-export function FilterAction({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex shrink-0 items-center justify-end gap-2 whitespace-nowrap px-5 py-3 lg:pl-4 lg:pr-2">
-      {children}
-    </div>
-  );
-}

@@ -31,17 +31,6 @@ export function formatDate(value: string | Date | null | undefined) {
   return date.format(new Date(value));
 }
 
-export function formatBudgetRange(
-  min: number | null | undefined,
-  max: number | null | undefined,
-) {
-  if (min === null && max === null) return 'Budget not set';
-  if (min !== null && min !== undefined && max !== null && max !== undefined) {
-    return `${formatMoney(min)} - ${formatMoney(max)}`;
-  }
-  return formatMoney(min ?? max);
-}
-
 export function titleCase(value: string) {
   const text = value.toLowerCase().replace(/_/g, ' ');
   return text.charAt(0).toUpperCase() + text.slice(1);

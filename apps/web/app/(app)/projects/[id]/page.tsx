@@ -20,7 +20,7 @@ import { Field, Textarea } from '@/components/ui/field';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
-import { formatDate, titleCase } from '@/lib/utils/format';
+import { formatDate } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
 import type { Project, ProjectStage } from '@/lib/types';
 
