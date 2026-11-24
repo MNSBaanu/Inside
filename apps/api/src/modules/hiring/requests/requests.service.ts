@@ -26,6 +26,17 @@ import type { ListOpenRequestsQueryDto } from './dto/list-open-requests-query.dt
 
 const requestInclude = {
   brief: { select: { id: true, styles: true, rooms: true } },
+  portfolio: {
+    select: {
+      id: true,
+      title: true,
+      images: {
+        select: { imageUrl: true },
+        orderBy: { displayOrder: 'asc' },
+        take: 1,
+      },
+    },
+  },
   designer: {
     select: {
       id: true,
@@ -75,10 +86,24 @@ export class RequestsService {
         );
       }
       await this.blocks.assertNotBlocked(user.id, dto.designerId);
-    } else if (dto.designerId) {
+    } else if (dto.designerId || dto.portfolioId) {
       throw new BadRequestException(
-        'OPEN requests must not include designerId',
+        'OPEN requests must not include designerId or portfolioId',
       );
+    }
+
+    if (dto.portfolioId) {
+      const portfolio = await this.prisma.portfolio.findUnique({
+        where: { id: dto.portfolioId },
+        select: { designerId: true, isPublished: true },
+      });
+      if (
+        !portfolio ||
+        !portfolio.isPublished ||
+        portfolio.designerId !== dto.designerId
+      ) {
+        throw new NotFoundException('Portfolio project not found');
+      }
     }
 
     if (dto.briefId) {
@@ -95,6 +120,7 @@ export class RequestsService {
         clientId: user.id,
         designerId: dto.type === RequestType.DIRECT ? dto.designerId : null,
         briefId: dto.briefId,
+        portfolioId: dto.portfolioId,
         title: dto.title,
         description: dto.description,
         timeline: dto.timeline,
@@ -417,6 +443,7 @@ export class RequestsService {
     clientId: string;
     designerId: string | null;
     briefId: string | null;
+    portfolioId: string | null;
     title: string;
     description: string | null;
     timeline: string | null;
@@ -429,6 +456,11 @@ export class RequestsService {
       id: string;
       styles: string[];
       rooms: string[];
+    } | null;
+    portfolio?: {
+      id: string;
+      title: string;
+      images: { imageUrl: string }[];
     } | null;
     designer?: {
       id: string;
@@ -449,6 +481,7 @@ export class RequestsService {
       clientId: request.clientId,
       designerId: request.designerId,
       briefId: request.briefId,
+      portfolioId: request.portfolioId,
       title: request.title,
       description: request.description,
       timeline: request.timeline,
@@ -458,6 +491,13 @@ export class RequestsService {
       createdAt: request.createdAt,
       updatedAt: request.updatedAt,
       brief: request.brief ?? null,
+      portfolio: request.portfolio
+        ? {
+            id: request.portfolio.id,
+            title: request.portfolio.title,
+            imageUrl: request.portfolio.images[0]?.imageUrl ?? null,
+          }
+        : null,
       designer: request.designer ?? null,
       client: request.client ?? null,
       proposalCount: request._count?.proposals ?? 0,

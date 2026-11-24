@@ -47,6 +47,13 @@ export class CreateRequestDto {
   @IsUUID()
   briefId?: string;
 
+  @ApiPropertyOptional({
+    description: 'Portfolio project that inspired a DIRECT request',
+  })
+  @IsOptional()
+  @IsUUID()
+  portfolioId?: string;
+
   @ApiPropertyOptional({ example: 500000 })
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
