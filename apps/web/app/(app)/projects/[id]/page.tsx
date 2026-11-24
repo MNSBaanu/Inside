@@ -92,17 +92,23 @@ export default function ProjectWorkspacePage({
     setActionError(null);
     setBusy(true);
     try {
-      const result = await api.patch<{ refundFailed?: number }>(
+      const result = await api.patch<{ refundFailed?: number; refundOffline?: number }>(
         `/projects/${params.id}/${action}`,
         body,
       );
       if (action === 'cancel') {
         setCancelling(false);
         setCancelReason('');
-        if (result?.refundFailed) {
-          setActionError(
-            `The project is cancelled, but ${result.refundFailed} refund${result.refundFailed === 1 ? '' : 's'} could not be sent. Support will follow up.`,
-          );
+        const notes = [
+          result?.refundFailed
+            ? `${result.refundFailed} card refund${result.refundFailed === 1 ? '' : 's'} could not be sent`
+            : '',
+          result?.refundOffline
+            ? `${result.refundOffline} payment${result.refundOffline === 1 ? ' was' : 's were'} made offline and will be refunded by the Inside team`
+            : '',
+        ].filter(Boolean);
+        if (notes.length > 0) {
+          setActionError(`The project is cancelled. ${notes.join('; ')}. Support will follow up.`);
         }
       }
       await Promise.all([project.reload(), stages.reload()]);
@@ -282,7 +288,7 @@ export default function ProjectWorkspacePage({
         ) : null}
 
         {tab === 'Messages' && user ? (
-          <MessageThread projectId={params.id} currentUserId={user.id} />
+          <MessageThread projectId={params.id} currentUserId={user.id} partner={party} />
         ) : null}
 
         {tab === 'History' ? <ProjectHistory projectId={params.id} /> : null}

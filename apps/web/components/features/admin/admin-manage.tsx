@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { Plus, ReceiptText } from 'lucide-react';
 import { InvoiceDialog } from '@/components/features/payments/invoice-dialog';
+import { OfflinePaymentDialog } from '@/components/features/admin/offline-payment-dialog';
+import { paymentMethodLabel, type PaymentMethod } from '@/lib/types';
 import { useEffect, useState, type FormEvent } from 'react';
 import {
   downloadCsv,
@@ -369,7 +371,13 @@ type AdminProjectDetail = {
     dueDate: string | null;
     approvedAt: string | null;
   }[];
-  payments: { id: string; stageId: string; amount: number; status: string }[];
+  payments: {
+    id: string;
+    stageId: string;
+    amount: number;
+    status: string;
+    method: PaymentMethod;
+  }[];
   _count: { messages: number; reviews: number };
 };
 
@@ -381,6 +389,10 @@ export function AdminProjectDetail({ id }: { id: string }) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [invoiceId, setInvoiceId] = useState<string | null>(null);
+  const [offline, setOffline] = useState<{ id: string; label: string; amount: number } | null>(
+    null,
+  );
+  const { confirm, dialog } = useConfirm();
 
   async function act(action: string, body: unknown = {}) {
     setActionError(null);
@@ -395,10 +407,31 @@ export function AdminProjectDetail({ id }: { id: string }) {
     }
   }
 
+  async function markRefunded(payment: { id: string; amount: number }, stageName: string) {
+    const ok = await confirm({
+      title: `Mark the ${stageName} payment refunded?`,
+      description: `Only do this after you have returned ${formatMoney(payment.amount)} to the client yourself. The client is told it was refunded.`,
+      confirmLabel: 'Mark refunded',
+      tone: 'default',
+    });
+    if (!ok) return;
+    setActionError(null);
+    setPending(true);
+    try {
+      await api.patch(`/admin/payments/${payment.id}/offline-refunded`);
+      await reload();
+    } catch (cause) {
+      setActionError(errorMessage(cause));
+    } finally {
+      setPending(false);
+    }
+  }
+
   if (error) return <ErrorNotice message={error} />;
   if (!data) return <Skeleton className="h-64" />;
 
   const project = data.project;
+  const closed = project.status === 'COMPLETED' || project.status === 'CANCELLED';
   const paid = project.payments
     .filter((payment) => ['PAID', 'RELEASED'].includes(payment.status))
     .reduce((sum, payment) => sum + payment.amount, 0);
@@ -411,6 +444,19 @@ export function AdminProjectDetail({ id }: { id: string }) {
       {invoiceId ? (
         <InvoiceDialog paymentId={invoiceId} onClose={() => setInvoiceId(null)} />
       ) : null}
+      {offline ? (
+        <OfflinePaymentDialog
+          paymentId={offline.id}
+          label={offline.label}
+          amount={offline.amount}
+          onClose={() => setOffline(null)}
+          onRecorded={() => {
+            setOffline(null);
+            void reload();
+          }}
+        />
+      ) : null}
+      {dialog}
 
       <section className={cn(cardSurface, 'flex flex-wrap items-center justify-between gap-4 p-5 md:p-6')}>
         <div className="min-w-0">
@@ -472,15 +518,44 @@ export function AdminProjectDetail({ id }: { id: string }) {
             return (
               <li
                 key={stage.id}
-                className="grid gap-2 px-5 py-3 sm:grid-cols-[minmax(0,1fr)_8rem_8rem_8rem] sm:items-center md:px-6"
+                className="grid gap-2 px-5 py-3 sm:grid-cols-[minmax(0,1fr)_8rem_8rem_minmax(14rem,auto)] sm:items-center md:px-6"
               >
                 <p className="font-semibold">{titleCase(stage.name)}</p>
                 <p className="text-sm">{formatMoney(stage.fee)}</p>
                 <div>
                   <StatusBadge status={stage.status} />
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted">
-                  {payment ? titleCase(payment.status) : 'No payment'}
+                <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
+                  {payment
+                    ? `${titleCase(payment.status)}${payment.method !== 'CARD' && payment.status !== 'PENDING' ? ` · ${paymentMethodLabel[payment.method]}` : ''}`
+                    : 'No payment'}
+                  {payment?.status === 'PENDING' && !closed ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        setOffline({
+                          id: payment.id,
+                          label: `${titleCase(stage.name)} stage`,
+                          amount: payment.amount,
+                        })
+                      }
+                    >
+                      Record offline
+                    </Button>
+                  ) : null}
+                  {payment?.status === 'PAID' &&
+                  payment.method !== 'CARD' &&
+                  project.status === 'CANCELLED' ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={pending}
+                      onClick={() => void markRefunded(payment, titleCase(stage.name))}
+                    >
+                      Mark refunded
+                    </Button>
+                  ) : null}
                   {payment && payment.status !== 'PENDING' ? (
                     <button
                       type="button"

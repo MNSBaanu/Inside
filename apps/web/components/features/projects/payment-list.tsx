@@ -14,13 +14,15 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
 import { formatDate, formatMoney, titleCase } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
-import type { MilestonePayment } from '@/lib/types';
+import { paymentMethodLabel, type MilestonePayment } from '@/lib/types';
 import {
   loadStripe,
   type Stripe,
-  type StripeCardElement,
+  type StripeCardNumberElement,
 } from '@stripe/stripe-js';
-import { ReceiptText, X } from 'lucide-react';
+import { Lock, ReceiptText, ShieldCheck } from 'lucide-react';
+import { Field, Input } from '@/components/ui/field';
+import { Modal } from '@/components/ui/modal';
 import { InvoiceDialog } from '@/components/features/payments/invoice-dialog';
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -45,13 +47,14 @@ export function PaymentList({
     paymentId: string;
     clientSecret: string;
     amount: string;
+    label: string;
   } | null>(null);
 
   async function pay(paymentId: string) {
     setActionError(null);
     setPaidMessage(null);
     if (!stripePromise) {
-      setActionError('Payments are not configured. Add the Stripe publishable key.');
+      setActionError('Card payments are not available right now. Please try again later.');
       return;
     }
     setPending(paymentId);
@@ -67,7 +70,13 @@ export function PaymentList({
         setPaidMessage(`Your payment of ${amount} had already gone through. Nothing more to pay.`);
         return;
       }
-      setCheckout({ paymentId, clientSecret: intent.clientSecret, amount });
+      const stage = data?.items.find((item) => item.id === paymentId)?.stageName;
+      setCheckout({
+        paymentId,
+        clientSecret: intent.clientSecret,
+        amount,
+        label: stage ? `${titleCase(stage)} stage milestone` : 'Project milestone',
+      });
     } catch (cause) {
       setActionError(errorMessage(cause));
     } finally {
@@ -112,7 +121,7 @@ export function PaymentList({
               </p>
               <p className="mt-1 text-sm text-muted">
                 {payment.paidAt
-                  ? `Paid ${formatDate(payment.paidAt)}`
+                  ? `Paid ${formatDate(payment.paidAt)}${payment.method !== 'CARD' ? ` by ${paymentMethodLabel[payment.method].toLowerCase()}` : ''}`
                   : 'Not paid yet'}
                 {payment.releasedAt
                   ? ` · Released ${formatDate(payment.releasedAt)}`
@@ -122,7 +131,7 @@ export function PaymentList({
 
             <div className="flex items-center gap-4">
               <StatusBadge status={payment.status} />
-              {payment.status !== 'PENDING' && payment.stripeIntentId ? (
+              {payment.status !== 'PENDING' ? (
                 <Button size="sm" variant="outline" onClick={() => setInvoiceId(payment.id)}>
                   <ReceiptText aria-hidden className="h-4 w-4" />
                   Invoice
@@ -151,6 +160,7 @@ export function PaymentList({
           stripePromise={stripePromise}
           clientSecret={checkout.clientSecret}
           amount={checkout.amount}
+          label={checkout.label}
           onPaid={async (intentId) => {
             try {
               await api.patch(`/payments/${checkout.paymentId}/pay`, {
@@ -173,79 +183,123 @@ export function PaymentList({
   );
 }
 
+type CardField = 'cardNumber' | 'cardExpiry' | 'cardCvc';
+
+const CARD_FIELDS: { key: CardField; label: string }[] = [
+  { key: 'cardNumber', label: 'Card number' },
+  { key: 'cardExpiry', label: 'Expiry date' },
+  { key: 'cardCvc', label: 'CVC' },
+];
+
+const fieldBox =
+  'rounded-card border border-hairline bg-surface px-4 py-3.5 transition-colors duration-200 [&.StripeElement--focus]:border-brand [&.StripeElement--invalid]:border-error';
+
 function CheckoutDialog({
   stripePromise,
   clientSecret,
   amount,
+  label,
   onPaid,
   onClose,
 }: {
   stripePromise: Promise<Stripe | null>;
   clientSecret: string;
   amount: string;
+  label: string;
   onPaid: (paymentIntentId: string) => Promise<void>;
   onClose: () => void;
 }) {
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [onClose]);
-
-  const mountRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<StripeCardElement | null>(null);
+  const mounts = useRef<Record<CardField, HTMLDivElement | null>>({
+    cardNumber: null,
+    cardExpiry: null,
+    cardCvc: null,
+  });
+  const numberRef = useRef<StripeCardNumberElement | null>(null);
   const stripeRef = useRef<Stripe | null>(null);
+  const [name, setName] = useState('');
+  const [complete, setComplete] = useState<Record<CardField, boolean>>({
+    cardNumber: false,
+    cardExpiry: false,
+    cardCvc: false,
+  });
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<CardField, string>>>({});
   const [ready, setReady] = useState(false);
   const [paying, setPaying] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    let element: StripeCardElement | undefined;
+    const created: { destroy: () => void }[] = [];
     stripePromise
       .then((stripe) => {
-        if (!stripe || cancelled || !mountRef.current) return;
+        if (!stripe || cancelled) return;
         stripeRef.current = stripe;
-        element = stripe.elements().create('card', {
-          hidePostalCode: true,
-          disableLink: true,
-          style: {
-            base: {
-              fontSize: '16px',
-              color: '#1B2422',
-              '::placeholder': { color: '#6C7471' },
+        const elements = stripe.elements({
+          fonts: [
+            {
+              cssSrc:
+                'https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&display=swap',
             },
-          },
+          ],
         });
-        cardRef.current = element;
-        element.on('ready', () => setReady(true));
-        element.mount(mountRef.current);
+        const style = {
+          base: {
+            fontFamily: '"Inter Tight", system-ui, sans-serif',
+            fontSize: '16px',
+            color: '#1B2422',
+            '::placeholder': { color: '#9AA09D' },
+          },
+          invalid: { color: '#B3261E' },
+        };
+        const track =
+          (key: CardField) =>
+          (event: { complete: boolean; error?: { message?: string } }) => {
+            setComplete((current) => ({ ...current, [key]: event.complete }));
+            setFieldErrors((current) => ({ ...current, [key]: event.error?.message }));
+          };
+        const { cardNumber, cardExpiry, cardCvc } = mounts.current;
+        if (!cardNumber || !cardExpiry || !cardCvc) return;
+
+        const number = elements.create('cardNumber', {
+          style,
+          showIcon: true,
+          disableLink: true,
+        });
+        number.on('change', track('cardNumber'));
+        number.on('ready', () => setReady(true));
+        number.mount(cardNumber);
+        numberRef.current = number;
+
+        const expiry = elements.create('cardExpiry', { style });
+        expiry.on('change', track('cardExpiry'));
+        expiry.mount(cardExpiry);
+
+        const cvc = elements.create('cardCvc', { style, placeholder: '123' });
+        cvc.on('change', track('cardCvc'));
+        cvc.mount(cardCvc);
+
+        created.push(number, expiry, cvc);
       })
       .catch((cause) => setMessage(errorMessage(cause)));
     return () => {
       cancelled = true;
-      element?.destroy();
+      created.forEach((element) => element.destroy());
     };
   }, [stripePromise]);
+
+  const canPay =
+    ready && !paying && name.trim().length > 1 && Object.values(complete).every(Boolean);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     const stripe = stripeRef.current;
-    const card = cardRef.current;
-    if (!stripe || !card) return;
+    const card = numberRef.current;
+    if (!stripe || !card || !canPay) return;
     setPaying(true);
     setMessage(null);
-    const { error, paymentIntent } = await stripe.confirmCardPayment(
-      clientSecret,
-      { payment_method: { card } },
-    );
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: { card, billing_details: { name: name.trim() } },
+    });
     if (error) {
       setMessage(error.message ?? 'Payment failed. Try another card.');
       setPaying(false);
@@ -255,37 +309,60 @@ function CheckoutDialog({
       await onPaid(paymentIntent.id);
       return;
     }
-    setMessage('Payment is processing. Refresh in a moment.');
+    setMessage('Your payment is processing. It will show here once your bank confirms it.');
     setPaying(false);
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/60 p-4">
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Pay milestone"
-        className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-card bg-white p-6 pt-12 shadow-lift"
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close payment"
-          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full text-ink hover:bg-sand"
-        >
-          <X aria-hidden className="h-5 w-5" />
-        </button>
-        <form onSubmit={onSubmit} className="flex flex-col gap-5">
-          <p className="font-display text-2xl font-semibold text-brand">{amount}</p>
-          {message ? <ErrorNotice message={message} /> : null}
-          <div className="rounded-xl border border-hairline bg-white p-4">
-            <div ref={mountRef} />
+    <Modal title="Pay milestone" description={label} onClose={paying ? () => {} : onClose}>
+      <form onSubmit={onSubmit} className="flex flex-col gap-5">
+        <div className="flex items-center justify-between rounded-lg bg-brand-soft px-4 py-3">
+          <span className="text-sm text-brand-deep">Amount due</span>
+          <span className="font-display text-2xl font-semibold text-brand-deep">{amount}</span>
+        </div>
+
+        {message ? <ErrorNotice message={message} /> : null}
+
+        <Field label="Name on card" htmlFor="card-name">
+          <Input
+            id="card-name"
+            autoComplete="cc-name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="As shown on the card"
+          />
+        </Field>
+
+        {CARD_FIELDS.slice(0, 1).map(({ key, label: fieldLabel }) => (
+          <div key={key}>
+            <p className="ui-label mb-2 text-ink/70">{fieldLabel}</p>
+            <div ref={(node) => { mounts.current[key] = node; }} className={fieldBox} />
+            {fieldErrors[key] ? <p className="mt-1.5 text-sm text-error">{fieldErrors[key]}</p> : null}
           </div>
-          <Button type="submit" disabled={!ready || paying}>
-            {paying ? 'Paying…' : `Pay ${amount}`}
-          </Button>
-        </form>
-      </div>
-    </div>
+        ))}
+
+        <div className="grid grid-cols-2 gap-4">
+          {CARD_FIELDS.slice(1).map(({ key, label: fieldLabel }) => (
+            <div key={key}>
+              <p className="ui-label mb-2 text-ink/70">{fieldLabel}</p>
+              <div ref={(node) => { mounts.current[key] = node; }} className={fieldBox} />
+              {fieldErrors[key] ? <p className="mt-1.5 text-sm text-error">{fieldErrors[key]}</p> : null}
+            </div>
+          ))}
+        </div>
+
+        {!ready ? <Skeleton className="h-4 w-40" /> : null}
+
+        <Button type="submit" size="lg" fullWidth disabled={!canPay}>
+          <Lock aria-hidden className="h-4 w-4" />
+          {paying ? 'Paying…' : `Pay ${amount}`}
+        </Button>
+
+        <p className="flex items-center justify-center gap-1.5 text-center text-xs text-muted">
+          <ShieldCheck aria-hidden className="h-3.5 w-3.5" />
+          Secure card payment. Inside holds it until you approve the stage.
+        </p>
+      </form>
+    </Modal>
   );
 }

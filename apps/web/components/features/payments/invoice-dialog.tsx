@@ -1,12 +1,14 @@
 'use client';
 
-import { ExternalLink, Printer } from 'lucide-react';
+import { Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Modal } from '@/components/ui/modal';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { useApi } from '@/lib/api/use-api';
 import { formatDate, formatMoney, titleCase } from '@/lib/utils/format';
+import { safeHref } from '@/lib/utils/url';
+import { paymentMethodLabel, type PaymentMethod } from '@/lib/types';
 
 type Invoice = {
   number: string;
@@ -20,14 +22,14 @@ type Invoice = {
   currency: string;
   paidAt: string | null;
   releasedAt: string | null;
-  stripeReference: string;
-  receiptNumber: string | null;
-  receiptUrl: string | null;
+  method: PaymentMethod;
+  reference: string | null;
+  proofUrl: string | null;
   card: { brand: string; last4: string } | null;
   billingName: string | null;
 };
 
-/** The invoice for a paid milestone, with its details read from Stripe. */
+/** The invoice for a paid milestone. */
 export function InvoiceDialog({
   paymentId,
   onClose,
@@ -74,12 +76,29 @@ export function InvoiceDialog({
                 <dt className="text-muted">Project</dt>
                 <dd className="mt-0.5 font-semibold">{invoice.project.title}</dd>
               </div>
-              {invoice.card ? (
+              {invoice.card || invoice.method !== 'CARD' ? (
                 <div>
                   <dt className="text-muted">Paid with</dt>
                   <dd className="mt-0.5 font-semibold">
-                    {titleCase(invoice.card.brand)} •••• {invoice.card.last4}
+                    {invoice.card
+                      ? `${titleCase(invoice.card.brand)} •••• ${invoice.card.last4}`
+                      : paymentMethodLabel[invoice.method]}
                   </dd>
+                  {invoice.reference ? (
+                    <dd className="mt-0.5 text-muted">Ref. {invoice.reference}</dd>
+                  ) : null}
+                  {invoice.proofUrl ? (
+                    <dd className="no-print mt-0.5">
+                      <a
+                        href={safeHref(invoice.proofUrl)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-brand underline underline-offset-4"
+                      >
+                        View proof of payment
+                      </a>
+                    </dd>
+                  ) : null}
                 </div>
               ) : null}
             </dl>
@@ -120,42 +139,17 @@ export function InvoiceDialog({
               </tfoot>
             </table>
 
-            <dl className="mt-6 grid gap-x-6 gap-y-2 rounded-lg bg-sand/60 p-4 text-xs sm:grid-cols-2">
-              <div>
-                <dt className="text-muted">Stripe reference</dt>
-                <dd className="mt-0.5 break-all font-mono">{invoice.stripeReference}</dd>
-              </div>
-              {invoice.receiptNumber ? (
-                <div>
-                  <dt className="text-muted">Receipt number</dt>
-                  <dd className="mt-0.5 font-mono">{invoice.receiptNumber}</dd>
-                </div>
-              ) : null}
-              <div>
-                <dt className="text-muted">Payout to designer</dt>
-                <dd className="mt-0.5">
-                  {invoice.releasedAt
-                    ? `Released ${formatDate(invoice.releasedAt)}`
-                    : invoice.status === 'REFUNDED'
-                      ? 'Refunded to the client'
-                      : 'Held until the client approves the stage'}
-                </dd>
-              </div>
-            </dl>
+            <p className="mt-6 rounded-lg bg-sand/60 p-4 text-xs">
+              <span className="text-muted">Payout to designer: </span>
+              {invoice.releasedAt
+                ? `Released ${formatDate(invoice.releasedAt)}`
+                : invoice.status === 'REFUNDED'
+                  ? 'Refunded to the client'
+                  : 'Held until the client approves the stage'}
+            </p>
           </div>
 
           <div className="no-print mt-6 flex flex-wrap justify-end gap-3">
-            {invoice.receiptUrl ? (
-              <a
-                href={invoice.receiptUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg border border-ink/20 px-4 py-2 font-semibold transition-colors hover:border-ink"
-              >
-                <ExternalLink aria-hidden className="h-4 w-4" />
-                Stripe receipt
-              </a>
-            ) : null}
             <Button size="sm" onClick={() => window.print()}>
               <Printer aria-hidden className="h-4 w-4" />
               Print or save PDF

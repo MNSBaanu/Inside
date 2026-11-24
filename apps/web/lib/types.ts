@@ -280,6 +280,14 @@ export type Task = {
   updatedAt: string;
 };
 
+export type PaymentMethod = 'CARD' | 'CASH' | 'BANK_TRANSFER';
+
+export const paymentMethodLabel: Record<PaymentMethod, string> = {
+  CARD: 'Card',
+  CASH: 'Cash',
+  BANK_TRANSFER: 'Bank transfer',
+};
+
 export type MilestonePayment = {
   id: string;
   projectId: string;
@@ -287,6 +295,8 @@ export type MilestonePayment = {
   stageName?: string;
   amount: number | null;
   status: PaymentStatus;
+  method: PaymentMethod;
+  reference: string | null;
   stripeIntentId: string | null;
   paidAt: string | null;
   releasedAt: string | null;

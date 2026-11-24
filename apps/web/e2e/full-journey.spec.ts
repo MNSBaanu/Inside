@@ -213,7 +213,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
         await page.getByRole('tab', { name: 'Payments' }).click();
         await page.getByRole('button', { name: 'Pay now' }).first().click();
         // The UI test servers run without a Stripe publishable key.
-        await expect(page.getByText('Payments are not configured. Add the Stripe publishable key.')).toBeVisible();
+        await expect(page.getByText('Card payments are not available right now. Please try again later.')).toBeVisible();
         await page.getByRole('tab', { name: 'Stages' }).click();
       });
     }
