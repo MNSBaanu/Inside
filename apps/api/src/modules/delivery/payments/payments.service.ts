@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
@@ -12,6 +13,7 @@ import {
   PaymentStatus,
   Prisma,
   ProjectStatus,
+  Role,
 } from '@inside/database';
 import { formatLkr } from '../../../common/format';
 import type { AuthUser } from '../../identity/auth/auth.service';
@@ -24,6 +26,8 @@ import { STRIPE } from './stripe.provider';
 
 @Injectable()
 export class PaymentsService {
+  private readonly logger = new Logger(PaymentsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
@@ -33,6 +37,7 @@ export class PaymentsService {
 
   async listByProject(user: AuthUser, projectId: string) {
     const project = await this.requireParty(projectId, user);
+    await this.reconcilePending(project.id);
     const items = await this.prisma.milestonePayment.findMany({
       where: { projectId: project.id },
       include: { stage: { select: { name: true } } },
@@ -49,15 +54,51 @@ export class PaymentsService {
     };
   }
 
+  /**
+   * One Stripe payment per milestone: a retry reuses it, so a client whose
+   * confirmation never reached us cannot be charged twice.
+   */
   async createCheckout(user: AuthUser, id: string) {
     const payment = await this.requirePendingForClient(user, id);
     const stripe = this.requireStripe();
+    const amount = Math.round(Number(payment.amount) * 100);
+
+    if (payment.stripeIntentId) {
+      const existing = await stripe.paymentIntents
+        .retrieve(payment.stripeIntentId)
+        .catch(() => null);
+      if (existing?.status === 'succeeded') {
+        await this.recordPaid(payment, existing.id);
+        return { success: true, data: { alreadyPaid: true } };
+      }
+      if (existing?.status === 'processing') {
+        throw new ConflictException(
+          'Your last payment for this milestone is still processing. Check back in a few minutes.',
+        );
+      }
+      if (
+        existing &&
+        existing.status !== 'canceled' &&
+        existing.amount === amount &&
+        existing.client_secret
+      ) {
+        return {
+          success: true,
+          data: { clientSecret: existing.client_secret },
+        };
+      }
+    }
+
     const intent = await stripe.paymentIntents.create({
-      amount: Math.round(Number(payment.amount) * 100),
+      amount,
       currency: 'lkr',
       payment_method_types: ['card'],
       description: `${payment.project.title} milestone`,
       metadata: { paymentId: id },
+    });
+    await this.prisma.milestonePayment.update({
+      where: { id },
+      data: { stripeIntentId: intent.id },
     });
 
     return { success: true, data: { clientSecret: intent.client_secret } };
@@ -75,62 +116,222 @@ export class PaymentsService {
     if (intent.metadata?.paymentId !== id || intent.status !== 'succeeded') {
       throw new BadRequestException('Payment has not been completed');
     }
-    const intentId = intent.id;
 
+    const updated = await this.recordPaid(payment, intent.id);
+    if (!updated) {
+      throw new ConflictException('This payment was already recorded');
+    }
+    return { success: true, data: { payment: this.serialize(updated) } };
+  }
+
+  /**
+   * The invoice for a paid milestone, read from Stripe. Card details and the
+   * Stripe receipt link are shown only to the client who paid and to admins.
+   */
+  async invoice(user: AuthUser, id: string) {
+    const payment = await this.prisma.milestonePayment.findUnique({
+      where: { id },
+      include: {
+        stage: { select: { name: true } },
+        project: {
+          select: {
+            id: true,
+            title: true,
+            clientId: true,
+            designerId: true,
+            client: { select: { name: true } },
+            designer: { select: { name: true } },
+          },
+        },
+      },
+    });
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
+    }
+    const isAdmin = user.role === Role.ADMIN;
+    const isPayer = payment.project.clientId === user.id;
+    if (!isAdmin && !isPayer && payment.project.designerId !== user.id) {
+      throw new ForbiddenException('You do not have access to this payment');
+    }
+    if (payment.status === PaymentStatus.PENDING) {
+      throw new BadRequestException('This milestone has not been paid yet');
+    }
+    if (!payment.stripeIntentId) {
+      throw new NotFoundException(
+        'This payment was not made through Stripe, so there is no invoice for it',
+      );
+    }
+
+    const intent = await this.requireStripe()
+      .paymentIntents.retrieve(payment.stripeIntentId, {
+        expand: ['latest_charge'],
+      })
+      .catch(() => {
+        throw new ServiceUnavailableException(
+          'Could not load this payment from Stripe. Try again shortly.',
+        );
+      });
+    const charge =
+      intent.latest_charge && typeof intent.latest_charge === 'object'
+        ? intent.latest_charge
+        : null;
+    const card = charge?.payment_method_details?.card;
+    const showPayment = isAdmin || isPayer;
+    const minor = (value: number) => value / 100;
+
+    return {
+      success: true,
+      data: {
+        invoice: {
+          number: `INS-${payment.id.slice(0, 8).toUpperCase()}`,
+          paymentId: payment.id,
+          status: payment.status,
+          project: { id: payment.project.id, title: payment.project.title },
+          stage: payment.stage.name,
+          client: payment.project.client.name,
+          designer: payment.project.designer.name,
+          amount: minor(intent.amount_received || intent.amount),
+          amountRefunded: minor(charge?.amount_refunded ?? 0),
+          currency: intent.currency.toUpperCase(),
+          paidAt: charge ? new Date(charge.created * 1000) : payment.paidAt,
+          releasedAt: payment.releasedAt,
+          stripeReference: intent.id,
+          receiptNumber: charge?.receipt_number ?? null,
+          receiptUrl: showPayment ? (charge?.receipt_url ?? null) : null,
+          card:
+            showPayment && card
+              ? { brand: card.brand, last4: card.last4 }
+              : null,
+          billingName: showPayment
+            ? (charge?.billing_details?.name ?? null)
+            : null,
+        },
+      },
+    };
+  }
+
+  /** Records milestones Stripe has taken payment for but the browser never confirmed. */
+  private async reconcilePending(projectId: string) {
+    if (!this.stripe) return;
+    const waiting = await this.prisma.milestonePayment.findMany({
+      where: {
+        projectId,
+        status: PaymentStatus.PENDING,
+        stripeIntentId: { not: null },
+      },
+      include: {
+        project: { select: { designerId: true, clientId: true, title: true } },
+      },
+    });
+    for (const payment of waiting) {
+      const intent = await this.stripe.paymentIntents
+        .retrieve(payment.stripeIntentId!)
+        .catch(() => null);
+      if (
+        intent?.status === 'succeeded' &&
+        intent.metadata?.paymentId === payment.id
+      ) {
+        await this.recordPaid(payment, intent.id);
+      }
+    }
+  }
+
+  /** Marks a pending milestone paid once. Returns null if it was already recorded. */
+  private async recordPaid(
+    payment: {
+      id: string;
+      projectId: string;
+      amount: unknown;
+      project: { designerId: string; clientId: string; title: string };
+    },
+    intentId: string,
+  ) {
+    let updated;
     try {
-      const updated = await this.prisma.milestonePayment.update({
-        where: { id, status: PaymentStatus.PENDING },
+      updated = await this.prisma.milestonePayment.update({
+        where: { id: payment.id, status: PaymentStatus.PENDING },
         data: {
           status: PaymentStatus.PAID,
           paidAt: new Date(),
           stripeIntentId: intentId,
         },
       });
-
-      await this.notifications.notify({
-        userId: payment.project.designerId,
-        type: NotificationType.PAYMENT,
-        title: 'Milestone paid',
-        message: `Client paid ${formatLkr(payment.amount)} for "${payment.project.title}"`,
-        metadata: { projectId: payment.projectId, paymentId: id },
-      });
-
-      await this.activity.log({
-        projectId: payment.projectId,
-        userId: user.id,
-        action: 'PAYMENT_PAID',
-        metadata: { paymentId: id, amount: Number(payment.amount) },
-      });
-
-      return { success: true, data: { payment: this.serialize(updated) } };
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         (error.code === 'P2002' || error.code === 'P2025')
       ) {
-        throw new ConflictException('This payment was already recorded');
+        return null;
       }
       throw error;
     }
+
+    await this.notifications.notify({
+      userId: payment.project.designerId,
+      type: NotificationType.PAYMENT,
+      title: 'Milestone paid',
+      message: `Client paid ${formatLkr(payment.amount)} for "${payment.project.title}"`,
+      metadata: { projectId: payment.projectId, paymentId: payment.id },
+    });
+    await this.activity.log({
+      projectId: payment.projectId,
+      userId: payment.project.clientId,
+      action: 'PAYMENT_PAID',
+      metadata: { paymentId: payment.id, amount: Number(payment.amount) },
+    });
+    return updated;
   }
 
-  /** Refunds money paid but not yet released when a project is cancelled. */
-  async refundCancelledProject(projectId: string) {
+  /**
+   * Closes an active or on-hold project, then refunds milestones that were
+   * paid but not released. The project is claimed first so two cancels can't
+   * both refund, and each payment is claimed before Stripe is called so a
+   * stage approved at the same moment is never refunded after release.
+   */
+  async cancelAndRefund(projectId: string) {
+    const closed = await this.prisma.project.updateMany({
+      where: {
+        id: projectId,
+        status: { in: [ProjectStatus.ACTIVE, ProjectStatus.ON_HOLD] },
+      },
+      data: { status: ProjectStatus.CANCELLED },
+    });
+    if (closed.count === 0) {
+      throw new ConflictException('Project is already closed');
+    }
+
     const paid = await this.prisma.milestonePayment.findMany({
       where: { projectId, status: PaymentStatus.PAID },
     });
+    let refunded = 0;
+    let failed = 0;
     for (const payment of paid) {
-      if (payment.stripeIntentId) {
-        await this.requireStripe().refunds.create({
-          payment_intent: payment.stripeIntentId,
-        });
-      }
-      await this.prisma.milestonePayment.update({
-        where: { id: payment.id },
+      const claimed = await this.prisma.milestonePayment.updateMany({
+        where: { id: payment.id, status: PaymentStatus.PAID },
         data: { status: PaymentStatus.REFUNDED },
       });
+      if (claimed.count === 0) continue;
+      if (payment.stripeIntentId) {
+        try {
+          await this.requireStripe().refunds.create(
+            { payment_intent: payment.stripeIntentId },
+            { idempotencyKey: `refund-${payment.id}` },
+          );
+        } catch (error) {
+          await this.prisma.milestonePayment.update({
+            where: { id: payment.id },
+            data: { status: PaymentStatus.PAID },
+          });
+          this.logger.error(
+            `Refund failed for payment ${payment.id}: ${error instanceof Error ? error.message : 'unknown'}`,
+          );
+          failed += 1;
+          continue;
+        }
+      }
+      refunded += 1;
     }
-    return paid.length;
+    return { refunded, failed };
   }
 
   private async requirePendingForClient(user: AuthUser, id: string) {

@@ -200,7 +200,7 @@ export class AdminManageService {
     ) {
       throw new BadRequestException('Project is already closed');
     }
-    const refunded = await this.payments.refundCancelledProject(project.id);
+    const { refunded } = await this.payments.cancelAndRefund(project.id);
     const refundNote = refunded
       ? `. ${refunded} paid milestone${refunded === 1 ? ' was' : 's were'} refunded`
       : '';

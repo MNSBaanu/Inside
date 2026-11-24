@@ -6,12 +6,14 @@ import {
 } from '@nestjs/common';
 import {
   NotificationType,
+  PaymentStatus,
   PortfolioShareStatus,
   ProjectStatus,
   Role,
   StageName,
   StageStatus,
 } from '@inside/database';
+import { stageLabel } from '../../../common/format';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
@@ -135,7 +137,14 @@ export class ProjectsService {
 
   async getById(user: AuthUser, id: string) {
     const project = await this.requirePartyAccess(id, user);
-    return { success: true, data: { project: this.serialize(project) } };
+    const reviewed =
+      (await this.prisma.review.count({
+        where: { projectId: id, reviewerId: user.id },
+      })) > 0;
+    return {
+      success: true,
+      data: { project: { ...this.serialize(project), reviewed } },
+    };
   }
 
   /** Designer asks the client for permission to show a completed project in their portfolio. */
@@ -277,10 +286,35 @@ export class ProjectsService {
       throw new BadRequestException('Project is already closed');
     }
 
-    await this.payments.refundCancelledProject(id);
-    const updated = await this.prisma.project.update({
+    if (user.id === project.clientId) {
+      const underway = await this.prisma.milestonePayment.findFirst({
+        where: {
+          projectId: id,
+          status: PaymentStatus.PAID,
+          stage: {
+            status: {
+              in: [
+                StageStatus.IN_PROGRESS,
+                StageStatus.SUBMITTED,
+                StageStatus.REJECTED,
+              ],
+            },
+          },
+        },
+        select: { stage: { select: { name: true, status: true } } },
+      });
+      if (underway) {
+        throw new BadRequestException(
+          underway.stage.status === StageStatus.SUBMITTED
+            ? `The ${stageLabel(underway.stage.name)} stage is paid and waiting for your review. Approve it or ask for changes first, or contact support to cancel.`
+            : `The ${stageLabel(underway.stage.name)} stage is paid and the designer is working on it. Contact support to cancel so the payment can be settled fairly.`,
+        );
+      }
+    }
+
+    const { refunded, failed } = await this.payments.cancelAndRefund(id);
+    const updated = await this.prisma.project.findUniqueOrThrow({
       where: { id },
-      data: { status: ProjectStatus.CANCELLED },
       include: projectInclude,
     });
 
@@ -298,10 +332,17 @@ export class ProjectsService {
       projectId: id,
       userId: user.id,
       action: 'PROJECT_CANCELLED',
-      metadata: { reason },
+      metadata: { reason, refunded, refundFailed: failed },
     });
 
-    return { success: true, data: { project: this.serialize(updated) } };
+    return {
+      success: true,
+      data: {
+        project: this.serialize(updated),
+        refunded,
+        refundFailed: failed,
+      },
+    };
   }
 
   async putOnHold(user: AuthUser, id: string) {

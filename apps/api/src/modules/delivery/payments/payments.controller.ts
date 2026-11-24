@@ -37,6 +37,19 @@ export class PaymentsController {
     return this.payments.listByProject(user, projectId);
   }
 
+  @Get('payments/:id/invoice')
+  @ApiOperation({
+    summary:
+      'Invoice for a paid milestone, from Stripe (client, designer or admin)',
+  })
+  @ApiOkResponse({ description: 'Invoice' })
+  invoice(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.payments.invoice(user, id);
+  }
+
   @Post('payments/:id/checkout')
   @ApiOperation({ summary: 'Client starts a card payment for a milestone' })
   @ApiOkResponse({ description: 'Client secret' })

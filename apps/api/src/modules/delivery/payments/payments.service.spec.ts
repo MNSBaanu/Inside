@@ -13,14 +13,16 @@ describe('PaymentsService', () => {
       findUnique: jest.fn(),
       findMany: jest.fn(),
       update: jest.fn(),
+      updateMany: jest.fn(),
     },
-    project: { findUnique: jest.fn() },
+    project: { findUnique: jest.fn(), updateMany: jest.fn() },
   };
 
   const notifications = { notify: jest.fn() };
   const activity = { log: jest.fn() };
   const stripe = {
     paymentIntents: { create: jest.fn(), retrieve: jest.fn() },
+    refunds: { create: jest.fn() },
   };
 
   const client = {
@@ -59,6 +61,138 @@ describe('PaymentsService', () => {
       activity as unknown as ActivityService,
       stripe as unknown as Stripe,
     );
+  });
+
+  it('reuses the open Stripe payment instead of charging again', async () => {
+    prisma.milestonePayment.findUnique.mockResolvedValue({
+      ...pendingPayment,
+      stripeIntentId: 'pi_1',
+    });
+    stripe.paymentIntents.retrieve.mockResolvedValue({
+      id: 'pi_1',
+      status: 'requires_payment_method',
+      amount: 5000000,
+      client_secret: 'cs_existing',
+    });
+    const result = await service.createCheckout(client, 'pay1');
+    expect(result.data.clientSecret).toBe('cs_existing');
+    expect(stripe.paymentIntents.create).not.toHaveBeenCalled();
+  });
+
+  it('records a payment Stripe already took instead of opening a new one', async () => {
+    prisma.milestonePayment.findUnique.mockResolvedValue({
+      ...pendingPayment,
+      stripeIntentId: 'pi_1',
+    });
+    stripe.paymentIntents.retrieve.mockResolvedValue({
+      id: 'pi_1',
+      status: 'succeeded',
+      amount: 5000000,
+      metadata: { paymentId: 'pay1' },
+    });
+    prisma.milestonePayment.update.mockResolvedValue({
+      ...pendingPayment,
+      status: PaymentStatus.PAID,
+    });
+    const result = await service.createCheckout(client, 'pay1');
+    expect(result.data).toEqual({ alreadyPaid: true });
+    expect(stripe.paymentIntents.create).not.toHaveBeenCalled();
+    expect(prisma.milestonePayment.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'pay1', status: PaymentStatus.PENDING },
+      }),
+    );
+  });
+
+  it('skips refunding a payment that was released before it was claimed', async () => {
+    prisma.project.updateMany.mockResolvedValue({ count: 1 });
+    prisma.milestonePayment.findMany.mockResolvedValue([
+      { id: 'pay1', stripeIntentId: 'pi_1' },
+    ]);
+    prisma.milestonePayment.updateMany.mockResolvedValue({ count: 0 });
+    const result = await service.cancelAndRefund('p1');
+    expect(result).toEqual({ refunded: 0, failed: 0 });
+    expect(stripe.refunds.create).not.toHaveBeenCalled();
+  });
+
+  it('will not cancel and refund a project twice', async () => {
+    prisma.project.updateMany.mockResolvedValue({ count: 0 });
+    await expect(service.cancelAndRefund('p1')).rejects.toThrow(
+      'Project is already closed',
+    );
+    expect(prisma.milestonePayment.findMany).not.toHaveBeenCalled();
+  });
+
+  describe('invoice', () => {
+    const paidPayment = {
+      ...pendingPayment,
+      status: PaymentStatus.PAID,
+      stripeIntentId: 'pi_1',
+      stage: { name: 'DESIGN' },
+      project: {
+        ...pendingPayment.project,
+        client: { name: 'Nadia' },
+        designer: { name: 'Ravi' },
+      },
+    };
+    const intent = {
+      id: 'pi_1',
+      amount: 5000000,
+      amount_received: 5000000,
+      currency: 'lkr',
+      latest_charge: {
+        id: 'ch_1',
+        created: 1_700_000_000,
+        amount_refunded: 0,
+        receipt_number: '1234-5678',
+        receipt_url: 'https://pay.stripe.com/receipts/x',
+        billing_details: { name: 'Nadia Client' },
+        payment_method_details: { card: { brand: 'visa', last4: '4242' } },
+      },
+    };
+
+    it('gives the client the card and receipt from Stripe', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue(paidPayment);
+      stripe.paymentIntents.retrieve.mockResolvedValue(intent);
+      const { data } = await service.invoice(client, 'pay1');
+      expect(stripe.paymentIntents.retrieve).toHaveBeenCalledWith('pi_1', {
+        expand: ['latest_charge'],
+      });
+      expect(data.invoice).toMatchObject({
+        amount: 50000,
+        currency: 'LKR',
+        card: { brand: 'visa', last4: '4242' },
+        receiptUrl: 'https://pay.stripe.com/receipts/x',
+      });
+    });
+
+    it('hides card details and the receipt link from the designer', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue(paidPayment);
+      stripe.paymentIntents.retrieve.mockResolvedValue(intent);
+      const { data } = await service.invoice(designer, 'pay1');
+      expect(data.invoice.card).toBeNull();
+      expect(data.invoice.receiptUrl).toBeNull();
+      expect(data.invoice.billingName).toBeNull();
+      expect(data.invoice.amount).toBe(50000);
+    });
+
+    it('refuses someone outside the project', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue(paidPayment);
+      await expect(
+        service.invoice({ id: 'x', role: Role.CLIENT } as AuthUser, 'pay1'),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('has no invoice before the milestone is paid', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue({
+        ...paidPayment,
+        status: PaymentStatus.PENDING,
+        stripeIntentId: null,
+      });
+      await expect(service.invoice(client, 'pay1')).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
+    });
   });
 
   it('creates a payment intent for the client', async () => {

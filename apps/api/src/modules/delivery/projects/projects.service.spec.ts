@@ -1,5 +1,5 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
-import { ProjectStatus, Role, StageName } from '@inside/database';
+import { ProjectStatus, Role, StageName, StageStatus } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
@@ -12,8 +12,10 @@ describe('ProjectsService', () => {
     project: {
       findMany: jest.fn(),
       findUnique: jest.fn(),
+      findUniqueOrThrow: jest.fn(),
       update: jest.fn(),
     },
+    milestonePayment: { findFirst: jest.fn() },
     message: {
       findMany: jest.fn().mockResolvedValue([]),
       groupBy: jest.fn().mockResolvedValue([]),
@@ -36,6 +38,10 @@ describe('ProjectsService', () => {
 
   const notifications = { notify: jest.fn() };
   const activity = { log: jest.fn(), listByProject: jest.fn() };
+
+  const payments = {
+    cancelAndRefund: jest.fn().mockResolvedValue({ refunded: 0, failed: 0 }),
+  };
 
   let service: ProjectsService;
 
@@ -60,10 +66,9 @@ describe('ProjectsService', () => {
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
       activity as unknown as ActivityService,
-      {
-        refundCancelledProject: jest.fn().mockResolvedValue(0),
-      } as unknown as PaymentsService,
+      payments as unknown as PaymentsService,
     );
+    prisma.milestonePayment.findFirst.mockResolvedValue(null);
   });
 
   it('listMine returns designer projects for designer mode', async () => {
@@ -85,15 +90,38 @@ describe('ProjectsService', () => {
 
   it('cancel updates status and notifies the other party', async () => {
     prisma.project.findUnique.mockResolvedValue(activeProject);
-    prisma.project.update.mockResolvedValue({
+    prisma.project.findUniqueOrThrow.mockResolvedValue({
       ...activeProject,
       status: ProjectStatus.CANCELLED,
     });
     const result = await service.cancel(client, 'p1', 'Budget changed');
+    expect(payments.cancelAndRefund).toHaveBeenCalledWith('p1');
     expect(result.data.project.status).toBe(ProjectStatus.CANCELLED);
     expect(notifications.notify).toHaveBeenCalledWith(
       expect.objectContaining({ userId: 'd1' }),
     );
+  });
+
+  it('stops a client cancelling while a paid stage is under way', async () => {
+    prisma.project.findUnique.mockResolvedValue(activeProject);
+    prisma.milestonePayment.findFirst.mockResolvedValue({
+      stage: { name: StageName.DESIGN, status: StageStatus.SUBMITTED },
+    });
+    await expect(service.cancel(client, 'p1', 'x')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+    expect(payments.cancelAndRefund).not.toHaveBeenCalled();
+  });
+
+  it('lets the designer cancel and refund a stage under way', async () => {
+    prisma.project.findUnique.mockResolvedValue(activeProject);
+    prisma.project.findUniqueOrThrow.mockResolvedValue({
+      ...activeProject,
+      status: ProjectStatus.CANCELLED,
+    });
+    await service.cancel(designer, 'p1', 'Cannot continue');
+    expect(prisma.milestonePayment.findFirst).not.toHaveBeenCalled();
+    expect(payments.cancelAndRefund).toHaveBeenCalledWith('p1');
   });
 
   it('rejects cancel on completed project', async () => {

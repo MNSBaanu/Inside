@@ -255,7 +255,11 @@ export class StagesService {
 
     const result = await this.prisma.$transaction(async (tx) => {
       const claimed = await tx.projectStage.updateMany({
-        where: { id: stageId, status: StageStatus.SUBMITTED },
+        where: {
+          id: stageId,
+          status: StageStatus.SUBMITTED,
+          project: { status: ProjectStatus.ACTIVE },
+        },
         data: { status: StageStatus.APPROVED, approvedAt: new Date() },
       });
       if (claimed.count === 0) {
