@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { use, useEffect, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { MessageThread } from '@/components/features/projects/message-thread';
+import { PortfolioShare } from '@/components/features/projects/portfolio-share';
 import { PaymentList } from '@/components/features/projects/payment-list';
 import { ProjectHistory } from '@/components/features/projects/project-history';
 import { StageList } from '@/components/features/projects/stage-list';
@@ -169,6 +170,13 @@ export default function ProjectWorkspacePage({
         <StageTimeline stages={stageItems} currentStage={item.currentStage} />
       ) : null}
 
+      <PortfolioShare
+        project={item}
+        isClient={isClient}
+        isDesigner={isDesigner}
+        onChanged={() => void project.reload()}
+      />
+
       {actionError ? (
         <div className="mt-6">
           <ErrorNotice message={actionError} />
@@ -277,7 +285,7 @@ export default function ProjectWorkspacePage({
               description="A review can be left once the project is completed."
             />
           ) : !isClient ? (
-            <ReviewList designerId={item.designerId} />
+            <ReviewList endpoint={`/designers/${item.designerId}/reviews`} />
           ) : reviewed ? (
             <EmptyState
               title="Thanks for your review."
