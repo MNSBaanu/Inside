@@ -163,7 +163,7 @@ export function OpenRequestDrawer({
 
             <aside className="lg:border-l lg:border-hairline lg:pl-8">
               <div className="space-y-3 lg:sticky lg:top-0">
-                <ButtonLink href={href} size="lg" fullWidth>
+                <ButtonLink href={`${href}?propose=1`} size="lg" fullWidth>
                   Send a proposal
                 </ButtonLink>
                 <div className="rounded-xl border border-hairline p-4 text-sm">

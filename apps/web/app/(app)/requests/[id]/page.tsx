@@ -1,9 +1,9 @@
 'use client';
 
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Send } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { use, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { ProposalForm } from '@/components/features/proposals/proposal-form';
 import { BriefCard } from '@/components/features/requests/brief-card';
@@ -11,7 +11,8 @@ import { PortfolioReferenceCard } from '@/components/features/requests/portfolio
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { Modal } from '@/components/ui/modal';
 import { ConfirmDialog, useConfirm } from '@/components/ui/confirm-dialog';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -37,6 +38,13 @@ export default function RequestDetailPage({
   const [actionError, setActionError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [confirmAccept, setConfirmAccept] = useState<Proposal | null>(null);
+  const [proposing, setProposing] = useState(false);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('propose') === '1') {
+      setProposing(true);
+    }
+  }, []);
   const { confirm, dialog } = useConfirm();
 
   if (request.loading) return <Skeleton className="h-64" />;
@@ -237,25 +245,35 @@ export default function RequestDetailPage({
         </div>
       ) : null}
 
-      {canPropose ? (
-        <Card className="mt-6">
-          <CardHeader
-            title={canResubmit ? 'Send a revised proposal' : 'Send a proposal'}
-            description="Set out the scope, the timeline, and a fee for each stage."
-          />
+      {canPropose && proposing ? (
+        <Modal
+          title={canResubmit ? 'Send a revised proposal' : 'Send a proposal'}
+          description="Set out the scope, the timeline, and a fee for each stage."
+          onClose={() => setProposing(false)}
+        >
           <ProposalForm
             requestId={item.id}
+            clientBudget={item.budget}
             onSubmitted={() => {
+              setProposing(false);
               void Promise.all([proposals.reload(), request.reload()]);
             }}
           />
-        </Card>
+        </Modal>
       ) : null}
 
       <section className="mt-8">
-        <h2 className="text-lg font-semibold">
-          {isClient ? 'Proposals received' : 'Proposals'}
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold">
+            {isClient ? 'Proposals received' : 'Proposals'}
+          </h2>
+          {canPropose ? (
+            <Button size="sm" onClick={() => setProposing(true)}>
+              <Send aria-hidden className="h-4 w-4" />
+              {canResubmit ? 'Send a revised proposal' : 'Send a proposal'}
+            </Button>
+          ) : null}
+        </div>
 
         <div className="mt-3">
           {proposals.loading ? (
