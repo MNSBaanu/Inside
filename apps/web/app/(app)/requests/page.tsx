@@ -12,7 +12,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { formatDate, formatMoney } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
-import type { ProjectRequest, RequestStatus } from '@/lib/types';
+import type { ProjectRequest, RequestStatus, RequestType } from '@/lib/types';
 
 const STATUSES: RequestStatus[] = [
   'PENDING',
@@ -39,8 +39,14 @@ export default function RequestsPage() {
     useApi<{ items: ProjectRequest[] }>('/requests');
   const isClient = user?.activeRole === 'CLIENT';
   const [filter, setFilter] = useState<RequestStatus | null>(null);
+  const [kind, setKind] = useState<RequestType>('DIRECT');
 
-  const items = data?.items ?? [];
+  const all = data?.items ?? [];
+  const kinds: { type: RequestType; label: string }[] = [
+    { type: 'DIRECT', label: isClient ? 'Sent to a designer' : 'Sent to you' },
+    { type: 'OPEN', label: 'Open requests' },
+  ];
+  const items = all.filter((request) => request.type === kind);
   const counts = items.reduce<Partial<Record<RequestStatus, number>>>(
     (acc, request) => ({ ...acc, [request.status]: (acc[request.status] ?? 0) + 1 }),
     {},
@@ -78,6 +84,42 @@ export default function RequestsPage() {
           </div>
         ) : data && data.items.length > 0 ? (
           <>
+            <div role="tablist" aria-label="Request type" className="mb-5 flex gap-6 border-b border-hairline">
+              {kinds.map(({ type, label }) => {
+                const active = kind === type;
+                const count = all.filter((request) => request.type === type).length;
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => {
+                      setKind(type);
+                      setFilter(null);
+                    }}
+                    className={cn(
+                      '-mb-px inline-flex items-center gap-2 border-b-2 px-1 pb-3 text-sm font-semibold transition-colors',
+                      active
+                        ? 'border-brand text-brand'
+                        : 'border-transparent text-muted hover:text-ink',
+                    )}
+                  >
+                    {label}
+                    <span
+                      className={cn(
+                        'rounded-pill px-2 py-0.5 text-xs',
+                        active ? 'bg-brand-soft text-brand-deep' : 'bg-sand text-ink/70',
+                      )}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {items.length > 0 ? (
             <div
               role="group"
               aria-label="Filter by status"
@@ -100,14 +142,28 @@ export default function RequestsPage() {
                   >
                     {status ? readable(status) : 'All'}
                     <span className={active ? 'text-canvas/80' : 'text-muted'}>
-                      {status ? counts[status] : data.items.length}
+                      {status ? counts[status] : items.length}
                     </span>
                   </button>
                 );
               })}
             </div>
+            ) : null}
 
-            {visible.length > 0 ? (
+            {items.length === 0 ? (
+              <EmptyState
+                title={kind === 'OPEN' ? 'No open requests.' : 'No direct requests.'}
+                description={
+                  kind === 'OPEN'
+                    ? isClient
+                      ? 'Open a request to every designer and compare the proposals that come back.'
+                      : 'Open requests you send a proposal on show up here.'
+                    : isClient
+                      ? 'Send a request straight to a designer from their profile.'
+                      : 'Requests clients send straight to you show up here.'
+                }
+              />
+            ) : visible.length > 0 ? (
               <ul className={cn(cardSurface, 'divide-y divide-hairline overflow-hidden')}>
                 {visible.map((request) => (
                   <li key={request.id}>

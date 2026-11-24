@@ -3,7 +3,7 @@
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
@@ -14,7 +14,8 @@ import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
 import { cn } from '@/lib/utils/cn';
 import { PortfolioReferenceCard } from '@/components/features/requests/portfolio-reference';
-import type { Portfolio, ProjectRequest } from '@/lib/types';
+import { BriefCard } from '@/components/features/requests/brief-card';
+import type { Brief, Portfolio, ProjectRequest } from '@/lib/types';
 
 function NewRequestForm() {
   const router = useRouter();
@@ -41,6 +42,20 @@ function NewRequestForm() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const { data: fromBrief } = useApi<{ brief: Brief }>(
+    briefId ? `/briefs/${briefId}` : null,
+  );
+  const brief = fromBrief?.brief ?? null;
+  useEffect(() => {
+    if (!brief) return;
+    const heading = [brief.styles.join(' / '), brief.rooms.join(' & ')]
+      .filter(Boolean)
+      .join(' ');
+    const budgetFigures = (brief.budgetRange ?? '').match(/\d+/g);
+    setTitle((current) => current || heading || 'Interior design request');
+    setBudget((current) => current || (budgetFigures ? budgetFigures[budgetFigures.length - 1] : ''));
+  }, [brief]);
+
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
@@ -56,7 +71,7 @@ function NewRequestForm() {
     try {
       const data = await api.post<{ request: ProjectRequest }>('/requests', {
         title,
-        description: description || undefined,
+        description: description || brief?.description || undefined,
         type,
         ...(type === 'DIRECT' ? { designerId, portfolioId } : {}),
         ...(briefId ? { briefId } : {}),
@@ -130,29 +145,48 @@ function NewRequestForm() {
         />
       ) : null}
 
-      <Field label="Title" htmlFor="title">
-        <Input
-          id="title"
-          required
-          minLength={2}
-          maxLength={200}
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="Living room refresh"
-        />
-      </Field>
+      {briefId && !brief ? <Skeleton className="h-32" /> : null}
 
-      <Field label="Description" htmlFor="description">
+      {brief ? (
+        <div>
+          <p className="text-sm text-muted">
+            Your brief goes with this request. Add only what it doesn&apos;t already say.
+          </p>
+          <BriefCard brief={brief} />
+        </div>
+      ) : (
+        <Field label="Title" htmlFor="title">
+          <Input
+            id="title"
+            required
+            minLength={2}
+            maxLength={200}
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            placeholder="Living room refresh"
+          />
+        </Field>
+      )}
+
+      <Field
+        label={brief ? 'Anything to add?' : 'Description'}
+        htmlFor="description"
+        hint={brief ? 'Optional. Extra notes for the designer beyond your brief.' : undefined}
+      >
         <Textarea
           id="description"
           maxLength={4000}
           value={description}
           onChange={(event) => setDescription(event.target.value)}
-          placeholder="What you need done, and anything a designer should know up front."
+          placeholder={
+            brief
+              ? 'For example: we need it finished before the holidays.'
+              : 'What you need done, and anything a designer should know up front.'
+          }
         />
       </Field>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className={cn('grid gap-5', !brief && 'sm:grid-cols-2')}>
         <Field
           label="Expected timeline"
           htmlFor="timeline"
@@ -167,28 +201,30 @@ function NewRequestForm() {
           />
         </Field>
 
-        <Field label="Budget" htmlFor="budget" hint="Optional, in LKR.">
-          <Input
-            id="budget"
-            type="number"
-            min={0}
-            value={budget}
-            onChange={(event) => setBudget(event.target.value)}
-            placeholder="500000"
-          />
-        </Field>
+        {brief ? null : (
+          <Field label="Budget" htmlFor="budget" hint="Optional, in LKR.">
+            <Input
+              id="budget"
+              type="number"
+              min={0}
+              value={budget}
+              onChange={(event) => setBudget(event.target.value)}
+              placeholder="500000"
+            />
+          </Field>
+        )}
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <Button type="submit" disabled={submitting}>
-          {submitting ? 'Sending…' : 'Send request'}
-        </Button>
+      <div className="flex flex-wrap justify-end gap-3">
         <Button
           type="button"
           variant="outline"
           onClick={() => router.push('/requests')}
         >
           Cancel
+        </Button>
+        <Button type="submit" disabled={submitting}>
+          {submitting ? 'Sending…' : 'Send request'}
         </Button>
       </div>
     </form>
