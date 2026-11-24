@@ -74,7 +74,7 @@ export function PortfolioDetail({
     return (
       <div className="shell page">
         <Skeleton className="h-16 w-2/3" />
-        <Skeleton className="mt-10 aspect-[16/9] w-full" />
+        <Skeleton className="mt-10 aspect-[16/9] w-full md:aspect-auto md:h-[min(45vh,420px)]" />
       </div>
     );
   }
@@ -102,30 +102,32 @@ export function PortfolioDetail({
     <div className="page">
       <section className="shell">
         <BackLink fallback="/explore" />
-        <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <div className="flex flex-wrap gap-2">
-              {portfolio.style ? (
-                <Badge tone="brand">{portfolio.style}</Badge>
-              ) : null}
-              {portfolio.roomType ? <Badge>{portfolio.roomType}</Badge> : null}
+        {cover ? null : (
+          <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <div className="flex flex-wrap gap-2">
+                {portfolio.style ? (
+                  <Badge tone="brand">{portfolio.style}</Badge>
+                ) : null}
+                {portfolio.roomType ? <Badge>{portfolio.roomType}</Badge> : null}
+              </div>
+              <h1 className="mt-4 max-w-3xl font-display text-title font-semibold">
+                {portfolio.title}
+              </h1>
             </div>
-            <h1 className="mt-4 max-w-3xl font-display text-title font-semibold">
-              {portfolio.title}
-            </h1>
-          </div>
 
-          {portfolio.budget !== null ? (
-            <p className="font-display text-2xl font-semibold text-brand">
-              {formatMoney(portfolio.budget)}
-            </p>
-          ) : null}
-        </div>
+            {portfolio.budget !== null ? (
+              <p className="font-display text-2xl font-semibold text-brand">
+                {formatMoney(portfolio.budget)}
+              </p>
+            ) : null}
+          </div>
+        )}
       </section>
 
       {cover ? (
-        <section className="shell mt-8">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-card shadow-lift md:aspect-[21/9]">
+        <section className="shell mt-4">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-card shadow-lift md:aspect-auto md:h-[min(45vh,420px)]">
             <Image
               src={cover.imageUrl}
               unoptimized={!isOptimizableImage(cover.imageUrl)}
@@ -135,6 +137,30 @@ export function PortfolioDetail({
               sizes="100vw"
               className="object-cover"
             />
+
+            <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-4 border-b border-white/15 bg-brand-deep/60 px-5 py-4 backdrop-blur-md md:px-6">
+              <h1 className="min-w-0 font-display text-2xl font-semibold text-white md:text-3xl">
+                {portfolio.title}
+              </h1>
+              {portfolio.budget !== null ? (
+                <p className="shrink-0 font-display text-xl font-semibold text-white md:text-2xl">
+                  {formatMoney(portfolio.budget)}
+                </p>
+              ) : null}
+            </div>
+
+            {portfolio.style || portfolio.roomType ? (
+              <div className="absolute bottom-4 right-4 flex flex-wrap justify-end gap-2">
+                {[portfolio.style, portfolio.roomType].filter(Boolean).map((label) => (
+                  <span
+                    key={label}
+                    className="rounded-[6px] border border-white/15 bg-brand/70 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white backdrop-blur-md"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            ) : null}
           </div>
         </section>
       ) : null}
