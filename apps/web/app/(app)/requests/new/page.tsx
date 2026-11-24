@@ -13,15 +13,22 @@ import { useSession } from '@/components/providers/session-provider';
 import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
 import { cn } from '@/lib/utils/cn';
-import type { ProjectRequest } from '@/lib/types';
+import { PortfolioReferenceCard } from '@/components/features/requests/portfolio-reference';
+import type { Portfolio, ProjectRequest } from '@/lib/types';
 
 function NewRequestForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const designerId = searchParams.get('designerId') ?? undefined;
   const briefId = searchParams.get('briefId') ?? undefined;
+  const portfolioId = designerId
+    ? (searchParams.get('portfolioId') ?? undefined)
+    : undefined;
   const { data: picked } = useApi<{ designer: { name: string } }>(
     designerId ? `/designers/${designerId}` : null,
+  );
+  const { data: inspiration } = useApi<{ portfolio: Portfolio }>(
+    portfolioId ? `/portfolios/${portfolioId}` : null,
   );
 
   const [type, setType] = useState<'DIRECT' | 'OPEN'>(
@@ -51,7 +58,7 @@ function NewRequestForm() {
         title,
         description: description || undefined,
         type,
-        ...(type === 'DIRECT' ? { designerId } : {}),
+        ...(type === 'DIRECT' ? { designerId, portfolioId } : {}),
         ...(briefId ? { briefId } : {}),
         ...(budget ? { budget: Number(budget) } : {}),
         ...(timeline ? { timeline } : {}),
@@ -112,6 +119,16 @@ function NewRequestForm() {
           </button>
         </div>
       </fieldset>
+
+      {type === 'DIRECT' && inspiration ? (
+        <PortfolioReferenceCard
+          portfolio={{
+            id: inspiration.portfolio.id,
+            title: inspiration.portfolio.title,
+            imageUrl: inspiration.portfolio.images[0]?.imageUrl ?? null,
+          }}
+        />
+      ) : null}
 
       <Field label="Title" htmlFor="title">
         <Input

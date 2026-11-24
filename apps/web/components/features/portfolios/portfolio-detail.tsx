@@ -8,6 +8,7 @@ import { BackLink } from '@/components/ui/back-link';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { RequestDesignerButton } from '@/components/features/designers/request-designer-button';
+import { ReviewList } from '@/components/features/reviews/review-list';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Rating } from '@/components/ui/rating';
 import { formatDate, formatMoney } from '@/lib/utils/format';
@@ -149,9 +150,13 @@ export function PortfolioDetail({
               ) : null}
             </div>
 
-            {portfolio.style || portfolio.roomType ? (
+            {portfolio.style || portfolio.roomType || portfolio.completedOnInside ? (
               <div className="absolute bottom-4 right-4 flex flex-wrap justify-end gap-2">
-                {[portfolio.style, portfolio.roomType].filter(Boolean).map((label) => (
+                {[
+                  portfolio.completedOnInside ? 'Completed on Inside' : null,
+                  portfolio.style,
+                  portfolio.roomType,
+                ].filter(Boolean).map((label) => (
                   <span
                     key={label}
                     className="rounded-[6px] border border-white/15 bg-brand/70 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white backdrop-blur-md"
@@ -219,6 +224,24 @@ export function PortfolioDetail({
               ))}
             </div>
           ) : null}
+
+          <div className="mt-12 empty:hidden">
+            <ReviewList
+              endpoint={`/portfolios/${portfolio.id}/reviews`}
+              hideWhenEmpty
+              heading={
+                <div className="mb-4">
+                  <h2 className="font-display text-xl font-semibold">
+                    From clients inspired by this project
+                  </h2>
+                  <p className="mt-1 text-sm text-muted">
+                    Reviews of {portfolio.designer.name}&apos;s work for clients
+                    who requested them from this project.
+                  </p>
+                </div>
+              }
+            />
+          </div>
         </div>
 
         <aside className="flex h-fit flex-col gap-6">
@@ -272,6 +295,7 @@ export function PortfolioDetail({
               {designer?.isAvailable === false ? null : (
                 <RequestDesignerButton
                   designerId={portfolio.designer.id}
+                  portfolioId={portfolio.id}
                   fullWidth
                 />
               )}

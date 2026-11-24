@@ -82,6 +82,7 @@ export type Portfolio = {
   roomType: string | null;
   budget: number | null;
   isPublished: boolean;
+  completedOnInside: boolean;
   createdAt: string;
   updatedAt: string;
   designer: PortfolioDesigner;
@@ -168,6 +169,8 @@ export type ProjectRequest = {
   clientId: string;
   designerId: string | null;
   briefId: string | null;
+  portfolioId: string | null;
+  portfolio: PortfolioReference | null;
   title: string;
   description: string | null;
   timeline: string | null;
@@ -178,6 +181,12 @@ export type ProjectRequest = {
   updatedAt: string;
   client?: PartySummary;
   designer?: PartySummary | null;
+};
+
+export type PortfolioReference = {
+  id: string;
+  title: string;
+  imageUrl: string | null;
 };
 
 export type StageFee = { name: StageName; fee: number };
@@ -204,12 +213,25 @@ export type Project = {
   title: string;
   currentStage: StageName;
   status: ProjectStatus;
+  portfolioShare: PortfolioShareStatus | null;
+  portfolioId: string | null;
   startedAt: string | null;
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;
   client?: PartySummary;
   designer?: PartySummary;
+};
+
+export type PortfolioShareStatus = 'PENDING' | 'APPROVED' | 'DECLINED';
+
+export type PortfolioDraft = {
+  title: string;
+  description: string;
+  style: string;
+  roomType: string;
+  budget: number | null;
+  images: { imageUrl: string; name: string | null }[];
 };
 
 export type ProjectStage = {

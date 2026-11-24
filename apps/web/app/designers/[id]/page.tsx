@@ -78,8 +78,8 @@ export default async function DesignerProfilePage({
               <Avatar
                 name={designer.name}
                 src={designer.avatarUrl}
-                size={88}
-                className="-mt-11 ring-4 ring-sand"
+                size={128}
+                className="-mt-16 ring-4 ring-sand"
               />
               <div className="mt-3">
                 <h1 className="font-display text-title font-semibold">
@@ -131,7 +131,7 @@ export default async function DesignerProfilePage({
       <section className="shell mt-12">
         <h2 className="font-display text-2xl font-semibold">Reviews</h2>
         <div className="mt-6">
-          <ReviewList designerId={designer.id} />
+          <ReviewList endpoint={`/designers/${designer.id}/reviews`} />
         </div>
       </section>
 

@@ -5,9 +5,11 @@ import { ButtonLink } from '@/components/ui/button';
 
 export function RequestDesignerButton({
   designerId,
+  portfolioId,
   fullWidth,
 }: {
   designerId: string;
+  portfolioId?: string;
   fullWidth?: boolean;
 }) {
   const { user, status } = useSession();
@@ -19,7 +21,7 @@ export function RequestDesignerButton({
   }
   return (
     <ButtonLink
-      href={`/requests/new?designerId=${designerId}`}
+      href={`/requests/new?designerId=${designerId}${portfolioId ? `&portfolioId=${portfolioId}` : ''}`}
       fullWidth={fullWidth}
     >
       Request this designer

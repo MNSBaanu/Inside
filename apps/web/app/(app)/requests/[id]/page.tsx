@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { use, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { ProposalForm } from '@/components/features/proposals/proposal-form';
+import { PortfolioReferenceCard } from '@/components/features/requests/portfolio-reference';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -196,6 +197,12 @@ export default function RequestDetailPage({
         {item.budget !== null ? ` · Budget ${formatMoney(item.budget)}` : ''}
         {item.timeline ? ` · Timeline ${item.timeline}` : ''}
       </p>
+
+      {item.portfolio ? (
+        <div className="mt-6 max-w-md">
+          <PortfolioReferenceCard portfolio={item.portfolio} />
+        </div>
+      ) : null}
 
       {item.description ? (
         <Card className="mt-6">
