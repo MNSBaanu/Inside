@@ -29,6 +29,12 @@ const contentSecurityPolicy = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || (isDev ? '.next-dev' : '.next'),
+  // Next 15 stopped keeping visited pages in the client router cache, so every
+  // sidebar click went back to the server. Keep them briefly, as Next 14 did.
+  // Pages still fetch fresh data when they open.
+  experimental: {
+    staleTimes: { dynamic: 30, static: 180 },
+  },
   images: {
     // Only our own upload host and the stock-photo host go through the optimizer.
     remotePatterns: [
