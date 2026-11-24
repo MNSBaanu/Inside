@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import {
   AccountStatus,
+  MoodboardStatus,
   NotificationType,
   Prisma,
   ProposalStatus,
@@ -23,6 +24,7 @@ import { NotificationsService } from '../../platform/notifications/notifications
 import { PrismaService } from '../../../database/prisma.service';
 import { likedImages } from '../../../common/moodboard';
 import { CreateRequestDto } from './dto/create-request.dto';
+import { ReviewMoodboardDto } from './dto/review-moodboard.dto';
 import type { ListOpenRequestsQueryDto } from './dto/list-open-requests-query.dto';
 
 const briefSelect = {
@@ -32,7 +34,13 @@ const briefSelect = {
   budgetRange: true,
   description: true,
   moodboard: {
-    select: { name: true, moodWords: true, palette: true, savedItems: true },
+    select: {
+      id: true,
+      name: true,
+      moodWords: true,
+      palette: true,
+      savedItems: true,
+    },
   },
 } as const;
 
@@ -43,6 +51,7 @@ type BriefRow = {
   budgetRange: string | null;
   description: string | null;
   moodboard: {
+    id: string;
     name: string;
     moodWords: string[];
     palette: string[];
@@ -60,6 +69,7 @@ function briefView(brief: BriefRow) {
     description: brief.description,
     moodboard: brief.moodboard
       ? {
+          id: brief.moodboard.id,
           name: brief.moodboard.name,
           moodWords: brief.moodboard.moodWords,
           palette: brief.moodboard.palette,
@@ -333,7 +343,94 @@ export class RequestsService {
 
   async getById(user: AuthUser, id: string) {
     const request = await this.requirePartyAccess(id, user);
-    return { success: true, data: { request: this.serialize(request) } };
+    return {
+      success: true,
+      data: {
+        request: {
+          ...this.serialize(request),
+          moodboardReview: await this.moodboardReview(request),
+        },
+      },
+    };
+  }
+
+  /** Where the designer's review of the request's moodboard stands. */
+  private async moodboardReview(request: {
+    id: string;
+    briefSnapshot?: unknown;
+  }) {
+    const moodboardId = (request.briefSnapshot as BriefView | null)?.moodboard
+      ?.id;
+    if (!moodboardId) return null;
+    const moodboard = await this.prisma.moodboard.findUnique({
+      where: { id: moodboardId },
+      select: { status: true, reviewNote: true, reviewRequestId: true },
+    });
+    if (!moodboard) return null;
+    const here = moodboard.reviewRequestId === request.id;
+    return {
+      status: here ? moodboard.status : MoodboardStatus.OPEN,
+      note: here ? moodboard.reviewNote : null,
+    };
+  }
+
+  async reviewMoodboard(user: AuthUser, id: string, dto: ReviewMoodboardDto) {
+    const request = await this.prisma.projectRequest.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        clientId: true,
+        designerId: true,
+        briefSnapshot: true,
+      },
+    });
+    if (!request) {
+      throw new NotFoundException('Request not found');
+    }
+    if (request.designerId !== user.id) {
+      throw new ForbiddenException('This request is not assigned to you');
+    }
+    const moodboardId = (request.briefSnapshot as BriefView | null)?.moodboard
+      ?.id;
+    const moodboard = moodboardId
+      ? await this.prisma.moodboard.findUnique({ where: { id: moodboardId } })
+      : null;
+    if (!moodboard) {
+      throw new NotFoundException('This request has no moodboard to review');
+    }
+    const note = dto.note?.trim();
+    if (!dto.approve && !note) {
+      throw new BadRequestException('Say what you would like changed');
+    }
+
+    await this.prisma.moodboard.update({
+      where: { id: moodboard.id },
+      data: {
+        status: dto.approve
+          ? MoodboardStatus.APPROVED
+          : MoodboardStatus.CHANGES_REQUESTED,
+        reviewNote: dto.approve ? null : note,
+        reviewRequestId: request.id,
+      },
+    });
+
+    await this.notifications.notify({
+      userId: request.clientId,
+      type: NotificationType.REQUEST,
+      title: dto.approve
+        ? 'Moodboard approved'
+        : 'Changes requested on your moodboard',
+      message: dto.approve
+        ? `${user.name} approved your moodboard "${moodboard.name}" for "${request.title}"`
+        : `${user.name} asked for changes to "${moodboard.name}": ${note}`,
+      metadata: { requestId: request.id },
+    });
+
+    return {
+      success: true,
+      data: { moodboardReview: await this.moodboardReview(request) },
+    };
   }
 
   async cancel(user: AuthUser, id: string) {

@@ -23,6 +23,7 @@ import { DesignerModeGuard } from '../../identity/auth/guards/designer-mode.guar
 import { JwtAuthGuard } from '../../identity/auth/guards/jwt-auth.guard';
 import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto';
 import { CreateRequestDto } from './dto/create-request.dto';
+import { ReviewMoodboardDto } from './dto/review-moodboard.dto';
 import { ListOpenRequestsQueryDto } from './dto/list-open-requests-query.dto';
 import { RequestsService } from './requests.service';
 
@@ -83,6 +84,21 @@ export class RequestsController {
   @ApiOkResponse({ description: 'Closed' })
   close(@CurrentUser() user: AuthUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.requestsService.close(user, id);
+  }
+
+  @Patch(':id/moodboard-review')
+  @UseGuards(JwtAuthGuard, DesignerModeGuard)
+  @ApiOperation({
+    summary:
+      "Approve or ask for changes to the request's moodboard (assigned designer)",
+  })
+  @ApiOkResponse({ description: 'Review saved' })
+  reviewMoodboard(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: ReviewMoodboardDto,
+  ) {
+    return this.requestsService.reviewMoodboard(user, id, dto);
   }
 
   @Patch(':id/decline')
