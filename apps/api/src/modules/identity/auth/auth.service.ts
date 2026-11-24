@@ -111,6 +111,11 @@ export class AuthService {
 
     const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) {
+      if (!emailVerified) {
+        throw new UnauthorizedException(
+          'Verify your email address to sign in to this account',
+        );
+      }
       return this.prisma.user.update({
         where: { id: existing.id },
         data: {
