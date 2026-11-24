@@ -1,15 +1,15 @@
 'use client';
 
-import { useSignIn } from '@clerk/nextjs';
+import { useAuth, useSignIn } from '@clerk/nextjs';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { AuthFooterLink, AuthLayout } from '@/components/features/auth/auth-layout';
 import { GoogleSignInButton } from '@/components/features/auth/google-sign-in-button';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { PasswordInput } from '@/components/ui/password-input';
-import { ErrorNotice } from '@/components/ui/feedback';
+import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { clerkErrorMessage, navigateTo } from '@/lib/auth/clerk-flow';
 import { safeRedirectPath } from '@/lib/utils/url';
 
@@ -36,6 +36,11 @@ function LoginForm() {
   );
   const [submitting, setSubmitting] = useState(false);
   const busy = submitting || fetchStatus === 'fetching';
+  const { isSignedIn } = useAuth();
+
+  useEffect(() => {
+    if (isSignedIn) router.replace(redirectTo);
+  }, [isSignedIn, redirectTo, router]);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -83,6 +88,8 @@ function LoginForm() {
       setSubmitting(false);
     }
   }
+
+  if (isSignedIn) return <Skeleton className="h-72" />;
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">

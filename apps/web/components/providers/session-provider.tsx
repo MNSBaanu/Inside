@@ -38,26 +38,32 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const loadUser = useCallback(() => {
     const request = ++latest.current;
-    return api
-      .get<{ user: User }>('/users/me')
-      .then((data) => {
-        if (request !== latest.current) return;
-        setUser(data.user);
-        setStatus('authenticated');
-      })
-      .catch((cause) => {
-        if (request !== latest.current) return;
-        setUser(null);
-        // Signed in with Clerk but refused by the API: sign out, or /login bounces straight back.
-        if (cause instanceof ApiError && cause.statusCode === 401) {
-          const suspended = cause.message === 'Account suspended';
-          void signOut({
-            redirectUrl: suspended ? '/login?suspended=1' : '/login',
-          });
-          return;
-        }
-        setStatus('unauthenticated');
-      });
+    const attempt = (tries: number): Promise<void> =>
+      api
+        .get<{ user: User }>('/users/me')
+        .then((data) => {
+          if (request !== latest.current) return;
+          setUser(data.user);
+          setStatus('authenticated');
+        })
+        .catch((cause) => {
+          if (request !== latest.current) return;
+          // Signed in with Clerk but refused by the API: sign out, or /login bounces straight back.
+          if (cause instanceof ApiError && cause.statusCode === 401) {
+            setUser(null);
+            const suspended = cause.message === 'Account suspended';
+            void signOut({
+              redirectUrl: suspended ? '/login?suspended=1' : '/login',
+            });
+            return;
+          }
+          // Clerk still has a session, so a network or server error is not a sign-out. Retry.
+          const delay = Math.min(1000 * 2 ** tries, 10_000);
+          return new Promise<void>((resolve) => setTimeout(resolve, delay)).then(
+            () => (request === latest.current ? attempt(tries + 1) : undefined),
+          );
+        });
+    return attempt(0);
   }, [signOut]);
 
   useEffect(() => {
