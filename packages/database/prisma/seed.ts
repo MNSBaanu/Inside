@@ -510,6 +510,7 @@ type ProjectPlan = {
   rejection?: { reason: string; revised: boolean };
   pausedBy?: UserKey;
   cancelled?: { by: UserKey; reason: string };
+  inspiredBy?: string;
 };
 
 const A = StageStatus.APPROVED;
@@ -519,7 +520,7 @@ const R = StageStatus.REJECTED;
 const P = StageStatus.PENDING;
 
 // Completed projects that exist to give the wider designer pool genuine reviews.
-const REVIEWED: { n: number; designer: UserKey; client: UserKey; title: string; total: number; started: number; rating: number; comment: string }[] = [
+const REVIEWED: { n: number; designer: UserKey; client: UserKey; title: string; total: number; started: number; rating: number; comment: string; inspiredBy?: string }[] = [
   { n: 40, designer: 'dilan', client: 'dinuka', title: 'Penthouse living room', total: 1500000, started: 120, rating: 5, comment: 'Dilan understood exactly how we entertain. The lighting plan alone was worth it.' },
   { n: 41, designer: 'dilan', client: 'shalini', title: 'Kitchen and dining refresh', total: 900000, started: 110, rating: 4, comment: 'Great design and clear drawings. Sourcing took a little longer than planned.' },
   { n: 42, designer: 'hiruni', client: 'shalini', title: 'Hillside bungalow living room', total: 450000, started: 140, rating: 5, comment: 'Calm, bright and practical. Our family uses the room far more now.' },
@@ -553,6 +554,12 @@ const REVIEWED: { n: number; designer: UserKey; client: UserKey; title: string; 
   { n: 70, designer: 'yasas', client: 'harsha', title: 'Bathroom retreat', total: 500000, started: 120, rating: 4, comment: 'Beautiful bathroom with lots of natural light.' },
   { n: 71, designer: 'gayani', client: 'dinuka', title: 'Japandi bedroom', total: 220000, started: 160, rating: 5, comment: 'Restful and beautifully detailed.' },
   { n: 72, designer: 'gayani', client: 'zainab', title: 'Entrance hall and stair', total: 400000, started: 130, rating: 4, comment: 'Elegant result. Timing was well managed.' },
+  // Requested from one of Ravi's portfolio projects, so the review also shows on that project.
+  { n: 73, designer: 'ravi', client: 'dinuka', title: 'Scandinavian apartment lounge', total: 480000, started: 130, rating: 5, comment: 'We showed Ravi his Scandinavian living room and he made it work for our smaller flat. Light, calm and easy to live in.', inspiredBy: 'Scandinavian Living Room' },
+  { n: 74, designer: 'ravi', client: 'shalini', title: 'Handleless kitchen', total: 820000, started: 115, rating: 5, comment: 'The hidden storage is brilliant. The kitchen finally feels uncluttered.', inspiredBy: 'Minimalist Kitchen Remodel' },
+  { n: 75, designer: 'ravi', client: 'naveen', title: 'Spare room office', total: 230000, started: 80, rating: 4, comment: 'A quiet, practical office. The shelving took an extra week to arrive.', inspiredBy: 'Quiet Home Office' },
+  { n: 76, designer: 'ravi', client: 'thilini', title: 'Green reading study', total: 200000, started: 60, rating: 5, comment: 'We loved the Green Study and Ravi adapted it beautifully to our room.', inspiredBy: 'Green Study' },
+  { n: 77, designer: 'ravi', client: 'harsha', title: 'Writing studio', total: 270000, started: 40, rating: 4, comment: 'Good lighting and a comfortable layout. Would hire Ravi again.', inspiredBy: 'Studio Workspace' },
 ];
 
 const PROJECTS: ProjectPlan[] = [
@@ -565,10 +572,16 @@ const PROJECTS: ProjectPlan[] = [
   { n: 7, title: 'Kids room refresh', client: 'malsha', designer: 'tharushi', total: 300000, timeline: '6 weeks', scope: 'Brighter kids room with more storage and a study desk.', startedDaysAgo: 2, stages: [I, P, P, P, P] },
   { n: 8, title: 'Apartment balcony garden', client: 'kasun', designer: 'ravi', total: 150000, timeline: '3 weeks', scope: 'Planting plan and seating for a small balcony.', startedDaysAgo: 90, stages: [A, A, A, A, A], status: ProjectStatus.COMPLETED },
   { n: 9, title: 'Reading corner', client: 'nadia', designer: 'nimal', total: 180000, timeline: '4 weeks', scope: 'Window seat with storage and lighting.', startedDaysAgo: 100, stages: [A, A, A, A, A], status: ProjectStatus.COMPLETED },
-  ...REVIEWED.map((r) => ({ n: r.n, title: r.title, client: r.client, designer: r.designer, total: r.total, timeline: '6 weeks', scope: `${r.title}: concept, drawings, sourcing and site visits.`, startedDaysAgo: r.started, stages: [A, A, A, A, A], status: ProjectStatus.COMPLETED })),
+  ...REVIEWED.map((r) => ({ n: r.n, title: r.title, client: r.client, designer: r.designer, total: r.total, timeline: '6 weeks', scope: `${r.title}: concept, drawings, sourcing and site visits.`, startedDaysAgo: r.started, stages: [A, A, A, A, A], status: ProjectStatus.COMPLETED, inspiredBy: r.inspiredBy })),
 ];
 
 const projectId = (n: number) => seedId(10, n);
+
+function portfolioIdByTitle(title: string) {
+  const index = PORTFOLIOS.findIndex((item) => item.title === title);
+  if (index === -1) throw new Error(`Unknown portfolio: ${title}`);
+  return seedId(2, index + 1);
+}
 
 // Demo-day accounts with real inboxes. Added only when the DEMO_* variables are set.
 const DEMO_PROJECTS: ProjectPlan[] = [
@@ -600,6 +613,7 @@ async function seedProject(plan: ProjectPlan) {
         id: requestId,
         clientId: client,
         designerId: designer,
+        portfolioId: plan.inspiredBy ? portfolioIdByTitle(plan.inspiredBy) : null,
         title: plan.title,
         description: plan.scope,
         timeline: plan.timeline,
