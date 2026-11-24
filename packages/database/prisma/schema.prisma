@@ -62,6 +62,12 @@ enum StageStatus {
   REJECTED
 }
 
+enum PaymentMethod {
+  CARD
+  CASH
+  BANK_TRANSFER
+}
+
 enum PaymentStatus {
   PENDING
   PROCESSING
@@ -424,6 +430,10 @@ model MilestonePayment {
   stageId        String
   amount         Decimal       @db.Decimal(12, 2)
   status         PaymentStatus @default(PENDING)
+  method         PaymentMethod @default(CARD)
+  reference      String?
+  proofUrl       String?
+  recordedById   String?
   stripeIntentId String?       @unique
   paidAt         DateTime?
   releasedAt     DateTime?

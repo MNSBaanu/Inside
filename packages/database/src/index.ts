@@ -12,6 +12,7 @@ export {
   StageName,
   StageStatus,
   PaymentStatus,
+  PaymentMethod,
   NotificationType,
   VerificationStatus,
   ReportStatus,
