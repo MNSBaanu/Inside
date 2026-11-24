@@ -55,6 +55,20 @@ vi.mock('@/lib/api/use-api', () => ({
   buildQuery: () => '',
 }));
 
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+vi.mock('@/components/providers/session-provider', () => ({
+  useSession: () => ({ user: { id: 'c1' } }),
+}));
+
+vi.mock('@/components/features/projects/message-thread', () => ({
+  MessageThread: ({ projectId }: { projectId: string }) => (
+    <div data-testid="open-thread">{projectId}</div>
+  ),
+}));
+
 describe('MessagesPage', () => {
   it('shows the latest message and an unread count per thread', () => {
     render(<MessagesPage />);
@@ -63,7 +77,13 @@ describe('MessagesPage', () => {
     expect(
       within(thread).getByText('Sending the concept boards tonight.'),
     ).toBeInTheDocument();
-    expect(within(thread).getByText('2 unread')).toBeInTheDocument();
+    expect(within(thread).getByLabelText('2 unread')).toHaveTextContent('2');
+  });
+
+  it('opens the most recent conversation beside the list', () => {
+    render(<MessagesPage />);
+
+    expect(screen.getByTestId('open-thread')).toHaveTextContent('p2');
   });
 
   it('falls back to a placeholder when a project has no messages', () => {
