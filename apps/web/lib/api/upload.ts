@@ -16,9 +16,11 @@ type SignedUpload = {
 
 export type UploadedFile = { url: string; fileName: string };
 
+/** Uploads to Cloudinary. `onProgress` gets the share sent so far, from 0 to 1. */
 export async function uploadFile(
   file: File,
   folder: UploadFolder,
+  onProgress?: (fraction: number) => void,
 ): Promise<UploadedFile> {
   const signed = await api.post<SignedUpload>('/uploads/signature', { folder });
 
@@ -28,19 +30,35 @@ export async function uploadFile(
     form.append(key, value);
   }
 
-  const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${signed.cloudName}/${signed.resourceType}/upload`,
-    { method: 'POST', body: form },
-  );
+  const { ok, payload } = await new Promise<{
+    ok: boolean;
+    payload: { secure_url?: string; error?: { message?: string } } | null;
+  }>((resolve) => {
+    const request = new XMLHttpRequest();
+    request.open(
+      'POST',
+      `https://api.cloudinary.com/v1_1/${signed.cloudName}/${signed.resourceType}/upload`,
+    );
+    request.upload.onprogress = (event) => {
+      if (event.lengthComputable) onProgress?.(event.loaded / event.total);
+    };
+    request.onload = () => {
+      let body = null;
+      try {
+        body = JSON.parse(request.responseText);
+      } catch {
+        body = null;
+      }
+      resolve({ ok: request.status >= 200 && request.status < 300, payload: body });
+    };
+    request.onerror = () => resolve({ ok: false, payload: null });
+    request.send(form);
+  });
 
-  const payload = (await response.json().catch(() => null)) as {
-    secure_url?: string;
-    error?: { message?: string };
-  } | null;
-
-  if (!response.ok || !payload?.secure_url) {
+  if (!ok || !payload?.secure_url) {
     throw new Error(payload?.error?.message ?? 'The upload failed.');
   }
 
+  onProgress?.(1);
   return { url: payload.secure_url, fileName: file.name };
 }

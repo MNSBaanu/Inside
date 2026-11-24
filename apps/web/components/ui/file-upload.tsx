@@ -40,6 +40,7 @@ export function FileUpload({
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<string | null>(null);
+  const [percent, setPercent] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [uploaded, setUploaded] = useState<string | null>(null);
   const multiple = Boolean(onUploadedMany);
@@ -67,18 +68,25 @@ export function FileUpload({
 
     const done: HashedUpload[] = [];
     const failed: string[] = [];
+    const totalBytes = queue.reduce((sum, entry) => sum + entry.file.size, 0) || 1;
+    let sentBytes = 0;
     for (const [index, { file, fileHash }] of queue.entries()) {
-      setProgress(
-        queue.length > 1 ? `Uploading ${index + 1} of ${queue.length}…` : 'Uploading…',
-      );
+      const label =
+        queue.length > 1 ? `Uploading ${index + 1} of ${queue.length}` : `Uploading ${file.name}`;
+      setProgress(label);
+      setPercent(Math.round((sentBytes / totalBytes) * 100));
       try {
-        const result = await uploadFile(file, folder);
+        const result = await uploadFile(file, folder, (fraction) =>
+          setPercent(Math.round(((sentBytes + fraction * file.size) / totalBytes) * 100)),
+        );
         done.push({ ...result, fileHash });
         onUploaded?.(result);
       } catch (cause) {
         failed.push(`${file.name}: ${errorMessage(cause)}`);
       }
+      sentBytes += file.size;
     }
+    setPercent(null);
     if (done.length > 0) onUploadedMany?.(done);
 
     const notes = [
@@ -111,7 +119,29 @@ export function FileUpload({
         onChange={onChange}
         className="w-full rounded-card border border-dashed border-hairline bg-surface px-4 py-3 text-sm text-muted file:mr-4 file:rounded-lg file:border-0 file:bg-brand file:px-4 file:py-2 file:text-label file:font-semibold file:uppercase file:text-canvas hover:file:bg-brand-deep disabled:opacity-60"
       />
-      {progress ? <p className="text-sm text-muted">{progress}</p> : null}
+      {progress ? (
+        <div>
+          <div className="flex items-center justify-between gap-3 text-sm text-muted">
+            <span className="truncate">{progress}</span>
+            {percent !== null ? <span className="tabular-nums">{percent}%</span> : null}
+          </div>
+          {percent !== null ? (
+            <div
+              role="progressbar"
+              aria-label="Upload progress"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={percent}
+              className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-sand"
+            >
+              <div
+                className="h-full rounded-full bg-brand transition-[width] duration-200"
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+          ) : null}
+        </div>
+      ) : null}
       {error ? (
         <p role="alert" className="text-sm text-error">
           {error}
