@@ -3,8 +3,8 @@ packages:
   - "packages/*"
 
 # These packages' type files import 'react' without declaring @types/react. Declaring it
-# as an optional peer makes pnpm link the web app's React 18 types instead of whichever
-# version happens to be hoisted (the mobile app uses React 19).
+# as an optional peer makes pnpm link the web app's own React types instead of whichever
+# version happens to be hoisted.
 packageExtensions:
   next:
     peerDependencies:
