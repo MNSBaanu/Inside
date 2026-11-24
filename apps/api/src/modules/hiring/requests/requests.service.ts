@@ -21,11 +21,58 @@ import {
 } from '../../../common/dto/pagination-query.dto';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { likedImages } from '../../../common/moodboard';
 import { CreateRequestDto } from './dto/create-request.dto';
 import type { ListOpenRequestsQueryDto } from './dto/list-open-requests-query.dto';
 
+const briefSelect = {
+  id: true,
+  styles: true,
+  rooms: true,
+  budgetRange: true,
+  description: true,
+  moodboard: {
+    select: { name: true, moodWords: true, palette: true, savedItems: true },
+  },
+} as const;
+
+type BriefRow = {
+  id: string;
+  styles: string[];
+  rooms: string[];
+  budgetRange: string | null;
+  description: string | null;
+  moodboard: {
+    name: string;
+    moodWords: string[];
+    palette: string[];
+    savedItems: unknown;
+  } | null;
+};
+
+/** What a designer sees of the client's brief. Stored on the request when it is sent. */
+function briefView(brief: BriefRow) {
+  return {
+    id: brief.id,
+    styles: brief.styles,
+    rooms: brief.rooms,
+    budgetRange: brief.budgetRange,
+    description: brief.description,
+    moodboard: brief.moodboard
+      ? {
+          name: brief.moodboard.name,
+          moodWords: brief.moodboard.moodWords,
+          palette: brief.moodboard.palette,
+          images: likedImages(brief.moodboard.savedItems),
+        }
+      : null,
+  };
+}
+
+type BriefView = ReturnType<typeof briefView>;
+
 const requestInclude = {
-  brief: { select: { id: true, styles: true, rooms: true } },
+  brief: { select: briefSelect },
   portfolio: {
     select: {
       id: true,
@@ -106,13 +153,16 @@ export class RequestsService {
       }
     }
 
+    let briefSnapshot: BriefView | undefined;
     if (dto.briefId) {
       const brief = await this.prisma.brief.findUnique({
         where: { id: dto.briefId },
+        select: { ...briefSelect, clientId: true },
       });
       if (!brief || brief.clientId !== user.id) {
         throw new NotFoundException('Brief not found');
       }
+      briefSnapshot = briefView(brief);
     }
 
     const request = await this.prisma.projectRequest.create({
@@ -120,6 +170,7 @@ export class RequestsService {
         clientId: user.id,
         designerId: dto.type === RequestType.DIRECT ? dto.designerId : null,
         briefId: dto.briefId,
+        briefSnapshot,
         portfolioId: dto.portfolioId,
         title: dto.title,
         description: dto.description,
@@ -242,6 +293,7 @@ export class RequestsService {
           timeline: true,
           budget: true,
           createdAt: true,
+          briefSnapshot: true,
           brief: { select: { styles: true, rooms: true } },
           client: { select: { location: true } },
           _count: { select: { proposals: true } },
@@ -261,8 +313,14 @@ export class RequestsService {
           timeline: request.timeline,
           budget: request.budget !== null ? Number(request.budget) : null,
           createdAt: request.createdAt,
-          styles: request.brief?.styles ?? [],
-          rooms: request.brief?.rooms ?? [],
+          styles:
+            (request.briefSnapshot as BriefView | null)?.styles ??
+            request.brief?.styles ??
+            [],
+          rooms:
+            (request.briefSnapshot as BriefView | null)?.rooms ??
+            request.brief?.rooms ??
+            [],
           location: request.client.location,
           proposalCount: request._count.proposals,
         })),
@@ -443,6 +501,7 @@ export class RequestsService {
     clientId: string;
     designerId: string | null;
     briefId: string | null;
+    briefSnapshot?: unknown;
     portfolioId: string | null;
     title: string;
     description: string | null;
@@ -452,11 +511,7 @@ export class RequestsService {
     budget: unknown;
     createdAt: Date;
     updatedAt: Date;
-    brief?: {
-      id: string;
-      styles: string[];
-      rooms: string[];
-    } | null;
+    brief?: BriefRow | null;
     portfolio?: {
       id: string;
       title: string;
@@ -490,7 +545,11 @@ export class RequestsService {
       budget: request.budget !== null ? Number(request.budget) : null,
       createdAt: request.createdAt,
       updatedAt: request.updatedAt,
-      brief: request.brief ?? null,
+      brief: request.briefSnapshot
+        ? (request.briefSnapshot as BriefView)
+        : request.brief
+          ? briefView(request.brief)
+          : null,
       portfolio: request.portfolio
         ? {
             id: request.portfolio.id,
