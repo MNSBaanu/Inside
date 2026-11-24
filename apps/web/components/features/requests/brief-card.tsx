@@ -1,10 +1,20 @@
+import type { ComponentProps } from 'react';
 import { MoodboardPreview } from '@/components/features/moodboards/moodboard-preview';
+import { MoodboardReview } from '@/components/features/requests/moodboard-review';
 import { Card } from '@/components/ui/card';
 import { Tag } from '@/components/ui/tag';
 import type { RequestBrief } from '@/lib/types';
 
 /** The client's brief as it was when the request was sent. */
-export function BriefCard({ brief }: { brief: RequestBrief }) {
+export function BriefCard({
+  brief,
+  clientName,
+  review,
+}: {
+  brief: RequestBrief;
+  clientName?: string;
+  review?: ComponentProps<typeof MoodboardReview>;
+}) {
   const rows: [string, string[]][] = [
     ['Rooms', brief.rooms],
     ['Styles', brief.styles],
@@ -41,7 +51,8 @@ export function BriefCard({ brief }: { brief: RequestBrief }) {
 
       {brief.moodboard ? (
         <div className="mt-5 border-t border-hairline pt-4">
-          <MoodboardPreview board={brief.moodboard} />
+          <MoodboardPreview board={brief.moodboard} clientName={clientName} />
+          {review ? <MoodboardReview {...review} /> : null}
         </div>
       ) : null}
     </Card>

@@ -161,6 +161,7 @@ export type Brief = {
 };
 
 export type MoodboardSummary = {
+  id?: string;
   name: string;
   moodWords: string[];
   palette: string[];
@@ -190,7 +191,10 @@ export type ProjectRequest = {
   updatedAt: string;
   client?: PartySummary;
   designer?: PartySummary | null;
+  moodboardReview?: MoodboardReview | null;
 };
+
+export type MoodboardReview = { status: MoodboardStatus; note: string | null };
 
 export type RequestBrief = {
   id: string;
@@ -320,6 +324,7 @@ export type Deliverable = {
   stageId: string;
   fileUrl: string;
   fileName: string | null;
+  fileHash?: string | null;
   notes: string | null;
   feedback: string | null;
   createdAt: string;
@@ -392,6 +397,7 @@ export type Favourite = {
 
 export type MoodboardItem = {
   imageUrl: string;
+  fileHash?: string;
   note?: string | null;
   portfolioId?: string | null;
   loves?: string[];
@@ -407,9 +413,15 @@ export type Moodboard = {
   savedItems: MoodboardItem[];
   moodWords: string[];
   palette: string[];
+  status: MoodboardStatus;
+  reviewNote: string | null;
+  parentId: string | null;
+  version: number;
   createdAt: string;
   updatedAt: string;
 };
+
+export type MoodboardStatus = 'OPEN' | 'APPROVED' | 'CHANGES_REQUESTED';
 
 export type ReportStatus = 'OPEN' | 'UNDER_REVIEW' | 'RESOLVED' | 'DISMISSED';
 

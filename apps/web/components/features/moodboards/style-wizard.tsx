@@ -97,10 +97,85 @@ export function StyleSummary({ board }: { board: Moodboard }) {
   );
 }
 
+export function MoodWordPicker({
+  value,
+  onChange,
+}: {
+  value: string[];
+  onChange: (value: string[]) => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2.5">
+      {MOOD_WORDS.map((word) => {
+        const on = value.includes(word);
+        return (
+          <button
+            key={word}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onChange(toggle(value, word, MAX_MOOD_WORDS))}
+            className={`rounded-lg border px-4 py-2.5 transition-colors ${
+              on
+                ? 'border-brand bg-brand text-canvas'
+                : 'border-hairline hover:border-brand hover:text-brand'
+            }`}
+          >
+            {word}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export function PalettePicker({
+  value,
+  onChange,
+}: {
+  value: string[];
+  onChange: (value: string[]) => void;
+}) {
+  return (
+    <div className="grid grid-cols-4 gap-4 sm:grid-cols-7">
+      {PALETTE.map((swatch) => {
+        const on = value.includes(swatch.name);
+        return (
+          <button
+            key={swatch.name}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onChange(toggle(value, swatch.name, MAX_PALETTE))}
+            className="group flex flex-col items-center gap-1.5"
+          >
+            <span
+              className={`grid h-12 w-12 place-items-center rounded-full ring-1 ring-ink/10 transition-transform group-hover:scale-105 ${
+                on ? 'ring-2 ring-brand ring-offset-2' : ''
+              }`}
+              style={{ backgroundColor: swatch.hex }}
+            >
+              {on ? (
+                <Check
+                  aria-hidden
+                  className={`h-5 w-5 ${swatch.light ? 'text-ink' : 'text-white'}`}
+                />
+              ) : null}
+            </span>
+            <span className={`text-xs ${on ? 'font-semibold text-ink' : 'text-muted'}`}>
+              {swatch.name}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 const TITLES = ['How should it feel?', 'Which colours feel right?', 'Tell us about your images'];
+export const MOOD_HINT = `Pick up to ${MAX_MOOD_WORDS} words that describe the room you want.`;
+export const PALETTE_HINT = `Pick up to ${MAX_PALETTE} colours you would like to see.`;
 const HINTS = [
-  `Pick up to ${MAX_MOOD_WORDS} words that describe the room you want.`,
-  `Pick up to ${MAX_PALETTE} colours you would like to see.`,
+  MOOD_HINT,
+  PALETTE_HINT,
   'Love it or not for you? Then tap what you love about it.',
 ];
 
@@ -198,70 +273,17 @@ export function StyleWizard({
 
         <div className="flex-1 overflow-y-auto p-5">
           {step === 1 ? (
-            <div className="flex flex-wrap gap-2.5">
-              {MOOD_WORDS.map((word) => {
-                const on = draft.moodWords.includes(word);
-                return (
-                  <button
-                    key={word}
-                    type="button"
-                    aria-pressed={on}
-                    onClick={() =>
-                      setDraft((current) => ({
-                        ...current,
-                        moodWords: toggle(current.moodWords, word, MAX_MOOD_WORDS),
-                      }))
-                    }
-                    className={`rounded-lg border px-4 py-2.5 transition-colors ${
-                      on
-                        ? 'border-brand bg-brand text-canvas'
-                        : 'border-hairline hover:border-brand hover:text-brand'
-                    }`}
-                  >
-                    {word}
-                  </button>
-                );
-              })}
-            </div>
+            <MoodWordPicker
+              value={draft.moodWords}
+              onChange={(moodWords) => setDraft((current) => ({ ...current, moodWords }))}
+            />
           ) : null}
 
           {step === 2 ? (
-            <div className="grid grid-cols-4 gap-4 sm:grid-cols-7">
-              {PALETTE.map((swatch) => {
-                const on = draft.palette.includes(swatch.name);
-                return (
-                  <button
-                    key={swatch.name}
-                    type="button"
-                    aria-pressed={on}
-                    onClick={() =>
-                      setDraft((current) => ({
-                        ...current,
-                        palette: toggle(current.palette, swatch.name, MAX_PALETTE),
-                      }))
-                    }
-                    className="group flex flex-col items-center gap-1.5"
-                  >
-                    <span
-                      className={`grid h-12 w-12 place-items-center rounded-full ring-1 ring-ink/10 transition-transform group-hover:scale-105 ${
-                        on ? 'ring-2 ring-brand ring-offset-2' : ''
-                      }`}
-                      style={{ backgroundColor: swatch.hex }}
-                    >
-                      {on ? (
-                        <Check
-                          aria-hidden
-                          className={`h-5 w-5 ${swatch.light ? 'text-ink' : 'text-white'}`}
-                        />
-                      ) : null}
-                    </span>
-                    <span className={`text-xs ${on ? 'font-semibold text-ink' : 'text-muted'}`}>
-                      {swatch.name}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            <PalettePicker
+              value={draft.palette}
+              onChange={(palette) => setDraft((current) => ({ ...current, palette }))}
+            />
           ) : null}
 
           {step === 3 && item ? (

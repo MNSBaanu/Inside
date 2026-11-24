@@ -205,7 +205,22 @@ export default function RequestDetailPage({
         </div>
       ) : null}
 
-      {item.brief ? <BriefCard brief={item.brief} /> : null}
+      {item.brief ? (
+        <BriefCard
+          brief={item.brief}
+          clientName={item.client?.name}
+          review={
+            item.moodboardReview
+              ? {
+                  requestId: item.id,
+                  review: item.moodboardReview,
+                  canReview: isDesigner && user?.id === item.designerId,
+                  onReviewed: () => void request.reload(),
+                }
+              : undefined
+          }
+        />
+      ) : null}
 
       {item.description ? (
         <Card className="mt-6">

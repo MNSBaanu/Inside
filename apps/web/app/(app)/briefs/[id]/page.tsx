@@ -1,13 +1,15 @@
 'use client';
 
 import { cn } from '@/lib/utils/cn';
-import { ChevronLeft, Pencil, Sparkles, Trash2 } from 'lucide-react';
+import { ChevronLeft, Sparkles } from 'lucide-react';
+import { IconButton } from '@/components/ui/icon-button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { use, useState } from 'react';
 import { api, errorMessage } from '@/lib/api/client';
 import { MoodboardPreview } from '@/components/features/moodboards/moodboard-preview';
+import { useSession } from '@/components/providers/session-provider';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button, ButtonLink } from '@/components/ui/button';
@@ -41,6 +43,7 @@ export default function BriefDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { user } = useSession();
   const params = use(paramsPromise);
   const router = useRouter();
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -101,24 +104,13 @@ export default function BriefDetailPage({
             >
               Open to proposals
             </ButtonLink>
-            <Link
-              href={`/briefs/${item.id}/edit`}
-              aria-label="Edit brief"
-              title="Edit"
-              className="grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-sand hover:text-brand"
-            >
-              <Pencil aria-hidden className="h-4 w-4" />
-            </Link>
-            <button
-              type="button"
-              onClick={() => setConfirmDelete(true)}
+            <IconButton action="edit" label="Edit brief" href={`/briefs/${item.id}/edit`} />
+            <IconButton
+              action="delete"
+              label={deleting ? 'Deleting brief' : 'Delete brief'}
               disabled={deleting}
-              aria-label={deleting ? 'Deleting brief' : 'Delete brief'}
-              title="Delete"
-              className="grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
-            >
-              <Trash2 aria-hidden className="h-4 w-4" />
-            </button>
+              onClick={() => setConfirmDelete(true)}
+            />
           </div>
         </div>
 
@@ -173,7 +165,7 @@ export default function BriefDetailPage({
 
         {item.moodboard ? (
           <div className="mt-4 border-t border-hairline pt-4">
-            <MoodboardPreview board={item.moodboard} />
+            <MoodboardPreview board={item.moodboard} clientName={user?.name} />
           </div>
         ) : null}
       </div>

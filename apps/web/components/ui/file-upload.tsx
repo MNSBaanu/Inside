@@ -7,45 +7,93 @@ import { uploadFile, type UploadFolder, type UploadedFile } from '@/lib/api/uplo
 
 const MAX_BYTES = 10 * 1024 * 1024;
 
+export type HashedUpload = UploadedFile & { fileHash: string };
+
+async function hashOf(file: File) {
+  const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
+
+/**
+ * Uploads one file, or with `onUploadedMany` several at once. Files whose
+ * contents match `existingHashes`, or each other, are skipped.
+ */
 export function FileUpload({
   folder,
   accept = 'image/*',
   label,
   onUploaded,
+  onUploadedMany,
+  existingHashes,
   className,
 }: {
   folder: UploadFolder;
   accept?: string;
   label: string;
-  onUploaded: (file: UploadedFile) => void;
+  onUploaded?: (file: UploadedFile) => void;
+  onUploadedMany?: (files: HashedUpload[]) => void;
+  existingHashes?: string[];
   className?: string;
 }) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [uploaded, setUploaded] = useState<string | null>(null);
+  const multiple = Boolean(onUploadedMany);
 
   async function onChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (file.size > MAX_BYTES) {
-      setError('File is too large (max 10 MB).');
-      if (inputRef.current) inputRef.current.value = '';
-      return;
-    }
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) return;
     setError(null);
-    setBusy(true);
-    try {
-      const result = await uploadFile(file, folder);
-      setUploaded(result.fileName);
-      onUploaded(result);
-    } catch (cause) {
-      setError(errorMessage(cause));
-    } finally {
-      setBusy(false);
-      if (inputRef.current) inputRef.current.value = '';
+    setUploaded(null);
+
+    const tooLarge = files.filter((file) => file.size > MAX_BYTES);
+    const seen = new Set(existingHashes);
+    const queue: { file: File; fileHash: string }[] = [];
+    let duplicates = 0;
+    setProgress('Checking files…');
+    for (const file of files.filter((entry) => entry.size <= MAX_BYTES)) {
+      const fileHash = await hashOf(file);
+      if (seen.has(fileHash)) {
+        duplicates += 1;
+      } else {
+        seen.add(fileHash);
+        queue.push({ file, fileHash });
+      }
     }
+
+    const done: HashedUpload[] = [];
+    const failed: string[] = [];
+    for (const [index, { file, fileHash }] of queue.entries()) {
+      setProgress(
+        queue.length > 1 ? `Uploading ${index + 1} of ${queue.length}…` : 'Uploading…',
+      );
+      try {
+        const result = await uploadFile(file, folder);
+        done.push({ ...result, fileHash });
+        onUploaded?.(result);
+      } catch (cause) {
+        failed.push(`${file.name}: ${errorMessage(cause)}`);
+      }
+    }
+    if (done.length > 0) onUploadedMany?.(done);
+
+    const notes = [
+      tooLarge.length ? `${plural(tooLarge.length, 'file')} over 10 MB skipped.` : '',
+      duplicates
+        ? `${plural(duplicates, 'file')} already added, so ${duplicates === 1 ? 'it was' : 'they were'} skipped.`
+        : '',
+      ...failed,
+    ].filter(Boolean);
+    setError(notes.length ? notes.join(' ') : null);
+    setUploaded(
+      done.length === 1 ? done[0].fileName : done.length > 1 ? plural(done.length, 'file') : null,
+    );
+    setProgress(null);
+    if (inputRef.current) inputRef.current.value = '';
   }
 
   return (
@@ -58,17 +106,18 @@ export function FileUpload({
         id={inputId}
         type="file"
         accept={accept}
-        disabled={busy}
+        multiple={multiple}
+        disabled={progress !== null}
         onChange={onChange}
         className="w-full rounded-card border border-dashed border-hairline bg-surface px-4 py-3 text-sm text-muted file:mr-4 file:rounded-lg file:border-0 file:bg-brand file:px-4 file:py-2 file:text-label file:font-semibold file:uppercase file:text-canvas hover:file:bg-brand-deep disabled:opacity-60"
       />
-      {busy ? <p className="text-sm text-muted">Uploading…</p> : null}
+      {progress ? <p className="text-sm text-muted">{progress}</p> : null}
       {error ? (
         <p role="alert" className="text-sm text-error">
           {error}
         </p>
       ) : null}
-      {!busy && !error && uploaded ? (
+      {!progress && uploaded ? (
         <p className="truncate text-sm text-muted">Uploaded {uploaded}</p>
       ) : null}
     </div>
