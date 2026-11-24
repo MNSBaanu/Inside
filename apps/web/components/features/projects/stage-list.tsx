@@ -3,10 +3,11 @@
 import { cardSurface } from '@/components/ui/card';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { IconButton } from '@/components/ui/icon-button';
 import { ConfirmDialog, useConfirm } from '@/components/ui/confirm-dialog';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { FileUpload } from '@/components/ui/file-upload';
+import { FileUpload, type HashedUpload } from '@/components/ui/file-upload';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
@@ -286,25 +287,27 @@ function StageDeliverables({
   const [error, setError] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   const [busy, setBusy] = useState(false);
-  const [uploadKey, setUploadKey] = useState(0);
 
-  async function onUpload(file: { url: string; fileName: string }) {
+  async function onUpload(files: HashedUpload[]) {
     setError(null);
     setBusy(true);
-    try {
-      await api.post(`/stages/${stageId}/deliverables`, {
-        fileUrl: file.url,
-        fileName: file.fileName || undefined,
-        notes: notes || undefined,
-      });
-      setNotes('');
-      setUploadKey((key) => key + 1);
-      await load();
-    } catch (cause) {
-      setError(errorMessage(cause));
-    } finally {
-      setBusy(false);
+    const failed: string[] = [];
+    for (const file of files) {
+      try {
+        await api.post(`/stages/${stageId}/deliverables`, {
+          fileUrl: file.url,
+          fileName: file.fileName || undefined,
+          fileHash: file.fileHash,
+          notes: notes || undefined,
+        });
+      } catch (cause) {
+        failed.push(`${file.fileName}: ${errorMessage(cause)}`);
+      }
     }
+    if (failed.length < files.length) setNotes('');
+    setError(failed.length ? failed.join(' ') : null);
+    await load();
+    setBusy(false);
   }
 
   async function onFeedback(deliverableId: string, feedback: string) {
@@ -371,11 +374,13 @@ function StageDeliverables({
             />
           </Field>
           <FileUpload
-            key={uploadKey}
             folder="deliverables"
             accept="image/*,.pdf,.dwg,.dxf,.zip"
-            label="Add a file. It's shared with the client as soon as it uploads."
-            onUploaded={(file) => void onUpload(file)}
+            label="Add files. They're shared with the client as soon as they upload."
+            existingHashes={(items ?? []).flatMap((item) =>
+              item.fileHash ? [item.fileHash] : [],
+            )}
+            onUploadedMany={(files) => void onUpload(files)}
           />
           {busy ? <p className="text-sm text-muted">Adding…</p> : null}
         </div>
@@ -497,17 +502,14 @@ function StageTasks({
                 </span>
               </label>
               {canEdit ? (
-                <Button
-                  size="sm"
-                  variant="ghost"
+                <IconButton
+                  action="delete"
                   disabled={busy}
-                  aria-label={`Delete task: ${task.title}`}
+                  label={`Delete task: ${task.title}`}
                   onClick={() =>
                     void run(() => api.delete(`/tasks/${task.id}`))
                   }
-                >
-                  Delete
-                </Button>
+                />
               ) : null}
             </li>
           ))}

@@ -197,6 +197,7 @@ function DraftForm({
     budget: draft.budget !== null ? String(draft.budget) : '',
   });
   const [images, setImages] = useState(draft.images);
+  const [uploadedHashes, setUploadedHashes] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>(
     draft.images.map((image) => image.imageUrl),
   );
@@ -322,10 +323,15 @@ function DraftForm({
         <div className="mt-3">
           <FileUpload
             folder="portfolios"
-            label="Add a photo"
-            onUploaded={(file) => {
-              setImages((current) => [...current, { imageUrl: file.url, name: null }]);
-              setSelected((current) => [...current, file.url]);
+            label="Add photos"
+            existingHashes={uploadedHashes}
+            onUploadedMany={(files) => {
+              setUploadedHashes((current) => [...current, ...files.map((file) => file.fileHash)]);
+              setImages((current) => [
+                ...current,
+                ...files.map((file) => ({ imageUrl: file.url, name: null })),
+              ]);
+              setSelected((current) => [...current, ...files.map((file) => file.url)]);
             }}
           />
         </div>
