@@ -1,5 +1,7 @@
 'use client';
 
+import { use } from 'react';
+import type React from 'react';
 import { notFound } from 'next/navigation';
 import {
   ActivitySection,
@@ -22,7 +24,7 @@ import { PageHeader } from '@/components/ui/page-header';
 
 const sections: Record<
   string,
-  { title?: string; description?: string; Section: () => JSX.Element }
+  { title?: string; description?: string; Section: () => React.JSX.Element }
 > = {
   analytics: { Section: AnalyticsSection },
   users: { Section: UsersSection },
@@ -47,10 +49,11 @@ const sections: Record<
 };
 
 export default function AdminSectionPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { section: string };
+  params: Promise<{ section: string }>;
 }) {
+  const params = use(paramsPromise);
   const section = sections[params.section];
   if (!section) notFound();
   const { title, description, Section } = section;

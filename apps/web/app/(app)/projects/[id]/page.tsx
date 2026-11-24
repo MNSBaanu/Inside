@@ -3,7 +3,7 @@
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { MessageThread } from '@/components/features/projects/message-thread';
 import { PaymentList } from '@/components/features/projects/payment-list';
@@ -28,10 +28,11 @@ const tabs = ['Stages', 'Payments', 'Messages', 'History', 'Review'] as const;
 type Tab = (typeof tabs)[number];
 
 export default function ProjectWorkspacePage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const params = use(paramsPromise);
   const { user } = useSession();
   const project = useApi<{ project: Project }>(`/projects/${params.id}`);
   const stages = useApi<{ items: ProjectStage[] }>(

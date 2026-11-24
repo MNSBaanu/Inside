@@ -1,5 +1,6 @@
 'use client';
 
+import { use } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -16,10 +17,11 @@ import { isOptimizableImage } from '@/lib/utils/images';
 const PLACEHOLDER_SELLER_URL = /^https?:\/\/(www\.)?example\.com(\/|$)/;
 
 export default function ProductDetailPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const params = use(paramsPromise);
   const { data, error, loading } = useApi<{ product: Product }>(
     `/products/${params.slug}`,
   );

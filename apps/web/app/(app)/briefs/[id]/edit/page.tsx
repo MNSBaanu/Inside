@@ -3,7 +3,7 @@
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader } from '@/components/ui/card';
@@ -15,10 +15,11 @@ import { useApi } from '@/lib/api/use-api';
 import type { Brief } from '@/lib/types';
 
 export default function EditBriefPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const params = use(paramsPromise);
   const { data, error, loading } = useApi<{ brief: Brief }>(
     `/briefs/${params.id}`,
   );

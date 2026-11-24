@@ -12,11 +12,12 @@ const tabs = [
   { id: 'designers', label: 'Designers', href: '/explore?tab=designers' },
 ] as const;
 
-export default function ExplorePage({
-  searchParams,
+export default async function ExplorePage({
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
+  const searchParams = await searchParamsPromise;
   const tab = single(searchParams.tab) === 'designers' ? 'designers' : 'projects';
 
   return (

@@ -3,7 +3,7 @@
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
 import { ProposalForm } from '@/components/features/proposals/proposal-form';
 import { Avatar } from '@/components/ui/avatar';
@@ -20,10 +20,11 @@ import type { Project, Proposal, ProjectRequest } from '@/lib/types';
 import { ProposalComparison } from '@/components/features/proposals/proposal-comparison';
 
 export default function RequestDetailPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const params = use(paramsPromise);
   const { user } = useSession();
   const router = useRouter();
   const request = useApi<{ request: ProjectRequest }>(`/requests/${params.id}`);

@@ -82,7 +82,7 @@ export function MessageThread({
   }, [projectId]);
 
   const [typingName, setTypingName] = useState<string | null>(null);
-  const typingTimer = useRef<ReturnType<typeof setTimeout>>();
+  const typingTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const lastTypingSent = useRef(0);
 
   useSocketEvent<Message>('message:new', (message) => {

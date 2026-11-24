@@ -1,5 +1,7 @@
 'use client';
 
+import { use } from 'react';
+import type React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -13,7 +15,7 @@ const details: Record<
   {
     title: string;
     back: string;
-    Detail: (props: { id: string }) => JSX.Element;
+    Detail: (props: { id: string }) => React.JSX.Element;
   }
 > = {
   users: { title: 'User details.', back: 'All users', Detail: AdminUserDetail },
@@ -25,10 +27,11 @@ const details: Record<
 };
 
 export default function AdminDetailPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { section: string; id: string };
+  params: Promise<{ section: string; id: string }>;
 }) {
+  const params = use(paramsPromise);
   const detail = details[params.section];
   if (!detail) notFound();
   const { title, back, Detail } = detail;

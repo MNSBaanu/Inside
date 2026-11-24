@@ -3,10 +3,11 @@ import { fetchPublic } from '@/lib/api/server-api';
 import type { Portfolio } from '@/lib/types';
 
 export async function generateMetadata({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
+  const params = await paramsPromise;
   const data = await fetchPublic<{ portfolio: Portfolio }>(
     `/portfolios/${params.id}`,
   );

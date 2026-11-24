@@ -54,7 +54,7 @@ describe('Designer availability', () => {
 
   it('keeps an unavailable profile viewable without a request link', async () => {
     mocks.fetchPublic.mockResolvedValue({ designer, portfolios: [] });
-    render(await DesignerProfilePage({ params: { id: 'd1' } }));
+    render(await DesignerProfilePage({ params: Promise.resolve({ id: 'd1' }) }));
     expect(screen.getByRole('heading', { name: 'Designer' })).toBeVisible();
     expect(
       screen.getByRole('button', { name: 'Not taking new requests' }),
@@ -69,7 +69,7 @@ describe('Designer availability', () => {
       designer: { ...designer, isAvailable: true },
       portfolios: [],
     });
-    render(await DesignerProfilePage({ params: { id: 'd1' } }));
+    render(await DesignerProfilePage({ params: Promise.resolve({ id: 'd1' }) }));
     expect(
       screen.getByRole('link', { name: 'Request this designer' }),
     ).toHaveAttribute('href', '/requests/new?designerId=d1');

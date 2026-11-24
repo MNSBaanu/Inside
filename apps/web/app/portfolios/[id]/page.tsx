@@ -34,10 +34,11 @@ async function loadExtras(portfolio: Portfolio): Promise<PortfolioExtras> {
 }
 
 export default async function PortfolioDetailPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const params = await paramsPromise;
   const initial = await fetchPublic<{ portfolio: Portfolio }>(
     `/portfolios/${params.id}`,
   );
