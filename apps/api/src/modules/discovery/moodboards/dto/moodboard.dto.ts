@@ -1,5 +1,5 @@
 import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -33,6 +33,11 @@ export class MoodboardItemDto {
   @IsUrl({ require_tld: false })
   @IsCloudinaryUrl()
   imageUrl!: string;
+
+  @ApiPropertyOptional({ description: 'SHA-256 of the uploaded file' })
+  @IsOptional()
+  @Matches(/^[a-f0-9]{64}$/)
+  fileHash?: string;
 
   @ApiPropertyOptional({ example: 'Warm neutrals' })
   @IsOptional()
@@ -84,23 +89,6 @@ export class CreateMoodboardDto {
   @ValidateNested({ each: true })
   @Type(() => MoodboardItemDto)
   savedItems?: MoodboardItemDto[];
-}
-
-export class UpdateMoodboardDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MinLength(2)
-  @MaxLength(120)
-  name?: string;
-
-  @ApiPropertyOptional({ type: [MoodboardItemDto] })
-  @IsOptional()
-  @IsArray()
-  @ArrayMaxSize(MAX_MOODBOARD_ITEMS)
-  @ValidateNested({ each: true })
-  @Type(() => MoodboardItemDto)
-  savedItems?: MoodboardItemDto[];
 
   @ApiPropertyOptional({ example: ['Calm', 'Warm', 'Natural'] })
   @IsOptional()
@@ -118,5 +106,7 @@ export class UpdateMoodboardDto {
   @MaxLength(30, { each: true })
   palette?: string[];
 }
+
+export class UpdateMoodboardDto extends PartialType(CreateMoodboardDto) {}
 
 export class AddMoodboardItemDto extends MoodboardItemDto {}
