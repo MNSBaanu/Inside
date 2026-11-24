@@ -15,6 +15,7 @@ import {
   AdminOnly,
   useIsAdmin,
 } from '@/components/features/admin/admin-sections';
+import { ReportTarget } from '@/components/features/admin/report-target';
 import { Avatar } from '@/components/ui/avatar';
 import { cardSurface } from '@/components/ui/card';
 import { ConfirmDialog, useConfirm } from '@/components/ui/confirm-dialog';
@@ -297,22 +298,10 @@ export default function AdminOverviewPage() {
                     </p>
                     <StatusBadge status={report.status} />
                   </div>
-                  {report.target ? (
-                    report.target.href ? (
-                      <Link
-                        href={report.target.href}
-                        target="_blank"
-                        title={report.target.label}
-                        className="mt-0.5 block truncate text-sm font-medium text-brand hover:underline"
-                      >
-                        {report.target.label}
-                      </Link>
-                    ) : (
-                      <p className="mt-0.5 truncate text-sm font-medium">
-                        {report.target.label}
-                      </p>
-                    )
-                  ) : null}
+                  <ReportTarget
+                    target={report.target}
+                    className="mt-0.5 block truncate text-sm font-medium"
+                  />
                   <p className="mt-2 line-clamp-2 border-l-2 border-hairline pl-3 text-sm">
                     {report.reason}
                   </p>

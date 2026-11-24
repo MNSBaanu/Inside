@@ -13,6 +13,7 @@ import {
   exportUsersCsv,
   revokeButtonClass,
 } from '@/components/features/admin/admin-users';
+import { ReportTarget } from '@/components/features/admin/report-target';
 import { CONTACT_TOPICS } from '@/components/features/contact/contact-form';
 import { describeActivity } from '@/components/features/projects/project-history';
 import { useSession } from '@/components/providers/session-provider';
@@ -747,19 +748,7 @@ export function ReportsSection() {
             <div className="min-w-0">
               <div className="flex flex-wrap items-baseline gap-x-2">
                 <Badge>{titleCase(report.targetType)}</Badge>
-                {report.target ? (
-                  report.target.href ? (
-                    <Link
-                      href={report.target.href}
-                      target="_blank"
-                      className="font-semibold text-brand hover:underline"
-                    >
-                      {report.target.label}
-                    </Link>
-                  ) : (
-                    <span className="font-semibold">{report.target.label}</span>
-                  )
-                ) : null}
+                <ReportTarget target={report.target} className="font-semibold" />
               </div>
               <p className="mt-1.5">{report.reason}</p>
               {report.details ? (
