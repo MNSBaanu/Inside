@@ -427,6 +427,26 @@ export function AdminProjectDetail({ id }: { id: string }) {
     }
   }
 
+  async function retryRefund(payment: { id: string; amount: number }, stageName: string) {
+    const ok = await confirm({
+      title: `Retry the ${stageName} card refund?`,
+      description: `${formatMoney(payment.amount)} is refunded to the client's card. The client is told it was refunded.`,
+      confirmLabel: 'Retry refund',
+      tone: 'default',
+    });
+    if (!ok) return;
+    setActionError(null);
+    setPending(true);
+    try {
+      await api.patch(`/admin/payments/${payment.id}/retry-refund`);
+      await reload();
+    } catch (cause) {
+      setActionError(errorMessage(cause));
+    } finally {
+      setPending(false);
+    }
+  }
+
   if (error) return <ErrorNotice message={error} />;
   if (!data) return <Skeleton className="h-64" />;
 
@@ -554,6 +574,18 @@ export function AdminProjectDetail({ id }: { id: string }) {
                       onClick={() => void markRefunded(payment, titleCase(stage.name))}
                     >
                       Mark refunded
+                    </Button>
+                  ) : null}
+                  {payment?.status === 'PAID' &&
+                  payment.method === 'CARD' &&
+                  project.status === 'CANCELLED' ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={pending}
+                      onClick={() => void retryRefund(payment, titleCase(stage.name))}
+                    >
+                      Retry refund
                     </Button>
                   ) : null}
                   {payment && payment.status !== 'PENDING' ? (
