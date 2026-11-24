@@ -32,7 +32,7 @@ export default function ShopPage() {
   useEffect(() => {
     const style = new URLSearchParams(window.location.search).get('style');
     if (style) setFilters((current) => ({ ...current, style }));
-  }, []);
+  }, [setFilters]);
 
   return (
     <div className="shell page">
