@@ -113,6 +113,12 @@ function HeaderContent({ pathname }: { pathname: string }) {
               ) : null}
               <AccountMenu user={user} />
             </>
+          ) : status !== 'unauthenticated' ? (
+            <span aria-hidden className="flex items-center gap-4">
+              <span className="h-5 w-5 animate-pulse rounded-full bg-sand" />
+              <span className="h-5 w-5 animate-pulse rounded-full bg-sand" />
+              <span className="h-10 w-10 animate-pulse rounded-full bg-sand" />
+            </span>
           ) : (
             <>
               <Link
@@ -192,7 +198,7 @@ function HeaderContent({ pathname }: { pathname: string }) {
                 Account
               </ButtonLink>
             </>
-          ) : (
+          ) : status !== 'unauthenticated' ? null : (
             <>
               <ButtonLink href="/register" size="lg" fullWidth>
                 Get started

@@ -100,12 +100,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [status, router, pathname]);
 
   if (status !== 'authenticated' || !user) {
-    return (
-      <div className="shell page">
-        <Skeleton className="h-12 w-64" />
-        <Skeleton className="mt-8 h-72 w-full" />
-      </div>
-    );
+    return <ShellLoading />;
   }
 
   const items = navigation.filter(
@@ -166,6 +161,46 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <SignOutContext.Provider value={onSignOut}>
             {children}
           </SignOutContext.Provider>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** What the workspace looks like while the session loads: the sidebar and a page-shaped placeholder. */
+function ShellLoading() {
+  return (
+    <div className="lg:pl-[88px]" aria-busy="true" aria-label="Loading your workspace">
+      <div className="shell page flex flex-col gap-8 lg:pt-24">
+        <aside className="flex min-w-0 items-center gap-3 rounded-card bg-ink p-2 lg:fixed lg:inset-y-0 lg:left-0 lg:z-[60] lg:w-[88px] lg:flex-col lg:gap-0 lg:rounded-none lg:px-2 lg:py-5">
+          <span className="mb-6 hidden h-12 w-12 shrink-0 items-center justify-center rounded-full ring-1 ring-canvas/15 lg:flex">
+            <Image src="/logo.png" alt="" width={226} height={265} className="h-7 w-auto invert" />
+          </span>
+          <div className="flex flex-1 gap-2 overflow-hidden lg:w-full lg:flex-col lg:items-center lg:gap-4">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <span key={index} className="flex flex-col items-center gap-1.5 px-2 py-1.5">
+                <span className="h-5 w-5 animate-pulse rounded-md bg-canvas/15" />
+                <span className="hidden h-2 w-12 animate-pulse rounded bg-canvas/10 lg:block" />
+              </span>
+            ))}
+          </div>
+          <div className="hidden w-full flex-col items-center gap-4 border-t border-canvas/10 pt-4 lg:flex">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <span key={index} className="h-5 w-5 animate-pulse rounded-md bg-canvas/15" />
+            ))}
+          </div>
+        </aside>
+
+        <div className="min-w-0">
+          <Skeleton className="h-6 w-28 rounded-pill" />
+          <Skeleton className="mt-4 h-10 w-72 max-w-full" />
+          <Skeleton className="mt-3 h-4 w-96 max-w-full" />
+          <Skeleton className="mt-8 h-40 w-full" />
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+          </div>
         </div>
       </div>
     </div>
