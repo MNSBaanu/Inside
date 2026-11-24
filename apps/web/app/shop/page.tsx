@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { ProductCard } from '@/components/features/shop/product-card';
 import { Pagination } from '@/components/ui/pagination';
 import { Combobox } from '@/components/ui/combobox';
@@ -9,50 +9,30 @@ import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { PageHeader } from '@/components/ui/page-header';
 import { PRODUCT_CATEGORIES, STYLES } from '@/lib/utils/options';
-import { buildQuery, useApi } from '@/lib/api/use-api';
-import type { Paginated, Product } from '@/lib/types';
+import { usePagedSearch } from '@/lib/api/use-paged-search';
+import type { Product } from '@/lib/types';
 
 const PAGE_SIZE = 12;
 
 const EMPTY_FILTERS = { q: '', category: '', style: '', maxPrice: '' };
 
 export default function ShopPage() {
-  const [filters, setFilters] = useState(EMPTY_FILTERS);
-  const [applied, setApplied] = useState(EMPTY_FILTERS);
-  const [page, setPage] = useState(1);
-  const resultsRef = useRef<HTMLDivElement>(null);
+  const {
+    data,
+    error,
+    loading,
+    filters,
+    setFilters,
+    page,
+    showPage,
+    totalPages,
+    resultsRef,
+  } = usePagedSearch<Product, typeof EMPTY_FILTERS>('/products', EMPTY_FILTERS, PAGE_SIZE);
 
   useEffect(() => {
     const style = new URLSearchParams(window.location.search).get('style');
     if (style) setFilters((current) => ({ ...current, style }));
   }, []);
-  const showPage = (next: number) => {
-    setPage(next);
-    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  const query = buildQuery({
-    q: applied.q,
-    category: applied.category,
-    style: applied.style,
-    maxPrice: applied.maxPrice,
-    page,
-    pageSize: PAGE_SIZE,
-  });
-
-  const { data, error, loading } = useApi<Paginated<Product>>(
-    `/products${query}`,
-  );
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPage(1);
-      setApplied(filters);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [filters]);
-
-  const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
   return (
     <div className="shell page">

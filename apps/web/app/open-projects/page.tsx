@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ButtonLink } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
 import { Combobox } from '@/components/ui/combobox';
@@ -12,8 +12,8 @@ import { FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { PageHeader } from '@/components/ui/page-header';
 import { Select } from '@/components/ui/select';
 import { LOCATIONS } from '@/lib/utils/options';
-import { buildQuery, useApi } from '@/lib/api/use-api';
-import type { OpenRequest, Paginated } from '@/lib/types';
+import { usePagedSearch } from '@/lib/api/use-paged-search';
+import type { OpenRequest } from '@/lib/types';
 
 const PAGE_SIZE = 12;
 
@@ -32,35 +32,29 @@ const SORT_OPTIONS = [
 ];
 
 export default function OpenProjectsPage() {
-  const [filters, setFilters] = useState(EMPTY_FILTERS);
-  const [applied, setApplied] = useState(EMPTY_FILTERS);
-  const [page, setPage] = useState(1);
+  const {
+    data,
+    error,
+    loading,
+    filters,
+    setFilters,
+    page,
+    showPage,
+    totalPages,
+    resultsRef,
+  } = usePagedSearch<OpenRequest, typeof EMPTY_FILTERS>(
+    '/requests/open',
+    EMPTY_FILTERS,
+    PAGE_SIZE,
+  );
   const [selected, setSelected] = useState<OpenRequest | null>(null);
   const closeDrawer = useCallback(() => setSelected(null), []);
-  const resultsRef = useRef<HTMLDivElement>(null);
-  const showPage = (next: number) => {
-    setPage(next);
-    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-  const { data, error, loading } = useApi<Paginated<OpenRequest>>(
-    `/requests/open${buildQuery({ ...applied, page, pageSize: PAGE_SIZE })}`,
-  );
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPage(1);
-      setApplied(filters);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [filters]);
 
   const filtered =
     filters.q !== '' ||
     filters.location !== '' ||
     filters.minBudget !== '' ||
     filters.maxBudget !== '';
-
-  const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
   return (
     <div className="shell page">

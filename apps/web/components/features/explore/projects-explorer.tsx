@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { PortfolioGrid } from '@/components/features/portfolios/portfolio-grid';
 import { Pagination } from '@/components/ui/pagination';
 import { Combobox } from '@/components/ui/combobox';
@@ -8,18 +7,10 @@ import { BareInput } from '@/components/ui/field';
 import { FilterBar, FilterField } from '@/components/ui/filter-bar';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { LOCATIONS, ROOM_TYPES, STYLES } from '@/lib/utils/options';
-import { buildQuery, useApi } from '@/lib/api/use-api';
-import type { Paginated, Portfolio } from '@/lib/types';
+import { usePagedSearch } from '@/lib/api/use-paged-search';
+import type { Portfolio } from '@/lib/types';
 
 const PAGE_SIZE = 12;
-
-const EMPTY_FILTERS = {
-  q: '',
-  location: '',
-  style: '',
-  roomType: '',
-  maxBudget: '',
-};
 
 export function ProjectsExplorer({
   style,
@@ -28,52 +19,31 @@ export function ProjectsExplorer({
   style?: string;
   roomType?: string;
 }) {
-  const [filters, setFilters] = useState({
-    q: '',
-    location: '',
-    style: style ?? '',
-    roomType: roomType ?? '',
-    maxBudget: '',
-  });
-  const [applied, setApplied] = useState(filters);
-  const [page, setPage] = useState(1);
-  const resultsRef = useRef<HTMLDivElement>(null);
-  const showPage = (next: number) => {
-    setPage(next);
-    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  const query = buildQuery({
-    q: applied.q,
-    location: applied.location,
-    style: applied.style,
-    roomType: applied.roomType,
-    maxBudget: applied.maxBudget,
+  const {
+    data,
+    error,
+    loading,
+    filters,
+    setFilters,
     page,
-    pageSize: PAGE_SIZE,
-  });
-
-  const { data, error, loading } = useApi<Paginated<Portfolio>>(
-    `/portfolios${query}`,
+    showPage,
+    totalPages,
+    resultsRef,
+  } = usePagedSearch<Portfolio, Record<string, string>>(
+    '/portfolios',
+    {
+      q: '',
+      location: '',
+      style: style ?? '',
+      roomType: roomType ?? '',
+      maxBudget: '',
+    },
+    PAGE_SIZE,
   );
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPage(1);
-      setApplied(filters);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [filters]);
-
-  function onSubmit(event: React.FormEvent) {
-    event.preventDefault();
-  }
-
-  const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
   return (
     <div>
-      <FilterBar onSubmit={onSubmit}>
+      <FilterBar onSubmit={(event) => event.preventDefault()}>
         <FilterField label="Search" htmlFor="q">
           <BareInput
             id="q"
