@@ -9,10 +9,9 @@ test.describe('Signing in', () => {
 
   test('rejects a wrong password', async ({ page }) => {
     await page.goto('/login');
-    await page.getByLabel('Email address').fill(accounts.nadia);
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await page.getByLabel('Email', { exact: true }).fill(accounts.nadia);
     await page.getByLabel('Password', { exact: true }).fill('WrongPassword1!');
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await page.getByRole('button', { name: 'Sign in', exact: true }).click();
     await expect(page.getByText(/password is incorrect/i).first()).toBeVisible();
   });
 
@@ -42,15 +41,14 @@ test.describe('Signing in', () => {
   test('registers a new client', async ({ page }) => {
     const run = Date.now();
     await page.goto('/register');
-    await page.getByLabel('First name').fill('Playwright');
-    await page.getByLabel('Last name').fill('Client');
+    await page.getByLabel('Full name').fill('Playwright Client');
     await page
-      .getByLabel('Email address')
+      .getByLabel('Email', { exact: true })
       .fill(`pw-${run}+clerk_test@example.com`);
     await page.getByLabel('Password', { exact: true }).fill(`Inside-${run}-pw!`);
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
-    await expect(page.getByText(/verify your email/i)).toBeVisible();
-    await page.keyboard.type('424242');
+    await page.getByRole('button', { name: 'Create account', exact: true }).click();
+    await page.getByLabel('Verification code').fill('424242');
+    await page.getByRole('button', { name: 'Verify email', exact: true }).click();
     await expect(page).toHaveURL(/\/dashboard/);
   });
 

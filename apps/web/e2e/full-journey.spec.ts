@@ -76,13 +76,14 @@ test('a new client goes from the landing page to a completed, reviewed project',
     await page.getByRole('link', { name: /Create an account/ }).click();
     await expect(page).toHaveURL(/\/register/);
     await page.getByRole('button', { name: /I have a space/ }).click();
-    await page.getByLabel('First name').fill('Journey');
-    await page.getByLabel('Last name').fill('Client');
-    await page.getByLabel('Email address').fill(`journey-${run}+clerk_test@example.com`);
+    await page.getByLabel('Full name').fill('Journey Client');
+    await page
+      .getByLabel('Email', { exact: true })
+      .fill(`journey-${run}+clerk_test@example.com`);
     await page.getByLabel('Password', { exact: true }).fill(`Inside-${run}-pw!`);
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
-    await expect(page.getByText(/verify your email/i)).toBeVisible();
-    await page.keyboard.type('424242');
+    await page.getByRole('button', { name: 'Create account', exact: true }).click();
+    await page.getByLabel('Verification code').fill('424242');
+    await page.getByRole('button', { name: 'Verify email', exact: true }).click();
     await expect(page).toHaveURL(/\/dashboard/);
   });
 
