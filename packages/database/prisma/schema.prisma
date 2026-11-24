@@ -272,6 +272,7 @@ model ProjectRequest {
   clientId    String
   designerId  String?
   briefId     String?
+  briefSnapshot Json?
   portfolioId String?
   title       String
   description String?
