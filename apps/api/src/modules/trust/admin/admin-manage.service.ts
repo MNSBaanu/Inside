@@ -135,6 +135,9 @@ export class AdminManageService {
             stageId: true,
             amount: true,
             status: true,
+            method: true,
+            reference: true,
+            proofUrl: true,
             paidAt: true,
             releasedAt: true,
           },
@@ -200,10 +203,17 @@ export class AdminManageService {
     ) {
       throw new BadRequestException('Project is already closed');
     }
-    const { refunded } = await this.payments.cancelAndRefund(project.id);
-    const refundNote = refunded
-      ? `. ${refunded} paid milestone${refunded === 1 ? ' was' : 's were'} refunded`
-      : '';
+    const { refunded, offline } = await this.payments.cancelAndRefund(
+      project.id,
+    );
+    const refundNote = [
+      refunded
+        ? `. ${refunded} paid milestone${refunded === 1 ? ' was' : 's were'} refunded`
+        : '',
+      offline
+        ? `. ${offline} milestone${offline === 1 ? '' : 's'} paid offline will be refunded by hand`
+        : '',
+    ].join('');
     return this.changeProjectStatus(admin, project, ProjectStatus.CANCELLED, {
       action: 'PROJECT_CANCELLED',
       title: 'Project cancelled',

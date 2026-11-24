@@ -1,5 +1,14 @@
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
-import { PaymentStatus, Role } from '@inside/database';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+} from '@nestjs/common';
+import {
+  PaymentMethod,
+  PaymentStatus,
+  ProjectStatus,
+  Role,
+} from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import type Stripe from 'stripe';
 import { ActivityService } from '../../platform/activity/activity.service';
@@ -16,12 +25,17 @@ describe('PaymentsService', () => {
       updateMany: jest.fn(),
     },
     project: { findUnique: jest.fn(), updateMany: jest.fn() },
+    user: { findMany: jest.fn() },
   };
 
-  const notifications = { notify: jest.fn() };
+  const notifications = { notify: jest.fn(), notifyMany: jest.fn() };
   const activity = { log: jest.fn() };
   const stripe = {
-    paymentIntents: { create: jest.fn(), retrieve: jest.fn() },
+    paymentIntents: {
+      create: jest.fn(),
+      retrieve: jest.fn(),
+      cancel: jest.fn(),
+    },
     refunds: { create: jest.fn() },
   };
 
@@ -43,6 +57,9 @@ describe('PaymentsService', () => {
     stageId: 's1',
     amount: 50000,
     status: PaymentStatus.PENDING,
+    method: PaymentMethod.CARD,
+    reference: null,
+    proofUrl: null,
     stripeIntentId: null,
     paidAt: null,
     releasedAt: null,
@@ -107,12 +124,124 @@ describe('PaymentsService', () => {
   it('skips refunding a payment that was released before it was claimed', async () => {
     prisma.project.updateMany.mockResolvedValue({ count: 1 });
     prisma.milestonePayment.findMany.mockResolvedValue([
-      { id: 'pay1', stripeIntentId: 'pi_1' },
+      { id: 'pay1', stripeIntentId: 'pi_1', method: PaymentMethod.CARD },
     ]);
     prisma.milestonePayment.updateMany.mockResolvedValue({ count: 0 });
     const result = await service.cancelAndRefund('p1');
-    expect(result).toEqual({ refunded: 0, failed: 0 });
+    expect(result).toEqual({ refunded: 0, failed: 0, offline: 0 });
     expect(stripe.refunds.create).not.toHaveBeenCalled();
+  });
+
+  it('leaves offline payments for an admin to refund by hand', async () => {
+    prisma.project.updateMany.mockResolvedValue({ count: 1 });
+    prisma.milestonePayment.findMany.mockResolvedValue([
+      { id: 'pay1', stripeIntentId: null, method: PaymentMethod.BANK_TRANSFER },
+    ]);
+    prisma.user.findMany.mockResolvedValue([{ id: 'admin1' }]);
+    prisma.project.findUnique.mockResolvedValue({ title: 'Sofa' });
+    const result = await service.cancelAndRefund('p1');
+    expect(result).toEqual({ refunded: 0, failed: 0, offline: 1 });
+    expect(prisma.milestonePayment.updateMany).not.toHaveBeenCalled();
+    expect(notifications.notifyMany).toHaveBeenCalledWith(
+      ['admin1'],
+      expect.objectContaining({ title: 'Offline refund needed' }),
+    );
+  });
+
+  describe('offline payments', () => {
+    const admin = { id: 'a1', role: Role.ADMIN } as AuthUser;
+    const pendingWithProject = {
+      ...pendingPayment,
+      project: { ...pendingPayment.project, status: ProjectStatus.ACTIVE },
+    };
+
+    it('records a bank transfer and cancels the open card checkout', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue({
+        ...pendingWithProject,
+        stripeIntentId: 'pi_1',
+      });
+      stripe.paymentIntents.retrieve.mockResolvedValue({
+        id: 'pi_1',
+        status: 'requires_payment_method',
+      });
+      stripe.paymentIntents.cancel.mockResolvedValue({});
+      prisma.milestonePayment.update.mockResolvedValue({
+        ...pendingPayment,
+        status: PaymentStatus.PAID,
+        method: PaymentMethod.BANK_TRANSFER,
+      });
+      await service.recordOffline(admin, 'pay1', {
+        method: 'BANK_TRANSFER',
+        paidOn: '2026-11-20',
+        reference: 'BOC 004512',
+      });
+      expect(stripe.paymentIntents.cancel).toHaveBeenCalledWith('pi_1');
+      expect(prisma.milestonePayment.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'pay1', status: PaymentStatus.PENDING },
+          data: expect.objectContaining({
+            status: PaymentStatus.PAID,
+            method: PaymentMethod.BANK_TRANSFER,
+            reference: 'BOC 004512',
+            recordedById: 'a1',
+            stripeIntentId: null,
+          }),
+        }),
+      );
+      expect(notifications.notifyMany).toHaveBeenCalledWith(
+        ['c1', 'd1'],
+        expect.objectContaining({ title: 'Milestone paid' }),
+      );
+    });
+
+    it('does not record an offline payment the client already paid by card', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue({
+        ...pendingWithProject,
+        stripeIntentId: 'pi_1',
+      });
+      stripe.paymentIntents.retrieve.mockResolvedValue({
+        id: 'pi_1',
+        status: 'succeeded',
+        metadata: { paymentId: 'pay1' },
+      });
+      prisma.milestonePayment.update.mockResolvedValue({
+        ...pendingPayment,
+        status: PaymentStatus.PAID,
+      });
+      await expect(
+        service.recordOffline(admin, 'pay1', {
+          method: 'CASH',
+          paidOn: '2026-11-20',
+        }),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(prisma.milestonePayment.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ stripeIntentId: 'pi_1' }),
+        }),
+      );
+    });
+
+    it('rejects a payment date in the future', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue(pendingWithProject);
+      await expect(
+        service.recordOffline(admin, 'pay1', {
+          method: 'CASH',
+          paidOn: '2999-01-01',
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('only marks offline payments on cancelled projects as refunded', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue({
+        ...pendingPayment,
+        status: PaymentStatus.PAID,
+        method: PaymentMethod.CASH,
+        project: { ...pendingPayment.project, status: ProjectStatus.ACTIVE },
+      });
+      await expect(
+        service.markOfflineRefunded(admin, 'pay1'),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
   });
 
   it('will not cancel and refund a project twice', async () => {
@@ -151,7 +280,7 @@ describe('PaymentsService', () => {
       },
     };
 
-    it('gives the client the card and receipt from Stripe', async () => {
+    it('gives the client the card details from Stripe', async () => {
       prisma.milestonePayment.findUnique.mockResolvedValue(paidPayment);
       stripe.paymentIntents.retrieve.mockResolvedValue(intent);
       const { data } = await service.invoice(client, 'pay1');
@@ -162,16 +291,17 @@ describe('PaymentsService', () => {
         amount: 50000,
         currency: 'LKR',
         card: { brand: 'visa', last4: '4242' },
-        receiptUrl: 'https://pay.stripe.com/receipts/x',
+        billingName: 'Nadia Client',
       });
+      expect(data.invoice).not.toHaveProperty('receiptUrl');
+      expect(data.invoice).not.toHaveProperty('stripeReference');
     });
 
-    it('hides card details and the receipt link from the designer', async () => {
+    it('hides card details from the designer', async () => {
       prisma.milestonePayment.findUnique.mockResolvedValue(paidPayment);
       stripe.paymentIntents.retrieve.mockResolvedValue(intent);
       const { data } = await service.invoice(designer, 'pay1');
       expect(data.invoice.card).toBeNull();
-      expect(data.invoice.receiptUrl).toBeNull();
       expect(data.invoice.billingName).toBeNull();
       expect(data.invoice.amount).toBe(50000);
     });
@@ -181,6 +311,28 @@ describe('PaymentsService', () => {
       await expect(
         service.invoice({ id: 'x', role: Role.CLIENT } as AuthUser, 'pay1'),
       ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('builds the invoice from the payment record when there is no card record', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue({
+        ...paidPayment,
+        stripeIntentId: null,
+        paidAt: new Date('2026-11-05'),
+      });
+      const { data } = await service.invoice(client, 'pay1');
+      expect(stripe.paymentIntents.retrieve).not.toHaveBeenCalled();
+      expect(data.invoice).toMatchObject({
+        amount: 50000,
+        currency: 'LKR',
+        card: null,
+      });
+    });
+
+    it('falls back to the payment record when card details cannot be loaded', async () => {
+      prisma.milestonePayment.findUnique.mockResolvedValue(paidPayment);
+      stripe.paymentIntents.retrieve.mockRejectedValue(new Error('network'));
+      const { data } = await service.invoice(client, 'pay1');
+      expect(data.invoice).toMatchObject({ amount: 50000, card: null });
     });
 
     it('has no invoice before the milestone is paid', async () => {

@@ -3,6 +3,7 @@ import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsDateString,
   IsIn,
   IsNumber,
   IsOptional,
@@ -12,7 +13,12 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import { ProjectStatus, RequestStatus, StageName } from '@inside/database';
+import {
+  PaymentMethod,
+  ProjectStatus,
+  RequestStatus,
+  StageName,
+} from '@inside/database';
 import { AdminSearchQueryDto } from './admin-list-query.dto';
 
 export class AdminProjectsQueryDto extends AdminSearchQueryDto {
@@ -33,6 +39,31 @@ export class AdminCancelProjectDto {
   @MinLength(3)
   @MaxLength(500)
   reason!: string;
+}
+
+export class AdminRecordOfflinePaymentDto {
+  @ApiProperty({ enum: [PaymentMethod.CASH, PaymentMethod.BANK_TRANSFER] })
+  @IsIn([PaymentMethod.CASH, PaymentMethod.BANK_TRANSFER])
+  method!: 'CASH' | 'BANK_TRANSFER';
+
+  @ApiProperty({
+    example: '2026-11-24',
+    description: 'The day the money was received',
+  })
+  @IsDateString()
+  paidOn!: string;
+
+  @ApiPropertyOptional({ example: 'BOC transfer 004512' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  reference?: string;
+
+  @ApiPropertyOptional({ description: 'Uploaded bank slip or receipt' })
+  @IsOptional()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  @IsCloudinaryUrl()
+  proofUrl?: string;
 }
 
 export class AdminProductsQueryDto extends AdminSearchQueryDto {

@@ -312,7 +312,8 @@ export class ProjectsService {
       }
     }
 
-    const { refunded, failed } = await this.payments.cancelAndRefund(id);
+    const { refunded, failed, offline } =
+      await this.payments.cancelAndRefund(id);
     const updated = await this.prisma.project.findUniqueOrThrow({
       where: { id },
       include: projectInclude,
@@ -332,7 +333,7 @@ export class ProjectsService {
       projectId: id,
       userId: user.id,
       action: 'PROJECT_CANCELLED',
-      metadata: { reason, refunded, refundFailed: failed },
+      metadata: { reason, refunded, refundFailed: failed, offline },
     });
 
     return {
@@ -341,6 +342,7 @@ export class ProjectsService {
         project: this.serialize(updated),
         refunded,
         refundFailed: failed,
+        refundOffline: offline,
       },
     };
   }

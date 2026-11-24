@@ -27,17 +27,22 @@ import {
   AdminOpenRequestsQueryDto,
   AdminProductsQueryDto,
   AdminProjectsQueryDto,
+  AdminRecordOfflinePaymentDto,
   AdminSetRequestStatusDto,
   AdminUpdateProductDto,
 } from './dto/admin-manage.dto';
 import { AdminManageService } from './admin-manage.service';
+import { PaymentsService } from '../../delivery/payments/payments.service';
 
 @ApiTags('admin')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, AdminGuard)
 @Controller('admin')
 export class AdminManageController {
-  constructor(private readonly manage: AdminManageService) {}
+  constructor(
+    private readonly manage: AdminManageService,
+    private readonly payments: PaymentsService,
+  ) {}
 
   @Get('projects')
   @ApiOperation({ summary: 'List projects' })
@@ -82,6 +87,31 @@ export class AdminManageController {
     @Body() dto: AdminCancelProjectDto,
   ) {
     return this.manage.cancelProject(admin, id, dto.reason.trim());
+  }
+
+  @Post('payments/:id/offline')
+  @ApiOperation({
+    summary: 'Record a milestone paid in cash or by bank transfer',
+  })
+  @ApiOkResponse({ description: 'Recorded' })
+  recordOfflinePayment(
+    @CurrentUser() admin: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AdminRecordOfflinePaymentDto,
+  ) {
+    return this.payments.recordOffline(admin, id, dto);
+  }
+
+  @Patch('payments/:id/offline-refunded')
+  @ApiOperation({
+    summary: 'Mark an offline payment on a cancelled project as refunded',
+  })
+  @ApiOkResponse({ description: 'Refunded' })
+  markOfflineRefunded(
+    @CurrentUser() admin: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.payments.markOfflineRefunded(admin, id);
   }
 
   @Get('products')

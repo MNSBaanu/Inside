@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import {
   NotificationType,
+  PaymentMethod,
   PaymentStatus,
   Prisma,
   ProjectStatus,
@@ -22,6 +23,7 @@ import { NotificationsService } from '../../platform/notifications/notifications
 import { PrismaService } from '../../../database/prisma.service';
 import Stripe from 'stripe';
 import { PayPaymentDto } from './dto/pay-payment.dto';
+import type { AdminRecordOfflinePaymentDto } from '../../trust/admin/dto/admin-manage.dto';
 import { STRIPE } from './stripe.provider';
 
 @Injectable()
@@ -126,7 +128,7 @@ export class PaymentsService {
 
   /**
    * The invoice for a paid milestone, read from Stripe. Card details and the
-   * Stripe receipt link are shown only to the client who paid and to admins.
+   * billing name are shown only to the client who paid and to admins.
    */
   async invoice(user: AuthUser, id: string) {
     const payment = await this.prisma.milestonePayment.findUnique({
@@ -156,48 +158,75 @@ export class PaymentsService {
     if (payment.status === PaymentStatus.PENDING) {
       throw new BadRequestException('This milestone has not been paid yet');
     }
-    if (!payment.stripeIntentId) {
-      throw new NotFoundException(
-        'This payment was not made through Stripe, so there is no invoice for it',
-      );
+    const showPayment = isAdmin || isPayer;
+    const base = {
+      number: `INS-${payment.id.slice(0, 8).toUpperCase()}`,
+      paymentId: payment.id,
+      status: payment.status,
+      method: payment.method,
+      project: { id: payment.project.id, title: payment.project.title },
+      stage: payment.stage.name,
+      client: payment.project.client.name,
+      designer: payment.project.designer.name,
+      releasedAt: payment.releasedAt,
+    };
+
+    // Built from Inside's own record when there are no card details to read:
+    // offline payments, payments recorded before card checkout, or when the
+    // card provider can't be reached.
+    const fromRecord = () => {
+      const amount = Number(payment.amount);
+      return {
+        success: true,
+        data: {
+          invoice: {
+            ...base,
+            amount,
+            amountRefunded:
+              payment.status === PaymentStatus.REFUNDED ? amount : 0,
+            currency: 'LKR',
+            paidAt: payment.paidAt,
+            reference: payment.reference,
+            proofUrl: showPayment ? payment.proofUrl : null,
+            card: null,
+            billingName: null,
+          },
+        },
+      };
+    };
+
+    if (
+      payment.method !== PaymentMethod.CARD ||
+      !payment.stripeIntentId ||
+      !this.stripe
+    ) {
+      return fromRecord();
     }
 
-    const intent = await this.requireStripe()
-      .paymentIntents.retrieve(payment.stripeIntentId, {
-        expand: ['latest_charge'],
-      })
-      .catch(() => {
-        throw new ServiceUnavailableException(
-          'Could not load this payment from Stripe. Try again shortly.',
-        );
-      });
+    const intent = await this.stripe.paymentIntents
+      .retrieve(payment.stripeIntentId, { expand: ['latest_charge'] })
+      .catch(() => null);
+    if (!intent) {
+      return fromRecord();
+    }
     const charge =
       intent.latest_charge && typeof intent.latest_charge === 'object'
         ? intent.latest_charge
         : null;
     const card = charge?.payment_method_details?.card;
-    const showPayment = isAdmin || isPayer;
     const minor = (value: number) => value / 100;
 
     return {
       success: true,
       data: {
         invoice: {
-          number: `INS-${payment.id.slice(0, 8).toUpperCase()}`,
-          paymentId: payment.id,
-          status: payment.status,
-          project: { id: payment.project.id, title: payment.project.title },
-          stage: payment.stage.name,
-          client: payment.project.client.name,
-          designer: payment.project.designer.name,
+          ...base,
           amount: minor(intent.amount_received || intent.amount),
           amountRefunded: minor(charge?.amount_refunded ?? 0),
           currency: intent.currency.toUpperCase(),
           paidAt: charge ? new Date(charge.created * 1000) : payment.paidAt,
-          releasedAt: payment.releasedAt,
-          stripeReference: intent.id,
-          receiptNumber: charge?.receipt_number ?? null,
-          receiptUrl: showPayment ? (charge?.receipt_url ?? null) : null,
+          reference: null,
+          proofUrl: null,
           card:
             showPayment && card
               ? { brand: card.brand, last4: card.last4 }
@@ -305,7 +334,12 @@ export class PaymentsService {
     });
     let refunded = 0;
     let failed = 0;
+    let offline = 0;
     for (const payment of paid) {
+      if (payment.method !== PaymentMethod.CARD) {
+        offline += 1;
+        continue;
+      }
       const claimed = await this.prisma.milestonePayment.updateMany({
         where: { id: payment.id, status: PaymentStatus.PAID },
         data: { status: PaymentStatus.REFUNDED },
@@ -331,7 +365,157 @@ export class PaymentsService {
       }
       refunded += 1;
     }
-    return { refunded, failed };
+
+    if (offline > 0) {
+      const [admins, project] = await Promise.all([
+        this.prisma.user.findMany({
+          where: { role: Role.ADMIN },
+          select: { id: true },
+        }),
+        this.prisma.project.findUnique({
+          where: { id: projectId },
+          select: { title: true },
+        }),
+      ]);
+      await this.notifications.notifyMany(
+        admins.map((admin) => admin.id),
+        {
+          type: NotificationType.PAYMENT,
+          title: 'Offline refund needed',
+          message: `"${project?.title ?? 'A project'}" was cancelled with ${offline} milestone${offline === 1 ? '' : 's'} paid offline. Refund the client by hand, then mark ${offline === 1 ? 'it' : 'them'} refunded.`,
+          metadata: { projectId },
+        },
+      );
+    }
+    return { refunded, failed, offline };
+  }
+
+  /** An admin records a milestone the client paid in cash or by bank transfer. */
+  async recordOffline(
+    admin: AuthUser,
+    id: string,
+    dto: AdminRecordOfflinePaymentDto,
+  ) {
+    const payment = await this.requirePayment(id);
+    if (payment.status !== PaymentStatus.PENDING) {
+      throw new BadRequestException(
+        'Only unpaid milestones can be recorded as paid',
+      );
+    }
+    if (
+      payment.project.status === ProjectStatus.CANCELLED ||
+      payment.project.status === ProjectStatus.COMPLETED
+    ) {
+      throw new BadRequestException('This project is closed');
+    }
+    const paidAt = new Date(dto.paidOn);
+    if (paidAt.getTime() > Date.now()) {
+      throw new BadRequestException('The payment date cannot be in the future');
+    }
+
+    if (payment.stripeIntentId && this.stripe) {
+      const intent = await this.stripe.paymentIntents
+        .retrieve(payment.stripeIntentId)
+        .catch(() => null);
+      if (intent?.status === 'succeeded') {
+        await this.recordPaid(payment, intent.id);
+        throw new ConflictException(
+          'The client already paid this milestone by card. That payment is now recorded.',
+        );
+      }
+      if (intent?.status === 'processing') {
+        throw new ConflictException(
+          'A card payment for this milestone is still processing. Wait for it to finish first.',
+        );
+      }
+      if (intent && intent.status !== 'canceled') {
+        await this.stripe.paymentIntents
+          .cancel(intent.id)
+          .catch(() => undefined);
+      }
+    }
+
+    let updated;
+    try {
+      updated = await this.prisma.milestonePayment.update({
+        where: { id, status: PaymentStatus.PENDING },
+        data: {
+          status: PaymentStatus.PAID,
+          method: dto.method,
+          paidAt,
+          reference: dto.reference?.trim() || null,
+          proofUrl: dto.proofUrl ?? null,
+          recordedById: admin.id,
+          stripeIntentId: null,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new ConflictException('This milestone was already paid');
+      }
+      throw error;
+    }
+
+    const how = dto.method === PaymentMethod.CASH ? 'cash' : 'bank transfer';
+    await this.notifications.notifyMany(
+      [payment.project.clientId, payment.project.designerId],
+      {
+        type: NotificationType.PAYMENT,
+        title: 'Milestone paid',
+        message: `A ${how} payment of ${formatLkr(payment.amount)} for "${payment.project.title}" was recorded`,
+        metadata: { projectId: payment.projectId, paymentId: id },
+      },
+    );
+    await this.activity.log({
+      projectId: payment.projectId,
+      userId: admin.id,
+      action: 'PAYMENT_PAID_OFFLINE',
+      metadata: {
+        paymentId: id,
+        amount: Number(payment.amount),
+        method: dto.method,
+      },
+    });
+    return { success: true, data: { payment: this.serialize(updated) } };
+  }
+
+  /** After refunding an offline payment by hand, an admin records it as refunded. */
+  async markOfflineRefunded(admin: AuthUser, id: string) {
+    const payment = await this.requirePayment(id);
+    if (payment.method === PaymentMethod.CARD) {
+      throw new BadRequestException('Card payments are refunded automatically');
+    }
+    if (payment.project.status !== ProjectStatus.CANCELLED) {
+      throw new BadRequestException(
+        'Only payments on cancelled projects can be refunded',
+      );
+    }
+    const claimed = await this.prisma.milestonePayment.updateMany({
+      where: { id, status: PaymentStatus.PAID },
+      data: { status: PaymentStatus.REFUNDED },
+    });
+    if (claimed.count === 0) {
+      throw new BadRequestException(
+        'Only paid milestones can be marked refunded',
+      );
+    }
+    await this.notifications.notify({
+      userId: payment.project.clientId,
+      type: NotificationType.PAYMENT,
+      title: 'Payment refunded',
+      message: `Your ${formatLkr(payment.amount)} payment for "${payment.project.title}" was refunded`,
+      metadata: { projectId: payment.projectId, paymentId: id },
+    });
+    await this.activity.log({
+      projectId: payment.projectId,
+      userId: admin.id,
+      action: 'PAYMENT_REFUNDED_OFFLINE',
+      metadata: { paymentId: id, amount: Number(payment.amount) },
+    });
+    return { success: true, data: { refunded: true } };
   }
 
   private async requirePendingForClient(user: AuthUser, id: string) {
@@ -398,6 +582,8 @@ export class PaymentsService {
     stageId: string;
     amount: unknown;
     status: PaymentStatus;
+    method: PaymentMethod;
+    reference: string | null;
     stripeIntentId: string | null;
     paidAt: Date | null;
     releasedAt: Date | null;
@@ -410,6 +596,8 @@ export class PaymentsService {
       stageId: p.stageId,
       amount: p.amount !== null ? Number(p.amount) : null,
       status: p.status,
+      method: p.method,
+      reference: p.reference,
       stripeIntentId: p.stripeIntentId,
       paidAt: p.paidAt,
       releasedAt: p.releasedAt,
