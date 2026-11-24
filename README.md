@@ -48,7 +48,7 @@ Inside is a full-stack platform that connects **clients** and **interior designe
 
 | Layer | Stack |
 |-------|-------|
-| Web | Next.js 14, TypeScript, Tailwind CSS |
+| Web | Next.js 15, React 19, Clerk 7, TypeScript, Tailwind CSS |
 | Mobile | Expo / React Native, TypeScript |
 | API | Node.js, NestJS 11, Prisma, Socket.IO |
 | Database | PostgreSQL |

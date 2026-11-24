@@ -23,5 +23,5 @@ Fix any failure before reporting the change as complete.
 | Layer | Tech |
 |-------|------|
 | API | NestJS 11, Prisma, PostgreSQL |
-| Web | Next.js 14, TypeScript, Tailwind CSS |
+| Web | Next.js 15, React 19, Clerk 7, TypeScript, Tailwind CSS |
 | Monorepo | pnpm workspaces + Turborepo |
