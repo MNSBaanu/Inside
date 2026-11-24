@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -55,6 +56,18 @@ export class DeliverablesService {
       );
     }
 
+    if (dto.fileHash) {
+      const same = await this.prisma.deliverable.findFirst({
+        where: { stageId, fileHash: dto.fileHash },
+        select: { version: true },
+      });
+      if (same) {
+        throw new ConflictException(
+          `This file is already on this stage as v${same.version}`,
+        );
+      }
+    }
+
     const last = await this.prisma.deliverable.findFirst({
       where: { stageId },
       orderBy: { version: 'desc' },
@@ -67,6 +80,7 @@ export class DeliverablesService {
         version,
         fileUrl: dto.fileUrl,
         fileName: dto.fileName,
+        fileHash: dto.fileHash,
         notes: dto.notes,
       },
     });
@@ -192,6 +206,7 @@ export class DeliverablesService {
     version: number;
     fileUrl: string;
     fileName: string | null;
+    fileHash: string | null;
     notes: string | null;
     feedback: string | null;
     uploadedAt: Date;
@@ -203,6 +218,7 @@ export class DeliverablesService {
       version: d.version,
       fileUrl: d.fileUrl,
       fileName: d.fileName,
+      fileHash: d.fileHash,
       notes: d.notes,
       feedback: d.feedback,
       uploadedAt: d.uploadedAt,

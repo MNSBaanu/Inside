@@ -1,6 +1,12 @@
 import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsUrl,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateDeliverableDto {
   @ApiProperty({ example: 'https://cdn.example.com/proposal-v1.pdf' })
@@ -14,6 +20,11 @@ export class CreateDeliverableDto {
   @IsString()
   @MaxLength(255)
   fileName?: string;
+
+  @ApiPropertyOptional({ description: 'SHA-256 of the uploaded file' })
+  @IsOptional()
+  @Matches(/^[a-f0-9]{64}$/)
+  fileHash?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
