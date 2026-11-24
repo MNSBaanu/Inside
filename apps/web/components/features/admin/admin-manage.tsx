@@ -21,6 +21,7 @@ import {
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { IconButton } from '@/components/ui/icon-button';
 import { cardSurface } from '@/components/ui/card';
 import { ConfirmDialog, useConfirm } from '@/components/ui/confirm-dialog';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
@@ -852,17 +853,16 @@ export function ShopSection() {
               >
                 {product.isPublished ? 'Hide' : 'Show'}
               </Button>
-              <Button size="sm" variant="outline" onClick={() => setEditing(product)}>
-                Edit
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="!border-error/40 !text-error hover:!border-error hover:!bg-error hover:!text-canvas"
+              <IconButton
+                action="edit"
+                label={`Edit ${product.name}`}
+                onClick={() => setEditing(product)}
+              />
+              <IconButton
+                action="delete"
+                label={`Delete ${product.name}`}
                 onClick={() => setDeleting(product)}
-              >
-                Delete
-              </Button>
+              />
             </div>
           </li>
         )}

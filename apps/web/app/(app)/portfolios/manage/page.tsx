@@ -1,7 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils/cn';
-import { ImageOff, Trash2 } from 'lucide-react';
+import { ImageOff } from 'lucide-react';
+import { IconButton } from '@/components/ui/icon-button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -242,16 +243,12 @@ export default function ManagePortfoliosPage() {
                   <Badge tone={portfolio.isPublished ? 'support' : 'neutral'}>
                     {portfolio.isPublished ? 'Published' : 'Draft'}
                   </Badge>
-                  <button
-                    type="button"
+                  <IconButton
+                    action="delete"
+                    label={`Delete ${portfolio.title}`}
                     disabled={removingId === portfolio.id}
                     onClick={() => setConfirmId(portfolio.id)}
-                    aria-label={`Delete ${portfolio.title}`}
-                    title="Delete"
-                    className="grid h-9 w-9 place-items-center rounded-full text-ink transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
-                  >
-                    <Trash2 aria-hidden className="h-4 w-4" />
-                  </button>
+                  />
                 </div>
               </li>
             ))}
