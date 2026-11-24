@@ -8,15 +8,18 @@ import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
 import type { ReportTargetType } from '@/lib/types';
+import { cn } from '@/lib/utils/cn';
 
 export function ReportDialog({
   targetType,
   targetId,
   reportedUserId,
+  menuItem = false,
 }: {
   targetType: ReportTargetType;
   targetId: string;
   reportedUserId?: string;
+  menuItem?: boolean;
 }) {
   const { status } = useSession();
   const [open, setOpen] = useState(false);
@@ -67,7 +70,7 @@ export function ReportDialog({
 
   if (sent) {
     return (
-      <p className="text-sm text-muted">
+      <p className={cn('text-sm text-muted', menuItem && 'px-4 py-2.5')}>
         Reported. An admin will review this.
       </p>
     );
@@ -77,8 +80,13 @@ export function ReportDialog({
     <>
       <button
         type="button"
+        role={menuItem ? 'menuitem' : undefined}
         onClick={() => setOpen(true)}
-        className="text-sm text-muted underline underline-offset-4 transition-colors duration-300 hover:text-brand"
+        className={
+          menuItem
+            ? 'block w-full rounded-card px-4 py-2.5 text-left text-sm text-ink transition-colors duration-150 hover:bg-brand-soft hover:text-brand'
+            : 'text-sm text-muted underline underline-offset-4 transition-colors duration-300 hover:text-brand'
+        }
       >
         Report
       </button>

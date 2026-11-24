@@ -8,8 +8,7 @@ import { PortfolioCard } from '@/components/features/portfolios/portfolio-card';
 import { ReviewList } from '@/components/features/reviews/review-list';
 import { FavouriteButton } from '@/components/features/designers/favourite-button';
 import { RequestDesignerButton } from '@/components/features/designers/request-designer-button';
-import { BlockButton } from '@/components/features/moderation/block-button';
-import { ReportDialog } from '@/components/features/moderation/report-dialog';
+import { DesignerActionsMenu } from '@/components/features/designers/designer-actions-menu';
 import { AutoRefresh } from '@/components/layout/auto-refresh';
 import { fetchPublic } from '@/lib/api/server-api';
 import type { DesignerProfile, PortfolioImage } from '@/lib/types';
@@ -56,8 +55,11 @@ export default async function DesignerProfilePage({
       <AutoRefresh />
       <section className="shell">
         <BackLink fallback="/explore?tab=designers" />
-        <div className="mt-4 overflow-hidden rounded-card bg-sand">
-          <div className="relative h-28 bg-brand-soft md:h-40">
+        <div className="relative mt-4 rounded-card bg-sand">
+          <div className="absolute right-4 top-4 z-10">
+            <DesignerActionsMenu designerId={designer.id} />
+          </div>
+          <div className="relative h-28 overflow-hidden rounded-t-card bg-brand-soft md:h-40">
             {cover ? (
               <Image
                 src={bannerImage(cover.imageUrl)}
@@ -122,15 +124,6 @@ export default async function DesignerProfilePage({
           {designer.bio ? (
             <p className="mt-4 max-w-3xl text-muted">{designer.bio}</p>
           ) : null}
-
-          <div className="mt-6 flex flex-wrap items-center gap-4 empty:hidden">
-            <BlockButton userId={designer.id} />
-            <ReportDialog
-              targetType="USER"
-              targetId={designer.id}
-              reportedUserId={designer.id}
-            />
-          </div>
           </div>
         </div>
       </section>

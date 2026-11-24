@@ -9,15 +9,31 @@ import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
 import type { Block } from '@/lib/types';
 
-export function BlockButton({ userId }: { userId: string }) {
+export function BlockButton({
+  userId,
+  menuItem = false,
+}: {
+  userId: string;
+  menuItem?: boolean;
+}) {
   const { user, status } = useSession();
   if (status !== 'authenticated' || !user || user.id === userId) return null;
   return (
-    <AuthenticatedBlockButton key={`${user.id}:${userId}`} userId={userId} />
+    <AuthenticatedBlockButton
+      key={`${user.id}:${userId}`}
+      userId={userId}
+      menuItem={menuItem}
+    />
   );
 }
 
-function AuthenticatedBlockButton({ userId }: { userId: string }) {
+function AuthenticatedBlockButton({
+  userId,
+  menuItem,
+}: {
+  userId: string;
+  menuItem: boolean;
+}) {
   const { data, error, loading, reload } = useApi<{ items: Block[] }>(
     '/blocks',
   );
@@ -73,6 +89,16 @@ function AuthenticatedBlockButton({ userId }: { userId: string }) {
         <Button variant="outline" onClick={() => void reload()}>
           Retry blocked users
         </Button>
+      ) : menuItem ? (
+        <button
+          type="button"
+          role="menuitem"
+          onClick={toggle}
+          disabled={busy || loading || !data}
+          className="block w-full rounded-card px-4 py-2.5 text-left text-sm text-ink transition-colors duration-150 hover:bg-brand-soft hover:text-brand disabled:opacity-50"
+        >
+          {blocked ? 'Unblock' : 'Block'}
+        </button>
       ) : (
         <Button
           variant="ghost"
