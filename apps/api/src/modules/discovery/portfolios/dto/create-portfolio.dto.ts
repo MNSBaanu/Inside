@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
   Max,
   MaxLength,
   Min,
@@ -51,6 +52,13 @@ export class CreatePortfolioDto {
   @IsOptional()
   @IsBoolean()
   isPublished?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Completed project the client approved for this portfolio',
+  })
+  @IsOptional()
+  @IsUUID()
+  projectId?: string;
 
   @ApiPropertyOptional({ type: [AddPortfolioImageDto] })
   @IsOptional()

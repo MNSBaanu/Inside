@@ -5,6 +5,7 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -16,6 +17,7 @@ import {
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { CurrentUser } from '../../identity/auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../identity/auth/guards/jwt-auth.guard';
+import { AnswerPortfolioShareDto } from './dto/answer-portfolio-share.dto';
 import { CancelProjectDto } from './dto/cancel-project.dto';
 import { ProjectsService } from './projects.service';
 
@@ -41,6 +43,45 @@ export class ProjectsController {
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.projects.getById(user, id);
+  }
+
+  @Post(':id/portfolio-share')
+  @ApiOperation({
+    summary:
+      'Designer asks the client to feature a completed project in their portfolio',
+  })
+  @ApiOkResponse({ description: 'Requested' })
+  requestPortfolioShare(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.projects.requestPortfolioShare(user, id);
+  }
+
+  @Patch(':id/portfolio-share')
+  @ApiOperation({
+    summary: 'Client approves or declines the portfolio request (final)',
+  })
+  @ApiOkResponse({ description: 'Answered' })
+  answerPortfolioShare(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AnswerPortfolioShareDto,
+  ) {
+    return this.projects.answerPortfolioShare(user, id, dto.approve);
+  }
+
+  @Get(':id/portfolio-draft')
+  @ApiOperation({
+    summary:
+      'Pre-filled portfolio details for an approved project (designer only)',
+  })
+  @ApiOkResponse({ description: 'Draft' })
+  portfolioDraft(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.projects.portfolioDraft(user, id);
   }
 
   @Get(':id/activity')

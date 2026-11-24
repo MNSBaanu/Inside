@@ -1,9 +1,10 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { AccountStatus, Prisma } from '@inside/database';
+import { AccountStatus, PortfolioShareStatus, Prisma } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
 import { AddPortfolioImageDto } from './dto/add-portfolio-image.dto';
@@ -123,9 +124,35 @@ export class PortfoliosService {
   }
 
   async create(user: AuthUser, dto: CreatePortfolioDto) {
+    if (dto.projectId) {
+      const project = await this.prisma.project.findUnique({
+        where: { id: dto.projectId },
+        select: {
+          designerId: true,
+          portfolioShare: true,
+          portfolio: { select: { id: true } },
+        },
+      });
+      if (
+        !project ||
+        project.designerId !== user.id ||
+        project.portfolioShare !== PortfolioShareStatus.APPROVED
+      ) {
+        throw new ForbiddenException(
+          'This project is not approved for your portfolio',
+        );
+      }
+      if (project.portfolio) {
+        throw new ConflictException(
+          'This project is already in your portfolio',
+        );
+      }
+    }
+
     const portfolio = await this.prisma.portfolio.create({
       data: {
         designerId: user.id,
+        projectId: dto.projectId,
         title: dto.title,
         description: dto.description,
         style: dto.style,
@@ -235,6 +262,7 @@ export class PortfoliosService {
       roomType: portfolio.roomType,
       budget: portfolio.budget === null ? null : Number(portfolio.budget),
       isPublished: portfolio.isPublished,
+      completedOnInside: portfolio.projectId !== null,
       createdAt: portfolio.createdAt,
       updatedAt: portfolio.updatedAt,
       designer: portfolio.designer,

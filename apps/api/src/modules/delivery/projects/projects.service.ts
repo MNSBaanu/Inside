@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import {
   NotificationType,
+  PortfolioShareStatus,
   ProjectStatus,
   Role,
   StageName,
@@ -29,7 +30,10 @@ const projectInclude = {
       isAvailable: true,
     },
   },
+  portfolio: { select: { id: true } },
 } as const;
+
+const IMAGE_FILE = /\.(jpe?g|png|webp|gif|avif)(\?|$)/i;
 
 type ProjectWithIncludes = {
   id: string;
@@ -39,10 +43,12 @@ type ProjectWithIncludes = {
   title: string;
   currentStage: StageName;
   status: ProjectStatus;
+  portfolioShare?: PortfolioShareStatus | null;
   startedAt: Date | null;
   completedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  portfolio?: { id: string } | null;
   stages: {
     id: string;
     stageOrder: number;
@@ -130,6 +136,136 @@ export class ProjectsService {
   async getById(user: AuthUser, id: string) {
     const project = await this.requirePartyAccess(id, user);
     return { success: true, data: { project: this.serialize(project) } };
+  }
+
+  /** Designer asks the client for permission to show a completed project in their portfolio. */
+  async requestPortfolioShare(user: AuthUser, id: string) {
+    const project = await this.requirePartyAccess(id, user);
+    if (project.designerId !== user.id) {
+      throw new ForbiddenException(
+        'Only the designer can ask to feature this project',
+      );
+    }
+    if (project.status !== ProjectStatus.COMPLETED) {
+      throw new BadRequestException(
+        'Only completed projects can be added to a portfolio',
+      );
+    }
+    if (project.portfolioShare) {
+      throw new BadRequestException(
+        'Permission was already requested for this project',
+      );
+    }
+
+    const updated = await this.prisma.project.update({
+      where: { id },
+      data: { portfolioShare: PortfolioShareStatus.PENDING },
+      include: projectInclude,
+    });
+    await this.notifications.notify({
+      userId: project.clientId,
+      type: NotificationType.PROJECT,
+      title: 'Portfolio request',
+      message: `${project.designer?.name ?? 'Your designer'} would like to show "${project.title}" in their portfolio. Your name will not be shown.`,
+      metadata: { projectId: id },
+    });
+    return { success: true, data: { project: this.serialize(updated) } };
+  }
+
+  /** The client's answer is final. */
+  async answerPortfolioShare(user: AuthUser, id: string, approve: boolean) {
+    const project = await this.requirePartyAccess(id, user);
+    if (project.clientId !== user.id) {
+      throw new ForbiddenException('Only the client can answer this request');
+    }
+    if (project.portfolioShare !== PortfolioShareStatus.PENDING) {
+      throw new BadRequestException('There is no pending portfolio request');
+    }
+
+    const updated = await this.prisma.project.update({
+      where: { id },
+      data: {
+        portfolioShare: approve
+          ? PortfolioShareStatus.APPROVED
+          : PortfolioShareStatus.DECLINED,
+      },
+      include: projectInclude,
+    });
+    await this.notifications.notify({
+      userId: project.designerId,
+      type: NotificationType.PROJECT,
+      title: approve
+        ? 'Portfolio request approved'
+        : 'Portfolio request declined',
+      message: approve
+        ? `You can now add "${project.title}" to your portfolio.`
+        : `The client prefers not to show "${project.title}" in your portfolio.`,
+      metadata: { projectId: id },
+    });
+    return { success: true, data: { project: this.serialize(updated) } };
+  }
+
+  /** Pre-filled portfolio details for an approved project, built from its brief, request and image deliverables. */
+  async portfolioDraft(user: AuthUser, id: string) {
+    const project = await this.requirePartyAccess(id, user);
+    if (
+      project.designerId !== user.id ||
+      project.portfolioShare !== PortfolioShareStatus.APPROVED
+    ) {
+      throw new ForbiddenException(
+        'This project is not approved for your portfolio',
+      );
+    }
+
+    const source = await this.prisma.project.findUniqueOrThrow({
+      where: { id },
+      select: {
+        proposal: {
+          select: {
+            totalAmount: true,
+            request: {
+              select: {
+                description: true,
+                budget: true,
+                brief: {
+                  select: { styles: true, rooms: true, description: true },
+                },
+                portfolio: { select: { style: true, roomType: true } },
+              },
+            },
+          },
+        },
+        stages: {
+          orderBy: { stageOrder: 'asc' },
+          select: {
+            deliverables: {
+              orderBy: { version: 'asc' },
+              select: { fileUrl: true, fileName: true },
+            },
+          },
+        },
+      },
+    });
+
+    const { request, totalAmount } = source.proposal;
+    const budget = totalAmount ?? request.budget;
+    return {
+      success: true,
+      data: {
+        draft: {
+          title: project.title,
+          description: request.description ?? request.brief?.description ?? '',
+          style: request.brief?.styles[0] ?? request.portfolio?.style ?? '',
+          roomType:
+            request.brief?.rooms[0] ?? request.portfolio?.roomType ?? '',
+          budget: budget !== null ? Number(budget) : null,
+          images: source.stages
+            .flatMap((stage) => stage.deliverables)
+            .filter((file) => IMAGE_FILE.test(file.fileName ?? file.fileUrl))
+            .map((file) => ({ imageUrl: file.fileUrl, name: file.fileName })),
+        },
+      },
+    };
   }
 
   async cancel(user: AuthUser, id: string, reason: string) {
@@ -272,6 +408,8 @@ export class ProjectsService {
       title: project.title,
       currentStage: project.currentStage,
       status: project.status,
+      portfolioShare: project.portfolioShare ?? null,
+      portfolioId: project.portfolio?.id ?? null,
       startedAt: project.startedAt,
       completedAt: project.completedAt,
       createdAt: project.createdAt,
