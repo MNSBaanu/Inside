@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { PortfolioCard } from '@/components/features/portfolios/portfolio-card';
+import { PortfolioGrid } from '@/components/features/portfolios/portfolio-grid';
 import { Avatar } from '@/components/ui/avatar';
 import { BackLink } from '@/components/ui/back-link';
 import { Badge } from '@/components/ui/badge';
@@ -48,10 +48,8 @@ function PortfolioRow({ title, items }: { title: string; items: Portfolio[] }) {
   return (
     <section className="shell mt-20">
       <h2 className="font-display text-2xl font-semibold">{title}</h2>
-      <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
-          <PortfolioCard key={item.id} portfolio={item} />
-        ))}
+      <div className="mt-8">
+        <PortfolioGrid items={items} />
       </div>
     </section>
   );

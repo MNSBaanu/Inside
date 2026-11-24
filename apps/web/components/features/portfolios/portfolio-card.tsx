@@ -25,7 +25,7 @@ export function PortfolioCard({
   return (
     <Link
       href={`/portfolios/${portfolio.id}`}
-      className="group relative block aspect-[4/3] overflow-hidden rounded-card bg-sand shadow-card"
+      className="group relative block aspect-square overflow-hidden rounded-[10px] bg-sand shadow-card"
     >
       {cover ? (
         <Image
@@ -44,13 +44,13 @@ export function PortfolioCard({
       )}
 
       {portfolio.style ? (
-        <span className="absolute left-4 top-4 rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-ink backdrop-blur">
+        <span className="absolute right-3 top-3 rounded-[6px] border border-white/15 bg-brand/70 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
           {portfolio.style}
         </span>
       ) : null}
 
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-5 pb-5 pt-16 transition-colors duration-500 group-hover:from-black/90">
-        <h3 className="truncate font-display text-2xl font-semibold text-white">
+      <div className="absolute inset-x-0 bottom-0 border-t border-white/15 bg-brand-deep/60 px-4 py-3 backdrop-blur-md transition-colors duration-500 group-hover:bg-brand-deep/75">
+        <h3 className="truncate font-display text-xl font-semibold text-white">
           {portfolio.title}
         </h3>
         {meta.length > 0 ? (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { PortfolioCard } from '@/components/features/portfolios/portfolio-card';
+import { PortfolioGrid } from '@/components/features/portfolios/portfolio-grid';
 import { Pagination } from '@/components/ui/pagination';
 import { Combobox } from '@/components/ui/combobox';
 import { BareInput } from '@/components/ui/field';
@@ -142,11 +142,7 @@ export function ProjectsExplorer({
           </div>
         ) : data && data.items.length > 0 ? (
           <>
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {data.items.map((portfolio) => (
-                <PortfolioCard key={portfolio.id} portfolio={portfolio} />
-              ))}
-            </div>
+            <PortfolioGrid items={data.items} />
 
             <Pagination page={page} totalPages={totalPages} onPageChange={showPage} />
           </>
