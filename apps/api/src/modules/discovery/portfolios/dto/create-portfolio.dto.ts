@@ -1,11 +1,10 @@
-import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
+import { AddPortfolioImageDto } from './add-portfolio-image.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsNumber,
   IsOptional,
   IsString,
-  IsUrl,
   Max,
   MaxLength,
   Min,
@@ -14,26 +13,6 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { MAX_AMOUNT } from '../../../../common/money';
-
-export class CreatePortfolioImageDto {
-  @ApiProperty({ example: 'https://picsum.photos/seed/room/1200/800' })
-  @IsUrl({ require_tld: false })
-  @IsCloudinaryUrl()
-  imageUrl!: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(200)
-  caption?: string;
-
-  @ApiPropertyOptional({ default: 0 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  displayOrder?: number;
-}
 
 export class CreatePortfolioDto {
   @ApiProperty({ example: 'Scandinavian Living Room' })
@@ -73,9 +52,9 @@ export class CreatePortfolioDto {
   @IsBoolean()
   isPublished?: boolean;
 
-  @ApiPropertyOptional({ type: [CreatePortfolioImageDto] })
+  @ApiPropertyOptional({ type: [AddPortfolioImageDto] })
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => CreatePortfolioImageDto)
-  images?: CreatePortfolioImageDto[];
+  @Type(() => AddPortfolioImageDto)
+  images?: AddPortfolioImageDto[];
 }
