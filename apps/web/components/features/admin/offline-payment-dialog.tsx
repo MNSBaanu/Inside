@@ -10,7 +10,12 @@ import { Select } from '@/components/ui/select';
 import { api, errorMessage } from '@/lib/api/client';
 import { formatMoney } from '@/lib/utils/format';
 
-const today = () => new Date().toISOString().slice(0, 10);
+/** Today's date where the admin is, not in UTC (which lags in Sri Lanka until 05:30). */
+const today = () => {
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+};
 
 /** Admin records a milestone the client paid in cash or by bank transfer. */
 export function OfflinePaymentDialog({

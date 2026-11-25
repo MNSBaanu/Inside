@@ -284,7 +284,11 @@ export default function ProjectWorkspacePage({
         ) : null}
 
         {tab === 'Payments' ? (
-          <PaymentList projectId={params.id} isClient={isClient} />
+          <PaymentList
+            projectId={params.id}
+            isClient={isClient}
+            closed={item.status === 'COMPLETED' || item.status === 'CANCELLED'}
+          />
         ) : null}
 
         {tab === 'Messages' && user ? (

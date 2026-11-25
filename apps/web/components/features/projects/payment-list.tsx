@@ -31,9 +31,12 @@ const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 export function PaymentList({
   projectId,
   isClient,
+  closed = false,
 }: {
   projectId: string;
   isClient: boolean;
+  /** A completed or cancelled project takes no more payments. */
+  closed?: boolean;
 }) {
   const { data, error, loading, reload } = useApi<{
     items: MilestonePayment[];
@@ -137,7 +140,7 @@ export function PaymentList({
                   Invoice
                 </Button>
               ) : null}
-              {isClient && payment.status === 'PENDING' ? (
+              {isClient && !closed && payment.status === 'PENDING' ? (
                 <Button
                   size="sm"
                   disabled={pending === payment.id}
@@ -163,17 +166,22 @@ export function PaymentList({
           label={checkout.label}
           onPaid={async (intentId) => {
             try {
-              await api.patch(`/payments/${checkout.paymentId}/pay`, {
-                paymentIntentId: intentId,
-              });
-              await reload();
+              const result = await api.patch<{ payment: MilestonePayment }>(
+                `/payments/${checkout.paymentId}/pay`,
+                { paymentIntentId: intentId },
+              );
               setPaidMessage(
-                `Payment of ${checkout.amount} received. The designer can start this stage.`,
+                result?.payment?.status === 'REFUNDED'
+                  ? `This project was cancelled while you were paying, so your ${checkout.amount} payment was refunded to your card.`
+                  : `Payment of ${checkout.amount} received. The designer can start this stage.`,
               );
             } catch (cause) {
               setActionError(errorMessage(cause));
             } finally {
               setCheckout(null);
+              // Refresh either way: the card was charged, and the list picks
+              // up a payment the confirmation above failed to record.
+              await reload();
             }
           }}
           onClose={() => setCheckout(null)}
@@ -297,9 +305,20 @@ function CheckoutDialog({
     if (!stripe || !card || !canPay) return;
     setPaying(true);
     setMessage(null);
-    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: { card, billing_details: { name: name.trim() } },
-    });
+    let result: Awaited<ReturnType<Stripe['confirmCardPayment']>>;
+    try {
+      result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: { card, billing_details: { name: name.trim() } },
+      });
+    } catch {
+      // Lost connection mid-payment: the card may or may not have been charged.
+      setMessage(
+        'We lost the connection while paying. Close this and check your payments before trying again.',
+      );
+      setPaying(false);
+      return;
+    }
+    const { error, paymentIntent } = result;
     if (error) {
       setMessage(error.message ?? 'Payment failed. Try another card.');
       setPaying(false);
