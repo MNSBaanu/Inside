@@ -360,7 +360,6 @@ describe('Workspace flow (e2e)', () => {
       .send({
         targetType: 'USER',
         targetId: otherId,
-        reportedUserId: otherId,
         reason: 'Inappropriate behaviour',
       })
       .expect(201);
@@ -492,12 +491,22 @@ describe('Workspace flow (e2e)', () => {
       .set(authHeader(clientToken))
       .send({
         targetType: 'USER',
-        targetId: otherId,
-        reportedUserId: otherId,
+        targetId: designerId,
         reason: 'Admin queue test',
       })
       .expect(201);
     const reportId: string = filed.body.data.report.id;
+
+    // A second report of the same person is refused while the first is open
+    await request(app.getHttpServer())
+      .post('/reports')
+      .set(authHeader(clientToken))
+      .send({
+        targetType: 'USER',
+        targetId: designerId,
+        reason: 'Admin queue test again',
+      })
+      .expect(409);
 
     const openReports = await request(app.getHttpServer())
       .get('/admin/reports')
