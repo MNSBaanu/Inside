@@ -15,7 +15,10 @@ import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { paginate } from '../../../common/dto/pagination-query.dto';
-import { PaymentsService } from '../../delivery/payments/payments.service';
+import {
+  PaymentsService,
+  refundNote,
+} from '../../delivery/payments/payments.service';
 import { PrismaService } from '../../../database/prisma.service';
 import type {
   AdminCreateProductDto,
@@ -203,22 +206,14 @@ export class AdminManageService {
     ) {
       throw new BadRequestException('Project is already closed');
     }
-    const { refunded, offline } = await this.payments.cancelAndRefund(
+    const { refunded, failed, offline } = await this.payments.cancelAndRefund(
       project.id,
     );
-    const refundNote = [
-      refunded
-        ? `. ${refunded} paid milestone${refunded === 1 ? ' was' : 's were'} refunded`
-        : '',
-      offline
-        ? `. ${offline} milestone${offline === 1 ? '' : 's'} paid offline will be refunded by hand`
-        : '',
-    ].join('');
     return this.changeProjectStatus(admin, project, ProjectStatus.CANCELLED, {
       action: 'PROJECT_CANCELLED',
       title: 'Project cancelled',
-      message: `An administrator cancelled "${project.title}": ${reason}${refundNote}`,
-      metadata: { reason, refunded },
+      message: `An administrator cancelled "${project.title}": ${reason}${refundNote({ refunded, failed, offline })}`,
+      metadata: { reason, refunded, refundFailed: failed, offline },
     });
   }
 

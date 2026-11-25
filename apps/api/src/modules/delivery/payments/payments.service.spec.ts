@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import {
   PaymentMethod,
@@ -272,6 +273,27 @@ describe('PaymentsService', () => {
       ).rejects.toBeInstanceOf(BadRequestException);
     });
 
+    it("accepts today's date in Sri Lanka before it is today in UTC", async () => {
+      jest.useFakeTimers().setSystemTime(new Date('2026-11-24T20:30:00Z'));
+      try {
+        prisma.milestonePayment.findUnique.mockResolvedValue(
+          pendingWithProject,
+        );
+        prisma.milestonePayment.update.mockResolvedValue({
+          ...pendingPayment,
+          status: PaymentStatus.PAID,
+          method: PaymentMethod.CASH,
+        });
+        await service.recordOffline(admin, 'pay1', {
+          method: 'CASH',
+          paidOn: '2026-11-25',
+        });
+        expect(prisma.milestonePayment.update).toHaveBeenCalled();
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
     it('only marks offline payments on cancelled projects as refunded', async () => {
       prisma.milestonePayment.findUnique.mockResolvedValue({
         ...pendingPayment,
@@ -493,5 +515,84 @@ describe('PaymentsService', () => {
     await expect(
       service.markPaid(designer, 'pay1', { paymentIntentId: 'pi_1' }),
     ).rejects.toBeInstanceOf(ForbiddenException);
+  });
+
+  it('does not open a second checkout when the last one cannot be checked', async () => {
+    prisma.milestonePayment.findUnique.mockResolvedValue({
+      ...pendingPayment,
+      stripeIntentId: 'pi_1',
+    });
+    stripe.paymentIntents.retrieve.mockRejectedValueOnce(new Error('down'));
+    await expect(service.createCheckout(client, 'pay1')).rejects.toBeInstanceOf(
+      ServiceUnavailableException,
+    );
+    expect(stripe.paymentIntents.create).not.toHaveBeenCalled();
+    expect(prisma.milestonePayment.update).not.toHaveBeenCalled();
+  });
+
+  it('closes the old checkout before opening one for a new amount', async () => {
+    prisma.milestonePayment.findUnique.mockResolvedValue({
+      ...pendingPayment,
+      stripeIntentId: 'pi_old',
+    });
+    stripe.paymentIntents.retrieve.mockResolvedValue({
+      id: 'pi_old',
+      status: 'requires_payment_method',
+      amount: 100,
+      client_secret: 'cs_old',
+    });
+    stripe.paymentIntents.cancel.mockResolvedValue({});
+    stripe.paymentIntents.create.mockResolvedValue({
+      id: 'pi_new',
+      client_secret: 'cs_new',
+    });
+    const result = await service.createCheckout(client, 'pay1');
+    expect(stripe.paymentIntents.cancel).toHaveBeenCalledWith('pi_old');
+    expect(result.data.clientSecret).toBe('cs_new');
+  });
+
+  it('treats a confirmation for an already recorded payment as success', async () => {
+    prisma.milestonePayment.findUnique.mockResolvedValue({
+      ...pendingPayment,
+      status: PaymentStatus.PAID,
+      stripeIntentId: 'pi_1',
+    });
+    const result = await service.markPaid(client, 'pay1', {
+      paymentIntentId: 'pi_1',
+    });
+    expect(result.data.payment.status).toBe(PaymentStatus.PAID);
+    expect(stripe.paymentIntents.retrieve).not.toHaveBeenCalled();
+  });
+
+  it('records and refunds a card payment confirmed after the project was cancelled', async () => {
+    prisma.milestonePayment.findUnique.mockResolvedValue({
+      ...pendingPayment,
+      project: { ...pendingPayment.project, status: ProjectStatus.CANCELLED },
+    });
+    stripe.paymentIntents.retrieve.mockResolvedValue({
+      id: 'pi_1',
+      metadata: { paymentId: 'pay1' },
+      status: 'succeeded',
+    });
+    prisma.milestonePayment.update.mockResolvedValue({
+      ...pendingPayment,
+      status: PaymentStatus.PAID,
+      stripeIntentId: 'pi_1',
+    });
+    prisma.project.findUnique.mockResolvedValue({
+      status: ProjectStatus.CANCELLED,
+    });
+    prisma.milestonePayment.updateMany.mockResolvedValue({ count: 1 });
+    stripe.refunds.create.mockResolvedValue({});
+    prisma.milestonePayment.findUniqueOrThrow.mockResolvedValue({
+      ...pendingPayment,
+      status: PaymentStatus.REFUNDED,
+      stripeIntentId: 'pi_1',
+    });
+    const result = await service.markPaid(client, 'pay1', {
+      paymentIntentId: 'pi_1',
+    });
+    expect(stripe.refunds.create).toHaveBeenCalled();
+    expect(result.data.payment.status).toBe(PaymentStatus.REFUNDED);
   });
 });

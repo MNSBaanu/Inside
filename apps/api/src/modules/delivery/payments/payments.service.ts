@@ -26,6 +26,27 @@ import { PayPaymentDto } from './dto/pay-payment.dto';
 import type { AdminRecordOfflinePaymentDto } from '../../trust/admin/dto/admin-manage.dto';
 import { STRIPE } from './stripe.provider';
 
+/** How cancelling a project settled its paid milestones, for the people told. */
+export function refundNote(result: {
+  refunded: number;
+  failed: number;
+  offline: number;
+}) {
+  const count = (n: number, one: string, many: string) =>
+    `${n} ${n === 1 ? one : many}`;
+  return [
+    result.refunded
+      ? `. ${count(result.refunded, 'paid milestone was', 'paid milestones were')} refunded to the card`
+      : '',
+    result.failed
+      ? `. ${count(result.failed, 'card refund is', 'card refunds are')} delayed and the Inside team will retry ${result.failed === 1 ? 'it' : 'them'}`
+      : '',
+    result.offline
+      ? `. ${count(result.offline, 'milestone', 'milestones')} paid offline will be refunded by the Inside team`
+      : '',
+  ].join('');
+}
+
 @Injectable()
 export class PaymentsService {
   private readonly logger = new Logger(PaymentsService.name);
@@ -66,28 +87,37 @@ export class PaymentsService {
     const amount = Math.round(Number(payment.amount) * 100);
 
     if (payment.stripeIntentId) {
+      // If the last checkout can't be looked up, stop: starting a new one
+      // would forget it, and it may already have been paid.
       const existing = await stripe.paymentIntents
         .retrieve(payment.stripeIntentId)
-        .catch(() => null);
-      if (existing?.status === 'succeeded') {
+        .catch(() => {
+          throw new ServiceUnavailableException(
+            'Could not check your last payment for this milestone. Please try again shortly.',
+          );
+        });
+      if (existing.status === 'succeeded') {
         await this.recordPaid(payment, existing.id);
         return { success: true, data: { alreadyPaid: true } };
       }
-      if (existing?.status === 'processing') {
+      if (existing.status === 'processing') {
         throw new ConflictException(
           'Your last payment for this milestone is still processing. Check back in a few minutes.',
         );
       }
-      if (
-        existing &&
-        existing.status !== 'canceled' &&
-        existing.amount === amount &&
-        existing.client_secret
-      ) {
-        return {
-          success: true,
-          data: { clientSecret: existing.client_secret },
-        };
+      if (existing.status !== 'canceled') {
+        if (existing.amount === amount && existing.client_secret) {
+          return {
+            success: true,
+            data: { clientSecret: existing.client_secret },
+          };
+        }
+        // The amount changed: close the old checkout so it can't be paid too.
+        await stripe.paymentIntents.cancel(existing.id).catch(() => {
+          throw new ConflictException(
+            'Your last checkout for this milestone could not be closed. Refresh and check whether it was paid before trying again.',
+          );
+        });
       }
     }
 
@@ -106,8 +136,22 @@ export class PaymentsService {
     return { success: true, data: { clientSecret: intent.client_secret } };
   }
 
+  /**
+   * The client's browser confirms a card payment Stripe took. This still
+   * records it on a cancelled project, which refunds it straight away, and a
+   * payment already recorded from Stripe's side is not an error.
+   */
   async markPaid(user: AuthUser, id: string, dto: PayPaymentDto) {
-    const payment = await this.requirePendingForClient(user, id);
+    const payment = await this.requirePayment(id);
+    if (payment.project.clientId !== user.id) {
+      throw new ForbiddenException('Only the client can pay this milestone');
+    }
+    if (payment.status !== PaymentStatus.PENDING) {
+      if (payment.stripeIntentId === dto.paymentIntentId) {
+        return { success: true, data: { payment: this.serialize(payment) } };
+      }
+      throw new BadRequestException('Payment is not pending');
+    }
     const stripe = this.requireStripe();
 
     const intent = await stripe.paymentIntents
@@ -120,10 +164,17 @@ export class PaymentsService {
     }
 
     const updated = await this.recordPaid(payment, intent.id);
-    if (!updated) {
-      throw new ConflictException('This payment was already recorded');
+    if (updated) {
+      return { success: true, data: { payment: this.serialize(updated) } };
     }
-    return { success: true, data: { payment: this.serialize(updated) } };
+    // Recorded a moment ago by another request for this same payment.
+    const current = await this.prisma.milestonePayment.findUniqueOrThrow({
+      where: { id },
+    });
+    if (current.stripeIntentId === intent.id) {
+      return { success: true, data: { payment: this.serialize(current) } };
+    }
+    throw new ConflictException('This payment was already recorded');
   }
 
   /**
@@ -538,7 +589,11 @@ export class PaymentsService {
       throw new BadRequestException('This project is closed');
     }
     const paidAt = new Date(dto.paidOn);
-    if (paidAt.getTime() > Date.now()) {
+    // A plain date like 2026-11-25 reads as midnight UTC, which is still ahead
+    // of "now" for the first hours of that day east of UTC (05:30 in Sri
+    // Lanka). Allow any date that is already today somewhere.
+    const latestToday = Date.now() + 14 * 60 * 60 * 1000;
+    if (Number.isNaN(paidAt.getTime()) || paidAt.getTime() > latestToday) {
       throw new BadRequestException('The payment date cannot be in the future');
     }
 

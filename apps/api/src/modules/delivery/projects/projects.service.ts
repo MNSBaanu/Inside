@@ -18,7 +18,7 @@ import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
-import { PaymentsService } from '../payments/payments.service';
+import { PaymentsService, refundNote } from '../payments/payments.service';
 
 const projectInclude = {
   stages: { orderBy: { stageOrder: 'asc' } },
@@ -319,13 +319,14 @@ export class ProjectsService {
       include: projectInclude,
     });
 
-    const otherId =
-      user.id === project.clientId ? project.designerId : project.clientId;
+    const byClient = user.id === project.clientId;
+    const otherId = byClient ? project.designerId : project.clientId;
     await this.notifications.notify({
       userId: otherId,
       type: NotificationType.PROJECT,
       title: 'Project cancelled',
-      message: `Project "${project.title}" was cancelled: ${reason}`,
+      // The client is told what happens to their money when the designer cancels.
+      message: `Project "${project.title}" was cancelled: ${reason}${byClient ? '' : refundNote({ refunded, failed, offline })}`,
       metadata: { projectId: id },
     });
 
