@@ -63,22 +63,26 @@ export class BriefAssistantService {
     const configured = this.config.get<string>('GEMINI_MODEL')?.trim();
     const models = [
       ...new Set([
-        configured || 'gemini-flash-latest',
+        configured || 'gemini-3.5-flash',
         'gemini-flash-lite-latest',
-        'gemini-2.5-flash-lite',
-        'gemini-3.5-flash',
+        'gemini-3.5-flash-lite',
+        'gemini-flash-latest',
       ]),
     ];
 
     let payload: unknown;
-    for (const model of models) {
-      try {
-        payload = await this.request(key, model, text);
-        break;
-      } catch (error) {
-        this.logger.warn(
-          `Brief assistant request failed on ${model}: ${error instanceof Error ? error.message : 'unknown'}`,
-        );
+    attempts: for (const model of models) {
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          payload = await this.request(key, model, text);
+          break attempts;
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'unknown';
+          this.logger.warn(
+            `Brief assistant request failed on ${model}: ${message}`,
+          );
+          if (message !== 'status 503' && message !== 'status 429') break;
+        }
       }
     }
     if (payload === undefined) {
