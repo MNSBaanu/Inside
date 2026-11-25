@@ -109,6 +109,9 @@ describe('AdminImportService', () => {
       },
     ]);
     expect(data.failed).toBe(1);
+    expect(data.errors[0].message).toBe(
+      'Image URL must be an image already uploaded to Cloudinary.',
+    );
     expect(manage.createProduct).not.toHaveBeenCalled();
   });
 });

@@ -98,6 +98,12 @@ export const api = {
 
 export function errorMessage(error: unknown) {
   if (error instanceof ApiError) return error.message;
+  if (
+    error instanceof TypeError &&
+    /failed to fetch|networkerror|load failed/i.test(error.message)
+  ) {
+    return "Can't reach Inside right now. Check your connection and try again.";
+  }
   if (error instanceof Error) return error.message;
   return 'Something went wrong. Please try again.';
 }

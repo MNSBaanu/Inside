@@ -31,6 +31,19 @@ const text = (value: unknown) =>
       ? String(value)
       : '';
 
+const COLUMN_LABELS: Record<string, string> = {
+  name: 'Name',
+  email: 'Email',
+  role: 'Role',
+  description: 'Description',
+  category: 'Category',
+  style: 'Style',
+  price: 'Price',
+  sellerName: 'Seller name',
+  sellerUrl: 'Seller URL',
+  isPublished: 'Published',
+};
+
 const truthy = (value: unknown) =>
   !['no', 'n', 'false', '0', 'hidden', 'unpublished'].includes(
     text(value).toLowerCase(),
@@ -54,8 +67,19 @@ export class AdminImportService {
     const problems = await validate(value, { whitelist: true });
     if (problems.length === 0) return { value };
     const first = problems[0];
+    if (first.property === 'imageUrl') {
+      return {
+        message: text(row.imageUrl)
+          ? 'Image URL must be an image already uploaded to Cloudinary.'
+          : 'Image URL is missing.',
+      };
+    }
+    const label = COLUMN_LABELS[first.property] ?? first.property;
+    const problem = Object.values(first.constraints ?? {})[0];
     return {
-      message: `${first.property}: ${Object.values(first.constraints ?? {})[0] ?? 'invalid'}`,
+      message: problem
+        ? `${problem.replace(first.property, label)}.`
+        : `${label} is not valid.`,
     };
   }
 
@@ -129,6 +153,14 @@ export class AdminImportService {
 
     for (const [index, raw] of rows.entries()) {
       const line = index + 2;
+      if (!/^\d+(\.\d{1,2})?$/.test(text(raw.price).replace(/,/g, ''))) {
+        result.failed++;
+        result.errors.push({
+          row: line,
+          message: 'Price must be a number in LKR, for example 185000.',
+        });
+        continue;
+      }
       const { value, message } = await this.firstError(AdminCreateProductDto, {
         name: text(raw.name),
         description: text(raw.description),
