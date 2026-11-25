@@ -64,6 +64,7 @@ vi.mock('@/components/providers/session-provider', () => ({
 }));
 
 vi.mock('@/components/features/projects/message-thread', () => ({
+  CHAT_PANEL_HEIGHT: '',
   MessageThread: ({ projectId }: { projectId: string }) => (
     <div data-testid="open-thread">{projectId}</div>
   ),
