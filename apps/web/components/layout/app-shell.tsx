@@ -51,40 +51,112 @@ type NavItem = {
   href: string;
   label: string;
   icon: LucideIcon;
-  roles?: Role[];
   exact?: boolean;
 };
 
-const members: Role[] = ['CLIENT', 'DESIGNER'];
+/** A run of sidebar links shown together, split from the next by a divider. */
+type NavGroup = { label: string; items: NavItem[] };
 
-const footerHrefs = ['/account', '/safety'];
+/**
+ * Each role's sidebar. The second group follows that role's own flow in order;
+ * anything outside the flow sits in its own group after it.
+ */
+const navigation: Record<Role, NavGroup[]> = {
+  CLIENT: [
+    {
+      label: 'Home',
+      items: [{ href: '/dashboard', label: 'Overview', icon: LayoutDashboard }],
+    },
+    {
+      // Find designers, collect ideas, describe the job, hire, then work together.
+      label: 'Your project, step by step',
+      items: [
+        { href: '/favourites', label: 'Saved', icon: Heart },
+        { href: '/moodboards', label: 'Moodboards', icon: Images },
+        { href: '/briefs', label: 'Briefs', icon: FileText },
+        { href: '/requests', label: 'Requests', icon: Inbox },
+        { href: '/projects', label: 'Projects', icon: FolderKanban },
+      ],
+    },
+  ],
+  DESIGNER: [
+    {
+      label: 'Home',
+      items: [{ href: '/dashboard', label: 'Overview', icon: LayoutDashboard }],
+    },
+    {
+      // Win the work, deliver it, keep on top of due dates.
+      label: 'Your work, step by step',
+      items: [
+        { href: '/requests', label: 'Requests', icon: Inbox },
+        { href: '/projects', label: 'Projects', icon: FolderKanban },
+        { href: '/schedule', label: 'Schedule', icon: CalendarDays },
+      ],
+    },
+    {
+      // What clients see before they hire you.
+      label: 'Your profile',
+      items: [
+        { href: '/portfolios/manage', label: 'My work', icon: Palette },
+        { href: '/verification', label: 'Verification', icon: BadgeCheck },
+      ],
+    },
+  ],
+  ADMIN: [
+    {
+      label: 'Home',
+      items: [{ href: '/admin', label: 'Overview', icon: LayoutDashboard, exact: true }],
+    },
+    {
+      // The marketplace in the order it happens: people join, designers are
+      // verified, requests come in, projects run, clients review.
+      label: 'Marketplace, step by step',
+      items: [
+        { href: '/admin/users', label: 'Users', icon: Users },
+        { href: '/admin/verifications', label: 'Verifications', icon: ShieldCheck },
+        { href: '/admin/open-projects', label: 'Open projects', icon: Megaphone },
+        { href: '/admin/projects', label: 'Projects', icon: FolderKanban },
+        { href: '/admin/reviews', label: 'Reviews', icon: Star },
+      ],
+    },
+    {
+      label: 'Moderation',
+      items: [{ href: '/admin/reports', label: 'Reports', icon: Flag }],
+    },
+    {
+      label: 'Outreach',
+      items: [
+        { href: '/admin/announcements', label: 'Announce', icon: Radio },
+        { href: '/admin/newsletter', label: 'Newsletter', icon: Newspaper },
+        { href: '/admin/contact', label: 'Contact', icon: Mail },
+      ],
+    },
+    {
+      label: 'Store',
+      items: [{ href: '/admin/shop', label: 'Shop', icon: ShoppingBag }],
+    },
+    {
+      label: 'Insights',
+      items: [
+        { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+        { href: '/admin/activity', label: 'Activity', icon: Activity },
+      ],
+    },
+  ],
+};
 
-const navigation: NavItem[] = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, roles: members },
-  { href: '/favourites', label: 'Saved', icon: Heart, roles: ['CLIENT'] },
-  { href: '/moodboards', label: 'Moodboards', icon: Images, roles: ['CLIENT'] },
-  { href: '/briefs', label: 'Briefs', icon: FileText, roles: ['CLIENT'] },
-  { href: '/requests', label: 'Requests', icon: Inbox, roles: members },
-  { href: '/projects', label: 'Projects', icon: FolderKanban, roles: members },
-  { href: '/schedule', label: 'Schedule', icon: CalendarDays, roles: ['DESIGNER'] },
-  { href: '/portfolios/manage', label: 'My work', icon: Palette, roles: ['DESIGNER'] },
-  { href: '/verification', label: 'Verification', icon: BadgeCheck, roles: ['DESIGNER'] },
-  { href: '/admin', label: 'Overview', icon: LayoutDashboard, roles: ['ADMIN'], exact: true },
-  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3, roles: ['ADMIN'] },
-  { href: '/admin/users', label: 'Users', icon: Users, roles: ['ADMIN'] },
-  { href: '/admin/projects', label: 'Projects', icon: FolderKanban, roles: ['ADMIN'] },
-  { href: '/admin/open-projects', label: 'Open projects', icon: Megaphone, roles: ['ADMIN'] },
-  { href: '/admin/shop', label: 'Shop', icon: ShoppingBag, roles: ['ADMIN'] },
-  { href: '/admin/verifications', label: 'Verifications', icon: ShieldCheck, roles: ['ADMIN'] },
-  { href: '/admin/reports', label: 'Reports', icon: Flag, roles: ['ADMIN'] },
-  { href: '/admin/reviews', label: 'Reviews', icon: Star, roles: ['ADMIN'] },
-  { href: '/admin/contact', label: 'Contact', icon: Mail, roles: ['ADMIN'] },
-  { href: '/admin/announcements', label: 'Announce', icon: Radio, roles: ['ADMIN'] },
-  { href: '/admin/newsletter', label: 'Newsletter', icon: Newspaper, roles: ['ADMIN'] },
-  { href: '/admin/activity', label: 'Activity', icon: Activity, roles: ['ADMIN'] },
-  { href: '/account', label: 'Account', icon: UserRound },
-  { href: '/safety', label: 'Safety', icon: LifeBuoy, roles: members },
-];
+/** Account and help, kept at the foot of the sidebar for every role. */
+const footer: Record<Role, NavItem[]> = {
+  CLIENT: [
+    { href: '/account', label: 'Account', icon: UserRound },
+    { href: '/safety', label: 'Safety', icon: LifeBuoy },
+  ],
+  DESIGNER: [
+    { href: '/account', label: 'Account', icon: UserRound },
+    { href: '/safety', label: 'Safety', icon: LifeBuoy },
+  ],
+  ADMIN: [{ href: '/account', label: 'Account', icon: UserRound }],
+};
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, status, logout } = useSession();
@@ -103,13 +175,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return <ShellLoading />;
   }
 
-  const items = navigation.filter(
-    (item) => !item.roles || item.roles.includes(user.activeRole),
-  );
+  const groups = navigation[user.activeRole] ?? [];
+  const footerItems = footer[user.activeRole] ?? [];
   const isActive = (item: NavItem) =>
     pathname === item.href || (!item.exact && pathname.startsWith(`${item.href}/`));
-  const mainItems = items.filter((item) => !footerHrefs.includes(item.href));
-  const footerItems = items.filter((item) => footerHrefs.includes(item.href));
 
   async function onSignOut() {
     signingOut.current = true;
@@ -120,7 +189,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="lg:pl-[88px]">
       <div className="shell page flex flex-col gap-8 lg:pt-24">
-        <aside className="flex min-w-0 items-center gap-3 rounded-card bg-ink p-2 text-canvas [scrollbar-width:none] lg:fixed lg:inset-y-0 lg:left-0 lg:z-[60] lg:w-[88px] lg:flex-col lg:gap-0 lg:overflow-hidden lg:rounded-none lg:px-2 lg:py-5 [&::-webkit-scrollbar]:hidden">
+        <aside className="flex min-w-0 items-center gap-3 overflow-x-auto rounded-card bg-ink p-2 text-canvas [scrollbar-width:none] lg:fixed lg:inset-y-0 lg:left-0 lg:z-[60] lg:w-[88px] lg:flex-col lg:gap-0 lg:overflow-hidden lg:rounded-none lg:px-2 lg:py-5 [&::-webkit-scrollbar]:hidden">
           <Link
             href="/"
             aria-label="Inside - home"
@@ -129,19 +198,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Image src="/logo.png" alt="" width={226} height={265} className="h-7 w-auto invert" />
           </Link>
 
-          <nav className="flex flex-1 gap-0.5 overflow-x-auto [scrollbar-width:none] lg:min-h-0 lg:w-full lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden [&::-webkit-scrollbar]:hidden">
-            {mainItems.map((item) => (
-              <RailLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                icon={item.icon}
-                active={isActive(item)}
-              />
+          <nav className="flex shrink-0 gap-0.5 [scrollbar-width:none] lg:min-h-0 lg:flex-1 lg:shrink lg:w-full lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden [&::-webkit-scrollbar]:hidden">
+            {groups.map((group, index) => (
+              <div
+                key={group.label}
+                role="group"
+                aria-label={group.label}
+                className={cn(
+                  'flex shrink-0 gap-0.5 lg:w-full lg:flex-col',
+                  // A thin divider between groups: vertical on the phone bar, horizontal on the rail.
+                  index > 0 &&
+                    'ml-1 border-l border-canvas/10 pl-1 lg:ml-0 lg:mt-2 lg:border-l-0 lg:border-t lg:pl-0 lg:pt-2',
+                )}
+              >
+                {group.items.map((item) => (
+                  <RailLink
+                    key={item.href}
+                    href={item.href}
+                    label={item.label}
+                    icon={item.icon}
+                    active={isActive(item)}
+                  />
+                ))}
+              </div>
             ))}
           </nav>
 
-          <div className="flex shrink-0 gap-0.5 lg:mt-3 lg:w-full lg:flex-col lg:border-t lg:border-canvas/10 lg:pt-3">
+          <div className="flex shrink-0 gap-0.5 border-l border-canvas/10 pl-1 lg:mt-3 lg:w-full lg:flex-col lg:border-l-0 lg:border-t lg:pl-0 lg:pt-3">
             {user.role === 'DESIGNER' && user.hasClientAccount ? <RoleSwitch activeRole={user.activeRole} /> : null}
             {footerItems.map((item) => (
               <RailLink
