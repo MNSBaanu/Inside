@@ -164,6 +164,8 @@ model User {
   blocksReceived     Block[]            @relation("BlockBlocked")
   activityLogs       ActivityLog[]
   adminInvitesSent   AdminInvite[]      @relation("AdminInviteSender")
+  supportThread      SupportMessage[]   @relation("SupportThread")
+  supportSent        SupportMessage[]   @relation("SupportSender")
 
   @@index([role])
   @@index([activeRole])
@@ -470,6 +472,25 @@ model Message {
   @@index([senderId])
   @@index([receiverId])
   @@index([receiverId, isRead])
+}
+
+model SupportMessage {
+  id             String    @id @default(uuid())
+  userId         String
+  senderId       String
+  fromAdmin      Boolean
+  content        String
+  attachmentUrl  String?
+  attachmentType String?
+  isRead         Boolean   @default(false)
+  readAt         DateTime?
+  sentAt         DateTime  @default(now())
+
+  user   User @relation("SupportThread", fields: [userId], references: [id], onDelete: Cascade)
+  sender User @relation("SupportSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([userId, sentAt])
+  @@index([fromAdmin, isRead])
 }
 
 model Review {

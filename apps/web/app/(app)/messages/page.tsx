@@ -5,30 +5,32 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { MessageThread } from '@/components/features/projects/message-thread';
+import {
+  AdminSupportInbox,
+  SUPPORT_PARTY,
+  SupportRow,
+  shortTime,
+} from '@/components/features/support/support-inbox';
 import { useSession } from '@/components/providers/session-provider';
 import { Avatar } from '@/components/ui/avatar';
-import { ButtonLink } from '@/components/ui/button';
-import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
+import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { useApi } from '@/lib/api/use-api';
+import { useSocketEvent } from '@/lib/realtime/socket';
 import type { ProjectListItem } from '@/lib/types';
 import { cn } from '@/lib/utils/cn';
 
-function shortTime(iso: string) {
-  const date = new Date(iso);
-  const now = new Date();
-  if (date.toDateString() === now.toDateString()) {
-    return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
-  }
-  const days = (now.getTime() - date.getTime()) / 86_400_000;
-  if (days < 7) return date.toLocaleDateString(undefined, { weekday: 'short' });
-  return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-}
-
 function Inbox() {
   const { user } = useSession();
+  if (user?.role === 'ADMIN') return <AdminSupportInbox adminId={user.id} />;
+  return <PeopleInbox />;
+}
+
+function PeopleInbox() {
+  const { user } = useSession();
   const searchParams = useSearchParams();
-  const { data, error, loading } = useApi<{ items: ProjectListItem[] }>('/projects');
+  const { data, error, loading, refresh } = useApi<{ items: ProjectListItem[] }>('/projects');
+  useSocketEvent('conversation:updated', () => void refresh());
   const [query, setQuery] = useState('');
 
   const threads = [...(data?.items ?? [])].sort((a, b) => {
@@ -47,8 +49,10 @@ function Inbox() {
   );
 
   const chosenId = searchParams.get('project');
+  const supportOpen = searchParams.get('support') === '1';
   const open = threads.find((project) => project.id === chosenId) ?? null;
-  const selected = open ?? threads[0] ?? null;
+  const selected = supportOpen ? null : (open ?? threads[0] ?? null);
+  const showSupport = supportOpen || !selected;
 
   if (loading) {
     return (
@@ -59,22 +63,13 @@ function Inbox() {
     );
   }
   if (error) return <ErrorNotice message={error} />;
-  if (threads.length === 0) {
-    return (
-      <EmptyState
-        title="No conversations yet."
-        description="Once a project starts, you can message the other party here."
-        action={<ButtonLink href="/projects">View projects</ButtonLink>}
-      />
-    );
-  }
 
   return (
     <div className="grid gap-4 lg:grid-cols-[22rem_minmax(0,1fr)]">
       <aside
         className={cn(
           'flex h-[min(72vh,680px)] flex-col overflow-hidden rounded-card border border-hairline bg-surface',
-          open && 'hidden lg:flex',
+          (open || supportOpen) && 'hidden lg:flex',
         )}
       >
         <div className="border-b border-hairline p-3">
@@ -94,6 +89,9 @@ function Inbox() {
           </div>
         </div>
         <ul className="flex-1 overflow-y-auto">
+          <li>
+            <SupportRow active={showSupport} />
+          </li>
           {visible.map((project) => {
             const partner = partnerOf(project);
             const unread = project.unreadCount > 0;
@@ -150,10 +148,37 @@ function Inbox() {
             );
           })}
           {visible.length === 0 ? (
-            <li className="px-4 py-8 text-center text-sm text-muted">No conversations match.</li>
+            <li className="px-4 py-8 text-center text-sm text-muted">
+              {threads.length === 0
+                ? 'Project chats appear here once a project starts.'
+                : 'No conversations match.'}
+            </li>
           ) : null}
         </ul>
       </aside>
+
+      {showSupport && user ? (
+        <MessageThread
+          key="support"
+          projectId={`support:${user.id}`}
+          basePath="/support/messages"
+          projectRoom={false}
+          currentUserId={user.id}
+          partner={SUPPORT_PARTY}
+          subtitle="The Inside team usually replies within a day"
+          emptyHint="Questions about your account, a project or a payment? Ask here."
+          className={cn(!supportOpen && 'hidden lg:flex')}
+          headerStart={
+            <Link
+              href="/messages"
+              aria-label="Back to conversations"
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-ink hover:bg-sand lg:hidden"
+            >
+              <ChevronLeft aria-hidden className="h-5 w-5" />
+            </Link>
+          }
+        />
+      ) : null}
 
       {selected && user ? (
         <MessageThread

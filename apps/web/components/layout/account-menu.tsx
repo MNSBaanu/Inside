@@ -36,10 +36,17 @@ function useUnreadCounts() {
     void reloadNotifications();
     if (event.type === 'MESSAGE') void reloadProjects();
   });
+  const support = useApi<{ unreadCount: number }>('/support/summary');
+  useSocketEvent('conversation:updated', () => {
+    void projects.refresh();
+    void support.refresh();
+  });
 
   return {
     alerts: notifications.data?.items.filter((item) => item.readAt === null).length ?? 0,
-    messages: projects.data?.items.reduce((sum, item) => sum + item.unreadCount, 0) ?? 0,
+    messages:
+      (projects.data?.items.reduce((sum, item) => sum + item.unreadCount, 0) ?? 0) +
+      (support.data?.unreadCount ?? 0),
   };
 }
 

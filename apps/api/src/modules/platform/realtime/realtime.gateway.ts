@@ -9,7 +9,13 @@ import {
 import type { Server, Socket } from 'socket.io';
 import { PrismaService } from '../../../database/prisma.service';
 import { AuthService } from '../../identity/auth/auth.service';
-import { RealtimeService, projectRoom, userRoom } from './realtime.service';
+import { Role } from '@inside/database';
+import {
+  ADMINS_ROOM,
+  RealtimeService,
+  projectRoom,
+  userRoom,
+} from './realtime.service';
 
 type SocketUser = { id: string; name: string };
 
@@ -47,6 +53,7 @@ export class RealtimeGateway implements OnGatewayInit {
     const user = await this.auth.authenticateToken(token);
     socketData(socket).user = { id: user.id, name: user.name };
     await socket.join(userRoom(user.id));
+    if (user.role === Role.ADMIN) await socket.join(ADMINS_ROOM);
   }
 
   @SubscribeMessage('project:join')

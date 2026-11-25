@@ -98,7 +98,8 @@ describe('MessagesPage', () => {
     render(<MessagesPage />);
 
     const links = screen.getAllByRole('link');
-    expect(links[0]).toHaveTextContent('Kandy villa');
-    expect(links[1]).toHaveTextContent('Colombo apartment');
+    expect(links[0]).toHaveTextContent('Inside support');
+    expect(links[1]).toHaveTextContent('Kandy villa');
+    expect(links[2]).toHaveTextContent('Colombo apartment');
   });
 });

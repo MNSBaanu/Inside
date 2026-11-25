@@ -3,6 +3,7 @@ import type { Server } from 'socket.io';
 
 export const projectRoom = (projectId: string) => `project:${projectId}`;
 export const userRoom = (userId: string) => `user:${userId}`;
+export const ADMINS_ROOM = 'admins';
 
 /** Pushes events to connected browsers. Does nothing until the gateway starts. */
 @Injectable()
@@ -19,5 +20,9 @@ export class RealtimeService {
 
   toUser(userId: string, event: string, payload: unknown) {
     this.server?.to(userRoom(userId)).emit(event, payload);
+  }
+
+  toAdmins(event: string, payload: unknown) {
+    this.server?.to(ADMINS_ROOM).emit(event, payload);
   }
 }

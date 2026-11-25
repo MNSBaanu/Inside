@@ -53,6 +53,9 @@ export function MessageThread({
   headerStart,
   headerAction,
   className,
+  basePath = `/projects/${projectId}/messages`,
+  projectRoom = true,
+  emptyHint = 'Say hello. Everything you agree here stays attached to the project.',
 }: {
   projectId: string;
   currentUserId: string;
@@ -61,11 +64,14 @@ export function MessageThread({
   headerStart?: ReactNode;
   headerAction?: ReactNode;
   className?: string;
+  basePath?: string;
+  projectRoom?: boolean;
+  emptyHint?: string;
 }) {
   const { data, error, loading, reload } = useApi<{
     items: Message[];
     total?: number;
-  }>(`/projects/${projectId}/messages`);
+  }>(basePath);
 
   const [content, setContent] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
@@ -98,15 +104,16 @@ export function MessageThread({
     if (!unreadForMe || markingRef.current) return;
     markingRef.current = true;
     void api
-      .patch(`/projects/${projectId}/messages/read-all`, {})
+      .patch(`${basePath}/read-all`, {})
       .then(() => reload())
       .catch(() => undefined)
       .finally(() => {
         markingRef.current = false;
       });
-  }, [unreadForMe, projectId, reload]);
+  }, [unreadForMe, basePath, reload]);
 
   useEffect(() => {
+    if (!projectRoom) return;
     const socket = getSocket();
     const join = () => socket.emit('project:join', { projectId });
     socket.on('connect', join);
@@ -115,7 +122,7 @@ export function MessageThread({
       socket.off('connect', join);
       socket.emit('project:leave', { projectId });
     };
-  }, [projectId]);
+  }, [projectId, projectRoom]);
 
   useSocketEvent<Message>('message:new', (message) => {
     if (message.projectId !== projectId) return;
@@ -153,7 +160,7 @@ export function MessageThread({
       box.style.height = `${Math.min(box.scrollHeight, 140)}px`;
     }
     const now = Date.now();
-    if (value.trim() && now - lastTypingSent.current > 2000) {
+    if (projectRoom && value.trim() && now - lastTypingSent.current > 2000) {
       lastTypingSent.current = now;
       getSocket().emit('typing', { projectId });
     }
@@ -186,7 +193,7 @@ export function MessageThread({
     setSendError(null);
     setSending(true);
     try {
-      await api.post(`/projects/${projectId}/messages`, {
+      await api.post(basePath, {
         content: content.trim() || attachment?.fileName,
         ...(attachment
           ? {
@@ -214,7 +221,7 @@ export function MessageThread({
     const fromBottom = box ? box.scrollHeight - box.scrollTop : 0;
     try {
       const page = await api.get<{ items: Message[] }>(
-        `/projects/${projectId}/messages?page=${olderPage}`,
+        `${basePath}?page=${olderPage}`,
       );
       setOlder((current) => [...page.items, ...current]);
       setOlderPage((value) => value + 1);
@@ -281,9 +288,7 @@ export function MessageThread({
               <MessageCircle aria-hidden className="h-6 w-6" />
             </span>
             <p className="mt-3 font-semibold text-ink">No messages yet</p>
-            <p className="mt-1 max-w-xs text-sm">
-              Say hello. Everything you agree here stays attached to the project.
-            </p>
+            <p className="mt-1 max-w-xs text-sm">{emptyHint}</p>
           </div>
         ) : (
           <ol className="flex flex-col">
