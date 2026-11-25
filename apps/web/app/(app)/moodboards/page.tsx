@@ -124,6 +124,12 @@ export default function MoodboardsPage() {
         eyebrow="Moodboards"
         title="Collect what you like."
         description="Save images that capture the feeling you want, then turn a board into a brief so designers can see them."
+        action={
+          <Button size="lg" onClick={() => setCreating(true)}>
+            <Plus aria-hidden className="h-4 w-4" />
+            Create
+          </Button>
+        }
       />
 
       {actionError ? (
@@ -188,10 +194,6 @@ export default function MoodboardsPage() {
             className="pl-10"
           />
         </div>
-        <Button size="lg" onClick={() => setCreating(true)}>
-          <Plus aria-hidden className="h-4 w-4" />
-          Create
-        </Button>
       </div>
 
       <div className="mt-8">

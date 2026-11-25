@@ -26,28 +26,29 @@ export default async function ExplorePage({
         eyebrow="Explore"
         title="Rooms to love, designers to hire."
         description="Browse finished projects for ideas, or look for a designer directly."
+        action={(
+        <nav
+          aria-label="Explore sections"
+          className="inline-flex rounded-pill border border-hairline bg-surface p-1"
+        >
+          {tabs.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              aria-current={tab === item.id ? 'page' : undefined}
+              className={cn(
+                'rounded-pill px-6 py-2.5 text-sm font-semibold transition-colors duration-200',
+                tab === item.id
+                  ? 'bg-brand text-canvas'
+                  : 'text-ink/70 hover:text-brand',
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        )}
       />
-
-      <nav
-        aria-label="Explore sections"
-        className="mt-8 inline-flex rounded-pill border border-hairline bg-surface p-1"
-      >
-        {tabs.map((item) => (
-          <Link
-            key={item.id}
-            href={item.href}
-            aria-current={tab === item.id ? 'page' : undefined}
-            className={cn(
-              'rounded-pill px-6 py-2.5 text-sm font-semibold transition-colors duration-200',
-              tab === item.id
-                ? 'bg-brand text-canvas'
-                : 'text-ink/70 hover:text-brand',
-            )}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
 
       <div className="mt-8">
         {tab === 'designers' ? (
