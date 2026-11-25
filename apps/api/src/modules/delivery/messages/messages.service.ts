@@ -76,6 +76,9 @@ export class MessagesService {
 
     const message = this.serialize(created);
     this.realtime?.toProject(projectId, 'message:new', message);
+    for (const userId of [user.id, receiverId]) {
+      this.realtime?.toUser(userId, 'conversation:updated', { projectId });
+    }
     return { success: true, data: { message } };
   }
 
@@ -98,6 +101,9 @@ export class MessagesService {
       projectId: updated.projectId,
       readerId: user.id,
     });
+    this.realtime?.toUser(user.id, 'conversation:updated', {
+      projectId: updated.projectId,
+    });
     return { success: true, data: { message: this.serialize(updated) } };
   }
 
@@ -112,6 +118,7 @@ export class MessagesService {
         projectId,
         readerId: user.id,
       });
+      this.realtime?.toUser(user.id, 'conversation:updated', { projectId });
     }
     return { success: true, data: { updated: result.count } };
   }

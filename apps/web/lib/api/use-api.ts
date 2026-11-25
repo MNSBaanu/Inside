@@ -72,12 +72,15 @@ export function useApi<T>(path: string | null) {
     await fetchData();
   }, [path, fetchData]);
 
+  const refresh = useCallback(() => fetchData(undefined, true), [fetchData]);
+
   const current = path !== null && state.path === path;
   return {
     data: current ? state.data : null,
     error: current ? state.error : null,
     loading: path !== null && (!current || state.loading),
     reload,
+    refresh,
   };
 }
 
