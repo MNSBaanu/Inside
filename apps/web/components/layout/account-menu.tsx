@@ -32,8 +32,12 @@ function useUnreadCounts() {
     return () => window.removeEventListener('inside:notifications-changed', onChange);
   }, [reloadNotifications]);
 
-  useSocketEvent<{ type: string }>('notification:new', (event) => {
+  const toast = useToast();
+  useSocketEvent<{ type: string; title?: string }>('notification:new', (event) => {
     void reloadNotifications();
+    if (event.title && !(event.type === 'MESSAGE' && pathname.startsWith('/messages'))) {
+      toast(event.title);
+    }
     if (event.type === 'MESSAGE') void reloadProjects();
   });
   const support = useApi<{ unreadCount: number }>('/support/summary');
