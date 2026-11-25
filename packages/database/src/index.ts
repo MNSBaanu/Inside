@@ -21,5 +21,6 @@ export {
   ContactStatus,
   AnnouncementAudience,
   AnnouncementTone,
+  WorkLogType,
 } from '@prisma/client';
 export type * from '@prisma/client';

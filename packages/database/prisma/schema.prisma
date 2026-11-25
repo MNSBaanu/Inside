@@ -166,6 +166,7 @@ model User {
   adminInvitesSent   AdminInvite[]      @relation("AdminInviteSender")
   supportThread      SupportMessage[]   @relation("SupportThread")
   supportSent        SupportMessage[]   @relation("SupportSender")
+  workLogs           WorkLog[]          @relation("WorkLogAuthor")
 
   @@index([role])
   @@index([activeRole])
@@ -365,6 +366,7 @@ model Project {
   messages     Message[]
   reviews      Review[]
   activityLogs ActivityLog[]
+  workLogs     WorkLog[]
 
   @@index([clientId])
   @@index([designerId])
@@ -389,6 +391,8 @@ model ProjectStage {
   deliverables Deliverable[]
   payments     MilestonePayment[]
   tasks        Task[]
+  notes        StageNote[]
+  workLogs     WorkLog[]
 
   @@unique([projectId, stageOrder])
   @@index([projectId])
@@ -413,6 +417,7 @@ model Deliverable {
   id         String   @id @default(uuid())
   stageId    String
   version    Int      @default(1)
+  requirement String?
   fileUrl    String
   fileName   String?
   fileHash   String?
@@ -424,6 +429,53 @@ model Deliverable {
   stage ProjectStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
 
   @@unique([stageId, version])
+  @@index([stageId])
+}
+
+model StageNote {
+  id        String   @id @default(uuid())
+  stageId   String
+  key       String
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stage ProjectStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@unique([stageId, key])
+}
+
+enum WorkLogType {
+  SITE_VISIT
+  MEASUREMENT
+  MEETING
+  ORDER
+  DELIVERY
+  INSTALLATION
+  PROGRESS
+  ISSUE
+}
+
+model WorkLog {
+  id            String      @id @default(uuid())
+  projectId     String
+  stageId       String?
+  authorId      String
+  type          WorkLogType
+  title         String
+  note          String?
+  photos        String[]    @default([])
+  happenedAt    DateTime
+  confirmedAt   DateTime?
+  confirmedById String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  project Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  stage   ProjectStage? @relation(fields: [stageId], references: [id], onDelete: SetNull)
+  author  User          @relation("WorkLogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, happenedAt])
   @@index([stageId])
 }
 
