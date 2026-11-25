@@ -60,8 +60,10 @@ export function MessageThread({
   projectRoom = true,
   emptyHint = 'Say hello. Everything you agree here stays attached to the project.',
   fill = false,
+  partnerAvatar,
 }: {
   fill?: boolean;
+  partnerAvatar?: (size: number) => ReactNode;
   projectId: string;
   currentUserId: string;
   partner?: PartySummary | null;
@@ -253,7 +255,11 @@ export function MessageThread({
     >
       <header className="flex items-center gap-3 border-b border-hairline px-4 py-3">
         {headerStart}
-        {partner ? <Avatar name={partner.name} src={partner.avatarUrl} size={40} /> : null}
+        {partnerAvatar ? (
+          partnerAvatar(40)
+        ) : partner ? (
+          <Avatar name={partner.name} src={partner.avatarUrl} size={40} />
+        ) : null}
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{partner?.name ?? 'Project chat'}</p>
           <p className="h-4 truncate text-xs text-muted" aria-live="polite">
@@ -344,7 +350,11 @@ export function MessageThread({
                     {!mine ? (
                       <span className="w-8 shrink-0">
                         {!joinsNext && sender ? (
-                          <Avatar name={sender.name} src={sender.avatarUrl} size={32} />
+                          partnerAvatar && sender.id === partner?.id ? (
+                            partnerAvatar(32)
+                          ) : (
+                            <Avatar name={sender.name} src={sender.avatarUrl} size={32} />
+                          )
                         ) : null}
                       </span>
                     ) : null}

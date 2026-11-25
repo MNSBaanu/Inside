@@ -41,6 +41,17 @@ export function shortTime(iso: string) {
   return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 
+export function SupportAvatar({ size = 44 }: { size?: number }) {
+  return (
+    <span
+      className="grid shrink-0 place-items-center rounded-full bg-brand text-canvas"
+      style={{ width: size, height: size }}
+    >
+      <Headset aria-hidden style={{ width: size * 0.45, height: size * 0.45 }} />
+    </span>
+  );
+}
+
 export type SupportSummary = { unreadCount: number; lastMessage: LastMessage | null };
 
 export function SupportRow({ active, data }: { active: boolean; data: SupportSummary | null }) {
@@ -56,9 +67,7 @@ export function SupportRow({ active, data }: { active: boolean; data: SupportSum
         active ? 'bg-brand-soft/70' : 'hover:bg-sand/60',
       )}
     >
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand text-canvas">
-        <Headset aria-hidden className="h-5 w-5" />
-      </span>
+      <SupportAvatar />
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
           <p className={cn('truncate', unread ? 'font-bold' : 'font-semibold')}>Inside support</p>

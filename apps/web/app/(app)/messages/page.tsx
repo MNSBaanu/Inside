@@ -11,6 +11,7 @@ import {
 import {
   AdminSupportInbox,
   SUPPORT_PARTY,
+  SupportAvatar,
   SupportRow,
   shortTime,
   type SupportSummary,
@@ -181,6 +182,7 @@ function PeopleInbox() {
           projectRoom={false}
           currentUserId={user.id}
           partner={SUPPORT_PARTY}
+          partnerAvatar={(size) => <SupportAvatar size={size} />}
           subtitle="The Inside team usually replies within a day"
           emptyHint="Questions about your account, a project or a payment? Ask here."
           className={cn(!supportOpen && 'hidden lg:flex')}
