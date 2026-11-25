@@ -1,9 +1,15 @@
 import {
   BadRequestException,
+  ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { NotificationType, ReportTargetType } from '@inside/database';
+import {
+  NotificationType,
+  ReportStatus,
+  ReportTargetType,
+} from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
 import { serializeReport } from './report.serializer';
@@ -18,20 +24,33 @@ export class ReportsService {
   ) {}
 
   async create(user: AuthUser, dto: CreateReportDto) {
-    if (
-      (dto.targetType === ReportTargetType.USER && dto.targetId === user.id) ||
-      dto.reportedUserId === user.id
-    ) {
-      throw new BadRequestException('Cannot report yourself');
+    const reportedUserId = await this.resolveTarget(
+      user,
+      dto.targetType,
+      dto.targetId,
+    );
+    if (reportedUserId === user.id) {
+      throw new BadRequestException('You cannot report yourself');
     }
-    if (!(await this.targetExists(dto.targetType, dto.targetId))) {
-      throw new NotFoundException('Reported item not found');
+
+    const existing = await this.prisma.report.count({
+      where: {
+        reporterId: user.id,
+        targetType: dto.targetType,
+        targetId: dto.targetId,
+        status: { in: [ReportStatus.OPEN, ReportStatus.UNDER_REVIEW] },
+      },
+    });
+    if (existing > 0) {
+      throw new ConflictException(
+        'You already reported this. An admin is looking at it.',
+      );
     }
 
     const report = await this.prisma.report.create({
       data: {
         reporterId: user.id,
-        reportedUserId: dto.reportedUserId,
+        reportedUserId,
         targetType: dto.targetType,
         targetId: dto.targetId,
         reason: dto.reason,
@@ -60,18 +79,68 @@ export class ReportsService {
     };
   }
 
-  private async targetExists(type: ReportTargetType, id: string) {
-    const counters: Record<ReportTargetType, () => Promise<number>> = {
-      [ReportTargetType.USER]: () => this.prisma.user.count({ where: { id } }),
-      [ReportTargetType.PROJECT]: () =>
-        this.prisma.project.count({ where: { id } }),
-      [ReportTargetType.PORTFOLIO]: () =>
-        this.prisma.portfolio.count({ where: { id } }),
-      [ReportTargetType.REVIEW]: () =>
-        this.prisma.review.count({ where: { id } }),
-      [ReportTargetType.MESSAGE]: () =>
-        this.prisma.message.count({ where: { id } }),
+  private async resolveTarget(
+    user: AuthUser,
+    type: ReportTargetType,
+    id: string,
+  ): Promise<string | null> {
+    const missing = () => new NotFoundException('Reported item not found');
+    const party = (project: { clientId: string; designerId: string }) => {
+      if (![project.clientId, project.designerId].includes(user.id)) {
+        throw new ForbiddenException(
+          'Only the people in this project can report it',
+        );
+      }
+      return project.clientId === user.id
+        ? project.designerId
+        : project.clientId;
     };
-    return (await counters[type]()) > 0;
+
+    switch (type) {
+      case ReportTargetType.USER: {
+        const found = await this.prisma.user.findUnique({
+          where: { id },
+          select: { id: true },
+        });
+        if (!found) throw missing();
+        return found.id;
+      }
+      case ReportTargetType.PORTFOLIO: {
+        const found = await this.prisma.portfolio.findUnique({
+          where: { id },
+          select: { designerId: true },
+        });
+        if (!found) throw missing();
+        return found.designerId;
+      }
+      case ReportTargetType.REVIEW: {
+        const found = await this.prisma.review.findUnique({
+          where: { id },
+          select: { reviewerId: true },
+        });
+        if (!found) throw missing();
+        return found.reviewerId;
+      }
+      case ReportTargetType.PROJECT: {
+        const found = await this.prisma.project.findUnique({
+          where: { id },
+          select: { clientId: true, designerId: true },
+        });
+        if (!found) throw missing();
+        return party(found);
+      }
+      case ReportTargetType.MESSAGE: {
+        const found = await this.prisma.message.findUnique({
+          where: { id },
+          select: {
+            senderId: true,
+            project: { select: { clientId: true, designerId: true } },
+          },
+        });
+        if (!found) throw missing();
+        party(found.project);
+        return found.senderId;
+      }
+    }
   }
 }

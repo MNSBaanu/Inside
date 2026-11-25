@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { use, useEffect, useState } from 'react';
 import { useSession } from '@/components/providers/session-provider';
+import { ReportDialog } from '@/components/features/moderation/report-dialog';
 import { MessageThread } from '@/components/features/projects/message-thread';
 import { PortfolioShare } from '@/components/features/projects/portfolio-share';
 import { PaymentList } from '@/components/features/projects/payment-list';
@@ -174,11 +175,16 @@ export default function ProjectWorkspacePage({
           </div>
         ) : null}
       </div>
-      <p className="mt-3 text-muted">
-        {party?.name ? `${isClient ? 'Designer' : 'Client'}: ${party.name} · ` : ''}
-        Started {formatDate(item.startedAt)}
-        {item.completedAt ? ` · Completed ${formatDate(item.completedAt)}` : ''}
-      </p>
+      <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <p className="text-muted">
+          {party?.name ? `${isClient ? 'Designer' : 'Client'}: ${party.name} · ` : ''}
+          Started {formatDate(item.startedAt)}
+          {item.completedAt ? ` · Completed ${formatDate(item.completedAt)}` : ''}
+        </p>
+        {isClient || isDesigner ? (
+          <ReportDialog targetType="PROJECT" targetId={item.id} label="Report a problem" />
+        ) : null}
+      </div>
 
       {stageItems.length > 0 ? (
         <StageTimeline stages={stageItems} currentStage={item.currentStage} />

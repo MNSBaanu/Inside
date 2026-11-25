@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { ReportDialog } from '@/components/features/moderation/report-dialog';
 import { Avatar } from '@/components/ui/avatar';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
@@ -342,7 +343,7 @@ export function MessageThread({
                   ) : null}
                   <div
                     className={cn(
-                      'flex items-end gap-2',
+                      'group flex items-end gap-2',
                       mine ? 'justify-end' : 'justify-start',
                       joinsPrevious ? 'mt-0.5' : 'mt-3',
                     )}
@@ -426,6 +427,11 @@ export function MessageThread({
                         </p>
                       </div>
                     </div>
+                    {!mine && projectRoom && !message.isHidden ? (
+                      <span className="self-center opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+                        <ReportDialog targetType="MESSAGE" targetId={message.id} icon label="Report message" />
+                      </span>
+                    ) : null}
                   </div>
                 </li>
               );

@@ -1,32 +1,36 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { Flag, X } from 'lucide-react';
 import { useSession } from '@/components/providers/session-provider';
 import { Button } from '@/components/ui/button';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
-import { api, errorMessage } from '@/lib/api/client';
+import { ApiError, api, errorMessage } from '@/lib/api/client';
 import type { ReportTargetType } from '@/lib/types';
 import { cn } from '@/lib/utils/cn';
 
 export function ReportDialog({
   targetType,
   targetId,
-  reportedUserId,
   menuItem = false,
+  icon = false,
+  label = 'Report',
+  hideFor,
 }: {
   targetType: ReportTargetType;
   targetId: string;
-  reportedUserId?: string;
   menuItem?: boolean;
+  icon?: boolean;
+  label?: string;
+  hideFor?: string | null;
 }) {
-  const { status } = useSession();
+  const { status, user } = useSession();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState('');
   const [details, setDetails] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -43,7 +47,9 @@ export function ReportDialog({
     };
   }, [open]);
 
-  if (status !== 'authenticated') return null;
+  if (status !== 'authenticated' || (hideFor && user?.id === hideFor)) {
+    return null;
+  }
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -53,16 +59,20 @@ export function ReportDialog({
       await api.post('/reports', {
         targetType,
         targetId,
-        reportedUserId,
         reason,
         details: details || undefined,
       });
-      setSent(true);
+      setSent('Reported. An admin will review this.');
       setOpen(false);
       setReason('');
       setDetails('');
     } catch (cause) {
-      setError(errorMessage(cause));
+      if (cause instanceof ApiError && cause.statusCode === 409) {
+        setSent(cause.message);
+        setOpen(false);
+      } else {
+        setError(errorMessage(cause));
+      }
     } finally {
       setBusy(false);
     }
@@ -70,8 +80,14 @@ export function ReportDialog({
 
   if (sent) {
     return (
-      <p className={cn('text-sm text-muted', menuItem && 'px-4 py-2.5')}>
-        Reported. An admin will review this.
+      <p
+        className={cn(
+          'text-sm text-muted',
+          menuItem && 'px-4 py-2.5',
+          icon && 'text-[11px]',
+        )}
+      >
+        {icon ? 'Reported' : sent}
       </p>
     );
   }
@@ -82,13 +98,17 @@ export function ReportDialog({
         type="button"
         role={menuItem ? 'menuitem' : undefined}
         onClick={() => setOpen(true)}
+        aria-label={icon ? label : undefined}
+        title={icon ? label : undefined}
         className={
           menuItem
             ? 'block w-full rounded-card px-4 py-2.5 text-left text-sm text-ink transition-colors duration-150 hover:bg-brand-soft hover:text-brand'
-            : 'text-sm text-muted underline underline-offset-4 transition-colors duration-300 hover:text-brand'
+            : icon
+              ? 'grid h-7 w-7 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-sand hover:text-error'
+              : 'text-sm text-muted underline underline-offset-4 transition-colors duration-300 hover:text-brand'
         }
       >
-        Report
+        {icon ? <Flag aria-hidden className="h-3.5 w-3.5" /> : label}
       </button>
 
       {open ? (

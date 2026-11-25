@@ -8,6 +8,7 @@ import { BackLink } from '@/components/ui/back-link';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { RequestDesignerButton } from '@/components/features/designers/request-designer-button';
+import { ReportDialog } from '@/components/features/moderation/report-dialog';
 import { ReviewList } from '@/components/features/reviews/review-list';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Rating } from '@/components/ui/rating';
@@ -188,6 +189,14 @@ export function PortfolioDetail({
                 </div>
               ))}
             </dl>
+          </div>
+          <div className="mt-3 text-right">
+            <ReportDialog
+              targetType="PORTFOLIO"
+              targetId={portfolio.id}
+              label="Report this portfolio"
+              hideFor={portfolio.designer.id}
+            />
           </div>
 
           {portfolio.style && STYLE_NOTES[portfolio.style] ? (

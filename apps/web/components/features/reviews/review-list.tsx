@@ -4,6 +4,7 @@ import { useState, type ReactNode } from 'react';
 import { cn } from '@/lib/utils/cn';
 import { Button } from '@/components/ui/button';
 import { cardSurface } from '@/components/ui/card';
+import { ReportDialog } from '@/components/features/moderation/report-dialog';
 import { Avatar } from '@/components/ui/avatar';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Rating } from '@/components/ui/rating';
@@ -91,7 +92,7 @@ export function ReviewList({
                 src={review.reviewer?.avatarUrl}
                 size={44}
               />
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="font-semibold">
                   {review.reviewer?.name ?? 'Client'}
                 </p>
@@ -99,6 +100,11 @@ export function ReviewList({
                   {formatDate(review.createdAt)}
                 </p>
               </div>
+              <ReportDialog
+                targetType="REVIEW"
+                targetId={review.id}
+                hideFor={review.reviewerId}
+              />
             </div>
 
             <div className="mt-3">

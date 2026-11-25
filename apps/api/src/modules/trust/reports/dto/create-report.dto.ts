@@ -18,13 +18,6 @@ export class CreateReportDto {
   @IsUUID()
   targetId!: string;
 
-  @ApiPropertyOptional({
-    description: 'User id being reported (if applicable)',
-  })
-  @IsOptional()
-  @IsUUID()
-  reportedUserId?: string;
-
   @ApiProperty()
   @IsString()
   @MinLength(2)

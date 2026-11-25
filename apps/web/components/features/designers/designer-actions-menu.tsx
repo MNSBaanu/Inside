@@ -46,12 +46,7 @@ export function DesignerActionsMenu({ designerId }: { designerId: string }) {
         )}
       >
         <BlockButton userId={designerId} menuItem />
-        <ReportDialog
-          targetType="USER"
-          targetId={designerId}
-          reportedUserId={designerId}
-          menuItem
-        />
+        <ReportDialog targetType="USER" targetId={designerId} menuItem />
       </div>
     </div>
   );

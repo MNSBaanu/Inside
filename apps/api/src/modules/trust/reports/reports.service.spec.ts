@@ -1,4 +1,8 @@
-import { BadRequestException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { ReportStatus, ReportTargetType, Role } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
@@ -10,18 +14,20 @@ describe('ReportsService', () => {
     report: {
       create: jest.fn(),
       findMany: jest.fn(),
+      count: jest.fn(),
     },
-    user: { count: jest.fn().mockResolvedValue(1) },
-    project: { count: jest.fn().mockResolvedValue(1) },
-    portfolio: { count: jest.fn().mockResolvedValue(1) },
-    review: { count: jest.fn().mockResolvedValue(1) },
-    message: { count: jest.fn().mockResolvedValue(1) },
+    user: { findUnique: jest.fn() },
+    project: { findUnique: jest.fn() },
+    portfolio: { findUnique: jest.fn() },
+    review: { findUnique: jest.fn() },
+    message: { findUnique: jest.fn() },
   };
 
   const notifications = { notifyAdmins: jest.fn() };
 
   const client = {
     id: 'c1',
+    name: 'Nadia',
     role: Role.CLIENT,
     activeRole: Role.CLIENT,
   } as AuthUser;
@@ -30,6 +36,10 @@ describe('ReportsService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    prisma.report.count.mockResolvedValue(0);
+    prisma.user.findUnique.mockImplementation(
+      ({ where }: { where: { id: string } }) => ({ id: where.id }),
+    );
     service = new ReportsService(
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
@@ -56,7 +66,6 @@ describe('ReportsService', () => {
     const result = await service.create(client, {
       targetType: ReportTargetType.USER,
       targetId: 'd1',
-      reportedUserId: 'd1',
       reason: 'spam',
     });
 
@@ -66,6 +75,7 @@ describe('ReportsService', () => {
       expect.objectContaining({
         data: expect.objectContaining({
           reporterId: 'c1',
+          reportedUserId: 'd1',
           targetId: 'd1',
         }),
       }),
@@ -86,6 +96,47 @@ describe('ReportsService', () => {
         reason: 'oops',
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('rejects a second report while the first is still open', async () => {
+    prisma.report.count.mockResolvedValue(1);
+    await expect(
+      service.create(client, {
+        targetType: ReportTargetType.USER,
+        targetId: 'd1',
+        reason: 'spam again',
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(prisma.report.create).not.toHaveBeenCalled();
+  });
+
+  it('reports a review against its author', async () => {
+    prisma.review.findUnique.mockResolvedValue({ reviewerId: 'c9' });
+    prisma.report.create.mockResolvedValue({ id: 'r2' });
+    await service.create(client, {
+      targetType: ReportTargetType.REVIEW,
+      targetId: 'rv1',
+      reason: 'fake review',
+    });
+    expect(prisma.report.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ reportedUserId: 'c9' }),
+      }),
+    );
+  });
+
+  it('only lets people in the project report its messages', async () => {
+    prisma.message.findUnique.mockResolvedValue({
+      senderId: 'd1',
+      project: { clientId: 'c2', designerId: 'd1' },
+    });
+    await expect(
+      service.create(client, {
+        targetType: ReportTargetType.MESSAGE,
+        targetId: 'm1',
+        reason: 'rude',
+      }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
   });
 
   it('lists own reports only', async () => {

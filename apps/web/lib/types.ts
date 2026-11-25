@@ -310,6 +310,7 @@ export type Message = {
   senderId: string;
   receiverId: string;
   content: string;
+  isHidden?: boolean;
   attachmentUrl: string | null;
   attachmentType: string | null;
   isRead: boolean;
