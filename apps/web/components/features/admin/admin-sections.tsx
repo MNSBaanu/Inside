@@ -2,15 +2,24 @@
 
 import Link from 'next/link';
 import { useEffect, useState, type ReactNode } from 'react';
-import { UserPlus } from 'lucide-react';
+import { MailPlus, UserPlus } from 'lucide-react';
 import {
   downloadCsv,
   ExportButton,
   fetchAllPages,
 } from '@/components/features/admin/admin-export';
 import {
+  ImportButton,
+  SUBSCRIBER_IMPORT_COLUMNS,
+  USER_IMPORT_COLUMNS,
+} from '@/components/features/admin/admin-import';
+import {
+  InviteAdminDialog,
+  PendingInvites,
+} from '@/components/features/admin/admin-invites';
+import {
   AddUserDialog,
-  exportUsersCsv,
+  exportUsersXlsx,
   revokeButtonClass,
 } from '@/components/features/admin/admin-users';
 import { ReportTarget } from '@/components/features/admin/report-target';
@@ -364,6 +373,8 @@ export function UsersSection() {
     useAdminList<AdminUser>('/admin/users', { role, status });
   const { error, pending, run, dialog } = useAdminAction();
   const [adding, setAdding] = useState(false);
+  const [inviting, setInviting] = useState(false);
+  const [inviteKey, setInviteKey] = useState(0);
 
   return (
     <>
@@ -374,10 +385,25 @@ export function UsersSection() {
         action={
           <div className="flex flex-wrap items-start gap-2">
             <ExportButton
+              label="Export Excel"
               onExport={() =>
-                exportUsersCsv({ search: search.trim(), role, status })
+                exportUsersXlsx({ search: search.trim(), role, status })
               }
             />
+            <ImportButton
+              name="users"
+              title="Import users"
+              endpoint="/admin/import/users"
+              columns={USER_IMPORT_COLUMNS}
+              note="Role is Client or Designer. Each person is emailed a link to create their own password. Emails that already exist are skipped."
+              onDone={() => void list.reload()}
+            />
+            {me?.isOwner ? (
+              <Button size="sm" variant="outline" onClick={() => setInviting(true)}>
+                <MailPlus aria-hidden className="mr-1.5 h-4 w-4" />
+                Invite admin
+              </Button>
+            ) : null}
             <Button size="sm" onClick={() => setAdding(true)}>
               <UserPlus aria-hidden className="mr-1.5 h-4 w-4" />
               Add user
@@ -385,6 +411,13 @@ export function UsersSection() {
           </div>
         }
       />
+      {inviting ? (
+        <InviteAdminDialog
+          onClose={() => setInviting(false)}
+          onInvited={() => setInviteKey((key) => key + 1)}
+        />
+      ) : null}
+      {me?.isOwner ? <PendingInvites key={inviteKey} /> : null}
       {adding ? (
         <AddUserDialog
           onClose={() => setAdding(false)}
@@ -1274,7 +1307,19 @@ export function NewsletterSection() {
       <SectionHeader
         title="Newsletter."
         description="People who subscribed from the site footer."
-        action={<ExportButton onExport={exportSubscribers} />}
+        action={
+          <div className="flex flex-wrap items-start gap-2">
+            <ExportButton onExport={exportSubscribers} />
+            <ImportButton
+              name="newsletter-subscribers"
+              title="Import subscribers"
+              endpoint="/admin/import/subscribers"
+              columns={SUBSCRIBER_IMPORT_COLUMNS}
+              note="Only import people who agreed to receive the newsletter. Existing emails are skipped."
+              onDone={() => void list.reload()}
+            />
+          </div>
+        }
       />
       <Filters>
         <SearchField

@@ -163,6 +163,7 @@ model User {
   blocksMade         Block[]            @relation("BlockBlocker")
   blocksReceived     Block[]            @relation("BlockBlocked")
   activityLogs       ActivityLog[]
+  adminInvitesSent   AdminInvite[]      @relation("AdminInviteSender")
 
   @@index([role])
   @@index([activeRole])
@@ -660,4 +661,18 @@ model Product {
   @@index([category])
   @@index([style])
   @@index([isPublished])
+}
+
+model AdminInvite {
+  id          String    @id @default(uuid())
+  email       String
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  revokedAt   DateTime?
+  invitedById String
+  invitedBy   User      @relation("AdminInviteSender", fields: [invitedById], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@index([email])
 }

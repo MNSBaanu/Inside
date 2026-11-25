@@ -1,10 +1,11 @@
 'use client';
 
-import { Download } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
+import { buildXlsx, type XlsxCell } from '@/lib/utils/xlsx';
 
 const EXPORT_PAGE_SIZE = 100;
 const EXPORT_LIMIT = 5000;
@@ -67,10 +68,25 @@ export function downloadCsv(name: string, header: string[], rows: string[][]) {
   URL.revokeObjectURL(url);
 }
 
+export function downloadXlsx(
+  name: string,
+  header: string[],
+  rows: XlsxCell[][],
+) {
+  const url = URL.createObjectURL(buildXlsx(name, header, rows));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `inside-${name}-${new Date().toISOString().slice(0, 10)}.xlsx`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 export function ExportButton({
   onExport,
+  label = 'Export CSV',
 }: {
   onExport: () => Promise<void>;
+  label?: string;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,8 +106,8 @@ export function ExportButton({
   return (
     <div className="flex flex-col items-end gap-2">
       <Button size="sm" variant="outline" onClick={onClick} disabled={busy}>
-        <Download aria-hidden className="mr-1.5 h-4 w-4" />
-        {busy ? 'Exporting…' : 'Export CSV'}
+        <Upload aria-hidden className="mr-1.5 h-4 w-4" />
+        {busy ? 'Exporting…' : label}
       </Button>
       {error ? <ErrorNotice message={error} /> : null}
     </div>

@@ -12,6 +12,10 @@ import {
   fetchAllPages,
 } from '@/components/features/admin/admin-export';
 import {
+  ImportButton,
+  PRODUCT_IMPORT_COLUMNS,
+} from '@/components/features/admin/admin-import';
+import {
   Filters,
   gridRow,
   Results,
@@ -847,6 +851,14 @@ export function ShopSection() {
         action={
           <div className="flex flex-wrap items-start gap-2">
             <ExportButton onExport={exportProducts} />
+            <ImportButton
+              name="shop"
+              title="Import shop items"
+              endpoint="/admin/import/products"
+              columns={PRODUCT_IMPORT_COLUMNS}
+              note="Image URL must be an image already uploaded to Cloudinary."
+              onDone={() => void list.reload()}
+            />
             <Button size="sm" onClick={() => setEditing('new')}>
               <Plus aria-hidden className="mr-1.5 h-4 w-4" />
               Add item
