@@ -86,6 +86,8 @@ export default defineConfig({
         NEXT_PUBLIC_SITE_URL: `http://localhost:${WEB_PORT}`,
         // Separate build folder so a running `next dev` on 3000 is unaffected.
         NEXT_DIST_DIR: '.next-ui',
+        // Hide the Next.js dev tools button so it can't cover or be mistaken for app buttons.
+        NEXT_DEV_INDICATORS: 'off',
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: CLERK_PUBLISHABLE_KEY,
         // As in CI: no payment provider, even when .env.local has a Stripe key.
         NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: '',

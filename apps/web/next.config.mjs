@@ -29,6 +29,9 @@ const contentSecurityPolicy = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || (isDev ? '.next-dev' : '.next'),
+  // The browser tests run on `next dev`, where the Next.js dev tools button
+  // sits over the sidebar's Sign out button and is also named "Next".
+  ...(process.env.NEXT_DEV_INDICATORS === 'off' ? { devIndicators: false } : {}),
   // Next 15 stopped keeping visited pages in the client router cache, so every
   // sidebar click went back to the server. Keep them briefly, as Next 14 did.
   // Pages still fetch fresh data when they open.
