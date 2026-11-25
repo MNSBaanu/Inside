@@ -555,19 +555,23 @@ export class PaymentsService {
     }
   }
 
+  /**
+   * Payment alerts for active admins. They open the admin project page: admins
+   * are not parties to the project, so its workspace would turn them away.
+   */
   private async notifyAdmins(notice: {
     title: string;
     message: string;
-    metadata: Record<string, string>;
+    metadata: Record<string, string> & { projectId: string };
   }) {
-    const admins = await this.prisma.user.findMany({
-      where: { role: Role.ADMIN },
-      select: { id: true },
+    await this.notifications.notifyAdmins({
+      type: NotificationType.PAYMENT,
+      ...notice,
+      metadata: {
+        ...notice.metadata,
+        href: `/admin/projects/${notice.metadata.projectId}`,
+      },
     });
-    await this.notifications.notifyMany(
-      admins.map((admin) => admin.id),
-      { type: NotificationType.PAYMENT, ...notice },
-    );
   }
 
   /** An admin records a milestone the client paid in cash or by bank transfer. */

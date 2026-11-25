@@ -30,7 +30,11 @@ describe('PaymentsService', () => {
     user: { findMany: jest.fn() },
   };
 
-  const notifications = { notify: jest.fn(), notifyMany: jest.fn() };
+  const notifications = {
+    notify: jest.fn(),
+    notifyMany: jest.fn(),
+    notifyAdmins: jest.fn(),
+  };
   const activity = { log: jest.fn() };
   const stripe = {
     paymentIntents: {
@@ -141,14 +145,16 @@ describe('PaymentsService', () => {
     prisma.milestonePayment.findMany.mockResolvedValueOnce([
       { id: 'pay1', stripeIntentId: null, method: PaymentMethod.BANK_TRANSFER },
     ]);
-    prisma.user.findMany.mockResolvedValue([{ id: 'admin1' }]);
     prisma.project.findUnique.mockResolvedValue({ title: 'Sofa' });
     const result = await service.cancelAndRefund('p1');
     expect(result).toEqual({ refunded: 0, failed: 0, offline: 1 });
     expect(prisma.milestonePayment.updateMany).not.toHaveBeenCalled();
-    expect(notifications.notifyMany).toHaveBeenCalledWith(
-      ['admin1'],
-      expect.objectContaining({ title: 'Offline refund needed' }),
+    // Admins can't open the project workspace, so the alert opens the admin page.
+    expect(notifications.notifyAdmins).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Offline refund needed',
+        metadata: { projectId: 'p1', href: '/admin/projects/p1' },
+      }),
     );
   });
 
