@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@inside/database';
+import { NotificationType, Prisma } from '@inside/database';
 import { paginate } from '../../../common/dto/pagination-query.dto';
 import { PrismaService } from '../../../database/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import type {
   AdminContactQueryDto,
   CreateContactMessageDto,
@@ -10,16 +11,25 @@ import type {
 
 @Injectable()
 export class ContactService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   async create(dto: CreateContactMessageDto) {
-    await this.prisma.contactMessage.create({
+    const contact = await this.prisma.contactMessage.create({
       data: {
         name: dto.name.trim(),
         email: dto.email.trim().toLowerCase(),
         topic: dto.topic,
         message: dto.message.trim(),
       },
+    });
+    await this.notifications.notifyAdmins({
+      type: NotificationType.SYSTEM,
+      title: 'New contact message',
+      message: `${contact.name} sent a ${contact.topic.toLowerCase()} message.`,
+      metadata: { contactId: contact.id, href: '/admin/contact' },
     });
     return { success: true, data: { received: true } };
   }
