@@ -6,7 +6,11 @@ test.describe('Hiring and the project workspace', () => {
     page,
   }) => {
     await signIn(page, accounts.kasun);
-    await openFromList(page, '/requests', 'Japandi living room');
+    // Open requests have their own tab on the requests page.
+    await page.goto('/requests');
+    await page.getByRole('tab', { name: /Open requests/ }).click();
+    await page.getByRole('link', { name: /Japandi living room/ }).first().click();
+    await expect(page.getByRole('heading', { name: 'Japandi living room' })).toBeVisible();
 
     const comparison = page.getByRole('table', { name: 'Proposals side by side' });
     await expect(comparison).toBeVisible();

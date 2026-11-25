@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { setupClerkTestingToken } from '@clerk/testing/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { accounts, openFromList, signIn } from './helpers';
+import { accounts, signIn } from './helpers';
 
 const WEB_ORIGIN = 'http://localhost:3100';
 const STAGES = ['proposal', 'concept', 'design', 'revision', 'completion'];
@@ -65,7 +65,9 @@ test('a new client goes from the landing page to a completed, reviewed project',
 }) => {
   test.setTimeout(300_000);
   const run = Date.now();
-  const title = `Journey living room ${run}`;
+  // A request made from a brief is titled from the brief; read once it is sent.
+  let title = '';
+  let requestUrl = '';
   const reviewText = `Smooth project from start to finish (${run}).`;
 
   await test.step('guest starts from the landing page and creates an account', async () => {
@@ -107,13 +109,13 @@ test('a new client goes from the landing page to a completed, reviewed project',
     if (await skipAssistant.isVisible()) await skipAssistant.click();
     await page.getByLabel('Rooms').fill('Living Room');
     await page.getByLabel('Rooms').press('Enter');
-    await page.getByRole('button', { name: 'Next' }).click();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
     await page.getByLabel('Styles').fill('Scandinavian');
     await page.getByLabel('Styles').press('Enter');
-    await page.getByRole('button', { name: 'Next' }).click();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
     await page.getByLabel('Budget range').fill('400000-500000');
     await page.getByLabel('Description').fill('Calm, light living room.');
-    await page.getByRole('button', { name: 'Next' }).click();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
     await page.getByRole('button', { name: 'Create brief' }).click();
     await expect(page).toHaveURL(/\/briefs\/[0-9a-f-]+$/);
 
@@ -123,12 +125,14 @@ test('a new client goes from the landing page to a completed, reviewed project',
     await match.getByRole('link', { name: 'Request', exact: true }).click();
     await expect(page).toHaveURL(/\/requests\/new\?designerId=.+&briefId=/);
 
-    await page.getByLabel('Title').fill(title);
-    await page.getByLabel('Description').fill('Please quote for the full living room.');
+    // The brief already carries the title and budget; only extra notes are asked for.
+    await page.getByLabel('Anything to add?').fill('Please quote for the full living room.');
     await page.getByLabel('Expected timeline').fill('6 weeks');
-    await page.getByLabel('Budget').fill('450000');
     await page.getByRole('button', { name: 'Send request' }).click();
-    await expect(page.getByRole('heading', { name: title })).toBeVisible();
+    await expect(page).toHaveURL(/\/requests\/[0-9a-f-]+$/);
+    title = (await page.getByRole('heading', { level: 1 }).textContent())?.trim() ?? '';
+    expect(title).not.toBe('');
+    requestUrl = page.url();
   });
 
   const designerContext = await browser.newContext();
@@ -137,11 +141,13 @@ test('a new client goes from the landing page to a completed, reviewed project',
 
   await test.step('designer sends a proposal with stage fees', async () => {
     await signIn(designer, accounts.ravi);
-    await openFromList(designer, '/requests', title);
+    await designer.goto(requestUrl);
+    await expect(designer.getByRole('heading', { name: title })).toBeVisible();
+    await designer.getByRole('button', { name: 'Send a proposal' }).click();
     await designer.getByLabel('Scope').fill('Layout, concept boards, full design and a revision round.');
     await designer.getByLabel('Timeline').fill('6 weeks');
     for (const stage of STAGES.slice(1)) {
-      await designer.getByLabel(new RegExp(`^${stage}$`, 'i')).fill('100000');
+      await designer.getByLabel(new RegExp(`^${stage} fee`, 'i')).fill('100000');
     }
     await designer.getByRole('button', { name: 'Send proposal' }).click();
     await expect(designer.getByRole('button', { name: 'Send proposal' })).toBeHidden();
@@ -187,7 +193,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
       await expect(card.getByText('1/1 done')).toBeVisible();
 
       await card.getByRole('button', { name: 'Files' }).click();
-      await card.getByLabel(/^Add a file/).setInputFiles({
+      await card.getByLabel(/^Add files/).setInputFiles({
         name: `${name}.pdf`,
         mimeType: 'application/pdf',
         buffer: Buffer.from('%PDF-1.4 journey test'),
