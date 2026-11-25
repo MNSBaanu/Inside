@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState, type FormEvent } from 'react';
-import { downloadCsv, fetchExport } from '@/components/features/admin/admin-export';
+import { downloadXlsx, fetchExport } from '@/components/features/admin/admin-export';
 import { useSession } from '@/components/providers/session-provider';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +11,6 @@ import { cardSurface } from '@/components/ui/card';
 import { useConfirm } from '@/components/ui/confirm-dialog';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { Field, Input } from '@/components/ui/field';
-import { PasswordInput } from '@/components/ui/password-input';
 import { Select } from '@/components/ui/select';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
@@ -34,7 +34,7 @@ type ExportUser = {
   createdAt: string;
 };
 
-export async function exportUsersCsv(filters: Record<string, string>) {
+export async function exportUsersXlsx(filters: Record<string, string>) {
   const items = await fetchExport<ExportUser>('/admin/users/export', filters);
   const header = ['Name', 'Email', 'Role', 'Verified', 'Status', 'Phone', 'Location', 'Joined'];
   const rows = items.map((user) => [
@@ -45,9 +45,9 @@ export async function exportUsersCsv(filters: Record<string, string>) {
     titleCase(user.status),
     user.phone ?? '',
     user.location ?? '',
-    user.createdAt.slice(0, 10),
+    new Date(user.createdAt),
   ]);
-  downloadCsv('users', header, rows);
+  downloadXlsx('users', header, rows);
 }
 
 export function AddUserDialog({
@@ -59,7 +59,6 @@ export function AddUserDialog({
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [role, setRole] = useState<'CLIENT' | 'DESIGNER'>('CLIENT');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -82,7 +81,7 @@ export function AddUserDialog({
     setError(null);
     setBusy(true);
     try {
-      await api.post('/admin/users', { name, email, password, role });
+      await api.post('/admin/users', { name, email, role });
       onCreated();
     } catch (cause) {
       setError(errorMessage(cause));
@@ -135,22 +134,9 @@ export function AddUserDialog({
             autoComplete="off"
           />
         </Field>
-        <Field
-          label="Password"
-          htmlFor="new-user-password"
-          hint="At least 8 characters, with a letter and a number. Share it with the user."
-        >
-          <PasswordInput
-            id="new-user-password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-            minLength={8}
-            maxLength={72}
-            pattern="(?=.*[A-Za-z])(?=.*\d).+"
-            autoComplete="new-password"
-          />
-        </Field>
+        <p className="text-sm text-muted">
+          They will get an email with a link to create their own password.
+        </p>
         <div className="mt-2 flex justify-end gap-3">
           <Button type="button" variant="ghost" onClick={onClose} disabled={busy}>
             Cancel
@@ -198,11 +184,28 @@ type AdminUserDetail = {
   };
 };
 
+type AdminUserProject = {
+  id: string;
+  title: string;
+  status: string;
+  currentStage: string;
+  createdAt: string;
+  client: { id: string; name: string };
+  designer: { id: string; name: string };
+};
+
 const USER_ACTIONS = {
   suspend: {
     title: 'Suspend',
     label: 'Suspend',
     description: 'They are signed out everywhere and cannot sign in until reactivated.',
+    tone: 'danger',
+  },
+  'reset-password': {
+    title: 'Reset the password for',
+    label: 'Reset password',
+    description:
+      'They are signed out everywhere and emailed a link to set a new password.',
     tone: 'danger',
   },
   reactivate: {
@@ -217,13 +220,6 @@ const USER_ACTIONS = {
     description: 'The verified badge is removed until they submit new evidence and it is approved.',
     tone: 'danger',
   },
-  'make-admin': {
-    title: 'Give admin access to',
-    label: 'Make admin',
-    description:
-      'They get full access to the admin area. They are signed out and must sign in again. Their designer or client features are replaced by admin access.',
-    tone: 'danger',
-  },
   'remove-admin': {
     title: 'Remove admin access from',
     label: 'Remove admin',
@@ -235,7 +231,10 @@ const USER_ACTIONS = {
 
 export function AdminUserDetail({ id }: { id: string }) {
   const { user: me } = useSession();
-  const { data, error, reload } = useApi<{ user: AdminUserDetail }>(
+  const { data, error, reload } = useApi<{
+    user: AdminUserDetail;
+    projects: AdminUserProject[];
+  }>(
     `/admin/users/${id}`,
   );
   const [actionError, setActionError] = useState<string | null>(null);
@@ -258,7 +257,17 @@ export function AdminUserDetail({ id }: { id: string }) {
     setActionError(null);
     setPending(true);
     try {
-      await api.patch(`/admin/users/${id}/${action}`, {});
+      if (action === 'reset-password') {
+        const result = await api.post<{ emailSent: boolean }>(
+          `/admin/users/${id}/reset-password`,
+          {},
+        );
+        if (!result.emailSent) {
+          setActionError('The password was reset, but the email could not be sent.');
+        }
+      } else {
+        await api.patch(`/admin/users/${id}/${action}`, {});
+      }
       await reload();
     } catch (cause) {
       setActionError(errorMessage(cause));
@@ -354,16 +363,18 @@ export function AdminUserDetail({ id }: { id: string }) {
               Remove admin
             </Button>
           ) : null}
-          {me?.isOwner && user.role !== 'ADMIN' && user.status === 'ACTIVE' ? (
+          {user.id === me?.id ||
+          user.isOwner ||
+          (user.role === 'ADMIN' && !me?.isOwner) ? null : (
             <Button
               size="sm"
               variant="outline"
               disabled={pending}
-              onClick={() => run('make-admin')}
+              onClick={() => run('reset-password')}
             >
-              Make admin
+              Reset password
             </Button>
-          ) : null}
+          )}
           {user.id === me?.id ||
           user.isOwner ||
           (user.role === 'ADMIN' && !me?.isOwner) ? null : user.status === 'ACTIVE' ? (
@@ -414,6 +425,41 @@ export function AdminUserDetail({ id }: { id: string }) {
           </>
         ) : null}
       </section>
+
+      {user.role !== 'ADMIN' ? (
+        <section className={cn(cardSurface, 'p-5 md:p-6')}>
+          <h3 className="font-semibold">Projects</h3>
+          {data.projects.length === 0 ? (
+            <p className="mt-2 text-sm text-muted">No projects yet.</p>
+          ) : (
+            <ul className="mt-4 divide-y divide-line">
+              {data.projects.map((project) => (
+                <li
+                  key={project.id}
+                  className="relative flex flex-wrap items-center justify-between gap-3 py-3 transition-colors hover:bg-sand/40"
+                >
+                  <div className="min-w-0">
+                    <Link
+                      href={`/admin/projects/${project.id}`}
+                      className="font-semibold after:absolute after:inset-0 hover:underline"
+                    >
+                      {project.title}
+                    </Link>
+                    <p className="text-sm text-muted">
+                      {project.client.id === user.id
+                        ? `With ${project.designer.name}`
+                        : `For ${project.client.name}`}{' '}
+                      · {titleCase(project.currentStage)} · Started{' '}
+                      {formatDate(project.createdAt)}
+                    </p>
+                  </div>
+                  <StatusBadge status={project.status} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ) : null}
     </div>
   );
 }

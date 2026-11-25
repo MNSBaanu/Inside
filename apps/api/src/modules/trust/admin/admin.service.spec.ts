@@ -9,7 +9,9 @@ import {
   ReportTargetType,
   Role,
 } from '@inside/database';
+import { ConfigService } from '@nestjs/config';
 import type { AuthUser } from '../../identity/auth/auth.service';
+import { EmailService } from '../../platform/email/email.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
@@ -41,6 +43,8 @@ describe('AdminService', () => {
 
   const notifications = { notify: jest.fn() };
   const activity = { log: jest.fn() };
+  const config = { get: jest.fn() };
+  const email = { send: jest.fn() };
 
   const admin = { id: 'a1', role: Role.ADMIN } as AuthUser;
 
@@ -52,7 +56,47 @@ describe('AdminService', () => {
       prisma as unknown as PrismaService,
       notifications as unknown as NotificationsService,
       activity as unknown as ActivityService,
+      config as unknown as ConfigService,
+      email as unknown as EmailService,
     );
+  });
+
+  it('resetPassword signs the user out and emails a reset link', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'u1',
+      email: 'u1@example.com',
+      name: 'User One',
+      role: Role.CLIENT,
+      isOwner: false,
+      clerkId: 'clerk_1',
+    });
+    email.send.mockResolvedValue(true);
+
+    const { data } = await service.resetPassword(admin, 'u1');
+
+    expect(tx.user.update).toHaveBeenCalledWith({
+      where: { id: 'u1' },
+      data: { passwordHash: null },
+    });
+    expect(tx.session.updateMany).toHaveBeenCalled();
+    expect(email.send).toHaveBeenCalledWith(
+      'u1@example.com',
+      'Reset your Inside password',
+      expect.stringContaining('/forgot-password'),
+    );
+    expect(data.emailSent).toBe(true);
+  });
+
+  it('resetPassword refuses the platform owner', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'o1',
+      role: Role.ADMIN,
+      isOwner: true,
+    });
+    await expect(service.resetPassword(admin, 'o1')).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+    expect(email.send).not.toHaveBeenCalled();
   });
 
   it('suspend forbids self-suspension', async () => {

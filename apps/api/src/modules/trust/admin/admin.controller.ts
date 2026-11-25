@@ -84,6 +84,18 @@ export class AdminController {
     return this.admin.getUser(id);
   }
 
+  @Post('users/:id/reset-password')
+  @ApiOperation({
+    summary: 'Reset a password: signs the user out and emails a reset link',
+  })
+  @ApiOkResponse({ description: 'Reset' })
+  resetPassword(
+    @CurrentUser() admin: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.admin.resetPassword(admin, id);
+  }
+
   @Patch('users/:id/suspend')
   @ApiOperation({ summary: 'Suspend a user (revokes sessions)' })
   @ApiOkResponse({ description: 'Suspended' })

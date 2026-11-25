@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import * as bcrypt from 'bcryptjs';
+import { ConfigService } from '@nestjs/config';
 import {
   AccountStatus,
   NotificationType,
@@ -20,6 +20,12 @@ import {
 } from '@inside/database';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
+import { EmailService } from '../../platform/email/email.service';
+import {
+  passwordResetEmailHtml,
+  webUrl,
+  welcomeEmailHtml,
+} from './admin-emails';
 import { paginate } from '../../../common/dto/pagination-query.dto';
 import type {
   AdminActivityQueryDto,
@@ -41,6 +47,8 @@ export class AdminService {
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
     private readonly activity: ActivityService,
+    private readonly config: ConfigService,
+    private readonly email: EmailService,
   ) {}
 
   async getStats() {
@@ -314,7 +322,22 @@ export class AdminService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return { success: true, data: { user } };
+    const projects = await this.prisma.project.findMany({
+      where: {
+        OR: [{ client: { id: userId } }, { designer: { id: userId } }],
+      },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        currentStage: true,
+        createdAt: true,
+        client: { select: { id: true, name: true } },
+        designer: { select: { id: true, name: true } },
+      },
+    });
+    return { success: true, data: { user, projects } };
   }
 
   async createUser(admin: AuthUser, dto: AdminCreateUserDto) {
@@ -325,16 +348,15 @@ export class AdminService {
     }
     const role = dto.role === 'DESIGNER' ? Role.DESIGNER : Role.CLIENT;
     const user = await this.prisma.user.create({
-      data: {
-        email,
-        passwordHash: await bcrypt.hash(dto.password, 10),
-        name: dto.name.trim(),
-        role,
-        activeRole: role,
-        emailVerified: new Date(),
-      },
+      data: { email, name: dto.name.trim(), role, activeRole: role },
       select: { id: true, email: true, name: true, role: true },
     });
+
+    const emailSent = await this.email.send(
+      email,
+      'Your Inside account is ready',
+      welcomeEmailHtml(user.name, `${webUrl(this.config)}/register`),
+    );
 
     await this.activity.log({
       userId: admin.id,
@@ -342,7 +364,48 @@ export class AdminService {
       metadata: { targetUserId: user.id, role },
     });
 
-    return { success: true, data: { user } };
+    return { success: true, data: { user, emailSent } };
+  }
+
+  async resetPassword(admin: AuthUser, userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.isOwner) {
+      throw new ForbiddenException(
+        "The platform owner's password cannot be reset",
+      );
+    }
+    if (user.role === Role.ADMIN) {
+      await this.requireOwner(admin);
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: userId },
+        data: { passwordHash: null },
+      });
+      await tx.session.updateMany({
+        where: { userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+    });
+
+    const path = user.clerkId ? '/forgot-password' : '/register';
+    const emailSent = await this.email.send(
+      user.email,
+      'Reset your Inside password',
+      passwordResetEmailHtml(user.name, `${webUrl(this.config)}${path}`),
+    );
+
+    await this.activity.log({
+      userId: admin.id,
+      action: 'USER_PASSWORD_RESET',
+      metadata: { targetUserId: userId },
+    });
+
+    return { success: true, data: { emailSent } };
   }
 
   private usersWhere(query: AdminUsersQueryDto): Prisma.UserWhereInput {
