@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/page-header';
 import { Reveal } from '@/components/features/home/reveal';
-import { authImage, featuredWork, heroImage, spotlightImage } from '@/lib/utils/images';
+import { howItWorksImages } from '@/lib/utils/images';
 
 export const metadata: Metadata = {
   title: 'How Inside works',
@@ -18,31 +18,31 @@ const stages = [
     number: '01',
     title: 'Open or invite',
     body: 'Post a brief to every designer, or send it straight to one designer you already like. A direct brief goes only to that designer, who can reply with a proposal or decline.',
-    image: authImage,
+    image: howItWorksImages[0],
   },
   {
     number: '02',
     title: 'How matching scores',
     body: 'Each designer gets a score out of 100: style 30, room type 25, budget fit 20, how well their work matches your description 15, and availability 10. You see the breakdown, not just the rank.',
-    image: heroImage,
+    image: howItWorksImages[1],
   },
   {
     number: '03',
     title: 'Accepting closes the brief',
     body: 'When you accept a proposal, the brief closes and the other proposals are declined for you. Its stage fees become the project milestones.',
-    image: featuredWork[1].src,
+    image: howItWorksImages[2],
   },
   {
     number: '04',
     title: 'Submit, approve, move on',
     body: 'The designer submits each stage with its files. Approve it and the next stage starts. Send it back and it returns to the designer for changes.',
-    image: spotlightImage,
+    image: howItWorksImages[3],
   },
   {
     number: '05',
     title: 'Paid, then released',
     body: 'Paying a milestone holds the money against the stage. Releasing it tells the designer the work is signed off.',
-    image: featuredWork[2].src,
+    image: howItWorksImages[4],
   },
 ];
 

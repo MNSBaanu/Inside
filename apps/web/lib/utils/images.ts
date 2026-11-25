@@ -1,4 +1,4 @@
-const optimizedHosts = new Set(['res.cloudinary.com', 'images.unsplash.com']);
+const optimizedHosts = new Set(['res.cloudinary.com', 'images.unsplash.com', 'images.pexels.com']);
 
 /** User images can live on any https host; only known hosts use the optimizer. */
 export function isOptimizableImage(src: string) {
@@ -14,8 +14,28 @@ export function isOptimizableImage(src: string) {
 const unsplash = (id: string, width: number, height: number) =>
   `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${width}&h=${height}&q=80`;
 
+// Pexels photos (free to use, no attribution required). Every id was verified to resolve.
+const pexels = (id: number, width: number, height: number) =>
+  `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=${width}&h=${height}`;
+
 export const heroImage = unsplash('1600210491892-03d54c0aaf87', 2400, 1100);
-export const heroThumbImage = unsplash('1600210491892-03d54c0aaf87', 400, 800);
+export const heroThumbImage = pexels(20390760, 400, 800);
+
+// Each photo below is used in exactly one place on the public site.
+export const homeStepImages = [9052854, 6583362, 6322367, 4174746, 8152751].map((id) =>
+  pexels(id, 1200, 675),
+);
+export const homeRoleImages = [14505912, 3144580, 10153052].map((id) => pexels(id, 1200, 900));
+export const homeAboutThumb = pexels(9565782, 520, 390);
+export const hotspotImages = [3705529, 29383010, 7587314, 4740488].map((id) =>
+  pexels(id, 320, 240),
+);
+export const workGridImages = [39733025, 33837741, 5793547, 5461586].map((id) =>
+  pexels(id, 1400, 1050),
+);
+export const howItWorksImages = [31737843, 39404254, 7045924, 37252541, 5490384].map((id) =>
+  pexels(id, 1200, 675),
+);
 
 /** A wide, cropped copy of a Cloudinary image for banners. Other hosts are returned unchanged. */
 export function bannerImage(src: string) {
