@@ -325,6 +325,7 @@ export function Results<T>({
             totalPages={totalPages}
             onPageChange={onPageChange}
             label={`${titleCase(noun)} pages`}
+            alwaysShow
           />
         </>
       )}

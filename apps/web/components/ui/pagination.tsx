@@ -5,13 +5,15 @@ export function Pagination({
   totalPages,
   onPageChange,
   label = 'Pagination',
+  alwaysShow = false,
 }: {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
   label?: string;
+  alwaysShow?: boolean;
 }) {
-  if (totalPages <= 1) return null;
+  if (totalPages <= 1 && !alwaysShow) return null;
 
   return (
     <nav
