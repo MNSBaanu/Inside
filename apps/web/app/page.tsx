@@ -10,10 +10,14 @@ import { AutoRefresh } from '@/components/layout/auto-refresh';
 import { ArrowButton } from '@/components/layout/arrow-button';
 import { HomeFooter } from '@/components/layout/home-footer';
 import {
-  authImage,
   featuredWork,
   heroImage,
+  homeAboutThumb,
+  homeRoleImages,
+  homeStepImages,
+  hotspotImages,
   spotlightImage,
+  workGridImages,
 } from '@/lib/utils/images';
 
 const rooms = ['Living Room', 'Bedroom', 'Kitchen', 'Dining Room', 'Home Office'];
@@ -26,37 +30,41 @@ const stats = [
 ];
 
 const highlights = [
-  { title: 'Verified designers', body: 'Credentials checked before the badge appears.' },
+  { title: 'Verified designers', body: 'Designers submit credentials and an admin checks them before the badge appears.' },
   { title: 'Milestone payments', body: 'Pay for each stage after you approve it.' },
   { title: 'Side-by-side proposals', body: 'Compare scope, timeline and cost at a glance.' },
   { title: 'One workspace', body: 'Messages, files and approvals kept together.' },
+  { title: 'Saved designers', body: 'Save designers and work you like and come back to them later.' },
+  { title: 'Designer schedules', body: 'Designers manage their availability so you know when they can start.' },
+  { title: 'Live notifications', body: 'Get told when a proposal, message or payment needs you.' },
+  { title: 'Safety and reporting', body: 'Report a problem and our team steps in to review it.' },
 ];
 
 const steps = [
   {
     title: 'Write your brief',
     body: 'Describe the space, the budget and the feeling you are after. Add a moodboard if you already have one.',
-    image: authImage,
+    image: homeStepImages[0],
   },
   {
     title: 'Compare proposals',
     body: 'Verified designers respond with scope, timeline and cost. Read them side by side before you commit.',
-    image: featuredWork[1].src,
+    image: homeStepImages[1],
   },
   {
     title: 'Work in one place',
     body: 'Track stages, approve deliverables and keep every message and file together.',
-    image: spotlightImage,
+    image: homeStepImages[2],
   },
   {
     title: 'Pay per milestone',
     body: 'Posting a brief is free. You pay per milestone, after you approve each stage.',
-    image: featuredWork[2].src,
+    image: homeStepImages[3],
   },
   {
     title: 'Verified designers',
     body: 'Every designer submits proof of qualification and past work for review before the verified badge appears.',
-    image: featuredWork[3].src,
+    image: homeStepImages[4],
   },
 ];
 
@@ -67,7 +75,7 @@ const promotions = [
     body: "See every designer's fees, timeline and stages in one view before you accept.",
     href: '/briefs/new',
     cta: 'Start a brief',
-    image: featuredWork[0].src,
+    image: homeRoleImages[0],
   },
   {
     label: 'Open projects',
@@ -75,7 +83,7 @@ const promotions = [
     body: 'Describe the space and budget once. Designers reply with proposals you can compare.',
     href: '/requests/new',
     cta: 'Post a project',
-    image: authImage,
+    image: homeRoleImages[1],
   },
   {
     label: 'For designers',
@@ -83,7 +91,7 @@ const promotions = [
     body: 'Browse open projects from clients and send a proposal with your scope and fees.',
     href: '/open-projects',
     cta: 'See open projects',
-    image: spotlightImage,
+    image: homeRoleImages[2],
   },
 ];
 
@@ -139,7 +147,7 @@ export default function HomePage() {
           <Reveal>
             <p className="text-sm font-medium uppercase tracking-[0.08em]">About Inside</p>
             <div className="relative mt-8 hidden aspect-[4/5] w-full max-w-[260px] overflow-hidden rounded-card lg:block">
-              <Image src={featuredWork[3].src} alt="" fill sizes="260px" className="object-cover" />
+              <Image src={homeAboutThumb} alt="" fill sizes="260px" className="object-cover" />
             </div>
           </Reveal>
           <Reveal delay={60}>
@@ -202,6 +210,7 @@ export default function HomePage() {
       </section>
 
       <section aria-labelledby="steps-title" className="shell pb-16 md:pb-24">
+        <ScrollScale mode="enter" from={0.9} to={1}>
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
           <Reveal className="flex flex-col">
             <h2 id="steps-title" className={sectionTitle}>
@@ -225,8 +234,8 @@ export default function HomePage() {
 
           <Reveal delay={120} className="divide-y divide-ink/10">
             {steps.map((step, index) => (
-              <details key={step.title} open={index === 0} className="group py-5 first:pt-0">
-                <summary className="flex cursor-pointer list-none items-baseline gap-3">
+              <details key={step.title} name="steps" open={index === 0} className="group py-5 first:pt-0">
+                <summary className="flex cursor-pointer list-none items-baseline gap-3 group-open:pointer-events-none">
                   <span className={`text-xs ${muted}`}>{String(index + 1).padStart(2, '0')}</span>
                   <span className="text-xl font-medium tracking-[-0.02em]">{step.title}</span>
                   <Plus
@@ -248,13 +257,19 @@ export default function HomePage() {
             ))}
           </Reveal>
         </div>
+        </ScrollScale>
       </section>
 
       <section aria-label="Featured projects" className="shell pb-16 md:pb-24">
         <ScrollScale mode="enter" from={0.8} to={1}>
           <SpotlightCarousel
             slides={featuredWork}
-            hotspot={{ title: 'Verified designers', src: spotlightImage, href: '/explore?tab=designers' }}
+            hotspots={[
+              { title: 'Verified designers', src: hotspotImages[0], href: '/explore?tab=designers', className: 'left-1/2 top-[38%]' },
+              { title: 'Shop the look', src: hotspotImages[1], href: '/shop', className: 'left-[22%] top-[18%]' },
+              { title: 'Browse portfolios', src: hotspotImages[2], href: '/portfolios', className: 'right-[12%] top-[45%]' },
+              { title: 'Start a brief', src: hotspotImages[3], href: '/register', className: 'left-[55%] top-[12%]' },
+            ]}
           />
         </ScrollScale>
       </section>
@@ -292,7 +307,7 @@ export default function HomePage() {
               <Link href="/explore" className="group block">
                 <div className="relative aspect-[3/2] overflow-hidden rounded-card">
                   <Image
-                    src={work.src}
+                    src={workGridImages[index]}
                     alt={work.title}
                     fill
                     sizes="(min-width: 768px) 45vw, 100vw"

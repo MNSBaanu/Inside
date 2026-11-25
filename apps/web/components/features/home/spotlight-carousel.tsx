@@ -9,13 +9,14 @@ type Slide = { id: string; title: string; style: string; src: string };
 
 export function SpotlightCarousel({
   slides,
-  hotspot,
+  hotspots,
 }: {
   slides: Slide[];
-  hotspot: { title: string; src: string; href: string };
+  hotspots: { title: string; src: string; href: string; className: string }[];
 }) {
   const [index, setIndex] = useState(0);
   const slide = slides[index];
+  const hotspot = hotspots[index % hotspots.length];
   const go = (step: number) =>
     setIndex((current) => (current + step + slides.length) % slides.length);
 
@@ -34,7 +35,7 @@ export function SpotlightCarousel({
 
       <Link
         href={hotspot.href}
-        className="absolute left-1/2 top-[38%] hidden items-start gap-2 md:flex"
+        className={`absolute hidden items-start gap-2 md:flex ${hotspot.className}`}
       >
         <span className="mt-1 h-3 w-3 rounded-full border-2 border-white bg-white/40" />
         <span className="w-40 rounded-xl bg-canvas/95 p-2 shadow-lift">
