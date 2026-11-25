@@ -17,6 +17,7 @@ import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { STAGE_REQUIREMENTS, requirementFor } from './stage-requirements';
 
 type StageWithProject = {
   id: string;
@@ -193,6 +194,21 @@ export class StagesService {
     ) {
       throw new BadRequestException(
         'Only in-progress or rejected stages can be submitted',
+      );
+    }
+
+    const missing = (await this.requirementStatus(stage)).filter(
+      (item) => !item.done,
+    );
+    if (missing.length) {
+      throw new BadRequestException(
+        `Before submitting, add: ${missing
+          .map((item) =>
+            item.kind === 'FILES' && item.min
+              ? `${item.label} (${item.count}/${item.min})`
+              : item.label,
+          )
+          .join(', ')}`,
       );
     }
 
@@ -404,6 +420,94 @@ export class StagesService {
     });
 
     return { success: true, data: { stage: this.serialize(updated) } };
+  }
+
+  async requirements(user: AuthUser, stageId: string) {
+    const stage = await this.requireStage(stageId);
+    if (
+      stage.project.clientId !== user.id &&
+      stage.project.designerId !== user.id
+    ) {
+      throw new ForbiddenException('You do not have access to this project');
+    }
+    return {
+      success: true,
+      data: { items: await this.requirementStatus(stage) },
+    };
+  }
+
+  async saveNote(user: AuthUser, stageId: string, key: string, text: string) {
+    const stage = await this.requireStage(stageId);
+    this.assertDesigner(user, stage);
+    this.assertProjectActive(stage);
+    if (
+      stage.status !== StageStatus.IN_PROGRESS &&
+      stage.status !== StageStatus.REJECTED
+    ) {
+      throw new BadRequestException('This stage is not open for changes');
+    }
+    const requirement = requirementFor(stage.name, key);
+    if (!requirement || requirement.kind !== 'TEXT') {
+      throw new BadRequestException('Unknown item for this stage');
+    }
+    const trimmed = text.trim();
+    if (!trimmed) {
+      await this.prisma.stageNote.deleteMany({ where: { stageId, key } });
+    } else {
+      await this.prisma.stageNote.upsert({
+        where: { stageId_key: { stageId, key } },
+        create: { stageId, key, text: trimmed },
+        update: { text: trimmed },
+      });
+    }
+    await this.activity.log({
+      projectId: stage.projectId,
+      userId: user.id,
+      action: 'STAGE_NOTE_SAVED',
+      metadata: { stageId, key },
+    });
+    return {
+      success: true,
+      data: { items: await this.requirementStatus(stage) },
+    };
+  }
+
+  private async requirementStatus(stage: StageWithProject) {
+    const [files, notes, logs] = await Promise.all([
+      this.prisma.deliverable.groupBy({
+        by: ['requirement'],
+        where: { stageId: stage.id, requirement: { not: null } },
+        _count: { _all: true },
+      }),
+      this.prisma.stageNote.findMany({ where: { stageId: stage.id } }),
+      this.prisma.workLog.findMany({
+        where: {
+          projectId: stage.projectId,
+          stageId: stage.id,
+          confirmedAt: { not: null },
+        },
+        select: { type: true },
+      }),
+    ]);
+    return STAGE_REQUIREMENTS[stage.name].map((item) => {
+      if (item.kind === 'FILES') {
+        const count =
+          files.find((group) => group.requirement === item.key)?._count._all ??
+          0;
+        return { ...item, count, done: count >= (item.min ?? 1) };
+      }
+      if (item.kind === 'TEXT') {
+        const note = notes.find((entry) => entry.key === item.key);
+        return {
+          ...item,
+          text: note?.text ?? null,
+          count: note ? 1 : 0,
+          done: Boolean(note),
+        };
+      }
+      const count = logs.filter((log) => log.type === item.logType).length;
+      return { ...item, count, done: count > 0 };
+    });
   }
 
   private async requireStage(stageId: string): Promise<StageWithProject> {

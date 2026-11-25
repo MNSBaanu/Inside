@@ -31,6 +31,15 @@ export class CreateDeliverableDto {
   @IsString()
   @MaxLength(2000)
   notes?: string;
+
+  @ApiPropertyOptional({
+    example: 'site_photos',
+    description: 'Stage requirement this file fills',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  requirement?: string;
 }
 
 export class UpdateDeliverableFeedbackDto {

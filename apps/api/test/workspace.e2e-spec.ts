@@ -15,6 +15,7 @@ import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { STRIPE } from '../src/modules/delivery/payments/stripe.provider';
 import { PrismaService } from '../src/database/prisma.service';
+import { fulfilStageRequirements } from './stage-requirements';
 
 const password = 'Password123!';
 
@@ -270,6 +271,18 @@ describe('Workspace flow (e2e)', () => {
         })
         .expect(201);
       expect(deliv.body.data.deliverable.version).toBe(1);
+
+      await request(app.getHttpServer())
+        .patch(`/stages/${stageId}/submit`)
+        .set(authHeader(designerToken))
+        .expect(400);
+      await fulfilStageRequirements(
+        app.getHttpServer(),
+        projectId,
+        stageId,
+        designerToken,
+        clientToken,
+      );
 
       const submit = await request(app.getHttpServer())
         .patch(`/stages/${stageId}/submit`)

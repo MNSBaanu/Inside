@@ -34,6 +34,7 @@ import { RequestsModule } from './modules/hiring/requests/requests.module';
 import { ReviewsModule } from './modules/delivery/reviews/reviews.module';
 import { StagesModule } from './modules/delivery/stages/stages.module';
 import { TasksModule } from './modules/delivery/tasks/tasks.module';
+import { WorkLogModule } from './modules/delivery/work-log/work-log.module';
 import { UploadsModule } from './modules/platform/uploads/uploads.module';
 import { UsersModule } from './modules/identity/users/users.module';
 import { VerificationsModule } from './modules/identity/verifications/verifications.module';
@@ -66,6 +67,7 @@ import { VerificationsModule } from './modules/identity/verifications/verificati
     ProjectsModule,
     StagesModule,
     TasksModule,
+    WorkLogModule,
     DeliverablesModule,
     MessagesModule,
     SupportModule,

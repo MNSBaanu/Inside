@@ -6,6 +6,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/database/prisma.service';
+import { fulfilStageRequirements } from './stage-requirements';
 
 const password = 'Password123!';
 
@@ -324,6 +325,17 @@ describe('Platform flows (e2e)', () => {
         .set(auth(designer.token))
         .send({ fileUrl: 'https://res.cloudinary.com/e2e/proposal-v1.pdf' })
         .expect(201);
+      await request(server())
+        .patch(`/stages/${stageId}/submit`)
+        .set(auth(designer.token))
+        .expect(400);
+      await fulfilStageRequirements(
+        server(),
+        projectId,
+        stageId,
+        designer.token,
+        client.token,
+      );
       await request(server())
         .patch(`/stages/${stageId}/submit`)
         .set(auth(designer.token))

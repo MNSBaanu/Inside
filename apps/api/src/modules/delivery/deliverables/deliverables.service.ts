@@ -11,6 +11,7 @@ import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { requirementFor } from '../stages/stage-requirements';
 import {
   CreateDeliverableDto,
   UpdateDeliverableFeedbackDto,
@@ -56,6 +57,13 @@ export class DeliverablesService {
       );
     }
 
+    if (
+      dto.requirement &&
+      requirementFor(stage.name, dto.requirement)?.kind !== 'FILES'
+    ) {
+      throw new BadRequestException('Unknown item for this stage');
+    }
+
     if (dto.fileHash) {
       const same = await this.prisma.deliverable.findFirst({
         where: { stageId, fileHash: dto.fileHash },
@@ -82,6 +90,7 @@ export class DeliverablesService {
         fileName: dto.fileName,
         fileHash: dto.fileHash,
         notes: dto.notes,
+        requirement: dto.requirement,
       },
     });
 
@@ -204,6 +213,7 @@ export class DeliverablesService {
     id: string;
     stageId: string;
     version: number;
+    requirement: string | null;
     fileUrl: string;
     fileName: string | null;
     fileHash: string | null;
@@ -216,6 +226,7 @@ export class DeliverablesService {
       id: d.id,
       stageId: d.stageId,
       version: d.version,
+      requirement: d.requirement,
       fileUrl: d.fileUrl,
       fileName: d.fileName,
       fileHash: d.fileHash,

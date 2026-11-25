@@ -35,6 +35,20 @@ describe('StagesService', () => {
     },
     deliverable: {
       findFirst: jest.fn().mockResolvedValue({ uploadedAt: new Date() }),
+      groupBy: jest
+        .fn()
+        .mockResolvedValue([
+          { requirement: 'site_photos', _count: { _all: 3 } },
+        ]),
+    },
+    stageNote: {
+      findMany: jest.fn().mockResolvedValue([
+        { key: 'measurements', text: 'Living room 4m x 5m' },
+        { key: 'scope', text: 'Living room only' },
+      ]),
+    },
+    workLog: {
+      findMany: jest.fn().mockResolvedValue([{ type: 'SITE_VISIT' }]),
     },
     milestonePayment: {
       findFirst: jest.fn().mockResolvedValue({ status: PaymentStatus.PAID }),
@@ -152,6 +166,21 @@ describe('StagesService', () => {
 
     const result = await service.submit(designer, 's1');
     expect(result.data.stage.status).toBe(StageStatus.SUBMITTED);
+  });
+
+  it('blocks submitting until every stage requirement is done', async () => {
+    prisma.projectStage.findUnique.mockResolvedValue({
+      ...baseStage,
+      status: StageStatus.IN_PROGRESS,
+    });
+    prisma.deliverable.groupBy.mockResolvedValueOnce([
+      { requirement: 'site_photos', _count: { _all: 1 } },
+    ]);
+    prisma.workLog.findMany.mockResolvedValueOnce([]);
+
+    await expect(service.submit(designer, 's1')).rejects.toThrow(
+      'Before submitting, add: Site visit confirmed, Site photos (1/3)',
+    );
   });
 
   it('client approves submitted stage, releases payment, advances next stage', async () => {

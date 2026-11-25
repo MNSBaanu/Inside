@@ -5,6 +5,7 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -20,6 +21,7 @@ import { DesignerModeGuard } from '../../identity/auth/guards/designer-mode.guar
 import { JwtAuthGuard } from '../../identity/auth/guards/jwt-auth.guard';
 import { UpdateStageDueDateDto } from './dto/update-stage-due-date.dto';
 import { RejectStageDto } from './dto/reject-stage.dto';
+import { SaveStageNoteDto } from './dto/save-stage-note.dto';
 import { StagesService } from './stages.service';
 
 @ApiTags('stages')
@@ -57,6 +59,30 @@ export class StagesController {
     @Body() dto: UpdateStageDueDateDto,
   ) {
     return this.stages.setDueDate(user, id, dto.dueDate ?? null);
+  }
+
+  @Get('stages/:id/requirements')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'What a stage needs before it can be submitted' })
+  @ApiOkResponse({ description: 'Requirements with progress' })
+  requirements(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.stages.requirements(user, id);
+  }
+
+  @Put('stages/:id/requirements/:key')
+  @UseGuards(JwtAuthGuard, DesignerModeGuard)
+  @ApiOperation({ summary: 'Designer saves the text for a stage requirement' })
+  @ApiOkResponse({ description: 'Requirements with progress' })
+  saveNote(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('key') key: string,
+    @Body() dto: SaveStageNoteDto,
+  ) {
+    return this.stages.saveNote(user, id, key, dto.text);
   }
 
   @Patch('stages/:id/start')
