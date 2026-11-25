@@ -17,6 +17,7 @@ import { HealthModule } from './modules/platform/health/health.module';
 import { MatchingModule } from './modules/discovery/matching/matching.module';
 import { MessagesModule } from './modules/delivery/messages/messages.module';
 import { SupportModule } from './modules/delivery/support/support.module';
+import { InsideBotModule } from './modules/platform/bot/inside-bot.module';
 import { MoodboardsModule } from './modules/discovery/moodboards/moodboards.module';
 import { ContactModule } from './modules/platform/contact/contact.module';
 import { NewsletterModule } from './modules/platform/newsletter/newsletter.module';
@@ -68,6 +69,7 @@ import { VerificationsModule } from './modules/identity/verifications/verificati
     DeliverablesModule,
     MessagesModule,
     SupportModule,
+    InsideBotModule,
     PaymentsModule,
     ReviewsModule,
     ReportsModule,
