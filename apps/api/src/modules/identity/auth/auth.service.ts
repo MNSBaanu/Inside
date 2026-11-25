@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Role, AccountStatus, type User } from '@inside/database';
+import { Role, AccountStatus, Prisma, type User } from '@inside/database';
 import { createClerkClient, verifyToken } from '@clerk/backend';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../../../database/prisma.service';
@@ -95,7 +95,28 @@ export class AuthService {
     }
   }
 
+  /**
+   * A new user's first page sends several requests at once, and each one can
+   * try to create or link the account. Only one wins; the rest read its result.
+   */
   private async findOrLinkClerkUser(clerkId: string): Promise<User> {
+    try {
+      return await this.linkClerkUser(clerkId);
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        const linked = await this.prisma.user.findUnique({
+          where: { clerkId },
+        });
+        if (linked) return linked;
+      }
+      throw error;
+    }
+  }
+
+  private async linkClerkUser(clerkId: string): Promise<User> {
     const linked = await this.prisma.user.findUnique({ where: { clerkId } });
     if (linked) return linked;
 
