@@ -76,7 +76,7 @@ export class UploadsService {
       [UploadFolder.DELIVERABLES]: designer,
       [UploadFolder.MOODBOARDS]:
         user.role !== Role.ADMIN && user.activeRole === Role.CLIENT,
-      [UploadFolder.ATTACHMENTS]: user.role !== Role.ADMIN,
+      [UploadFolder.ATTACHMENTS]: true,
       [UploadFolder.AVATARS]: true,
       [UploadFolder.PRODUCTS]: user.role === Role.ADMIN,
     }[folder];
