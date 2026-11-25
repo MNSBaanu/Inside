@@ -586,7 +586,23 @@ export class RequestsService {
       request.type === RequestType.OPEN &&
       request.status === RequestStatus.OPEN;
 
-    if (!isClient && !isAssignedDesigner && !isOpenForDesigners) {
+    // A designer who quoted on an open request can still read it once it is
+    // closed, cancelled or given to someone else: their notices link here.
+    const hasProposed =
+      user.activeRole === Role.DESIGNER &&
+      !isClient &&
+      !isAssignedDesigner &&
+      !isOpenForDesigners &&
+      (await this.prisma.proposal.count({
+        where: { requestId: id, designerId: user.id },
+      })) > 0;
+
+    if (
+      !isClient &&
+      !isAssignedDesigner &&
+      !isOpenForDesigners &&
+      !hasProposed
+    ) {
       throw new ForbiddenException('You do not have access to this request');
     }
 

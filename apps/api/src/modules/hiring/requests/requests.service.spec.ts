@@ -1,4 +1,8 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   AccountStatus,
   RequestStatus,
@@ -23,6 +27,7 @@ describe('RequestsService', () => {
       update: jest.fn(),
     },
     proposal: {
+      count: jest.fn().mockResolvedValue(0),
       findMany: jest.fn().mockResolvedValue([]),
       updateMany: jest.fn().mockResolvedValue({ count: 0 }),
     },
@@ -265,6 +270,43 @@ describe('RequestsService', () => {
         metadata: { requestId: 'r2' },
       }),
     );
+  });
+
+  describe('a designer opening an open request that has closed', () => {
+    const closedOpenRequest = {
+      id: 'r1',
+      clientId: 'c1',
+      designerId: null,
+      briefId: null,
+      briefSnapshot: null,
+      portfolioId: null,
+      title: 'Japandi living room',
+      description: null,
+      timeline: null,
+      type: RequestType.OPEN,
+      status: RequestStatus.ACCEPTED,
+      budget: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    it('lets a designer who sent a proposal read it, as their notices link there', async () => {
+      prisma.projectRequest.findUnique.mockResolvedValue(closedOpenRequest);
+      prisma.proposal.count.mockResolvedValueOnce(1);
+      const result = await service.getById(designer, 'r1');
+      expect(result.data.request.id).toBe('r1');
+      expect(prisma.proposal.count).toHaveBeenCalledWith({
+        where: { requestId: 'r1', designerId: 'd1' },
+      });
+    });
+
+    it('still turns away a designer who never proposed', async () => {
+      prisma.projectRequest.findUnique.mockResolvedValue(closedOpenRequest);
+      prisma.proposal.count.mockResolvedValueOnce(0);
+      await expect(service.getById(designer, 'r1')).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+    });
   });
 
   it('rejects close on non-existent request', async () => {

@@ -388,11 +388,10 @@ export class ProposalsService {
   ) {
     const isClient = request.clientId === user.id;
     const isAssignedDesigner = request.designerId === user.id;
+    // Designers only ever get their own proposals back (see listByRequestId),
+    // so they can see theirs on an open request in any state.
     const isOpenDesigner =
-      user.activeRole === Role.DESIGNER &&
-      request.type === RequestType.OPEN &&
-      (request.status === RequestStatus.OPEN ||
-        request.status === RequestStatus.ACCEPTED);
+      user.activeRole === Role.DESIGNER && request.type === RequestType.OPEN;
 
     if (!isClient && !isAssignedDesigner && !isOpenDesigner) {
       throw new ForbiddenException('You do not have access to these proposals');
