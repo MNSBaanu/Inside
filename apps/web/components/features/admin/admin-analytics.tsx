@@ -72,29 +72,30 @@ export function AnalyticsSection() {
         eyebrow="Admin"
         title="Analytics."
         description={`Growth, revenue and activity for the ${rangeLabel.toLowerCase()}.`}
+        action={
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="w-56">
+              <label htmlFor="analytics-range" className="mb-1.5 block text-sm text-muted">
+                Date range
+              </label>
+              <Select
+                id="analytics-range"
+                value={range}
+                options={RANGES}
+                onChange={(value) => setRange(value || range)}
+              />
+            </div>
+            <Button
+              variant="outline"
+              onClick={exportPdf}
+              disabled={!data || loading || exporting}
+            >
+              <Download aria-hidden className="h-4 w-4" />
+              {exporting ? 'Exporting…' : 'Export PDF'}
+            </Button>
+          </div>
+        }
       />
-
-      <div className="mt-6 flex flex-wrap items-end gap-3">
-        <div className="w-56">
-          <label htmlFor="analytics-range" className="mb-1.5 block text-sm text-muted">
-            Date range
-          </label>
-          <Select
-            id="analytics-range"
-            value={range}
-            options={RANGES}
-            onChange={(value) => setRange(value || range)}
-          />
-        </div>
-        <Button
-          variant="outline"
-          onClick={exportPdf}
-          disabled={!data || loading || exporting}
-        >
-          <Download aria-hidden className="h-4 w-4" />
-          {exporting ? 'Exporting…' : 'Export PDF'}
-        </Button>
-      </div>
 
       {error ? (
         <div className="mt-6">
@@ -149,6 +150,7 @@ export function AnalyticsSection() {
           months={data?.months}
           loading={loading}
           format={formatMoney}
+          barFormat={compactNumber}
           series={[{ key: 'revenue', label: 'Revenue', className: 'bg-brand' }]}
           className="lg:col-span-2"
         />
@@ -164,6 +166,9 @@ export function AnalyticsSection() {
   );
 }
 
+const compactNumber = (value: number) =>
+  new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(value);
+
 async function downloadPdf(data: Analytics, rangeLabel: string) {
   const [{ jsPDF }, { default: autoTable }] = await Promise.all([
     import('jspdf'),
@@ -171,20 +176,63 @@ async function downloadPdf(data: Analytics, rangeLabel: string) {
   ]);
   const doc = new jsPDF();
   const { totals } = data;
-  let y = 20;
+  const PAPER: [number, number, number] = [252, 249, 244];
+  const SAND: [number, number, number] = [237, 231, 220];
+  const BRAND: [number, number, number] = [6, 69, 48];
+  const INK: [number, number, number] = [27, 36, 34];
+  const MUTED: [number, number, number] = [108, 116, 113];
+  const HAIRLINE: [number, number, number] = [223, 217, 205];
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
 
+  let paintedPages = 0;
+  const paintPage = () => {
+    const pages = doc.getNumberOfPages();
+    if (pages <= paintedPages) return;
+    paintedPages = pages;
+    doc.setFillColor(...PAPER);
+    doc.rect(0, 0, pageWidth, pageHeight, 'F');
+  };
+  paintPage();
+  doc.setFillColor(...BRAND);
+  doc.rect(0, 0, pageWidth, 26, 'F');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
-  doc.text('Inside analytics report', 14, y);
-  doc.setFontSize(10);
+  doc.setTextColor(...PAPER);
+  doc.text('Inside', 14, 17);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.text('Admin analytics report', pageWidth - 14, 17, { align: 'right' });
+
+  let y = 40;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(...INK);
+  doc.text('Analytics.', 14, y);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...MUTED);
   doc.text(`${rangeLabel} · generated ${new Date().toLocaleString('en-GB')}`, 14, (y += 7));
 
   const table = (title: string, head: string[], body: (string | number)[][]) => {
+    const minHeight = 10 + Math.min(body.length, 3) * 8;
+    if (y + 6 + minHeight > pageHeight - 18) {
+      doc.addPage();
+      paintPage();
+      y = 8;
+    }
     autoTable(doc, {
       startY: y + 6,
+      margin: { left: 14, right: 14, bottom: 18 },
+      rowPageBreak: 'avoid',
       head: [[title, ...head.slice(1)]],
       body,
-      headStyles: { fillColor: [60, 60, 60] },
-      styles: { fontSize: 9 },
+      theme: 'plain',
+      headStyles: { fillColor: BRAND, textColor: PAPER, fontStyle: 'bold' },
+      bodyStyles: { textColor: INK },
+      alternateRowStyles: { fillColor: SAND },
+      styles: { fontSize: 9, lineColor: HAIRLINE, lineWidth: 0.1 },
+      willDrawPage: paintPage,
       columnStyles: { 0: { cellWidth: head.length > 2 ? 40 : 90 } },
     });
     y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
@@ -197,6 +245,85 @@ async function downloadPdf(data: Analytics, rangeLabel: string) {
     ['Average rating', totals.averageRating === null ? '-' : totals.averageRating.toFixed(1)],
     ['Reviews', totals.reviews],
   ]);
+  const charts: {
+    title: string;
+    series: { key: SeriesKey; label: string; color: [number, number, number] }[];
+    format: (value: number) => string;
+    barFormat: (value: number) => string;
+  }[] = [
+    {
+      title: 'New users',
+      series: [
+        { key: 'clients', label: 'Clients', color: BRAND },
+        { key: 'designers', label: 'Designers', color: [142, 170, 158] },
+      ],
+      format: (value) => value.toString(),
+      barFormat: (value) => value.toString(),
+    },
+    {
+      title: 'Projects started',
+      series: [{ key: 'projects', label: 'Projects', color: BRAND }],
+      format: (value) => value.toString(),
+      barFormat: (value) => value.toString(),
+    },
+    {
+      title: 'Revenue paid',
+      series: [{ key: 'revenue', label: 'Revenue', color: BRAND }],
+      format: formatMoney,
+      barFormat: compactNumber,
+    },
+  ];
+  const chartHeight = 36;
+  const chartWidth = 182;
+  for (const chart of charts) {
+    if (y + chartHeight + 34 > 285) {
+      doc.addPage();
+      paintPage();
+      y = 14;
+    }
+    y += 12;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(...INK);
+    doc.text(chart.title, 14, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    let legendX = 14;
+    y += 5;
+    for (const s of chart.series) {
+      const total = chart.format(data.months.reduce((sum, m) => sum + m[s.key], 0));
+      doc.setFillColor(...s.color);
+      doc.rect(legendX, y - 2.5, 2.5, 2.5, 'F');
+      doc.setTextColor(...MUTED);
+      const text = `${s.label} ${total}`;
+      doc.text(text, legendX + 4, y);
+      legendX += 8 + doc.getTextWidth(text);
+    }
+    const totals = data.months.map((m) => chart.series.reduce((sum, s) => sum + m[s.key], 0));
+    const max = Math.max(1, ...totals);
+    const slot = chartWidth / Math.max(1, data.months.length);
+    const base = y + 6 + chartHeight;
+    data.months.forEach((m, index) => {
+      const x = 14 + index * slot + slot * 0.2;
+      let top = base;
+      for (const s of chart.series) {
+        const h = (m[s.key] / max) * chartHeight;
+        doc.setFillColor(...s.color);
+        if (h > 0) doc.rect(x, top - h, slot * 0.6, h, 'F');
+        top -= h;
+      }
+      doc.setFontSize(7);
+      doc.setTextColor(...INK);
+      doc.text(chart.barFormat(totals[index]), x + slot * 0.3, top - 1.5, { align: 'center' });
+      doc.setTextColor(...MUTED);
+      doc.text(monthLabel(m.month), x + slot * 0.3, base + 4, { align: 'center' });
+    });
+    doc.setDrawColor(...HAIRLINE);
+    doc.line(14, base, 14 + chartWidth, base);
+    y = base + 4;
+  }
+  doc.setTextColor(...INK);
+
   table(
     'Month',
     ['', 'Clients', 'Designers', 'Projects', 'Revenue'],
@@ -227,6 +354,15 @@ async function downloadPdf(data: Analytics, rangeLabel: string) {
   breakdown('Requests by type', data.requestsByType);
   breakdown('Top portfolio styles', data.topStyles, true);
 
+  const pages = doc.getNumberOfPages();
+  for (let page = 1; page <= pages; page++) {
+    doc.setPage(page);
+    doc.setFontSize(8);
+    doc.setTextColor(...MUTED);
+    doc.text('Inside · insidesign.me', 14, pageHeight - 8);
+    doc.text(`Page ${page} of ${pages}`, pageWidth - 14, pageHeight - 8, { align: 'right' });
+  }
+
   doc.save(`inside-analytics-${new Date().toISOString().slice(0, 10)}.pdf`);
 }
 
@@ -252,6 +388,7 @@ function MonthlyChart({
   loading,
   series,
   format = (value: number) => value.toString(),
+  barFormat = format,
   className,
 }: {
   title: string;
@@ -259,6 +396,7 @@ function MonthlyChart({
   loading: boolean;
   series: { key: SeriesKey; label: string; className: string }[];
   format?: (value: number) => string;
+  barFormat?: (value: number) => string;
   className?: string;
 }) {
   const totals = months?.map((m) => series.reduce((sum, s) => sum + m[s.key], 0)) ?? [];
@@ -268,22 +406,25 @@ function MonthlyChart({
     <section className={cn(cardSurface, 'p-5', className)}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="font-display text-lg font-semibold">{title}</h2>
-        {series.length > 1 ? (
-          <div className="flex gap-4 text-xs text-muted">
-            {series.map((s) => (
-              <span key={s.key} className="inline-flex items-center gap-1.5">
-                <span aria-hidden className={cn('h-2.5 w-2.5 rounded-sm', s.className)} />
-                {s.label}
-              </span>
-            ))}
-          </div>
-        ) : null}
+        <div className="flex gap-4 text-xs text-muted">
+          {series.map((s) => (
+            <span key={s.key} className="inline-flex items-center gap-1.5">
+              <span aria-hidden className={cn('h-2.5 w-2.5 rounded-sm', s.className)} />
+              {s.label}
+              {months ? (
+                <span className="font-semibold text-ink">
+                  {format(months.reduce((sum, m) => sum + m[s.key], 0))}
+                </span>
+              ) : null}
+            </span>
+          ))}
+        </div>
       </div>
 
       {loading || !months ? (
         <Skeleton className="mt-4 h-40 w-full" />
       ) : (
-        <div className="mt-4 flex h-40 items-end gap-1.5" role="list" aria-label={title}>
+        <div className="mt-4 flex h-48 items-end gap-1.5" role="list" aria-label={title}>
           {months.map((m, index) => (
             <div
               key={m.month}
@@ -294,6 +435,7 @@ function MonthlyChart({
               title={`${monthLabel(m.month)} ${m.month.slice(0, 4)}: ${format(totals[index])}`}
               className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1"
             >
+              <span className="text-[10px] font-medium text-ink">{barFormat(totals[index])}</span>
               <div className="flex w-full flex-col-reverse overflow-hidden rounded-t">
                 {series.map((s) => (
                   <div
