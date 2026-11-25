@@ -9,6 +9,7 @@ import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { FileUpload, type HashedUpload } from '@/components/ui/file-upload';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { StageRequirements } from '@/components/features/projects/stage-requirements';
 import { api, errorMessage } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
 import { formatDate, formatMoney, titleCase } from '@/lib/utils/format';
@@ -29,12 +30,14 @@ export function StageList({
   isDesigner: isDesignerParty,
   active,
   onChanged,
+  onOpenWorkLog,
 }: {
   stages: ProjectStage[];
   isClient: boolean;
   isDesigner: boolean;
   active: boolean;
   onChanged: () => void;
+  onOpenWorkLog: () => void;
 }) {
   const isClient = isClientParty && active;
   const isDesigner = isDesignerParty && active;
@@ -137,7 +140,7 @@ export function StageList({
                         void confirm({
                           title: `Submit ${titleCase(stage.name)} for review?`,
                           description:
-                            'The client is asked to approve this stage. Make sure your files are uploaded.',
+                            'The client is asked to approve this stage. Everything under "What this stage needs" must be ready.',
                           confirmLabel: 'Submit',
                           tone: 'default',
                         }).then((ok) => {
@@ -192,7 +195,7 @@ export function StageList({
                       setOpenStage(openStage === stage.id ? null : stage.id)
                     }
                   >
-                    {openStage === stage.id ? 'Hide files' : 'Files'}
+                    {openStage === stage.id ? 'Hide all files' : 'All files'}
                   </Button>
                   <StatusBadge status={stage.status} />
                 </div>
@@ -203,6 +206,21 @@ export function StageList({
                   <ErrorNotice message={error.message} />
                 </div>
               ) : null}
+
+              <StageRequirements
+                stageId={stage.id}
+                status={stage.status}
+                editable={
+                  isDesigner &&
+                  (stage.status === 'IN_PROGRESS' || stage.status === 'REJECTED')
+                }
+                onOpenWorkLog={onOpenWorkLog}
+                onChanged={() =>
+                  setError((current) =>
+                    current?.stageId === stage.id ? null : current,
+                  )
+                }
+              />
 
               <StageTasks
                 stageId={stage.id}

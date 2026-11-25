@@ -12,6 +12,7 @@ import { PaymentList } from '@/components/features/projects/payment-list';
 import { ProjectHistory } from '@/components/features/projects/project-history';
 import { StageList } from '@/components/features/projects/stage-list';
 import { StageTimeline } from '@/components/features/projects/stage-timeline';
+import { WorkLog } from '@/components/features/projects/work-log';
 import { ReviewForm } from '@/components/features/reviews/review-form';
 import { ReviewList } from '@/components/features/reviews/review-list';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +27,14 @@ import { formatDate } from '@/lib/utils/format';
 import { useApi } from '@/lib/api/use-api';
 import type { Project, ProjectStage } from '@/lib/types';
 
-const tabs = ['Stages', 'Payments', 'Messages', 'History', 'Review'] as const;
+const tabs = [
+  'Stages',
+  'Work log',
+  'Payments',
+  'Messages',
+  'History',
+  'Review',
+] as const;
 type Tab = (typeof tabs)[number];
 
 export default function ProjectWorkspacePage({
@@ -47,11 +55,14 @@ export default function ProjectWorkspacePage({
       ? 'Payments'
       : searchParams.get('tab') === 'messages'
         ? 'Messages'
-        : 'Stages',
+        : searchParams.get('tab') === 'work-log'
+          ? 'Work log'
+          : 'Stages',
   );
   const tabParam = searchParams.get('tab');
   useEffect(() => {
     if (tabParam === 'messages') setTab('Messages');
+    if (tabParam === 'work-log') setTab('Work log');
   }, [tabParam]);
   const [reviewed, setReviewed] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -285,8 +296,18 @@ export default function ProjectWorkspacePage({
                 void stages.reload();
                 void project.reload();
               }}
+              onOpenWorkLog={() => setTab('Work log')}
             />
           )
+        ) : null}
+
+        {tab === 'Work log' && user ? (
+          <WorkLog
+            projectId={params.id}
+            currentUserId={user.id}
+            partnerName={party?.name ?? 'the other party'}
+            active={item.status === 'ACTIVE'}
+          />
         ) : null}
 
         {tab === 'Payments' ? (

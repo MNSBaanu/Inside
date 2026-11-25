@@ -331,9 +331,48 @@ export type ProjectListItem = Project & {
   lastMessage: LastMessage | null;
 };
 
+export type StageRequirement = {
+  key: string;
+  label: string;
+  hint: string;
+  kind: 'FILES' | 'TEXT' | 'WORKLOG';
+  min?: number;
+  logType?: WorkLogType;
+  count: number;
+  text?: string | null;
+  done: boolean;
+};
+
+export type WorkLogType =
+  | 'SITE_VISIT'
+  | 'MEASUREMENT'
+  | 'MEETING'
+  | 'ORDER'
+  | 'DELIVERY'
+  | 'INSTALLATION'
+  | 'PROGRESS'
+  | 'ISSUE';
+
+export type WorkLogEntry = {
+  id: string;
+  projectId: string;
+  stageId: string | null;
+  stageName: StageName | null;
+  type: WorkLogType;
+  title: string;
+  note: string | null;
+  photos: string[];
+  happenedAt: string;
+  confirmedAt: string | null;
+  confirmedById: string | null;
+  createdAt: string;
+  author: PartySummary;
+};
+
 export type Deliverable = {
   id: string;
   stageId: string;
+  requirement?: string | null;
   fileUrl: string;
   fileName: string | null;
   fileHash?: string | null;

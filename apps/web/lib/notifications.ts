@@ -9,7 +9,9 @@ export function notificationHref(item: Notification): string | null {
         ? '?tab=messages'
         : item.type === 'PAYMENT'
           ? '?payment=1'
-          : '';
+          : meta.tab === 'work-log'
+            ? '?tab=work-log'
+            : '';
     return `/projects/${meta.projectId}${tab}`;
   }
   if (typeof meta.requestId === 'string') return `/requests/${meta.requestId}`;

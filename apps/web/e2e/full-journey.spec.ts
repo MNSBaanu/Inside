@@ -22,6 +22,70 @@ function payStage(projectId: string, stageOrder: number) {
   );
 }
 
+const STAGE_NEEDS: Record<
+  string,
+  { files: [string, number][]; notes: string[]; logs: string[] }
+> = {
+  proposal: {
+    files: [['site_photos', 3]],
+    notes: ['measurements', 'scope'],
+    logs: ['SITE_VISIT'],
+  },
+  concept: {
+    files: [
+      ['concept_boards', 2],
+      ['layout', 1],
+    ],
+    notes: ['direction'],
+    logs: [],
+  },
+  design: {
+    files: [
+      ['renders', 3],
+      ['floor_plan', 1],
+    ],
+    notes: ['materials'],
+    logs: [],
+  },
+  revision: { files: [['revised_files', 1]], notes: ['changes'], logs: [] },
+  completion: {
+    files: [
+      ['final_photos', 3],
+      ['final_drawings', 1],
+    ],
+    notes: ['handover'],
+    logs: ['INSTALLATION'],
+  },
+};
+
+/** Fills what each stage needs (files, notes and confirmed site work) straight in the test database. */
+function fulfilStage(projectId: string, stageOrder: number, name: string) {
+  const needs = STAGE_NEEDS[name];
+  const stage = `(SELECT id FROM "ProjectStage" WHERE "projectId" = '${projectId}' AND "stageOrder" = ${stageOrder})`;
+  let version = 100;
+  const sql = [
+    ...needs.files.flatMap(([key, count]) =>
+      Array.from({ length: count }, (_, n) => {
+        version += 1;
+        return `INSERT INTO "Deliverable" (id, "stageId", version, requirement, "fileUrl", "fileName", "updatedAt") VALUES (gen_random_uuid()::text, ${stage}, ${version}, '${key}', 'https://res.cloudinary.com/e2e/image/upload/${key}-${n}.jpg', '${key}-${n}.jpg', now());`;
+      }),
+    ),
+    ...needs.notes.map(
+      (key) =>
+        `INSERT INTO "StageNote" (id, "stageId", key, text, "updatedAt") VALUES (gen_random_uuid()::text, ${stage}, '${key}', 'Journey test ${key}', now());`,
+    ),
+    ...needs.logs.map(
+      (type) =>
+        `INSERT INTO "WorkLog" (id, "projectId", "stageId", "authorId", type, title, "happenedAt", "confirmedAt", "confirmedById", "updatedAt") SELECT gen_random_uuid()::text, p.id, ${stage}, p."designerId", '${type}', 'Journey test ${type}', now(), now(), p."clientId", now() FROM "Project" p WHERE p.id = '${projectId}';`,
+    ),
+  ].join('\n');
+  execFileSync(
+    'pnpm',
+    ['--filter', '@inside/database', 'exec', 'prisma', 'db', 'execute', '--stdin', '--url', DATABASE_URL],
+    { input: sql, stdio: ['pipe', 'ignore', 'inherit'], shell: process.platform === 'win32' },
+  );
+}
+
 /** The UI test servers have no Cloudinary account, so uploads are answered in the browser. */
 async function fakeUploads(page: Page) {
   const cors = {
@@ -186,14 +250,21 @@ test('a new client goes from the landing page to a completed, reviewed project',
       await card.getByRole('checkbox', { name: task }).check();
       await expect(card.getByText('1/1 done')).toBeVisible();
 
-      await card.getByRole('button', { name: 'Files' }).click();
-      await card.getByLabel(/^Add a file/).setInputFiles({
+      await card.getByRole('button', { name: 'All files' }).click();
+      await card.getByLabel(/^Add files\./).setInputFiles({
         name: `${name}.pdf`,
         mimeType: 'application/pdf',
         buffer: Buffer.from('%PDF-1.4 journey test'),
       });
       await expect(card.getByRole('link', { name: `${name}.pdf` })).toBeVisible();
 
+      await submit.click();
+      await designer.getByRole('alertdialog').getByRole('button', { name: 'Submit' }).click();
+      await expect(card.getByText(/^Before submitting, add:/)).toBeVisible();
+
+      fulfilStage(projectUrl.split('/').pop()!, index + 1, name);
+      await designer.reload();
+      await expect(card.getByText(/ready$/)).toHaveText(/^(\d+)\/\1 ready$/);
       await submit.click();
       await designer.getByRole('alertdialog').getByRole('button', { name: 'Submit' }).click();
       await expect(card.getByText('Submitted', { exact: true })).toBeVisible();
