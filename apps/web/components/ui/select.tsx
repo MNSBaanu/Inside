@@ -33,7 +33,8 @@ export function Select({
 
   function select(index: number) {
     const chosen = options[index].value;
-    onChange(chosen !== '' && chosen === value ? '' : chosen);
+    const clearable = options.some((option) => option.value === '');
+    onChange(clearable && chosen !== '' && chosen === value ? '' : chosen);
     setOpen(false);
   }
 
