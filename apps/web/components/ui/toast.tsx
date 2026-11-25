@@ -42,14 +42,14 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
 function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number) => void }) {
   useEffect(() => {
-    const timer = setTimeout(() => onDismiss(toast.id), 4000);
+    const timer = setTimeout(() => onDismiss(toast.id), 3000);
     return () => clearTimeout(timer);
   }, [toast.id, onDismiss]);
 
   return (
     <div
       role="status"
-      className="pointer-events-auto flex items-start gap-3 rounded-card bg-ink px-4 py-3 text-sm text-canvas shadow-lift"
+      className="pointer-events-auto flex items-start gap-3 rounded-card bg-brand px-4 py-3 text-sm text-canvas shadow-lift"
     >
       <CheckCircle2 aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-brand-soft" />
       <p className="flex-1">{toast.message}</p>
