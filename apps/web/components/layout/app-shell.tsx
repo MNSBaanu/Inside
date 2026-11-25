@@ -32,6 +32,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { AnnouncementBanner } from '@/components/features/announcements/announcement-banner';
+import { InsideBot } from '@/components/features/bot/inside-bot';
 import { useSession } from '@/components/providers/session-provider';
 import { Skeleton } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
@@ -163,6 +164,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </SignOutContext.Provider>
         </div>
       </div>
+      {user.role !== 'ADMIN' ? <InsideBot /> : null}
     </div>
   );
 }
