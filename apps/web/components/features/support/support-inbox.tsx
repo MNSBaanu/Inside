@@ -4,7 +4,10 @@ import { ChevronLeft, Headset, Search } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { MessageThread } from '@/components/features/projects/message-thread';
+import {
+  CHAT_PANEL_HEIGHT,
+  MessageThread,
+} from '@/components/features/projects/message-thread';
 import { Avatar } from '@/components/ui/avatar';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { useApi } from '@/lib/api/use-api';
@@ -38,11 +41,9 @@ export function shortTime(iso: string) {
   return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 
-export function SupportRow({ active }: { active: boolean }) {
-  const { data, refresh } = useApi<{ unreadCount: number; lastMessage: LastMessage | null }>(
-    '/support/summary',
-  );
-  useSocketEvent('conversation:updated', () => void refresh());
+export type SupportSummary = { unreadCount: number; lastMessage: LastMessage | null };
+
+export function SupportRow({ active, data }: { active: boolean; data: SupportSummary | null }) {
   const unread = (data?.unreadCount ?? 0) > 0;
   const last = data?.lastMessage;
   return (
@@ -93,6 +94,21 @@ export function AdminSupportInbox({ adminId }: { adminId: string }) {
     '/admin/support',
   );
   useSocketEvent('conversation:updated', () => void refresh());
+  const [typing, setTyping] = useState<Record<string, number>>({});
+  useSocketEvent<{ projectId: string; userId: string }>('typing', (event) => {
+    const userId = event.projectId.replace(/^support:/, '');
+    if (event.userId !== userId) return;
+    setTyping((current) => ({ ...current, [userId]: Date.now() }));
+    setTimeout(
+      () =>
+        setTyping((current) => {
+          if (Date.now() - (current[userId] ?? 0) < 2900) return current;
+          const { [userId]: _done, ...rest } = current;
+          return rest;
+        }),
+      3000,
+    );
+  });
 
   if (loading && !data) {
     return (
@@ -120,7 +136,8 @@ export function AdminSupportInbox({ adminId }: { adminId: string }) {
     <div className="grid gap-4 lg:grid-cols-[22rem_minmax(0,1fr)]">
       <aside
         className={cn(
-          'flex h-[min(72vh,680px)] flex-col overflow-hidden rounded-card border border-hairline bg-surface',
+          'flex flex-col overflow-hidden rounded-card border border-hairline bg-surface',
+          CHAT_PANEL_HEIGHT,
           open && 'hidden lg:flex',
         )}
       >
@@ -175,7 +192,9 @@ export function AdminSupportInbox({ adminId }: { adminId: string }) {
                     <p className="truncate text-xs text-muted">{titleCase(person.role)}</p>
                     <div className="mt-0.5 flex items-center justify-between gap-2">
                       <p className={cn('truncate text-sm', unread ? 'text-ink' : 'text-muted')}>
-                        {person.lastMessage
+                        {typing[person.id] ? (
+                          <span className="text-brand">typing…</span>
+                        ) : person.lastMessage
                           ? `${person.lastMessage.fromAdmin ? 'You: ' : ''}${person.lastMessage.content}`
                           : 'Start a conversation'}
                       </p>
@@ -201,6 +220,7 @@ export function AdminSupportInbox({ adminId }: { adminId: string }) {
 
       {selected ? (
         <MessageThread
+          fill
           key={selected.id}
           projectId={`support:${selected.id}`}
           basePath={`/admin/support/${selected.id}/messages`}

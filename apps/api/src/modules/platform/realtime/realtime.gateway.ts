@@ -17,7 +17,7 @@ import {
   userRoom,
 } from './realtime.service';
 
-type SocketUser = { id: string; name: string };
+type SocketUser = { id: string; name: string; role: Role };
 
 const socketData = (socket: Socket) => socket.data as { user?: SocketUser };
 
@@ -51,7 +51,7 @@ export class RealtimeGateway implements OnGatewayInit {
     const token = (socket.handshake.auth as { token?: unknown }).token;
     if (typeof token !== 'string' || !token) throw new Error('missing token');
     const user = await this.auth.authenticateToken(token);
-    socketData(socket).user = { id: user.id, name: user.name };
+    socketData(socket).user = { id: user.id, name: user.name, role: user.role };
     await socket.join(userRoom(user.id));
     if (user.role === Role.ADMIN) await socket.join(ADMINS_ROOM);
   }
@@ -87,6 +87,30 @@ export class RealtimeGateway implements OnGatewayInit {
       await socket.leave(projectRoom(body.projectId));
     }
     return { ok: true };
+  }
+
+  /** Users type to the admins; an admin types to one user (and the other admins). */
+  @SubscribeMessage('support:typing')
+  supportTyping(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() body: { userId?: unknown },
+  ) {
+    const { user } = socketData(socket);
+    if (!user) return;
+    const isAdmin = user.role === Role.ADMIN;
+    const threadUserId = isAdmin
+      ? typeof body?.userId === 'string'
+        ? body.userId
+        : ''
+      : user.id;
+    if (!threadUserId) return;
+    const payload = {
+      projectId: `support:${threadUserId}`,
+      userId: user.id,
+      name: user.name,
+    };
+    socket.to(ADMINS_ROOM).emit('typing', payload);
+    if (isAdmin) socket.to(userRoom(threadUserId)).emit('typing', payload);
   }
 
   @SubscribeMessage('typing')

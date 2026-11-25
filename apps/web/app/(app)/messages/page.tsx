@@ -4,17 +4,20 @@ import { ChevronLeft, MessageCircle, Search } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
-import { MessageThread } from '@/components/features/projects/message-thread';
+import {
+  CHAT_PANEL_HEIGHT,
+  MessageThread,
+} from '@/components/features/projects/message-thread';
 import {
   AdminSupportInbox,
   SUPPORT_PARTY,
   SupportRow,
   shortTime,
+  type SupportSummary,
 } from '@/components/features/support/support-inbox';
 import { useSession } from '@/components/providers/session-provider';
 import { Avatar } from '@/components/ui/avatar';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
-import { PageHeader } from '@/components/ui/page-header';
 import { useApi } from '@/lib/api/use-api';
 import { useSocketEvent } from '@/lib/realtime/socket';
 import type { ProjectListItem } from '@/lib/types';
@@ -30,7 +33,11 @@ function PeopleInbox() {
   const { user } = useSession();
   const searchParams = useSearchParams();
   const { data, error, loading, refresh } = useApi<{ items: ProjectListItem[] }>('/projects');
-  useSocketEvent('conversation:updated', () => void refresh());
+  const support = useApi<SupportSummary>('/support/summary');
+  useSocketEvent('conversation:updated', () => {
+    void refresh();
+    void support.refresh();
+  });
   const [query, setQuery] = useState('');
 
   const threads = [...(data?.items ?? [])].sort((a, b) => {
@@ -51,7 +58,14 @@ function PeopleInbox() {
   const chosenId = searchParams.get('project');
   const supportOpen = searchParams.get('support') === '1';
   const open = threads.find((project) => project.id === chosenId) ?? null;
-  const selected = supportOpen ? null : (open ?? threads[0] ?? null);
+  const newestThread = threads[0];
+  const supportIsNewest =
+    !newestThread ||
+    (support.data?.lastMessage
+      ? new Date(support.data.lastMessage.sentAt).getTime() >
+        new Date(newestThread.lastMessage?.sentAt ?? newestThread.updatedAt).getTime()
+      : false);
+  const selected = supportOpen ? null : (open ?? (supportIsNewest ? null : newestThread));
   const showSupport = supportOpen || !selected;
 
   if (loading) {
@@ -68,7 +82,8 @@ function PeopleInbox() {
     <div className="grid gap-4 lg:grid-cols-[22rem_minmax(0,1fr)]">
       <aside
         className={cn(
-          'flex h-[min(72vh,680px)] flex-col overflow-hidden rounded-card border border-hairline bg-surface',
+          'flex flex-col overflow-hidden rounded-card border border-hairline bg-surface',
+          CHAT_PANEL_HEIGHT,
           (open || supportOpen) && 'hidden lg:flex',
         )}
       >
@@ -90,7 +105,7 @@ function PeopleInbox() {
         </div>
         <ul className="flex-1 overflow-y-auto">
           <li>
-            <SupportRow active={showSupport} />
+            <SupportRow active={showSupport} data={support.data} />
           </li>
           {visible.map((project) => {
             const partner = partnerOf(project);
@@ -159,6 +174,7 @@ function PeopleInbox() {
 
       {showSupport && user ? (
         <MessageThread
+          fill
           key="support"
           projectId={`support:${user.id}`}
           basePath="/support/messages"
@@ -182,6 +198,7 @@ function PeopleInbox() {
 
       {selected && user ? (
         <MessageThread
+          fill
           key={selected.id}
           projectId={selected.id}
           currentUserId={user.id}
@@ -213,13 +230,11 @@ function PeopleInbox() {
 
 export default function MessagesPage() {
   return (
-    <div>
-      <PageHeader variant="app" eyebrow="Messages" title="Conversations." />
-      <div className="mt-8">
-        <Suspense fallback={<Skeleton className="h-64" />}>
-          <Inbox />
-        </Suspense>
-      </div>
+    <div className="lg:-mb-[6.5rem]">
+      <h1 className="sr-only">Messages</h1>
+      <Suspense fallback={<Skeleton className="h-64" />}>
+        <Inbox />
+      </Suspense>
     </div>
   );
 }

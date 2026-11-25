@@ -26,6 +26,9 @@ const MAX_BYTES = 10 * 1024 * 1024;
 const IMAGE = /^(jpe?g|png|webp|gif|avif)$/i;
 const GROUP_GAP_MS = 5 * 60 * 1000;
 
+/** Chat list and chat fill the window on desktop (below the app's top bar). */
+export const CHAT_PANEL_HEIGHT = 'h-[min(72vh,680px)] lg:h-[calc(100dvh-7.5rem)]';
+
 const timeOf = (iso: string) =>
   new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
 
@@ -56,7 +59,9 @@ export function MessageThread({
   basePath = `/projects/${projectId}/messages`,
   projectRoom = true,
   emptyHint = 'Say hello. Everything you agree here stays attached to the project.',
+  fill = false,
 }: {
+  fill?: boolean;
   projectId: string;
   currentUserId: string;
   partner?: PartySummary | null;
@@ -160,9 +165,10 @@ export function MessageThread({
       box.style.height = `${Math.min(box.scrollHeight, 140)}px`;
     }
     const now = Date.now();
-    if (projectRoom && value.trim() && now - lastTypingSent.current > 2000) {
+    if (value.trim() && now - lastTypingSent.current > 2000) {
       lastTypingSent.current = now;
-      getSocket().emit('typing', { projectId });
+      if (projectRoom) getSocket().emit('typing', { projectId });
+      else getSocket().emit('support:typing', { userId: projectId.replace(/^support:/, '') });
     }
   }
 
@@ -240,7 +246,8 @@ export function MessageThread({
   return (
     <div
       className={cn(
-        'flex h-[min(72vh,680px)] flex-col overflow-hidden rounded-card border border-hairline bg-surface',
+        'flex flex-col overflow-hidden rounded-card border border-hairline bg-surface',
+        fill ? CHAT_PANEL_HEIGHT : 'h-[min(72vh,680px)]',
         className,
       )}
     >
@@ -401,7 +408,7 @@ export function MessageThread({
                           {timeOf(message.sentAt)}
                           {mine ? (
                             message.isRead ? (
-                              <CheckCheck aria-label="Read" className="h-3.5 w-3.5 text-canvas" />
+                              <CheckCheck aria-label="Read" className="h-4 w-4 text-[#53BDEB]" />
                             ) : (
                               <Check aria-label="Sent" className="h-3.5 w-3.5" />
                             )
