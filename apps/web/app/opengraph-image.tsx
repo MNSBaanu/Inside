@@ -26,7 +26,7 @@ export default function OpengraphImage() {
             fontSize: 22,
             letterSpacing: '0.16em',
             textTransform: 'uppercase',
-            color: '#0B5A3D',
+            color: '#064530',
           }}
         >
           Interior design marketplace
@@ -49,7 +49,7 @@ export default function OpengraphImage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderTop: '2px solid #0B5A3D',
+            borderTop: '2px solid #064530',
             paddingTop: 32,
             fontSize: 30,
           }}

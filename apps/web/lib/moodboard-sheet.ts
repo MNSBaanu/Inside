@@ -17,7 +17,7 @@ const COLORS = {
   paper: '#F4EFE7',
   ink: '#1B2422',
   muted: '#6C7471',
-  brand: '#0B5A3D',
+  brand: '#064530',
   frame: '#E4DCCF',
 };
 
