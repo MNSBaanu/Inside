@@ -147,7 +147,7 @@ export default function HomePage() {
           <Reveal>
             <p className="text-sm font-medium uppercase tracking-[0.08em]">About Inside</p>
             <div className="relative mt-8 hidden aspect-[4/5] w-full max-w-[260px] overflow-hidden rounded-card lg:block">
-              <Image src={homeAboutThumb} alt="" fill sizes="260px" className="object-cover" />
+              <Image src={homeAboutThumb} alt="" fill sizes="(min-width: 1024px) 520px, 260px" quality={90} className="object-cover" />
             </div>
           </Reveal>
           <Reveal delay={60}>

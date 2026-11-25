@@ -26,7 +26,7 @@ export const homeStepImages = [9052854, 6583362, 6322367, 4174746, 8152751].map(
   pexels(id, 1200, 675),
 );
 export const homeRoleImages = [14505912, 3144580, 10153052].map((id) => pexels(id, 1200, 900));
-export const homeAboutThumb = pexels(9565782, 520, 390);
+export const homeAboutThumb = pexels(9565782, 1000, 1250);
 export const hotspotImages = [3705529, 29383010, 7587314, 4740488].map((id) =>
   pexels(id, 320, 240),
 );
