@@ -30,6 +30,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<SessionStatus>('loading');
   const latest = useRef(0);
+  const signingOut = useRef(false);
 
   useEffect(() => {
     setTokenGetter(() => getToken());
@@ -67,7 +68,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }, [signOut]);
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || signingOut.current) return;
     if (isSignedIn) {
       setStatus('loading');
       void loadUser();
@@ -78,11 +79,12 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isLoaded, isSignedIn, userId, loadUser]);
 
+  /** Keeps the signed-in page as it is until the browser has left for the home page. */
   const logout = useCallback(async () => {
+    signingOut.current = true;
     latest.current++;
     await signOut();
-    setUser(null);
-    setStatus('unauthenticated');
+    window.location.assign('/');
   }, [signOut]);
 
   const socketUserId = user?.id;

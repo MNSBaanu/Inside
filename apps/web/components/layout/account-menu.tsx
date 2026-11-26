@@ -100,11 +100,10 @@ export function AccountMenu({ user }: { user: User }) {
   async function onLogout() {
     setOpen(false);
     await logout();
-    window.location.assign('/');
   }
 
   return (
-    <div className="hidden items-center gap-2 sm:flex">
+    <div className="hidden items-center gap-2 motion-safe:animate-fade-in sm:flex">
       <IconLink href="/messages" label="Messages" count={unread.messages} icon={MessageSquare} />
       <IconLink href="/notifications" label="Notifications" count={unread.alerts} icon={Bell} />
 
@@ -189,11 +188,15 @@ function IconLink({
       className="relative flex h-10 w-10 items-center justify-center rounded-full text-ink/70 transition-colors duration-300 hover:bg-sand hover:text-brand"
     >
       <Icon aria-hidden strokeWidth={1.75} className="h-5 w-5" />
-      {count > 0 ? (
-        <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-5 justify-center rounded-pill bg-brand px-1.5 py-0.5 text-xs text-canvas">
-          {count}
-        </span>
-      ) : null}
+      <span
+        aria-hidden
+        className={cn(
+          'absolute -right-0.5 -top-0.5 inline-flex min-w-5 justify-center rounded-pill bg-brand px-1.5 py-0.5 text-xs text-canvas transition-opacity duration-300',
+          count > 0 ? 'opacity-100' : 'opacity-0',
+        )}
+      >
+        {count > 0 ? count : null}
+      </span>
     </Link>
   );
 }

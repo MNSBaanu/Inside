@@ -106,7 +106,7 @@ function HeaderContent({ pathname }: { pathname: string }) {
               {designerWorkspace ? (
                 <Link
                   href={`/designers/${user.id}`}
-                  className="hidden text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand sm:block"
+                  className="hidden text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand motion-safe:animate-fade-in sm:block"
                 >
                   Public profile
                 </Link>
@@ -114,20 +114,16 @@ function HeaderContent({ pathname }: { pathname: string }) {
               <AccountMenu user={user} />
             </>
           ) : status !== 'unauthenticated' ? (
-            <span aria-hidden className="flex items-center gap-4">
-              <span className="h-5 w-5 animate-pulse rounded-full bg-sand" />
-              <span className="h-5 w-5 animate-pulse rounded-full bg-sand" />
-              <span className="h-10 w-10 animate-pulse rounded-full bg-sand" />
-            </span>
+            <span aria-hidden className="invisible hidden h-10 w-36 sm:block" />
           ) : (
             <>
               <Link
                 href="/login"
-                className="hidden text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand sm:block"
+                className="hidden text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand motion-safe:animate-fade-in sm:block"
               >
                 Sign in
               </Link>
-              <ButtonLink href="/register" className="hidden sm:inline-flex">
+              <ButtonLink href="/register" className="hidden motion-safe:animate-fade-in sm:inline-flex">
                 Get started
               </ButtonLink>
             </>

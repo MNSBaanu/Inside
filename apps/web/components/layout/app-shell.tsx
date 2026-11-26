@@ -115,7 +115,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   async function onSignOut() {
     signingOut.current = true;
     await logout();
-    router.push('/');
   }
 
   return (
