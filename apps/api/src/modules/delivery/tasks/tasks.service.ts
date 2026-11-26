@@ -68,6 +68,11 @@ export class TasksService {
     if (stage.status === StageStatus.APPROVED) {
       throw new BadRequestException('Approved stages cannot be changed');
     }
+    if (stage.status === StageStatus.SUBMITTED) {
+      throw new BadRequestException(
+        'Tasks are locked while the client reviews this stage',
+      );
+    }
   }
 
   private async requireStage(stageId: string) {

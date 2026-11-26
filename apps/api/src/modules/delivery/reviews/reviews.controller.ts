@@ -41,6 +41,19 @@ export class ReviewsController {
     return this.reviews.create(user, projectId, dto);
   }
 
+  @Get('projects/:projectId/reviews')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Reviews left on a project, for its parties' })
+  @ApiOkResponse({ description: 'Reviews with summary' })
+  listForProject(
+    @CurrentUser() user: AuthUser,
+    @Param('projectId', ParseUUIDPipe) projectId: string,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.reviews.listByProject(user, projectId, query);
+  }
+
   @Get('designers/:designerId/reviews')
   @ApiOperation({ summary: 'Public reviews for a designer' })
   @ApiOkResponse({ description: 'Reviews with summary' })

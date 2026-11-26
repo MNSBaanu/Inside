@@ -43,6 +43,16 @@ const proposalInclude = {
   },
 } as const;
 
+function alreadyDecided(error: unknown): never {
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2025'
+  ) {
+    throw new ConflictException('This proposal has already been decided');
+  }
+  throw error;
+}
+
 @Injectable()
 export class ProposalsService {
   constructor(
@@ -158,11 +168,13 @@ export class ProposalsService {
       throw new BadRequestException('Only pending proposals can be withdrawn');
     }
 
-    const updated = await this.prisma.proposal.update({
-      where: { id, status: ProposalStatus.PENDING },
-      data: { status: ProposalStatus.WITHDRAWN },
-      include: proposalInclude,
-    });
+    const updated = await this.prisma.proposal
+      .update({
+        where: { id, status: ProposalStatus.PENDING },
+        data: { status: ProposalStatus.WITHDRAWN },
+        include: proposalInclude,
+      })
+      .catch(alreadyDecided);
 
     await this.notifications.notify({
       userId: proposal.request.clientId,
@@ -181,11 +193,13 @@ export class ProposalsService {
       throw new BadRequestException('Only pending proposals can be rejected');
     }
 
-    const updated = await this.prisma.proposal.update({
-      where: { id, status: ProposalStatus.PENDING },
-      data: { status: ProposalStatus.REJECTED },
-      include: proposalInclude,
-    });
+    const updated = await this.prisma.proposal
+      .update({
+        where: { id, status: ProposalStatus.PENDING },
+        data: { status: ProposalStatus.REJECTED },
+        include: proposalInclude,
+      })
+      .catch(alreadyDecided);
 
     await this.notifications.notify({
       userId: proposal.designerId,

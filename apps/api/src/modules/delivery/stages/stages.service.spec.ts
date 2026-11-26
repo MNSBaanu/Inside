@@ -23,6 +23,7 @@ describe('StagesService', () => {
     milestonePayment: {
       updateMany: jest.fn().mockResolvedValue({ count: 1 }),
       findFirst: jest.fn().mockResolvedValue({ status: PaymentStatus.PAID }),
+      findMany: jest.fn().mockResolvedValue([{ amount: 50000 }]),
     },
     project: { update: jest.fn() },
   };
@@ -42,6 +43,7 @@ describe('StagesService', () => {
         ]),
     },
     stageNote: {
+      findFirst: jest.fn().mockResolvedValue(null),
       findMany: jest.fn().mockResolvedValue([
         { key: 'measurements', text: 'Living room 4m x 5m' },
         { key: 'scope', text: 'Living room only' },
@@ -82,6 +84,8 @@ describe('StagesService', () => {
     dueDate: null,
     submittedAt: null,
     approvedAt: null,
+    feedback: null,
+    requirementsApply: true,
     createdAt: new Date(),
     updatedAt: new Date(),
     project: {
@@ -166,6 +170,63 @@ describe('StagesService', () => {
 
     const result = await service.submit(designer, 's1');
     expect(result.data.stage.status).toBe(StageStatus.SUBMITTED);
+  });
+
+  it('counts confirmed site work from any stage of the project', async () => {
+    prisma.projectStage.findUnique.mockResolvedValue({
+      ...baseStage,
+      status: StageStatus.IN_PROGRESS,
+    });
+    await service.requirements(designer, 's1');
+    expect(prisma.workLog.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { projectId: 'p1', confirmedAt: { not: null } },
+      }),
+    );
+  });
+
+  it('resubmits after only a note was updated', async () => {
+    const submittedAt = new Date(Date.now() - 86_400_000);
+    prisma.projectStage.findUnique.mockResolvedValue({
+      ...baseStage,
+      status: StageStatus.REJECTED,
+      submittedAt,
+    });
+    prisma.deliverable.findFirst.mockResolvedValueOnce({
+      uploadedAt: new Date(submittedAt.getTime() - 1000),
+      version: 1,
+    });
+    prisma.stageNote.findFirst.mockResolvedValueOnce({ id: 'n1' });
+    prisma.projectStage.update.mockResolvedValue({
+      ...baseStage,
+      status: StageStatus.SUBMITTED,
+    });
+    const result = await service.submit(designer, 's1');
+    expect(result.data.stage.status).toBe(StageStatus.SUBMITTED);
+  });
+
+  it('skips the new requirements on stages from before they existed', async () => {
+    prisma.projectStage.findUnique.mockResolvedValue({
+      ...baseStage,
+      status: StageStatus.IN_PROGRESS,
+      requirementsApply: false,
+    });
+    prisma.projectStage.update.mockResolvedValue({
+      ...baseStage,
+      status: StageStatus.SUBMITTED,
+    });
+    const result = await service.submit(designer, 's1');
+    expect(result.data.stage.status).toBe(StageStatus.SUBMITTED);
+  });
+
+  it('rejects a due date in the past', async () => {
+    prisma.projectStage.findUnique.mockResolvedValue({
+      ...baseStage,
+      status: StageStatus.IN_PROGRESS,
+    });
+    await expect(
+      service.setDueDate(designer, 's1', new Date(Date.now() - 3 * 86_400_000)),
+    ).rejects.toThrow('The due date cannot be in the past');
   });
 
   it('blocks submitting until every stage requirement is done', async () => {

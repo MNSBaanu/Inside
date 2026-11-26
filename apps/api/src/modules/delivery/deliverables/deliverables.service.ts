@@ -5,13 +5,18 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { NotificationType, ProjectStatus, StageStatus } from '@inside/database';
+import {
+  NotificationType,
+  Prisma,
+  ProjectStatus,
+  StageStatus,
+} from '@inside/database';
 import { stageLabel } from '../../../common/format';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
 import { PrismaService } from '../../../database/prisma.service';
-import { requirementFor } from '../stages/stage-requirements';
+import { isImageFile, requirementFor } from '../stages/stage-requirements';
 import {
   CreateDeliverableDto,
   UpdateDeliverableFeedbackDto,
@@ -57,11 +62,16 @@ export class DeliverablesService {
       );
     }
 
-    if (
-      dto.requirement &&
-      requirementFor(stage.name, dto.requirement)?.kind !== 'FILES'
-    ) {
+    const requirement = dto.requirement
+      ? requirementFor(stage.name, dto.requirement)
+      : undefined;
+    if (dto.requirement && requirement?.kind !== 'FILES') {
       throw new BadRequestException('Unknown item for this stage');
+    }
+    if (requirement?.imagesOnly && !isImageFile(dto.fileUrl, dto.fileName)) {
+      throw new BadRequestException(
+        `${requirement.label} must be photos (JPG, PNG or WebP)`,
+      );
     }
 
     if (dto.fileHash) {
@@ -82,17 +92,29 @@ export class DeliverablesService {
     });
     const version = (last?.version ?? 0) + 1;
 
-    const created = await this.prisma.deliverable.create({
-      data: {
-        stageId,
-        version,
-        fileUrl: dto.fileUrl,
-        fileName: dto.fileName,
-        fileHash: dto.fileHash,
-        notes: dto.notes,
-        requirement: dto.requirement,
-      },
-    });
+    const created = await this.prisma.deliverable
+      .create({
+        data: {
+          stageId,
+          version,
+          fileUrl: dto.fileUrl,
+          fileName: dto.fileName,
+          fileHash: dto.fileHash,
+          notes: dto.notes,
+          requirement: dto.requirement,
+        },
+      })
+      .catch((error: unknown) => {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === 'P2002'
+        ) {
+          throw new ConflictException(
+            'Another file was added at the same time. Try again.',
+          );
+        }
+        throw error;
+      });
 
     await this.notifications.notify({
       userId: stage.project.clientId,
@@ -132,6 +154,7 @@ export class DeliverablesService {
                 clientId: true,
                 designerId: true,
                 title: true,
+                status: true,
               },
             },
           },
@@ -143,6 +166,12 @@ export class DeliverablesService {
     }
     if (deliverable.stage.project.clientId !== user.id) {
       throw new ForbiddenException('Only the client can leave feedback');
+    }
+    if (deliverable.stage.project.status !== ProjectStatus.ACTIVE) {
+      throw new BadRequestException('Project is not active');
+    }
+    if (deliverable.feedback) {
+      throw new BadRequestException('You already left feedback on this file');
     }
 
     const updated = await this.prisma.deliverable.update({
@@ -174,6 +203,60 @@ export class DeliverablesService {
     });
 
     return { success: true, data: { deliverable: this.serialize(updated) } };
+  }
+
+  async remove(user: AuthUser, id: string) {
+    const deliverable = await this.prisma.deliverable.findUnique({
+      where: { id },
+      include: {
+        stage: {
+          include: {
+            project: {
+              select: { id: true, designerId: true, status: true },
+            },
+          },
+        },
+      },
+    });
+    if (!deliverable) {
+      throw new NotFoundException('Deliverable not found');
+    }
+    if (deliverable.stage.project.designerId !== user.id) {
+      throw new ForbiddenException(
+        'Only the assigned designer can remove files',
+      );
+    }
+    if (deliverable.stage.project.status !== ProjectStatus.ACTIVE) {
+      throw new BadRequestException('Project is not active');
+    }
+    if (
+      deliverable.stage.status !== StageStatus.IN_PROGRESS &&
+      deliverable.stage.status !== StageStatus.REJECTED
+    ) {
+      throw new BadRequestException(
+        'Files can only be removed while the stage is being worked on',
+      );
+    }
+    if (
+      deliverable.stage.submittedAt &&
+      deliverable.uploadedAt <= deliverable.stage.submittedAt
+    ) {
+      throw new BadRequestException(
+        'Files the client has already reviewed cannot be removed',
+      );
+    }
+    await this.prisma.deliverable.delete({ where: { id } });
+    await this.activity.log({
+      projectId: deliverable.stage.projectId,
+      userId: user.id,
+      action: 'DELIVERABLE_REMOVED',
+      metadata: {
+        stageId: deliverable.stageId,
+        deliverableId: id,
+        fileName: deliverable.fileName,
+      },
+    });
+    return { success: true, data: { deleted: true } };
   }
 
   private async requireStage(stageId: string) {

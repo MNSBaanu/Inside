@@ -114,6 +114,26 @@ export class ReviewsService {
     );
   }
 
+  async listByProject(
+    user: AuthUser,
+    projectId: string,
+    query: PaginationQueryDto,
+  ) {
+    const { page, pageSize, skip, take } = paginate(query);
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      select: { clientId: true, designerId: true },
+    });
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    if (project.clientId !== user.id && project.designerId !== user.id) {
+      throw new ForbiddenException('You do not have access to this project');
+    }
+
+    return this.listWhere({ projectId }, page, pageSize, skip, take);
+  }
+
   async listByPortfolio(portfolioId: string, query: PaginationQueryDto) {
     const { page, pageSize, skip, take } = paginate(query);
     const portfolio = await this.prisma.portfolio.findUnique({

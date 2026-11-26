@@ -95,7 +95,9 @@ describe('ProjectsService', () => {
       status: ProjectStatus.CANCELLED,
     });
     const result = await service.cancel(client, 'p1', 'Budget changed');
-    expect(payments.cancelAndRefund).toHaveBeenCalledWith('p1');
+    expect(payments.cancelAndRefund).toHaveBeenCalledWith('p1', {
+      payments: { none: expect.objectContaining({ status: 'PAID' }) },
+    });
     expect(result.data.project.status).toBe(ProjectStatus.CANCELLED);
     expect(notifications.notify).toHaveBeenCalledWith(
       expect.objectContaining({ userId: 'd1' }),
@@ -113,15 +115,15 @@ describe('ProjectsService', () => {
     expect(payments.cancelAndRefund).not.toHaveBeenCalled();
   });
 
-  it('lets the designer cancel and refund a stage under way', async () => {
+  it('stops a designer cancelling while a paid stage is under way', async () => {
     prisma.project.findUnique.mockResolvedValue(activeProject);
-    prisma.project.findUniqueOrThrow.mockResolvedValue({
-      ...activeProject,
-      status: ProjectStatus.CANCELLED,
+    prisma.milestonePayment.findFirst.mockResolvedValue({
+      stage: { name: StageName.DESIGN, status: StageStatus.IN_PROGRESS },
     });
-    await service.cancel(designer, 'p1', 'Cannot continue');
-    expect(prisma.milestonePayment.findFirst).not.toHaveBeenCalled();
-    expect(payments.cancelAndRefund).toHaveBeenCalledWith('p1');
+    await expect(
+      service.cancel(designer, 'p1', 'Cannot continue'),
+    ).rejects.toThrow('Contact support');
+    expect(payments.cancelAndRefund).not.toHaveBeenCalled();
   });
 
   it('rejects cancel on completed project', async () => {

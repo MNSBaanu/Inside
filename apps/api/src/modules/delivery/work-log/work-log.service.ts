@@ -56,6 +56,11 @@ export class WorkLogService {
     if (dto.happenedAt.getTime() > Date.now() + 5 * 60_000) {
       throw new BadRequestException('Log work that has already happened');
     }
+    const earliest = new Date(project.createdAt);
+    earliest.setDate(earliest.getDate() - 30);
+    if (dto.happenedAt < earliest) {
+      throw new BadRequestException('That date is before this project started');
+    }
     const stage = await this.prisma.projectStage.findFirst({
       where: { projectId, name: project.currentStage },
       select: { id: true },
@@ -95,6 +100,9 @@ export class WorkLogService {
   async confirm(user: AuthUser, id: string) {
     const entry = await this.requireEntry(id);
     const project = await this.requireParty(entry.projectId, user);
+    if (project.status !== ProjectStatus.ACTIVE) {
+      throw new BadRequestException('Project is not active');
+    }
     if (entry.authorId === user.id) {
       throw new ForbiddenException('The other party confirms this entry');
     }
@@ -132,6 +140,10 @@ export class WorkLogService {
     if (entry.confirmedAt) {
       throw new BadRequestException('Confirmed entries cannot be deleted');
     }
+    const project = await this.requireParty(entry.projectId, user);
+    if (project.status !== ProjectStatus.ACTIVE) {
+      throw new BadRequestException('Project is not active');
+    }
     await this.prisma.workLog.delete({ where: { id } });
     await this.activity.log({
       projectId: entry.projectId,
@@ -160,6 +172,7 @@ export class WorkLogService {
         designerId: true,
         status: true,
         currentStage: true,
+        createdAt: true,
       },
     });
     if (!project) {

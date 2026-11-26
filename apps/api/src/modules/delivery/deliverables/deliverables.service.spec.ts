@@ -83,6 +83,16 @@ describe('DeliverablesService', () => {
     );
   });
 
+  it('accepts only photos for a photo requirement', async () => {
+    prisma.projectStage.findUnique.mockResolvedValue(stage);
+    await expect(
+      service.create(designer, 's1', {
+        fileUrl: 'https://res.cloudinary.com/x/image/upload/plan.pdf',
+        requirement: 'site_photos',
+      }),
+    ).rejects.toThrow('Site photos must be photos');
+  });
+
   it('rejects upload by non-designer', async () => {
     prisma.projectStage.findUnique.mockResolvedValue(stage);
     await expect(

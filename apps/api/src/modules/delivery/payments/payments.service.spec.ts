@@ -26,6 +26,7 @@ describe('PaymentsService', () => {
       updateMany: jest.fn(),
     },
     project: { findUnique: jest.fn(), updateMany: jest.fn() },
+    projectStage: { findUnique: jest.fn(), updateMany: jest.fn() },
     user: { findMany: jest.fn() },
   };
 
@@ -337,7 +338,7 @@ describe('PaymentsService', () => {
   it('will not cancel and refund a project twice', async () => {
     prisma.project.updateMany.mockResolvedValue({ count: 0 });
     await expect(service.cancelAndRefund('p1')).rejects.toThrow(
-      'Project is already closed',
+      'The project changed while cancelling',
     );
     expect(prisma.milestonePayment.findMany).not.toHaveBeenCalled();
   });
@@ -472,6 +473,41 @@ describe('PaymentsService', () => {
       expect.objectContaining({
         data: expect.objectContaining({ stripeIntentId: 'pi_1' }),
       }),
+    );
+  });
+
+  it('starts the current stage once its milestone is paid', async () => {
+    prisma.milestonePayment.findUnique.mockResolvedValue(pendingPayment);
+    stripe.paymentIntents.retrieve.mockResolvedValue({
+      id: 'pi_1',
+      metadata: { paymentId: 'pay1' },
+      status: 'succeeded',
+    });
+    prisma.milestonePayment.update.mockResolvedValue({
+      ...pendingPayment,
+      status: PaymentStatus.PAID,
+    });
+    prisma.projectStage.findUnique.mockResolvedValueOnce({
+      id: 's1',
+      name: 'CONCEPT',
+      status: 'PENDING',
+      projectId: 'p1',
+      project: {
+        currentStage: 'CONCEPT',
+        status: ProjectStatus.ACTIVE,
+        clientId: 'c1',
+        designerId: 'd1',
+        title: 'Sofa',
+      },
+    });
+    prisma.projectStage.updateMany.mockResolvedValueOnce({ count: 1 });
+    await service.markPaid(client, 'pay1', { paymentIntentId: 'pi_1' });
+    expect(prisma.projectStage.updateMany).toHaveBeenCalledWith({
+      where: { id: 's1', status: 'PENDING' },
+      data: { status: 'IN_PROGRESS' },
+    });
+    expect(notifications.notify).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 'c1', title: 'Stage started' }),
     );
   });
 

@@ -15,8 +15,9 @@ import {
   Prisma,
   ProjectStatus,
   Role,
+  StageStatus,
 } from '@inside/database';
-import { formatLkr } from '../../../common/format';
+import { formatLkr, stageLabel } from '../../../common/format';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
@@ -270,6 +271,7 @@ export class PaymentsService {
     payment: {
       id: string;
       projectId: string;
+      stageId: string;
       amount: unknown;
       project: { designerId: string; clientId: string; title: string };
     },
@@ -334,7 +336,56 @@ export class PaymentsService {
       action: 'PAYMENT_PAID',
       metadata: { paymentId: payment.id, amount: Number(payment.amount) },
     });
+    await this.startIfCurrent(payment.stageId);
     return updated;
+  }
+
+  /** Starts the project's current stage once its milestone is paid, as approving the previous stage does. */
+  private async startIfCurrent(stageId: string) {
+    const stage = await this.prisma.projectStage.findUnique({
+      where: { id: stageId },
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        projectId: true,
+        project: {
+          select: {
+            currentStage: true,
+            status: true,
+            clientId: true,
+            designerId: true,
+            title: true,
+          },
+        },
+      },
+    });
+    if (
+      !stage ||
+      stage.status !== StageStatus.PENDING ||
+      stage.project.status !== ProjectStatus.ACTIVE ||
+      stage.project.currentStage !== stage.name
+    ) {
+      return;
+    }
+    const started = await this.prisma.projectStage.updateMany({
+      where: { id: stageId, status: StageStatus.PENDING },
+      data: { status: StageStatus.IN_PROGRESS },
+    });
+    if (started.count === 0) return;
+    await this.notifications.notify({
+      userId: stage.project.clientId,
+      type: NotificationType.STAGE,
+      title: 'Stage started',
+      message: `${stageLabel(stage.name)} stage of "${stage.project.title}" has started`,
+      metadata: { projectId: stage.projectId, stageId },
+    });
+    await this.activity.log({
+      projectId: stage.projectId,
+      userId: stage.project.designerId,
+      action: 'STAGE_STARTED',
+      metadata: { stageId, name: stage.name, auto: true },
+    });
   }
 
   /**
@@ -343,16 +394,22 @@ export class PaymentsService {
    * both refund, and each payment is claimed before Stripe is called so a
    * stage approved at the same moment is never refunded after release.
    */
-  async cancelAndRefund(projectId: string) {
+  async cancelAndRefund(
+    projectId: string,
+    guard: Prisma.ProjectWhereInput = {},
+  ) {
     const closed = await this.prisma.project.updateMany({
       where: {
+        ...guard,
         id: projectId,
         status: { in: [ProjectStatus.ACTIVE, ProjectStatus.ON_HOLD] },
       },
       data: { status: ProjectStatus.CANCELLED },
     });
     if (closed.count === 0) {
-      throw new ConflictException('Project is already closed');
+      throw new ConflictException(
+        'The project changed while cancelling. Refresh and try again.',
+      );
     }
 
     await this.closeOpenCheckouts(projectId);
@@ -616,6 +673,7 @@ export class PaymentsService {
         method: dto.method,
       },
     });
+    await this.startIfCurrent(payment.stageId);
     return { success: true, data: { payment: this.serialize(updated) } };
   }
 

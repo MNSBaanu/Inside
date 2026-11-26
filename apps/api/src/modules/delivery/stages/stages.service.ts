@@ -8,6 +8,7 @@ import {
 import {
   NotificationType,
   PaymentStatus,
+  Prisma,
   ProjectStatus,
   StageName,
   StageStatus,
@@ -29,6 +30,8 @@ type StageWithProject = {
   dueDate: Date | null;
   submittedAt: Date | null;
   approvedAt: Date | null;
+  feedback: string | null;
+  requirementsApply: boolean;
   createdAt: Date;
   updatedAt: Date;
   project: {
@@ -103,12 +106,7 @@ export class StagesService {
 
   async setDueDate(user: AuthUser, stageId: string, dueDate: Date | null) {
     const stage = await this.requireStage(stageId);
-    if (
-      stage.project.clientId !== user.id &&
-      stage.project.designerId !== user.id
-    ) {
-      throw new ForbiddenException('You do not have access to this project');
-    }
+    this.assertDesigner(user, stage);
     if (
       stage.project.status === ProjectStatus.COMPLETED ||
       stage.project.status === ProjectStatus.CANCELLED
@@ -117,6 +115,43 @@ export class StagesService {
     }
     if (stage.status === StageStatus.APPROVED) {
       throw new BadRequestException('Approved stages cannot be rescheduled');
+    }
+    if (dueDate) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (dueDate < today) {
+        throw new BadRequestException('The due date cannot be in the past');
+      }
+      const [before, after] = await Promise.all([
+        this.prisma.projectStage.findFirst({
+          where: {
+            projectId: stage.projectId,
+            stageOrder: { lt: stage.stageOrder },
+            dueDate: { not: null },
+          },
+          orderBy: { stageOrder: 'desc' },
+          select: { name: true, dueDate: true },
+        }),
+        this.prisma.projectStage.findFirst({
+          where: {
+            projectId: stage.projectId,
+            stageOrder: { gt: stage.stageOrder },
+            dueDate: { not: null },
+          },
+          orderBy: { stageOrder: 'asc' },
+          select: { name: true, dueDate: true },
+        }),
+      ]);
+      if (before?.dueDate && dueDate < before.dueDate) {
+        throw new BadRequestException(
+          `The due date must be on or after the ${stageLabel(before.name)} stage`,
+        );
+      }
+      if (after?.dueDate && dueDate > after.dueDate) {
+        throw new BadRequestException(
+          `The due date must be on or before the ${stageLabel(after.name)} stage`,
+        );
+      }
     }
     const updated = await this.prisma.projectStage.update({
       where: { id: stageId },
@@ -197,9 +232,9 @@ export class StagesService {
       );
     }
 
-    const missing = (await this.requirementStatus(stage)).filter(
-      (item) => !item.done,
-    );
+    const missing = stage.requirementsApply
+      ? (await this.requirementStatus(stage)).filter((item) => !item.done)
+      : [];
     if (missing.length) {
       throw new BadRequestException(
         `Before submitting, add: ${missing
@@ -221,14 +256,16 @@ export class StagesService {
         'Upload a deliverable before submitting this stage',
       );
     }
-    if (
-      stage.status === StageStatus.REJECTED &&
-      stage.submittedAt &&
-      latest.uploadedAt <= stage.submittedAt
-    ) {
-      throw new BadRequestException(
-        'Upload a revised deliverable before resubmitting',
-      );
+    if (stage.status === StageStatus.REJECTED && stage.submittedAt) {
+      const editedNote = await this.prisma.stageNote.findFirst({
+        where: { stageId, updatedAt: { gt: stage.submittedAt } },
+        select: { id: true },
+      });
+      if (latest.uploadedAt <= stage.submittedAt && !editedNote) {
+        throw new BadRequestException(
+          'Make the requested changes (a new file or an updated note) before resubmitting',
+        );
+      }
     }
 
     const updated = await this.prisma.projectStage.update({
@@ -266,9 +303,6 @@ export class StagesService {
       throw new BadRequestException('Only submitted stages can be approved');
     }
 
-    const fee =
-      stage.fee !== null && stage.fee !== undefined ? Number(stage.fee) : 0;
-
     const result = await this.prisma.$transaction(async (tx) => {
       const claimed = await tx.projectStage.updateMany({
         where: {
@@ -276,7 +310,11 @@ export class StagesService {
           status: StageStatus.SUBMITTED,
           project: { status: ProjectStatus.ACTIVE },
         },
-        data: { status: StageStatus.APPROVED, approvedAt: new Date() },
+        data: {
+          status: StageStatus.APPROVED,
+          approvedAt: new Date(),
+          feedback: null,
+        },
       });
       if (claimed.count === 0) {
         throw new ConflictException('Stage has already been reviewed');
@@ -285,10 +323,18 @@ export class StagesService {
         where: { id: stageId },
       });
 
+      const paid = await tx.milestonePayment.findMany({
+        where: { stageId, status: PaymentStatus.PAID },
+        select: { amount: true },
+      });
       const released = await tx.milestonePayment.updateMany({
         where: { stageId, status: PaymentStatus.PAID },
         data: { status: PaymentStatus.RELEASED, releasedAt: new Date() },
       });
+      const releasedAmount = paid.reduce(
+        (sum, payment) => sum + Number(payment.amount),
+        0,
+      );
 
       const next = await tx.projectStage.findFirst({
         where: {
@@ -299,6 +345,7 @@ export class StagesService {
       });
 
       let projectCompleted = false;
+      let nextStarted = false;
       if (next) {
         const nextPayment = await tx.milestonePayment.findFirst({
           where: { stageId: next.id },
@@ -309,6 +356,7 @@ export class StagesService {
             where: { id: next.id },
             data: { status: StageStatus.IN_PROGRESS },
           });
+          nextStarted = true;
         }
         await tx.project.update({
           where: { id: stage.projectId },
@@ -328,8 +376,11 @@ export class StagesService {
       return {
         approved,
         projectCompleted,
+        nextId: next?.id ?? null,
         nextName: next?.name ?? null,
+        nextStarted,
         paymentReleased: released.count > 0,
+        releasedAmount,
       };
     });
 
@@ -353,14 +404,30 @@ export class StagesService {
         userId: stage.project.designerId,
         type: NotificationType.PAYMENT,
         title: 'Milestone released',
-        message: `${formatLkr(fee)} for the ${stageLabel(stage.name)} stage of "${stage.project.title}" was released`,
+        message: `${formatLkr(result.releasedAmount)} for the ${stageLabel(stage.name)} stage of "${stage.project.title}" was released`,
         metadata: { projectId: stage.projectId, stageId: stage.id },
       });
       await this.activity.log({
         projectId: stage.projectId,
         userId: user.id,
         action: 'PAYMENT_RELEASED',
-        metadata: { stageId: stage.id, amount: fee },
+        metadata: { stageId: stage.id, amount: result.releasedAmount },
+      });
+    }
+
+    if (result.nextStarted && result.nextId && result.nextName) {
+      await this.notifications.notify({
+        userId: stage.project.clientId,
+        type: NotificationType.STAGE,
+        title: 'Stage started',
+        message: `${stageLabel(result.nextName)} stage of "${stage.project.title}" has started`,
+        metadata: { projectId: stage.projectId, stageId: result.nextId },
+      });
+      await this.activity.log({
+        projectId: stage.projectId,
+        userId: stage.project.designerId,
+        action: 'STAGE_STARTED',
+        metadata: { stageId: result.nextId, name: result.nextName, auto: true },
       });
     }
 
@@ -399,10 +466,20 @@ export class StagesService {
       throw new BadRequestException('Only submitted stages can be rejected');
     }
 
-    const updated = await this.prisma.projectStage.update({
-      where: { id: stageId, status: StageStatus.SUBMITTED },
-      data: { status: StageStatus.REJECTED },
-    });
+    const updated = await this.prisma.projectStage
+      .update({
+        where: { id: stageId, status: StageStatus.SUBMITTED },
+        data: { status: StageStatus.REJECTED, feedback: reason },
+      })
+      .catch((error: unknown) => {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === 'P2025'
+        ) {
+          throw new ConflictException('Stage has already been reviewed');
+        }
+        throw error;
+      });
 
     await this.notifications.notify({
       userId: stage.project.designerId,
@@ -432,7 +509,10 @@ export class StagesService {
     }
     return {
       success: true,
-      data: { items: await this.requirementStatus(stage) },
+      data: {
+        items: await this.requirementStatus(stage),
+        applies: stage.requirementsApply,
+      },
     };
   }
 
@@ -452,7 +532,10 @@ export class StagesService {
     }
     const trimmed = text.trim();
     if (!trimmed) {
-      await this.prisma.stageNote.deleteMany({ where: { stageId, key } });
+      await this.prisma.stageNote.updateMany({
+        where: { stageId, key },
+        data: { text: '' },
+      });
     } else {
       await this.prisma.stageNote.upsert({
         where: { stageId_key: { stageId, key } },
@@ -468,7 +551,10 @@ export class StagesService {
     });
     return {
       success: true,
-      data: { items: await this.requirementStatus(stage) },
+      data: {
+        items: await this.requirementStatus(stage),
+        applies: stage.requirementsApply,
+      },
     };
   }
 
@@ -483,7 +569,6 @@ export class StagesService {
       this.prisma.workLog.findMany({
         where: {
           projectId: stage.projectId,
-          stageId: stage.id,
           confirmedAt: { not: null },
         },
         select: { type: true },
@@ -497,12 +582,13 @@ export class StagesService {
         return { ...item, count, done: count >= (item.min ?? 1) };
       }
       if (item.kind === 'TEXT') {
-        const note = notes.find((entry) => entry.key === item.key);
+        const text =
+          notes.find((entry) => entry.key === item.key)?.text || null;
         return {
           ...item,
-          text: note?.text ?? null,
-          count: note ? 1 : 0,
-          done: Boolean(note),
+          text,
+          count: text ? 1 : 0,
+          done: Boolean(text),
         };
       }
       const count = logs.filter((log) => log.type === item.logType).length;
@@ -574,6 +660,8 @@ export class StagesService {
     dueDate: Date | null;
     submittedAt: Date | null;
     approvedAt: Date | null;
+    feedback: string | null;
+    requirementsApply: boolean;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -590,6 +678,8 @@ export class StagesService {
       dueDate: stage.dueDate,
       submittedAt: stage.submittedAt,
       approvedAt: stage.approvedAt,
+      feedback: stage.feedback,
+      requirementsApply: stage.requirementsApply,
       createdAt: stage.createdAt,
       updatedAt: stage.updatedAt,
     };

@@ -286,34 +286,37 @@ export class ProjectsService {
       throw new BadRequestException('Project is already closed');
     }
 
-    if (user.id === project.clientId) {
-      const underway = await this.prisma.milestonePayment.findFirst({
-        where: {
-          projectId: id,
-          status: PaymentStatus.PAID,
-          stage: {
-            status: {
-              in: [
-                StageStatus.IN_PROGRESS,
-                StageStatus.SUBMITTED,
-                StageStatus.REJECTED,
-              ],
-            },
-          },
+    const underwayPayment = {
+      status: PaymentStatus.PAID,
+      stage: {
+        status: {
+          in: [
+            StageStatus.IN_PROGRESS,
+            StageStatus.SUBMITTED,
+            StageStatus.REJECTED,
+          ],
         },
-        select: { stage: { select: { name: true, status: true } } },
-      });
-      if (underway) {
-        throw new BadRequestException(
-          underway.stage.status === StageStatus.SUBMITTED
-            ? `The ${stageLabel(underway.stage.name)} stage is paid and waiting for your review. Approve it or ask for changes first, or contact support to cancel.`
-            : `The ${stageLabel(underway.stage.name)} stage is paid and the designer is working on it. Contact support to cancel so the payment can be settled fairly.`,
-        );
-      }
+      },
+    };
+    const underway = await this.prisma.milestonePayment.findFirst({
+      where: { projectId: id, ...underwayPayment },
+      select: { stage: { select: { name: true, status: true } } },
+    });
+    if (underway) {
+      const label = stageLabel(underway.stage.name);
+      throw new BadRequestException(
+        user.id !== project.clientId
+          ? `The ${label} stage is paid and underway. Contact support to cancel so the payment can be settled fairly.`
+          : underway.stage.status === StageStatus.SUBMITTED
+            ? `The ${label} stage is paid and waiting for your review. Approve it or ask for changes first, or contact support to cancel.`
+            : `The ${label} stage is paid and the designer is working on it. Contact support to cancel so the payment can be settled fairly.`,
+      );
     }
 
-    const { refunded, failed, offline } =
-      await this.payments.cancelAndRefund(id);
+    const { refunded, failed, offline } = await this.payments.cancelAndRefund(
+      id,
+      { payments: { none: underwayPayment } },
+    );
     const updated = await this.prisma.project.findUniqueOrThrow({
       where: { id },
       include: projectInclude,
@@ -383,17 +386,6 @@ export class ProjectsService {
     if (project.status !== ProjectStatus.ON_HOLD) {
       throw new BadRequestException('Only on-hold projects can be resumed');
     }
-    const pausedBy = await this.prisma.activityLog.findFirst({
-      where: { projectId: id, action: 'PROJECT_ON_HOLD' },
-      orderBy: { createdAt: 'desc' },
-      select: { userId: true },
-    });
-    if (pausedBy?.userId && pausedBy.userId !== user.id) {
-      throw new ForbiddenException(
-        'Only the person who put the project on hold can resume it',
-      );
-    }
-
     const updated = await this.prisma.project.update({
       where: { id },
       data: { status: ProjectStatus.ACTIVE },

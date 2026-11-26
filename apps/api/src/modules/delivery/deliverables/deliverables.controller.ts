@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -53,6 +54,17 @@ export class DeliverablesController {
     @Body() dto: CreateDeliverableDto,
   ) {
     return this.deliverables.create(user, stageId, dto);
+  }
+
+  @Delete('deliverables/:id')
+  @UseGuards(JwtAuthGuard, DesignerModeGuard)
+  @ApiOperation({ summary: 'Designer removes a file not yet reviewed' })
+  @ApiOkResponse({ description: 'Deleted' })
+  remove(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.deliverables.remove(user, id);
   }
 
   @Patch('deliverables/:id/feedback')

@@ -8,6 +8,7 @@ export type StageRequirement = {
   hint: string;
   kind: RequirementKind;
   min?: number;
+  imagesOnly?: boolean;
   logType?: WorkLogType;
 };
 
@@ -32,6 +33,7 @@ export const STAGE_REQUIREMENTS: Record<StageName, StageRequirement[]> = {
       hint: 'At least 3 photos of the space as it is today.',
       kind: 'FILES',
       min: 3,
+      imagesOnly: true,
     },
     {
       key: 'scope',
@@ -69,6 +71,7 @@ export const STAGE_REQUIREMENTS: Record<StageName, StageRequirement[]> = {
       hint: 'At least 3 renders of the chosen concept.',
       kind: 'FILES',
       min: 3,
+      imagesOnly: true,
     },
     {
       key: 'floor_plan',
@@ -113,6 +116,7 @@ export const STAGE_REQUIREMENTS: Record<StageName, StageRequirement[]> = {
       hint: 'At least 3 photos of the finished space.',
       kind: 'FILES',
       min: 3,
+      imagesOnly: true,
     },
     {
       key: 'final_drawings',
@@ -132,4 +136,9 @@ export const STAGE_REQUIREMENTS: Record<StageName, StageRequirement[]> = {
 
 export function requirementFor(stage: StageName, key: string) {
   return STAGE_REQUIREMENTS[stage].find((item) => item.key === key);
+}
+
+export function isImageFile(url: string, fileName?: string | null) {
+  const pattern = /\.(jpe?g|png|webp|gif|avif)$/i;
+  return pattern.test(url.split('?')[0]) || pattern.test(fileName ?? '');
 }
