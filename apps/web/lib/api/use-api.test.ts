@@ -14,6 +14,7 @@ function deferred<T>() {
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  window.dispatchEvent(new Event('inside:data-changed'));
 });
 
 describe('useApi request lifecycle', () => {
@@ -97,7 +98,7 @@ describe('useApi request lifecycle', () => {
     act(() => {
       void result.current.reload();
     });
-    expect(result.current.loading).toBe(true);
+    expect(result.current.loading).toBe(false);
     expect(result.current.data?.name).toBe('Original');
     act(() => {
       void result.current.reload();
@@ -109,6 +110,37 @@ describe('useApi request lifecycle', () => {
       older.resolve({ name: 'Outdated' });
     });
     expect(result.current.data?.name).toBe('Newest');
+  });
+
+  it('shows a revisited page from the cache at once and refreshes it quietly', async () => {
+    const fresh = deferred<{ name: string }>();
+    vi.spyOn(api, 'get')
+      .mockResolvedValueOnce({ name: 'Cached' })
+      .mockReturnValueOnce(fresh.promise);
+    const first = renderHook(() => useApi<{ name: string }>('/projects/a'));
+    await waitFor(() => expect(first.result.current.data?.name).toBe('Cached'));
+    first.unmount();
+
+    const { result } = renderHook(() => useApi<{ name: string }>('/projects/a'));
+    expect(result.current.data?.name).toBe('Cached');
+    expect(result.current.loading).toBe(false);
+    await act(async () => {
+      fresh.resolve({ name: 'Fresh' });
+    });
+    expect(result.current.data?.name).toBe('Fresh');
+  });
+
+  it('forgets cached data after a change is saved', async () => {
+    vi.spyOn(api, 'get').mockResolvedValueOnce({ name: 'Before' });
+    const first = renderHook(() => useApi<{ name: string }>('/projects/a'));
+    await waitFor(() => expect(first.result.current.data?.name).toBe('Before'));
+    first.unmount();
+    window.dispatchEvent(new Event('inside:data-changed'));
+
+    vi.spyOn(api, 'get').mockReturnValueOnce(new Promise(() => {}));
+    const { result } = renderHook(() => useApi<{ name: string }>('/projects/a'));
+    expect(result.current.data).toBeNull();
+    expect(result.current.loading).toBe(true);
   });
 
   it('reports a failed request and clears the error after a successful retry', async () => {

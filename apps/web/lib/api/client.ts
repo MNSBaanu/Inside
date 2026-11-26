@@ -82,7 +82,11 @@ async function request<T>(
   const token =
     options.token ?? (auth && browser ? await getAccessToken() : null);
 
-  return send<T>(method, path, options, token);
+  const data = await send<T>(method, path, options, token);
+  if (method !== 'GET' && browser) {
+    window.dispatchEvent(new Event('inside:data-changed'));
+  }
+  return data;
 }
 
 export const api = {

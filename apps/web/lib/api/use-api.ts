@@ -5,6 +5,25 @@ import { api, errorMessage } from './client';
 
 export const REFRESH_INTERVAL_MS = 30_000;
 
+const MAX_CACHED = 100;
+const cache = new Map<string, unknown>();
+
+function remember(path: string, data: unknown) {
+  cache.delete(path);
+  cache.set(path, data);
+  if (cache.size > MAX_CACHED) cache.delete(cache.keys().next().value as string);
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('inside:data-changed', () => cache.clear());
+}
+
+let pending = 0;
+function track(change: 1 | -1) {
+  pending = Math.max(0, pending + change);
+  window.dispatchEvent(new CustomEvent('inside:loading', { detail: pending }));
+}
+
 export function useApi<T>(path: string | null) {
   const [state, setState] = useState<{
     path: string | null;
@@ -19,9 +38,12 @@ export function useApi<T>(path: string | null) {
       // Only the most recent request may update state.
       const request = ++latest.current;
       if (path === null) return;
+      const visible = !silent && !cache.has(path);
+      if (visible) track(1);
       try {
         const result = await api.get<T>(path, { signal });
         if (request === latest.current && !signal?.aborted) {
+          remember(path, result);
           setState({ path, data: result, error: null, loading: false });
         }
       } catch (cause) {
@@ -32,11 +54,16 @@ export function useApi<T>(path: string | null) {
           }
           setState((current) => ({
             path,
-            data: current.path === path ? current.data : null,
+            data:
+              current.path === path
+                ? current.data
+                : ((cache.get(path) as T | undefined) ?? null),
             error: errorMessage(cause),
             loading: false,
           }));
         }
+      } finally {
+        if (visible) track(-1);
       }
     },
     [path],
@@ -63,22 +90,25 @@ export function useApi<T>(path: string | null) {
 
   const reload = useCallback(async () => {
     if (path === null) return;
-    setState((current) => ({
-      path,
-      data: current.path === path ? current.data : null,
-      error: null,
-      loading: true,
-    }));
+    setState((current) => {
+      const data =
+        current.path === path
+          ? current.data
+          : ((cache.get(path) as T | undefined) ?? null);
+      return { path, data, error: null, loading: data === null };
+    });
     await fetchData();
   }, [path, fetchData]);
 
   const refresh = useCallback(() => fetchData(undefined, true), [fetchData]);
 
   const current = path !== null && state.path === path;
+  const cached =
+    path !== null && !current && cache.has(path) ? (cache.get(path) as T) : null;
   return {
-    data: current ? state.data : null,
+    data: current ? state.data : cached,
     error: current ? state.error : null,
-    loading: path !== null && (!current || state.loading),
+    loading: path !== null && (current ? state.loading : cached === null),
     reload,
     refresh,
   };

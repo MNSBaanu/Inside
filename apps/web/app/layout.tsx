@@ -6,6 +6,7 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { FooterGate } from '@/components/layout/footer-gate';
 import { SessionProvider } from '@/components/providers/session-provider';
+import { TopProgress } from '@/components/layout/top-progress';
 import { ToastProvider } from '@/components/ui/toast';
 
 const brand = Inter_Tight({
@@ -34,6 +35,7 @@ export default function RootLayout({
         <ClerkProvider signInUrl="/login" signUpUrl="/register">
           <SessionProvider>
             <ToastProvider>
+              <TopProgress />
               <a href="#main" className="skip-link">
                 Skip to content
               </a>
