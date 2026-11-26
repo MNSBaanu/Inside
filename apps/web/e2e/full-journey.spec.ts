@@ -201,6 +201,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
   await test.step('designer sends a proposal with stage fees', async () => {
     await signIn(designer, accounts.ravi);
     await openFromList(designer, '/requests', title);
+    await designer.getByRole('button', { name: 'Send a proposal' }).click();
     await designer.getByLabel('Scope').fill('Layout, concept boards, full design and a revision round.');
     await designer.getByLabel('Timeline').fill('6 weeks');
     for (const stage of STAGES.slice(1)) {
