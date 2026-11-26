@@ -37,6 +37,7 @@ const nextConfig = {
     staleTimes: { dynamic: 30, static: 180 },
   },
   images: {
+    formats: ['image/avif', 'image/webp'],
     // Only our own upload host and the stock-photo host go through the optimizer.
     remotePatterns: [
       { protocol: 'https', hostname: 'res.cloudinary.com' },
