@@ -153,13 +153,13 @@ function HeaderContent({ pathname }: { pathname: string }) {
         className="h-[calc(100dvh-4rem)] overflow-y-auto bg-canvas lg:hidden"
       >
         {workspace ? null : (
-          <nav className="shell flex flex-col pt-8">
+          <nav className="shell flex flex-col pt-4">
             {navigation.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 aria-current={isActive(pathname, item.href) ? 'page' : undefined}
-                className={`border-b border-hairline py-6 font-display text-3xl font-semibold tracking-tight ${
+                className={`border-b border-hairline py-3.5 font-display text-xl font-semibold tracking-tight ${
                   isActive(pathname, item.href) ? 'text-brand' : ''
                 }`}
               >
@@ -169,15 +169,15 @@ function HeaderContent({ pathname }: { pathname: string }) {
           </nav>
         )}
 
-        <div className="shell mt-10 flex flex-col gap-4 pb-12">
+        <div className="shell mt-6 flex flex-col gap-2.5 pb-8">
           {status === 'authenticated' ? (
             <>
-              <ButtonLink href="/dashboard" size="lg" fullWidth>
+              <ButtonLink href="/dashboard" size="md" fullWidth>
                 Dashboard
               </ButtonLink>
               <ButtonLink
                 href="/messages"
-                size="lg"
+                size="md"
                 variant="outline"
                 fullWidth
               >
@@ -185,22 +185,22 @@ function HeaderContent({ pathname }: { pathname: string }) {
               </ButtonLink>
               <ButtonLink
                 href="/notifications"
-                size="lg"
+                size="md"
                 variant="outline"
                 fullWidth
               >
                 Notifications
               </ButtonLink>
-              <ButtonLink href="/account" size="lg" variant="outline" fullWidth>
+              <ButtonLink href="/account" size="md" variant="outline" fullWidth>
                 Account
               </ButtonLink>
             </>
           ) : status !== 'unauthenticated' ? null : (
             <>
-              <ButtonLink href="/register" size="lg" fullWidth>
+              <ButtonLink href="/register" size="md" fullWidth>
                 Get started
               </ButtonLink>
-              <ButtonLink href="/login" size="lg" variant="outline" fullWidth>
+              <ButtonLink href="/login" size="md" variant="outline" fullWidth>
                 Sign in
               </ButtonLink>
             </>
