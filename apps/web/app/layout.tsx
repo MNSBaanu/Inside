@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={brand.variable}>
       <body>
-        <ClerkProvider signInUrl="/login" signUpUrl="/register">
+        <ClerkProvider signInUrl="/login" signUpUrl="/register" prefetchUI={false}>
           <SessionProvider>
             <ToastProvider>
               <TopProgress />
