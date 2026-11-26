@@ -26,6 +26,14 @@ describe('HealthController', () => {
     });
   });
 
+  it('answers the liveness check without querying the database', () => {
+    expect(controller.getLive()).toEqual({
+      success: true,
+      data: { status: 'ok' },
+    });
+    expect(prisma.$queryRaw).not.toHaveBeenCalled();
+  });
+
   it('throws 503 when database is down', async () => {
     prisma.$queryRaw.mockRejectedValue(new Error('connection refused'));
     await expect(controller.getHealth()).rejects.toBeInstanceOf(

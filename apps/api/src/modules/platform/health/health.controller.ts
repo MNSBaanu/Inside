@@ -13,4 +13,11 @@ export class HealthController {
   getHealth() {
     return this.healthService.getHealth();
   }
+
+  @Get('live')
+  @ApiOperation({ summary: 'Liveness check that does not touch the database' })
+  @ApiOkResponse({ description: 'The API process is running' })
+  getLive() {
+    return { success: true, data: { status: 'ok' as const } };
+  }
 }
