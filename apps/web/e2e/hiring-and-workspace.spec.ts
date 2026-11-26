@@ -6,7 +6,7 @@ test.describe('Hiring and the project workspace', () => {
     page,
   }) => {
     await signIn(page, accounts.kasun);
-    await openFromList(page, '/requests', 'Japandi living room');
+    await openFromList(page, '/requests', 'Japandi living room', 'Open requests');
 
     const comparison = page.getByRole('table', { name: 'Proposals side by side' });
     await expect(comparison).toBeVisible();

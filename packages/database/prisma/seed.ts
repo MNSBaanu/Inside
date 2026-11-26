@@ -686,6 +686,9 @@ async function seedProject(plan: ProjectPlan) {
           dueDate: new Date(startedAt.getTime() + (index + 1) * 14 * DAY),
           submittedAt: submitted ? at(index, 1) : null,
           approvedAt: stageStatus === StageStatus.APPROVED ? at(index) : null,
+          feedback:
+            stageStatus === StageStatus.REJECTED ? (plan.rejection?.reason ?? null) : null,
+          requirementsApply: !touched,
         },
       ],
     );

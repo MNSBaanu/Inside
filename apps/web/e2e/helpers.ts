@@ -25,9 +25,10 @@ export async function signIn(page: Page, email: string, next?: string) {
   await expect(page).toHaveURL(next ?? /\/(dashboard|admin)/);
 }
 
-/** Opens a list page and follows the link with the given title. */
-export async function openFromList(page: Page, path: string, title: string) {
+/** Opens a list page, optionally switches to a tab, and follows the link with the given title. */
+export async function openFromList(page: Page, path: string, title: string, tab?: string) {
   await page.goto(path);
+  if (tab) await page.getByRole('tab', { name: new RegExp(tab) }).click();
   await page.getByRole('link', { name: new RegExp(title) }).first().click();
   await expect(page.getByRole('heading', { name: title })).toBeVisible();
 }
