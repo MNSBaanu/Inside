@@ -30,14 +30,10 @@ const stats = [
 ];
 
 const highlights = [
-  { title: 'Verified designers', body: 'Designers submit credentials and an admin checks them before the badge appears.' },
-  { title: 'Milestone payments', body: 'Pay for each stage after you approve it.' },
-  { title: 'Side-by-side proposals', body: 'Compare scope, timeline and cost at a glance.' },
-  { title: 'One workspace', body: 'Messages, files and approvals kept together.' },
-  { title: 'Saved designers', body: 'Save designers and work you like and come back to them later.' },
-  { title: 'Designer schedules', body: 'Designers manage their availability so you know when they can start.' },
-  { title: 'Live notifications', body: 'Get told when a proposal, message or payment needs you.' },
-  { title: 'Safety and reporting', body: 'Report a problem and our team steps in to review it.' },
+  { title: 'Verified designers', body: 'Checked by our team.' },
+  { title: 'Compare proposals', body: 'Scope, time and cost side by side.' },
+  { title: 'Pay per stage', body: 'Only after you approve it.' },
+  { title: 'One workspace', body: 'Chat, files and approvals together.' },
 ];
 
 const steps = [
@@ -157,10 +153,8 @@ export default function HomePage() {
               Elevated Living
             </h2>
             <p className={`mt-6 max-w-sm text-sm leading-relaxed ${muted}`}>
-              Inside connects homeowners with verified interior designers.
-              Every project is briefed, compared and approved stage by stage,
-              ensuring comfort, elegance and a seamless journey from concept to
-              completion.
+              Find a verified interior designer, compare proposals, and approve
+              and pay one stage at a time.
             </p>
             <div className="mt-8">
               <ArrowButton href="/how-it-works" tone="dark">
@@ -171,7 +165,7 @@ export default function HomePage() {
               {highlights.map((item) => (
                 <li key={item.title}>
                   <p className="font-medium tracking-[-0.01em]">{item.title}</p>
-                  <p className={`mt-1 text-sm leading-relaxed ${muted}`}>{item.body}</p>
+                  <p className={`mt-1 text-sm ${muted}`}>{item.body}</p>
                 </li>
               ))}
             </ul>
