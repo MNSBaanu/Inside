@@ -108,6 +108,7 @@ export default function HomePage() {
             alt="A bright living room with arched windows, layered seating and warm natural textures"
             fill
             priority
+            fetchPriority="high"
             sizes="100vw"
             className="-z-10 object-cover"
           />
