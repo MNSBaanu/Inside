@@ -1,6 +1,7 @@
 import { AddPortfolioImageDto } from './add-portfolio-image.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  ArrayMaxSize,
   IsBoolean,
   IsNumber,
   IsOptional,
@@ -62,6 +63,7 @@ export class CreatePortfolioDto {
 
   @ApiPropertyOptional({ type: [AddPortfolioImageDto] })
   @IsOptional()
+  @ArrayMaxSize(30)
   @ValidateNested({ each: true })
   @Type(() => AddPortfolioImageDto)
   images?: AddPortfolioImageDto[];

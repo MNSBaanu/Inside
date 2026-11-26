@@ -1,21 +1,31 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class ListProductsQueryDto {
   @ApiPropertyOptional({ description: 'Search name or description' })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   q?: string;
 
   @ApiPropertyOptional({ example: 'Seating' })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   category?: string;
 
   @ApiPropertyOptional({ example: 'Scandinavian' })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   style?: string;
 
   @ApiPropertyOptional({ description: 'Highest price to include' })

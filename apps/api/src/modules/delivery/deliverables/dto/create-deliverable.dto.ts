@@ -1,11 +1,13 @@
 import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsOptional,
   IsString,
   IsUrl,
   Matches,
   MaxLength,
+  MinLength,
 } from 'class-validator';
 
 export class CreateDeliverableDto {
@@ -44,7 +46,11 @@ export class CreateDeliverableDto {
 
 export class UpdateDeliverableFeedbackDto {
   @ApiProperty()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @IsString()
+  @MinLength(1)
   @MaxLength(2000)
   feedback!: string;
 }

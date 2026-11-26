@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Max,
   MaxLength,
   Min,
 } from 'class-validator';
@@ -14,6 +15,7 @@ export class ListPortfoliosQueryDto {
   @ApiPropertyOptional({ description: 'Search title, description or designer' })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   q?: string;
 
   @ApiPropertyOptional({
@@ -68,5 +70,6 @@ export class ListPortfoliosQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
+  @Max(100)
   pageSize?: number;
 }

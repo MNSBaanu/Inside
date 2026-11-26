@@ -5,6 +5,8 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  Max,
+  MaxLength,
   Min,
 } from 'class-validator';
 
@@ -12,16 +14,19 @@ export class ListDesignersQueryDto {
   @ApiPropertyOptional({ description: 'Search name or bio' })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   q?: string;
 
   @ApiPropertyOptional({ example: 'Colombo' })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   location?: string;
 
   @ApiPropertyOptional({ example: 'Scandinavian' })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   style?: string;
 
   @ApiPropertyOptional({ example: 'true' })
@@ -46,5 +51,6 @@ export class ListDesignersQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
+  @Max(100)
   pageSize?: number;
 }

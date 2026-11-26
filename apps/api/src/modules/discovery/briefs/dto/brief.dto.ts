@@ -20,12 +20,15 @@ export class CreateBriefDto {
   @IsArray()
   @ArrayMaxSize(20)
   @IsString({ each: true })
+  @MaxLength(60, { each: true })
   styles!: string[];
 
   @ApiProperty({ example: ['Living Room', 'Kitchen'], type: [String] })
   @IsArray()
   @ArrayMaxSize(20)
+  @ArrayMinSize(1)
   @IsString({ each: true })
+  @MaxLength(60, { each: true })
   rooms!: string[];
 
   @ApiPropertyOptional({ example: '400000-800000' })
@@ -51,6 +54,7 @@ export class UpdateBriefDto {
   @ArrayMinSize(1)
   @ArrayMaxSize(20)
   @IsString({ each: true })
+  @MaxLength(60, { each: true })
   styles?: string[];
 
   @ApiPropertyOptional({ type: [String] })
@@ -59,6 +63,7 @@ export class UpdateBriefDto {
   @ArrayMinSize(1)
   @ArrayMaxSize(20)
   @IsString({ each: true })
+  @MaxLength(60, { each: true })
   rooms?: string[];
 
   @ApiPropertyOptional()

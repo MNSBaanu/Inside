@@ -1,4 +1,5 @@
 import { IsCloudinaryUrl } from '../../../../common/cloudinary-url';
+import { MAX_AMOUNT } from '../../../../common/money';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
@@ -9,6 +10,7 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  Max,
   MaxLength,
   Min,
   MinLength,
@@ -114,6 +116,7 @@ export class AdminCreateProductDto {
   @Type(() => Number)
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
+  @Max(MAX_AMOUNT)
   price!: number;
 
   @ApiProperty()
@@ -129,7 +132,7 @@ export class AdminCreateProductDto {
   sellerName!: string;
 
   @ApiProperty()
-  @IsUrl({ require_protocol: true })
+  @IsUrl({ protocols: ['https'], require_protocol: true })
   @MaxLength(1000)
   sellerUrl!: string;
 
