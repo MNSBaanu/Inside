@@ -18,7 +18,7 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https:",
   "font-src 'self'",
   "worker-src 'self' blob:",
-  `connect-src 'self' ${apiOrigin} ${apiOrigin.replace(/^http/, 'ws')} https://api.cloudinary.com https://api.stripe.com ${clerkOrigin} https://*.protect.clerk.com https://clerk-telemetry.com${isDev ? ' ws: wss:' : ''}`,
+  `connect-src 'self' ${apiOrigin} ${apiOrigin.replace(/^http/, 'ws')} https://api.cloudinary.com https://api.stripe.com ${clerkOrigin} https://*.protect.clerk.com:* https://clerk-telemetry.com${isDev ? ' ws: wss:' : ''}`,
   "frame-src https://js.stripe.com https://hooks.stripe.com https://challenges.cloudflare.com",
   "frame-ancestors 'none'",
   "form-action 'self'",
