@@ -75,11 +75,11 @@ export function FilterField({
     >
       <label
         htmlFor={htmlFor}
-        className="text-label font-semibold uppercase text-muted"
+        className="cursor-pointer text-label font-semibold uppercase text-muted before:absolute before:inset-0 before:content-['']"
       >
         {label}
       </label>
-      {children}
+      <div className="relative">{children}</div>
     </div>
   );
 }

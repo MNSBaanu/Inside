@@ -160,7 +160,7 @@ export function PortfolioDetail({
                 ].filter(Boolean).map((label) => (
                   <span
                     key={label}
-                    className="rounded-[6px] border border-white/15 bg-brand/70 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white backdrop-blur-md"
+                    className="rounded-[6px] border border-white/15 bg-brand/70 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md"
                   >
                     {label}
                   </span>

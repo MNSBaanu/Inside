@@ -44,7 +44,7 @@ export function PortfolioCard({
       )}
 
       {portfolio.style ? (
-        <span className="absolute right-3 top-3 rounded-[6px] border border-white/15 bg-brand/70 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+        <span className="absolute right-3 top-3 rounded-[6px] border border-white/15 bg-brand/70 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md">
           {portfolio.style}
         </span>
       ) : null}

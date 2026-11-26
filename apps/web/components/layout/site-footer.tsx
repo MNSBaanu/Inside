@@ -46,10 +46,10 @@ export function SiteFooter() {
           {columns.map((column) => (
             <nav key={column.heading} aria-label={column.heading}>
               <h2 className="text-sm font-medium">{column.heading}</h2>
-              <ul className="mt-3 space-y-2">
+              <ul className="mt-1">
                 {column.links.map((link) => (
                   <li key={`${column.heading}-${link.label}`}>
-                    <Link href={link.href} className="text-sm text-canvas/70 hover:text-white">
+                    <Link href={link.href} className="inline-flex min-h-10 items-center text-sm text-canvas/70 hover:text-white">
                       {link.label}
                     </Link>
                   </li>
@@ -66,10 +66,10 @@ export function SiteFooter() {
         <div className="mt-10 flex flex-col gap-2 border-t border-canvas/10 pt-6 text-xs text-canvas/60 sm:flex-row sm:justify-between">
           <p>&copy; {new Date().getFullYear()} Inside. All rights reserved.</p>
           <div className="flex gap-6">
-            <Link href="/safety" className="hover:text-white">
+            <Link href="/safety" className="inline-flex min-h-10 items-center hover:text-white">
               Trust &amp; safety
             </Link>
-            <Link href="/how-it-works" className="hover:text-white">
+            <Link href="/how-it-works" className="inline-flex min-h-10 items-center hover:text-white">
               How Inside works
             </Link>
           </div>
