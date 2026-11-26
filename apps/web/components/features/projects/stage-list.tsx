@@ -25,6 +25,12 @@ import type {
 
 type StageAction = 'start' | 'submit' | 'approve' | 'reject';
 
+function localToday() {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  return now.toISOString().slice(0, 10);
+}
+
 export function StageList({
   stages,
   isClient: isClientParty,
@@ -164,7 +170,7 @@ export function StageList({
                           id={`due-${stage.id}`}
                           type="date"
                           value={dueValue}
-                          min={new Date().toISOString().slice(0, 10)}
+                          min={localToday()}
                           onChange={(event) => setDueValue(event.target.value)}
                           className="w-auto py-1.5"
                         />
@@ -490,6 +496,7 @@ function StageDeliverables({
           <Field label="Notes (optional)" htmlFor={`notes-${stageId}`}>
             <Textarea
               id={`notes-${stageId}`}
+              maxLength={2000}
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
             />
@@ -686,6 +693,7 @@ function FeedbackForm({ onSubmit }: { onSubmit: (value: string) => void }) {
     >
       <Textarea
         value={value}
+        maxLength={2000}
         onChange={(event) => setValue(event.target.value)}
         placeholder="Leave feedback on this file."
         className="min-h-20"

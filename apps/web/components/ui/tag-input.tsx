@@ -35,6 +35,7 @@ export function TagInput({
     <div className="flex flex-col gap-3">
       <Input
         id={id}
+        maxLength={60}
         value={draft}
         placeholder={placeholder}
         onChange={(event) => setDraft(event.target.value)}

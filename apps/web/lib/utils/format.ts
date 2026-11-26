@@ -10,6 +10,8 @@ const date = new Intl.DateTimeFormat('en-GB', {
   year: 'numeric',
 });
 
+export const MAX_AMOUNT = 9_999_999_999;
+
 export function formatMoney(value: number | null | undefined) {
   if (value === null || value === undefined) return '-';
   return currency.format(value);

@@ -21,6 +21,7 @@ const plural = (count: number, word: string) => `${count} ${word}${count === 1 ?
  * contents match `existingHashes`, or each other, are skipped.
  */
 export function FileUpload({
+  id,
   folder,
   accept = 'image/*',
   label,
@@ -29,6 +30,7 @@ export function FileUpload({
   existingHashes,
   className,
 }: {
+  id?: string;
   folder: UploadFolder;
   accept?: string;
   label: string;
@@ -37,7 +39,8 @@ export function FileUpload({
   existingHashes?: string[];
   className?: string;
 }) {
-  const inputId = useId();
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
   const inputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<string | null>(null);
   const [percent, setPercent] = useState<number | null>(null);

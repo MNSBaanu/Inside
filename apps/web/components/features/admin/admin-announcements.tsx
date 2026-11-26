@@ -25,6 +25,12 @@ import { api, errorMessage } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
 import { formatDate } from '@/lib/utils/format';
 
+function localNow() {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  return now.toISOString().slice(0, 16);
+}
+
 const AUDIENCES = [
   { value: 'ALL', label: 'Everyone' },
   { value: 'CLIENTS', label: 'Clients' },
@@ -133,6 +139,7 @@ export function AnnouncementsSection() {
               <Input
                 id="announcement-ends"
                 type="datetime-local"
+                min={localNow()}
                 value={endsAt}
                 onChange={(event) => setEndsAt(event.target.value)}
               />

@@ -161,6 +161,7 @@ export default function RegisterPage() {
                 autoComplete="name"
                 required
                 minLength={2}
+                maxLength={100}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="Amara Weerasinghe"

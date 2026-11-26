@@ -127,6 +127,7 @@ function AccountForm({ user }: { user: User }) {
               id="name"
               required
               minLength={2}
+              maxLength={100}
               value={form.name}
               onChange={(event) =>
                 setForm({ ...form, name: event.target.value })
@@ -159,6 +160,8 @@ function AccountForm({ user }: { user: User }) {
             <Field label="Phone" htmlFor="phone">
               <Input
                 id="phone"
+                type="tel"
+                maxLength={30}
                 value={form.phone}
                 onChange={(event) =>
                   setForm({ ...form, phone: event.target.value })

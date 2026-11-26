@@ -101,10 +101,12 @@ function BriefForm({ brief }: { brief: Brief }) {
             </Field>
           </div>
 
-          <Field label="Budget range" htmlFor="budgetRange">
+          <Field label="Budget range" htmlFor="budgetRange" hint="In LKR. Include a number, e.g. 400000-800000.">
             <Input
               id="budgetRange"
               maxLength={80}
+              pattern={'(?=.*\d)[A-Za-z0-9\s.,\-]+'}
+              title="Include a number, e.g. 400000-800000"
               value={budgetRange}
               onChange={(event) => setBudgetRange(event.target.value)}
             />

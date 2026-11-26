@@ -76,6 +76,7 @@ export function InviteAdminDialog({
           <Input
             id="invite-admin-email"
             type="email"
+            maxLength={254}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             required

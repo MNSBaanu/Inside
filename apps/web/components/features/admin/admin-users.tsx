@@ -128,6 +128,7 @@ export function AddUserDialog({
           <Input
             id="new-user-email"
             type="email"
+            maxLength={254}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             required

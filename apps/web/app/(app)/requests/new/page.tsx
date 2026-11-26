@@ -13,6 +13,7 @@ import { useSession } from '@/components/providers/session-provider';
 import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
 import { cn } from '@/lib/utils/cn';
+import { MAX_AMOUNT } from '@/lib/utils/format';
 import { PortfolioReferenceCard } from '@/components/features/requests/portfolio-reference';
 import { BriefCard } from '@/components/features/requests/brief-card';
 import type { Brief, Portfolio, ProjectRequest } from '@/lib/types';
@@ -207,6 +208,7 @@ function NewRequestForm() {
               id="budget"
               type="number"
               min={0}
+              max={MAX_AMOUNT}
               value={budget}
               onChange={(event) => setBudget(event.target.value)}
               placeholder="500000"

@@ -273,10 +273,12 @@ function NewBriefForm() {
                   description="A rough budget and a few lines about what you want help designers quote accurately."
                 />
                 <div className="flex flex-col gap-5">
-                  <Field label="Budget range" htmlFor="budgetRange" hint="In LKR, e.g. 400000-800000.">
+                  <Field label="Budget range" htmlFor="budgetRange" hint="In LKR. Include a number, e.g. 400000-800000.">
                     <Input
                       id="budgetRange"
                       maxLength={80}
+                      pattern={'(?=.*\d)[A-Za-z0-9\s.,\-]+'}
+                      title="Include a number, e.g. 400000-800000"
                       value={budgetRange}
                       onChange={(event) => setBudgetRange(event.target.value)}
                       placeholder="400000-800000"

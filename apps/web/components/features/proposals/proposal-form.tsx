@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
-import { formatMoney, titleCase } from '@/lib/utils/format';
+import { MAX_AMOUNT, formatMoney, titleCase } from '@/lib/utils/format';
 import type { StageName } from '@/lib/types';
 
 const billableStages: { name: StageName; hint: string; example: string }[] = [
@@ -117,7 +117,8 @@ export function ProposalForm({
                   id={`fee-${stage.name}`}
                   type="number"
                   min={0}
-                  step={1000}
+                  max={MAX_AMOUNT}
+                  step={1}
                   value={fees[stage.name] ?? ''}
                   onChange={(event) =>
                     setFees({ ...fees, [stage.name]: event.target.value })

@@ -38,7 +38,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
 import { cn } from '@/lib/utils/cn';
-import { formatDate, formatMoney, titleCase } from '@/lib/utils/format';
+import { MAX_AMOUNT, formatDate, formatMoney, titleCase } from '@/lib/utils/format';
 
 type Person = { id: string; name: string; avatarUrl: string | null };
 
@@ -723,7 +723,7 @@ function ProductDialog({
           <Input id="product-name" value={form.name} onChange={set('name')} required minLength={2} maxLength={120} autoFocus />
         </Field>
         <Field label="Price (LKR)" htmlFor="product-price">
-          <Input id="product-price" type="number" min={0} step="0.01" value={form.price} onChange={set('price')} required />
+          <Input id="product-price" type="number" min={0} max={MAX_AMOUNT} step="0.01" value={form.price} onChange={set('price')} required />
         </Field>
         <Field label="Category" htmlFor="product-category">
           <Input id="product-category" list="product-categories" value={form.category} onChange={set('category')} required minLength={2} maxLength={60} />
@@ -758,7 +758,7 @@ function ProductDialog({
           </datalist>
         </Field>
         <Field label="Provider link" htmlFor="product-seller-url">
-          <Input id="product-seller-url" type="url" value={form.sellerUrl} onChange={set('sellerUrl')} required placeholder="https://" />
+          <Input id="product-seller-url" type="url" pattern="https://.+" title="Use an https:// link" maxLength={1000} value={form.sellerUrl} onChange={set('sellerUrl')} required placeholder="https://" />
         </Field>
       </div>
       <label className="flex items-center gap-2 text-sm">

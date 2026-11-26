@@ -14,6 +14,7 @@ import { useApi } from '@/lib/api/use-api';
 import type { PortfolioDraft, Project } from '@/lib/types';
 import { cn } from '@/lib/utils/cn';
 import { isOptimizableImage } from '@/lib/utils/images';
+import { MAX_AMOUNT } from '@/lib/utils/format';
 import { ROOM_TYPES, STYLES } from '@/lib/utils/options';
 
 /** Lets the designer feature a completed project in their portfolio once the client approves. */
@@ -218,6 +219,14 @@ function DraftForm({
       setError('Choose at least one photo.');
       return;
     }
+    if (selected.length > 30) {
+      setError('Choose up to 30 photos.');
+      return;
+    }
+    if (form.style.trim().length < 2 || form.roomType.trim().length < 2) {
+      setError('Choose a style and a room type.');
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
@@ -261,6 +270,7 @@ function DraftForm({
             id="share-budget"
             type="number"
             min={0}
+            max={MAX_AMOUNT}
             value={form.budget}
             onChange={(event) => setForm({ ...form, budget: event.target.value })}
           />
@@ -340,6 +350,7 @@ function DraftForm({
       <Field label="Description" htmlFor="share-description">
         <Textarea
           id="share-description"
+          maxLength={2000}
           value={form.description}
           onChange={(event) =>
             setForm({ ...form, description: event.target.value })

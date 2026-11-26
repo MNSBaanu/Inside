@@ -16,7 +16,7 @@ import { Field, Input, Textarea } from '@/components/ui/field';
 import { FileUpload } from '@/components/ui/file-upload';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
-import { formatMoney } from '@/lib/utils/format';
+import { MAX_AMOUNT, formatMoney } from '@/lib/utils/format';
 import { ROOM_TYPES, STYLES } from '@/lib/utils/options';
 import { useApi } from '@/lib/api/use-api';
 import type { Portfolio } from '@/lib/types';
@@ -43,6 +43,10 @@ export default function ManagePortfoliosPage() {
   async function onCreate(event: React.FormEvent) {
     event.preventDefault();
     setFormError(null);
+    if (form.style.trim().length < 2 || form.roomType.trim().length < 2) {
+      setFormError('Choose a style and a room type.');
+      return;
+    }
     setBusy(true);
     try {
       await api.post('/portfolios', {
@@ -129,6 +133,7 @@ export default function ManagePortfoliosPage() {
                   id="budget"
                   type="number"
                   min={0}
+                  max={MAX_AMOUNT}
                   value={form.budget}
                   onChange={(event) =>
                     setForm({ ...form, budget: event.target.value })
@@ -165,6 +170,7 @@ export default function ManagePortfoliosPage() {
             <Field label="Description" htmlFor="description">
               <Textarea
                 id="description"
+                maxLength={2000}
                 value={form.description}
                 onChange={(event) =>
                   setForm({ ...form, description: event.target.value })

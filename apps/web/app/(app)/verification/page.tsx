@@ -6,7 +6,7 @@ import { useSession } from '@/components/providers/session-provider';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, cardSurface } from '@/components/ui/card';
-import { Field, Input, Textarea } from '@/components/ui/field';
+import { Field, Textarea } from '@/components/ui/field';
 import { EmptyState, ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { api, errorMessage } from '@/lib/api/client';
@@ -40,6 +40,10 @@ export default function VerificationPage() {
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setFormError(null);
+    if (!evidenceUrl) {
+      setFormError('Upload a document first.');
+      return;
+    }
     setBusy(true);
     try {
       await api.post('/verifications', {
@@ -93,20 +97,26 @@ export default function VerificationPage() {
           <form onSubmit={onSubmit} className="flex flex-col gap-5">
             {formError ? <ErrorNotice message={formError} /> : null}
 
-            <Field label="Evidence URL" htmlFor="evidenceUrl">
-              <Input
-                id="evidenceUrl"
-                type="url"
-                required
-                minLength={4}
-                value={evidenceUrl}
-                onChange={(event) => setEvidenceUrl(event.target.value)}
-                placeholder="https://…"
-              />
+            <Field
+              label="Evidence document"
+              htmlFor="evidence-upload"
+              hint="An image or PDF, such as a qualification or business registration."
+            >
+              {evidenceUrl ? (
+                <a
+                  href={safeHref(evidenceUrl)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="link-underline mb-3 inline-block text-sm font-semibold"
+                >
+                  View the uploaded document
+                </a>
+              ) : null}
               <FileUpload
+                id="evidence-upload"
                 folder="attachments"
                 accept="image/*,.pdf"
-                label="Or upload a document"
+                label={evidenceUrl ? 'Replace the document' : 'Upload a document'}
                 onUploaded={(file) => setEvidenceUrl(file.url)}
               />
             </Field>
