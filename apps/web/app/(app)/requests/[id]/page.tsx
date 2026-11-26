@@ -55,6 +55,8 @@ export default function RequestDetailPage({
   const item = request.data.request;
   const isClient = user?.id === item.clientId;
   const isDesigner = user?.activeRole === 'DESIGNER';
+  const designersOnly =
+    !isClient && !isDesigner && item.designerId !== user?.id;
   const myProposal = proposals.data?.items.find(
     (proposal) => proposal.designerId === user?.id,
   );
@@ -276,7 +278,16 @@ export default function RequestDetailPage({
         </div>
 
         <div className="mt-3">
-          {proposals.loading ? (
+          {designersOnly ? (
+            <div className="rounded-xl bg-sand p-4 text-sm">
+              <p className="font-semibold">Only designers can send proposals.</p>
+              <p className="mt-1 text-muted">
+                {user?.role === 'DESIGNER'
+                  ? 'Switch to your designer view to send a proposal.'
+                  : 'Be a designer on Inside to send proposals on open projects.'}
+              </p>
+            </div>
+          ) : proposals.loading ? (
             <Skeleton className="h-40" />
           ) : proposals.error ? (
             <ErrorNotice message={proposals.error} />

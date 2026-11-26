@@ -3,6 +3,7 @@
 import { ArrowLeft, CalendarClock, ExternalLink, MapPin, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { useSession } from '@/components/providers/session-provider';
 import { ButtonLink } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 import { formatDate, formatMoney } from '@/lib/utils/format';
@@ -20,6 +21,7 @@ export function OpenRequestDrawer({
   const [shown, setShown] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
   const href = `/requests/${request.id}`;
+  const { user, status } = useSession();
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setShown(true));
@@ -163,9 +165,36 @@ export function OpenRequestDrawer({
 
             <aside className="lg:border-l lg:border-hairline lg:pl-8">
               <div className="space-y-3 lg:sticky lg:top-0">
-                <ButtonLink href={`${href}?propose=1`} size="lg" fullWidth>
-                  Send a proposal
-                </ButtonLink>
+                {status === 'loading' ? null : user?.activeRole === 'DESIGNER' ? (
+                  <ButtonLink href={`${href}?propose=1`} size="lg" fullWidth>
+                    Send a proposal
+                  </ButtonLink>
+                ) : (
+                  <div className="rounded-xl bg-sand p-4 text-sm">
+                    <p className="font-semibold">Only designers can send proposals.</p>
+                    <p className="mt-1 text-muted">
+                      {!user
+                        ? 'Join Inside as a designer to send proposals on open projects.'
+                        : user.role === 'DESIGNER'
+                          ? 'Switch to your designer view to send a proposal.'
+                          : 'Be a designer on Inside to send proposals on open projects.'}
+                    </p>
+                    {!user ? (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <ButtonLink href="/register" size="sm">
+                          Join as a designer
+                        </ButtonLink>
+                        <ButtonLink
+                          href={`/login?next=${encodeURIComponent(href)}`}
+                          size="sm"
+                          variant="outline"
+                        >
+                          Sign in
+                        </ButtonLink>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
                 <div className="rounded-xl border border-hairline p-4 text-sm">
                   <p className="text-muted">Client budget</p>
                   <p className="mt-1 text-xl font-semibold">
