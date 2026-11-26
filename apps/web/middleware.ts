@@ -24,9 +24,24 @@ export default clerkMiddleware(
   { signInUrl: '/login', signUpUrl: '/register' },
 );
 
+// Only signed-in areas run the middleware. Public pages skip it, so a first
+// visit has no Clerk handshake redirects and the page comes from the CDN cache.
 export const config = {
   matcher: [
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/dashboard/:path*',
+    '/briefs/:path*',
+    '/moodboards/:path*',
+    '/favourites/:path*',
+    '/requests/:path*',
+    '/projects/:path*',
+    '/schedule/:path*',
+    '/messages/:path*',
+    '/notifications/:path*',
+    '/account/:path*',
+    '/safety/:path*',
+    '/admin/:path*',
+    '/verification/:path*',
+    '/portfolios/manage/:path*',
     '/(api|trpc)(.*)',
   ],
 };
