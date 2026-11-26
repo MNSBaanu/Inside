@@ -384,6 +384,8 @@ model ProjectStage {
   dueDate     DateTime?
   submittedAt DateTime?
   approvedAt  DateTime?
+  feedback    String?
+  requirementsApply Boolean @default(true)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
