@@ -95,7 +95,7 @@ export default function HowItWorksPage() {
 
           <Reveal delay={120} className="divide-y divide-ink/10">
             {stages.map((stage, index) => (
-              <details key={stage.number} open={index === 0} className="group py-5 first:pt-0">
+              <details key={stage.number} name="how-it-works-step" open={index === 0} className="group py-5 first:pt-0">
                 <summary className="flex cursor-pointer list-none items-baseline gap-3">
                   <span className="text-xs text-ink/70">{stage.number}</span>
                   <span className="text-xl font-medium tracking-[-0.02em]">{stage.title}</span>
