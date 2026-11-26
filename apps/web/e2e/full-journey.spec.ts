@@ -205,7 +205,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
     await designer.getByLabel('Scope').fill('Layout, concept boards, full design and a revision round.');
     await designer.getByLabel('Timeline').fill('6 weeks');
     for (const stage of STAGES.slice(1)) {
-      await designer.getByLabel(new RegExp(`^${stage}$`, 'i')).fill('100000');
+      await designer.getByLabel(new RegExp(`^${stage} fee in LKR$`, 'i')).fill('100000');
     }
     await designer.getByRole('button', { name: 'Send proposal' }).click();
     await expect(designer.getByRole('button', { name: 'Send proposal' })).toBeHidden();
