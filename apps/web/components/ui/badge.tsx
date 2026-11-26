@@ -6,8 +6,8 @@ export type BadgeTone = 'neutral' | 'brand' | 'highlight' | 'support' | 'ink';
 const tones: Record<BadgeTone, string> = {
   neutral: 'bg-sand text-ink/70',
   brand: 'bg-brand-soft text-brand-deep',
-  highlight: 'bg-highlight-soft text-warning',
-  support: 'bg-support-soft text-success',
+  highlight: 'bg-highlight-soft text-status-action',
+  support: 'bg-support-soft text-brand',
   ink: 'bg-ink text-canvas',
 };
 

@@ -9,7 +9,7 @@ const config: Config = {
         surface: '#FFFFFF',
         sand: '#EDE7DC',
         ink: '#1B2422',
-        muted: '#6C7471',
+        muted: '#5B625F',
         hairline: '#DFD9CD',
         brand: {
           DEFAULT: '#064530',

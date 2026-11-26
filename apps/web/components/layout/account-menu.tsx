@@ -184,12 +184,11 @@ function IconLink({
   return (
     <Link
       href={href}
-      aria-label={count > 0 ? `${label} (${count} unread)` : label}
       className="relative flex h-10 w-10 items-center justify-center rounded-full text-ink/70 transition-colors duration-300 hover:bg-sand hover:text-brand"
     >
       <Icon aria-hidden strokeWidth={1.75} className="h-5 w-5" />
+      <span className="sr-only">{label}</span>
       <span
-        aria-hidden
         className={cn(
           'absolute -right-0.5 -top-0.5 inline-flex min-w-5 justify-center rounded-pill bg-brand px-1.5 py-0.5 text-xs text-canvas transition-opacity duration-300',
           count > 0 ? 'opacity-100' : 'opacity-0',
@@ -197,6 +196,7 @@ function IconLink({
       >
         {count > 0 ? count : null}
       </span>
+      {count > 0 ? <span className="sr-only"> unread</span> : null}
     </Link>
   );
 }
