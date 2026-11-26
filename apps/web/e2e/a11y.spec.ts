@@ -16,7 +16,10 @@ const PAGES = [
 for (const path of PAGES) {
   test(`a11y: ${path}`, async ({ page }) => {
     await page.goto(path);
-    await page.waitForLoadState('networkidle');
+    // Clerk's bot protection keeps probing in the background, so the network
+    // never goes idle. Wait for the page itself instead.
+    await page.waitForLoadState('load');
+    await page.getByRole('main').waitFor();
     const { violations } = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
       .analyze();
