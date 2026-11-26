@@ -129,7 +129,7 @@ test('a new client goes from the landing page to a completed, reviewed project',
 }) => {
   test.setTimeout(300_000);
   const run = Date.now();
-  const title = `Journey living room ${run}`;
+  const title = 'Scandinavian Living Room';
   const reviewText = `Smooth project from start to finish (${run}).`;
 
   await test.step('guest starts from the landing page and creates an account', async () => {
@@ -187,10 +187,9 @@ test('a new client goes from the landing page to a completed, reviewed project',
     await match.getByRole('link', { name: 'Request', exact: true }).click();
     await expect(page).toHaveURL(/\/requests\/new\?designerId=.+&briefId=/);
 
-    await page.getByLabel('Title').fill(title);
-    await page.getByLabel('Description').fill('Please quote for the full living room.');
+    await expect(page.getByText('Your brief goes with this request.')).toBeVisible();
+    await page.getByLabel('Anything to add?').fill('Please quote for the full living room.');
     await page.getByLabel('Expected timeline').fill('6 weeks');
-    await page.getByLabel('Budget').fill('450000');
     await page.getByRole('button', { name: 'Send request' }).click();
     await expect(page.getByRole('heading', { name: title })).toBeVisible();
   });
