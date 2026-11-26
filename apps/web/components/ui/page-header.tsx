@@ -17,12 +17,7 @@ export function PageHeader({
 }) {
   const app = variant === 'app';
   return (
-    <div
-      className={cn(
-        'flex flex-col gap-6',
-        app && 'md:flex-row md:items-end md:justify-between',
-      )}
-    >
+    <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
       <div>
         {eyebrow ? (
           <Badge tone={app ? 'brand' : 'neutral'}>{eyebrow}</Badge>
@@ -43,7 +38,7 @@ export function PageHeader({
           </p>
         ) : null}
       </div>
-      {action ? <div className={cn(!app && '-mt-1')}>{action}</div> : null}
+      {action ? <div className="shrink-0">{action}</div> : null}
     </div>
   );
 }
