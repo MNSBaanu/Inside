@@ -231,7 +231,7 @@ describe('Workspace flow (e2e)', () => {
     expect(projectView.body.data.project.status).toBe(ProjectStatus.ACTIVE);
 
     // 5. Walk all five stages. The client pays each milestone up front, the
-    //    designer starts the stage, and approval releases the held payment.
+    //    payment starts the stage, and approval releases the held payment.
     for (let i = 0; i < stageIds.length; i++) {
       const stageId = stageIds[i];
 
@@ -257,11 +257,14 @@ describe('Workspace flow (e2e)', () => {
         .expect(200);
       expect(paid.body.data.payment.status).toBe(PaymentStatus.PAID);
 
-      const start = await request(app.getHttpServer())
-        .patch(`/stages/${stageId}/start`)
+      const stages = await request(app.getHttpServer())
+        .get(`/projects/${projectId}/stages`)
         .set(authHeader(designerToken))
         .expect(200);
-      expect(start.body.data.stage.status).toBe(StageStatus.IN_PROGRESS);
+      const started = stages.body.data.items.find(
+        (s: { id: string }) => s.id === stageId,
+      );
+      expect(started.status).toBe(StageStatus.IN_PROGRESS);
 
       const deliv = await request(app.getHttpServer())
         .post(`/stages/${stageId}/deliverables`)

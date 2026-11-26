@@ -402,7 +402,7 @@ describe('Platform flows (e2e)', () => {
       expect(stagePayment.status).toBe('RELEASED');
     });
 
-    it('only lets the party who paused a project resume it, and requires a cancel reason', async () => {
+    it('lets either party resume a paused project, and requires a cancel reason', async () => {
       await request(server())
         .patch(`/projects/${projectId}/on-hold`)
         .set(auth(designer.token))
@@ -411,11 +411,6 @@ describe('Platform flows (e2e)', () => {
       await request(server())
         .patch(`/projects/${projectId}/resume`)
         .set(auth(client.token))
-        .send({})
-        .expect(403);
-      await request(server())
-        .patch(`/projects/${projectId}/resume`)
-        .set(auth(designer.token))
         .send({})
         .expect(200);
 
