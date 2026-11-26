@@ -7,6 +7,7 @@ import {
 import { AccountStatus, Role } from '@inside/database';
 import { AuthService } from '../auth/auth.service';
 import { PrismaService } from '../../../database/prisma.service';
+import { parseLocalDate } from '../../../common/time';
 import { SwitchActiveRoleDto } from './dto/switch-active-role.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
@@ -40,7 +41,7 @@ export class UsersService {
         ...(dto.availableFrom !== undefined
           ? {
               availableFrom: dto.availableFrom
-                ? new Date(dto.availableFrom)
+                ? parseLocalDate(dto.availableFrom)
                 : null,
             }
           : {}),

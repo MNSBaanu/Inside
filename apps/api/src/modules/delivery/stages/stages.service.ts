@@ -14,6 +14,7 @@ import {
   StageStatus,
 } from '@inside/database';
 import { formatLkr, stageLabel } from '../../../common/format';
+import { startOfLocalDay } from '../../../common/time';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
@@ -117,9 +118,7 @@ export class StagesService {
       throw new BadRequestException('Approved stages cannot be rescheduled');
     }
     if (dueDate) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (dueDate < today) {
+      if (dueDate < startOfLocalDay()) {
         throw new BadRequestException('The due date cannot be in the past');
       }
       const [before, after] = await Promise.all([
@@ -142,12 +141,13 @@ export class StagesService {
           select: { name: true, dueDate: true },
         }),
       ]);
-      if (before?.dueDate && dueDate < before.dueDate) {
+      const day = startOfLocalDay(dueDate).getTime();
+      if (before?.dueDate && day < startOfLocalDay(before.dueDate).getTime()) {
         throw new BadRequestException(
           `The due date must be on or after the ${stageLabel(before.name)} stage`,
         );
       }
-      if (after?.dueDate && dueDate > after.dueDate) {
+      if (after?.dueDate && day > startOfLocalDay(after.dueDate).getTime()) {
         throw new BadRequestException(
           `The due date must be on or before the ${stageLabel(after.name)} stage`,
         );

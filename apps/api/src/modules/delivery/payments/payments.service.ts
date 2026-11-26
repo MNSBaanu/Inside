@@ -18,6 +18,7 @@ import {
   StageStatus,
 } from '@inside/database';
 import { formatLkr, stageLabel } from '../../../common/format';
+import { parseLocalDate } from '../../../common/time';
 import type { AuthUser } from '../../identity/auth/auth.service';
 import { ActivityService } from '../../platform/activity/activity.service';
 import { NotificationsService } from '../../platform/notifications/notifications.service';
@@ -594,7 +595,7 @@ export class PaymentsService {
     ) {
       throw new BadRequestException('This project is closed');
     }
-    const paidAt = new Date(dto.paidOn);
+    const paidAt = parseLocalDate(dto.paidOn);
     if (paidAt.getTime() > Date.now()) {
       throw new BadRequestException('The payment date cannot be in the future');
     }

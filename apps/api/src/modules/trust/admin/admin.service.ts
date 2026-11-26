@@ -40,6 +40,11 @@ import { NotificationsService } from '../../platform/notifications/notifications
 import { PrismaService } from '../../../database/prisma.service';
 import { serializeReport } from '../reports/report.serializer';
 import { serializeReview } from '../../delivery/reviews/review.serializer';
+import {
+  APP_TIME_ZONE,
+  fromLocalClock,
+  toLocalClock,
+} from '../../../common/time';
 
 @Injectable()
 export class AdminService {
@@ -93,10 +98,11 @@ export class AdminService {
   }
 
   async getAnalytics(range = 12) {
-    const since = new Date();
-    since.setUTCDate(1);
-    since.setUTCHours(0, 0, 0, 0);
-    since.setUTCMonth(since.getUTCMonth() - (range - 1));
+    const firstMonth = toLocalClock();
+    firstMonth.setUTCDate(1);
+    firstMonth.setUTCHours(0, 0, 0, 0);
+    firstMonth.setUTCMonth(firstMonth.getUTCMonth() - (range - 1));
+    const since = fromLocalClock(firstMonth);
     const inRange = { createdAt: { gte: since } };
     const paid: PaymentStatus[] = [PaymentStatus.PAID, PaymentStatus.RELEASED];
 
@@ -112,15 +118,15 @@ export class AdminService {
       topStyles,
     ] = await Promise.all([
       this.prisma.$queryRaw<{ month: Date; role: Role; count: bigint }[]>`
-        SELECT date_trunc('month', "createdAt") AS month, role, COUNT(*) AS count
+        SELECT date_trunc('month', "createdAt" AT TIME ZONE 'UTC' AT TIME ZONE ${APP_TIME_ZONE}) AS month, role, COUNT(*) AS count
         FROM "User" WHERE "createdAt" >= ${since} AND role <> 'ADMIN'
         GROUP BY 1, 2`,
       this.prisma.$queryRaw<{ month: Date; count: bigint }[]>`
-        SELECT date_trunc('month', "createdAt") AS month, COUNT(*) AS count
+        SELECT date_trunc('month', "createdAt" AT TIME ZONE 'UTC' AT TIME ZONE ${APP_TIME_ZONE}) AS month, COUNT(*) AS count
         FROM "Project" WHERE "createdAt" >= ${since}
         GROUP BY 1`,
       this.prisma.$queryRaw<{ month: Date; amount: Prisma.Decimal }[]>`
-        SELECT date_trunc('month', "paidAt") AS month, SUM(amount) AS amount
+        SELECT date_trunc('month', "paidAt" AT TIME ZONE 'UTC' AT TIME ZONE ${APP_TIME_ZONE}) AS month, SUM(amount) AS amount
         FROM "MilestonePayment"
         WHERE "paidAt" >= ${since} AND status IN ('PAID', 'RELEASED')
         GROUP BY 1`,
@@ -161,8 +167,8 @@ export class AdminService {
 
     const key = (date: Date) => date.toISOString().slice(0, 7);
     const months = Array.from({ length: range }, (_, i) => {
-      const date = new Date(since);
-      date.setUTCMonth(since.getUTCMonth() + i);
+      const date = new Date(firstMonth);
+      date.setUTCMonth(firstMonth.getUTCMonth() + i);
       return {
         month: key(date),
         clients: 0,
