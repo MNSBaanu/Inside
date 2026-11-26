@@ -307,7 +307,7 @@ const USERS: UserSeed[] = [
   { key: 'sam', email: 'client2@insidesign.me', name: 'Sam Client', role: Role.CLIENT, location: 'Negombo', bio: 'Looking for a coastal bedroom redesign.', joinedDaysAgo: 110 },
   { key: 'kasun', email: 'client3@insidesign.me', name: 'Kasun Perera', role: Role.CLIENT, location: 'Kandy', bio: 'Updating a family home one room at a time.', joinedDaysAgo: 95 },
   { key: 'amaya', email: 'client4@insidesign.me', name: 'Amaya Fernando', role: Role.CLIENT, location: 'Galle', bio: 'Restoring a colonial-era townhouse.', joinedDaysAgo: 80 },
-  { key: 'ishan', email: 'client5@insidesign.me', name: 'Ishan Jayawardena', role: Role.CLIENT, location: 'Jaffna', emailVerified: false, joinedDaysAgo: 1 },
+  { key: 'ishan', email: 'client5@insidesign.me', name: 'Ishan Jayawardena', role: Role.CLIENT, location: 'Jaffna', bio: 'Furnishing my first apartment from scratch.', emailVerified: false, joinedDaysAgo: 1 },
   { key: 'ravindu', email: 'suspended.client@insidesign.me', name: 'Ravindu Silva', role: Role.CLIENT, status: AccountStatus.SUSPENDED, location: 'Colombo', joinedDaysAgo: 60 },
 
   { key: 'ravi', email: 'designer@insidesign.me', name: 'Ravi Jayasinghe', role: Role.DESIGNER, isVerified: true, location: 'Kandy', bio: 'Minimalist and Scandinavian interiors, 6 years experience.', joinedDaysAgo: 180 },
@@ -340,14 +340,14 @@ const USERS: UserSeed[] = [
   { key: 'yasas', email: 'designer26@insidesign.me', name: 'Yasas Hettiarachchi', role: Role.DESIGNER, isVerified: true, location: 'Hambantota', bio: 'Tropical modern extensions, bathrooms and gardens.', joinedDaysAgo: 181 },
   { key: 'gayani', email: 'designer27@insidesign.me', name: 'Gayani Samarasinghe', role: Role.DESIGNER, isVerified: true, location: 'Matale', bio: 'Japandi bedrooms and entrances with natural textures.', joinedDaysAgo: 189 },
 
-  { key: 'dinuka', email: 'client6@insidesign.me', name: 'Dinuka Alwis', role: Role.CLIENT, location: 'Colombo', joinedDaysAgo: 199 },
-  { key: 'shalini', email: 'client7@insidesign.me', name: 'Shalini Ranasinghe', role: Role.CLIENT, location: 'Kandy', joinedDaysAgo: 198 },
-  { key: 'roshan', email: 'client8@insidesign.me', name: 'Roshan Peris', role: Role.CLIENT, location: 'Galle', joinedDaysAgo: 197 },
-  { key: 'harsha', email: 'client9@insidesign.me', name: 'Harsha Kodikara', role: Role.CLIENT, location: 'Negombo', joinedDaysAgo: 196 },
-  { key: 'thilini', email: 'client10@insidesign.me', name: 'Thilini Gunasekara', role: Role.CLIENT, location: 'Matara', joinedDaysAgo: 195 },
-  { key: 'naveen', email: 'client11@insidesign.me', name: 'Naveen Rajan', role: Role.CLIENT, location: 'Jaffna', joinedDaysAgo: 194 },
-  { key: 'ishara', email: 'client12@insidesign.me', name: 'Ishara Wanigasekara', role: Role.CLIENT, location: 'Kurunegala', joinedDaysAgo: 193 },
-  { key: 'zainab', email: 'client13@insidesign.me', name: 'Zainab Farook', role: Role.CLIENT, location: 'Trincomalee', joinedDaysAgo: 192 },
+  { key: 'dinuka', email: 'client6@insidesign.me', name: 'Dinuka Alwis', role: Role.CLIENT, location: 'Colombo', bio: 'City apartment, done one room at a time with designers I trust.', joinedDaysAgo: 199 },
+  { key: 'shalini', email: 'client7@insidesign.me', name: 'Shalini Ranasinghe', role: Role.CLIENT, location: 'Kandy', bio: 'Family home in the hills: kitchen, bedrooms and a teenager to please.', joinedDaysAgo: 198 },
+  { key: 'roshan', email: 'client8@insidesign.me', name: 'Roshan Peris', role: Role.CLIENT, location: 'Galle', bio: 'Restoring a courtyard villa near the fort.', joinedDaysAgo: 197 },
+  { key: 'harsha', email: 'client9@insidesign.me', name: 'Harsha Kodikara', role: Role.CLIENT, location: 'Negombo', bio: 'Beach house owner who likes things easy to keep clean.', joinedDaysAgo: 196 },
+  { key: 'thilini', email: 'client10@insidesign.me', name: 'Thilini Gunasekara', role: Role.CLIENT, location: 'Matara', bio: 'Caring for an old walauwa and making it work for modern life.', joinedDaysAgo: 195 },
+  { key: 'naveen', email: 'client11@insidesign.me', name: 'Naveen Rajan', role: Role.CLIENT, location: 'Jaffna', bio: 'Growing family, extending the house and adding a home office.', joinedDaysAgo: 194 },
+  { key: 'ishara', email: 'client12@insidesign.me', name: 'Ishara Wanigasekara', role: Role.CLIENT, location: 'Kurunegala', bio: 'Fan of dark timber, steel and moody lighting.', joinedDaysAgo: 193 },
+  { key: 'zainab', email: 'client13@insidesign.me', name: 'Zainab Farook', role: Role.CLIENT, location: 'Trincomalee', bio: 'Bright bay-view apartment full of plants.', joinedDaysAgo: 192 },
 ];
 
 const AVATARS: Partial<Record<UserKey, string>> = {
@@ -576,6 +576,40 @@ const PROJECTS: ProjectPlan[] = [
 ];
 
 const projectId = (n: number) => seedId(10, n);
+
+// Clients from the reviewed projects planning their next room, so each account
+// has a moodboard, a brief and saved designers when someone signs in as them.
+const RETURNING: { client: UserKey; board: string; items: [PhotoKey, string][]; styles: string[]; rooms: string[]; budgetRange: string; description: string }[] = [
+  { client: 'dinuka', board: 'City Apartment Ideas', items: [['boucleLiving', 'Soft boucle seating'], ['platformBedroom', 'Low platform bed'], ['whiteOakKitchen', 'Pale oak kitchen']], styles: ['Contemporary', 'Japandi'], rooms: ['Bedroom'], budgetRange: '300000-450000', description: 'Second bedroom that doubles as a quiet guest room.' },
+  { client: 'shalini', board: 'Hill Country Family Home', items: [['fireplaceLibrary', 'Warm library corner'], ['cottageKitchen', 'Cottage kitchen'], ['heritageSuite', 'Four-poster suite']], styles: ['Traditional', 'Scandinavian'], rooms: ['Dining Room'], budgetRange: '400000-600000', description: 'Dining room that seats ten for family gatherings.' },
+  { client: 'roshan', board: 'Galle Villa Refresh', items: [['courtyardHouse', 'Open courtyard'], ['verandahPorch', 'Shaded verandah'], ['poolTerrace', 'Poolside terrace']], styles: ['Tropical Modern'], rooms: ['Outdoor'], budgetRange: '800000-1200000', description: 'Verandah and garden room that stay cool in the afternoon.' },
+  { client: 'harsha', board: 'Beach House Living', items: [['coastalSofa', 'Linen sofa'], ['rattanPendantLounge', 'Rattan pendants'], ['plantBathroom', 'Planted bathroom']], styles: ['Coastal'], rooms: ['Bathroom'], budgetRange: '250000-400000', description: 'Second bathroom that copes with sand and sea air.' },
+  { client: 'thilini', board: 'Walauwa Study', items: [['greenStudy', 'Green study'], ['heritageSuite', 'Heritage details'], ['walnutDining', 'Walnut dining']], styles: ['Traditional'], rooms: ['Home Office'], budgetRange: '200000-350000', description: 'Study in the old house with proper lighting and bookshelves.' },
+  { client: 'naveen', board: 'Family Extension', items: [['brightOpenPlan', 'Bright open plan'], ['tealOpenLiving', 'Teal accents'], ['greyIslandKitchen', 'Kitchen island']], styles: ['Contemporary'], rooms: ['Kitchen', 'Living Room'], budgetRange: '900000-1300000', description: 'Open kitchen and family room in the new extension.' },
+  { client: 'ishara', board: 'Industrial Touches', items: [['industrialLoft', 'Steel and brick'], ['nightLoftLounge', 'Evening lounge'], ['darkPanelBedroom', 'Dark panelling']], styles: ['Industrial'], rooms: ['Living Room'], budgetRange: '500000-750000', description: 'Lounge with exposed brick, steel shelving and warm lighting.' },
+  { client: 'zainab', board: 'Bright Bay Apartment', items: [['bohoPlants', 'Plants everywhere'], ['plantFilledBedroom', 'Leafy bedroom'], ['bayWindowDining', 'Bay window dining']], styles: ['Bohemian', 'Coastal'], rooms: ['Dining Room'], budgetRange: '200000-300000', description: 'Breakfast nook in the bay window.' },
+];
+
+const nameOf = (key: UserKey) => USERS.find((user) => user.key === key)?.name ?? '';
+const firstName = (key: UserKey) => nameOf(key).split(' ')[0];
+
+const KICKOFF = [
+  'thanks for choosing me. I will share the first ideas this week.',
+  'great to be working together. Site visit booked for Saturday morning.',
+  'I have the measurements. Concept boards are on their way.',
+];
+const FEEDBACK = [
+  'Love option A. Could we keep the existing floor?',
+  'The palette is perfect. Can the storage be a bit deeper?',
+  'We prefer the second layout. It leaves more room to walk around.',
+  'Looks great. Please keep it within the agreed total.',
+  'Could we try a lighter timber for the joinery?',
+];
+const HANDOVER = [
+  'Everything is installed. The care guide is in the Completion stage.',
+  'Handover done. Final drawings and supplier contacts are uploaded.',
+  'All finished. Thank you for being so easy to work with.',
+];
 
 function portfolioIdByTitle(title: string) {
   const index = PORTFOLIOS.findIndex((item) => item.title === title);
@@ -912,6 +946,11 @@ async function main() {
     ['amaya', 'shenali'],
     ['malsha', 'tharushi'],
   ];
+  for (const r of REVIEWED) {
+    if (r.rating === 5 && RETURNING.some((plan) => plan.client === r.client)) {
+      favourites.push([r.client, r.designer]);
+    }
+  }
   for (const data of favourites.map(([client, designer]) => ({ clientId: U[client], designerId: U[designer] }))) {
     await prisma.favourite.upsert({ where: { clientId_designerId: data }, create: data, update: {} });
   }
@@ -923,6 +962,7 @@ async function main() {
     { n: 3, client: 'sam', name: 'Coastal Bedroom', items: [['coastalBedroom', 'Soft blue palette']] },
     { n: 4, client: 'kasun', name: 'Japandi Living', items: [['retreat', 'Low furniture'], ['samples', 'Linen and timber']] },
     { n: 5, client: 'amaya', name: 'Townhouse Bathroom', items: [['townhouse', 'Terrazzo']] },
+    ...RETURNING.map((plan, index) => ({ n: 10 + index, client: plan.client, name: plan.board, items: plan.items })),
   ];
   for (const board of moodboards) {
     await upsertById(
@@ -945,6 +985,7 @@ async function main() {
     { n: 4, client: 'kasun', moodboard: 4, styles: ['Japandi'], rooms: ['Living Room'], budgetRange: '500000-700000', description: 'Quiet, uncluttered living room for a family of four.' },
     { n: 5, client: 'amaya', moodboard: 5, styles: ['Japandi', 'Contemporary'], rooms: ['Bathroom'], budgetRange: '300000-450000', description: 'Spa-like bathroom in a restored townhouse.' },
     { n: 6, client: 'ishan', styles: ['Minimalist'], rooms: ['Living Room', 'Bedroom'], budgetRange: '1,000,000', description: 'First apartment, furnishing from scratch.' },
+    ...RETURNING.map((plan, index) => ({ n: 10 + index, client: plan.client, moodboard: 10 + index, styles: plan.styles, rooms: plan.rooms, budgetRange: plan.budgetRange, description: plan.description })),
   ];
   for (const brief of briefs) {
     await upsertById(
@@ -1132,6 +1173,39 @@ async function main() {
   await seedThread(7, [
     { from: 'designer', text: 'Hi Malsha, I have started on the proposal for the kids room.', daysAgo: 1, unread: true },
   ]);
+  await seedThread(4, [
+    { from: 'designer', text: 'Hi Sam, the dining area concepts are ready for you.', daysAgo: 70 },
+    { from: 'client', text: 'The indoor-outdoor idea is exactly what we wanted.', daysAgo: 66 },
+    { from: 'designer', text: 'Everything is installed. Enjoy the long lunches!', daysAgo: 14 },
+  ]);
+  await seedThread(8, [
+    { from: 'designer', text: 'Planting plan uploaded. All plants cope with afternoon sun.', daysAgo: 80 },
+    { from: 'client', text: 'Perfect. Could we add one more seat?', daysAgo: 78 },
+    { from: 'designer', text: 'Done, and the balcony is finished. Water twice a week.', daysAgo: 45 },
+  ]);
+  await seedThread(9, [
+    { from: 'designer', text: 'Window seat drawings are ready, with storage drawers on both sides.', daysAgo: 92 },
+    { from: 'client', text: 'Love it. Can the cushion be a washable fabric?', daysAgo: 90 },
+    { from: 'designer', text: 'Installed today. The cushion cover unzips for washing.', daysAgo: 72 },
+  ]);
+  // Completed reviewed projects: kickoff, feedback, handover and thanks. Some
+  // have a recent follow-up, so both sides find something new in their inbox.
+  for (const [index, r] of REVIEWED.entries()) {
+    const step = Math.max(1, Math.floor(r.started / 6));
+    const finished = r.started - 5 * step;
+    const lines: Line[] = [
+      { from: 'designer', text: `Hi ${firstName(r.client)}, ${KICKOFF[index % KICKOFF.length]}`, daysAgo: r.started - 1 },
+      { from: 'client', text: FEEDBACK[index % FEEDBACK.length], daysAgo: r.started - 2 * step },
+      { from: 'designer', text: HANDOVER[index % HANDOVER.length], daysAgo: finished + 1 },
+      { from: 'client', text: `Thank you, ${firstName(r.designer)}. We love the ${r.title.toLowerCase()}.`, daysAgo: finished },
+    ];
+    if (index % 3 === 0) {
+      lines.push({ from: 'designer', text: `Checking in on the ${r.title.toLowerCase()}. Happy to help with any touch-ups.`, daysAgo: 1 + (index % 5), unread: true });
+    } else if (index % 3 === 1) {
+      lines.push({ from: 'client', text: 'We would love your help with another room. Are you free next month?', daysAgo: 1 + (index % 4), unread: true });
+    }
+    await seedThread(r.n, lines);
+  }
 
   // Reviews: published ones feed designer ratings; one waits for moderation.
   const reviewId = (n: number) => seedId(12, n);
@@ -1210,6 +1284,21 @@ async function main() {
     { user: 'malsha', type: NotificationType.MESSAGE, title: 'New message', message: 'Tharushi Wickramasinghe sent a message on "Kids room refresh"', daysAgo: 1, metadata: { projectId: projectId(7) } },
     { user: 'chaminda', type: NotificationType.SYSTEM, title: 'Account suspended', message: 'Your account was suspended by an administrator', daysAgo: 15 },
   ];
+  for (const [index, r] of REVIEWED.entries()) {
+    const step = Math.max(1, Math.floor(r.started / 6));
+    const finished = r.started - 5 * step;
+    const metadata = { projectId: projectId(r.n) };
+    notes.push(
+      { user: r.client, type: NotificationType.PROJECT, title: 'Project completed', message: `Project "${r.title}" is completed`, daysAgo: finished, read: true, metadata },
+      { user: r.designer, type: NotificationType.PAYMENT, title: 'Milestone released', message: `The final payment for "${r.title}" was released`, daysAgo: finished, read: true, metadata },
+      { user: r.designer, type: NotificationType.REVIEW, title: 'New review', message: `You received a ${r.rating}-star review`, daysAgo: Math.max(1, Math.floor(r.started / 6) - 1), read: true, metadata },
+    );
+    if (index % 3 === 0) {
+      notes.push({ user: r.client, type: NotificationType.MESSAGE, title: 'New message', message: `${nameOf(r.designer)} sent a message on "${r.title}"`, daysAgo: 1 + (index % 5), metadata });
+    } else if (index % 3 === 1) {
+      notes.push({ user: r.designer, type: NotificationType.MESSAGE, title: 'New message', message: `${nameOf(r.client)} sent a message on "${r.title}"`, daysAgo: 1 + (index % 4), metadata });
+    }
+  }
   await upsertById(
     (args) => prisma.notification.upsert(args),
     withIds(24, notes.map((note) => ({
