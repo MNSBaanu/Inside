@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ErrorNotice } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
+import { toDateInputValue } from '@/lib/utils/format';
 import { buildXlsx, type XlsxCell } from '@/lib/utils/xlsx';
 
 const EXPORT_PAGE_SIZE = 100;
@@ -63,7 +64,7 @@ export function downloadCsv(name: string, header: string[], rows: string[][]) {
   );
   const link = document.createElement('a');
   link.href = url;
-  link.download = `inside-${name}-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.download = `inside-${name}-${toDateInputValue()}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -76,7 +77,7 @@ export function downloadXlsx(
   const url = URL.createObjectURL(buildXlsx(name, header, rows));
   const link = document.createElement('a');
   link.href = url;
-  link.download = `inside-${name}-${new Date().toISOString().slice(0, 10)}.xlsx`;
+  link.download = `inside-${name}-${toDateInputValue()}.xlsx`;
   link.click();
   URL.revokeObjectURL(url);
 }

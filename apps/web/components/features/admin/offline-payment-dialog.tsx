@@ -8,9 +8,9 @@ import { FileUpload } from '@/components/ui/file-upload';
 import { Modal } from '@/components/ui/modal';
 import { Select } from '@/components/ui/select';
 import { api, errorMessage } from '@/lib/api/client';
-import { formatMoney } from '@/lib/utils/format';
+import { formatMoney, toDateInputValue } from '@/lib/utils/format';
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => toDateInputValue();
 
 /** Admin records a milestone the client paid in cash or by bank transfer. */
 export function OfflinePaymentDialog({

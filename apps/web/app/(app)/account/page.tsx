@@ -13,6 +13,7 @@ import { Field, Input, Textarea } from '@/components/ui/field';
 import { ErrorNotice, Skeleton } from '@/components/ui/feedback';
 import { api, errorMessage } from '@/lib/api/client';
 import { LOCATIONS } from '@/lib/utils/options';
+import { toDateInputValue } from '@/lib/utils/format';
 import type { User } from '@/lib/types';
 import { FileUpload } from '@/components/ui/file-upload';
 import { useToast } from '@/components/ui/toast';
@@ -36,7 +37,7 @@ function AccountForm({ user }: { user: User }) {
   });
   const [isAvailable, setIsAvailable] = useState(user.isAvailable);
   const [availableFrom, setAvailableFrom] = useState(
-    user.availableFrom?.slice(0, 10) ?? '',
+    user.availableFrom ? toDateInputValue(user.availableFrom) : '',
   );
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();

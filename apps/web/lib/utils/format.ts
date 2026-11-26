@@ -35,6 +35,13 @@ export function availabilityLabel(
   return 'Available';
 }
 
+/** A date as YYYY-MM-DD in the user's own time zone, for date inputs and file names. */
+export function toDateInputValue(value: string | Date = new Date()) {
+  const at = new Date(value);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${at.getFullYear()}-${pad(at.getMonth() + 1)}-${pad(at.getDate())}`;
+}
+
 export function formatDate(value: string | Date | null | undefined) {
   if (!value) return '-';
   return date.format(new Date(value));

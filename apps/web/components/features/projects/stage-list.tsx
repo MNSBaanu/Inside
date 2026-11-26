@@ -12,7 +12,12 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { StageRequirements } from '@/components/features/projects/stage-requirements';
 import { api, errorMessage } from '@/lib/api/client';
 import { cn } from '@/lib/utils/cn';
-import { formatDate, formatMoney, titleCase } from '@/lib/utils/format';
+import {
+  formatDate,
+  formatMoney,
+  titleCase,
+  toDateInputValue,
+} from '@/lib/utils/format';
 import { safeHref } from '@/lib/utils/url';
 import { useApi } from '@/lib/api/use-api';
 import { useSocketEvent } from '@/lib/realtime/socket';
@@ -25,11 +30,6 @@ import type {
 
 type StageAction = 'start' | 'submit' | 'approve' | 'reject';
 
-function localToday() {
-  const now = new Date();
-  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-  return now.toISOString().slice(0, 10);
-}
 
 export function StageList({
   stages,
@@ -148,7 +148,7 @@ export function StageList({
                           className="ml-2 font-semibold text-brand underline-offset-4 hover:underline"
                           onClick={() => {
                             setEditingDue(stage.id);
-                            setDueValue(stage.dueDate ? stage.dueDate.slice(0, 10) : '');
+                            setDueValue(stage.dueDate ? toDateInputValue(stage.dueDate) : '');
                           }}
                         >
                           Change
@@ -170,7 +170,7 @@ export function StageList({
                           id={`due-${stage.id}`}
                           type="date"
                           value={dueValue}
-                          min={localToday()}
+                          min={toDateInputValue()}
                           onChange={(event) => setDueValue(event.target.value)}
                           className="w-auto py-1.5"
                         />

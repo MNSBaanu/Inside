@@ -9,7 +9,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { cardSurface } from '@/components/ui/card';
 import { useApi } from '@/lib/api/use-api';
 import { cn } from '@/lib/utils/cn';
-import { formatMoney, titleCase } from '@/lib/utils/format';
+import { formatMoney, titleCase, toDateInputValue } from '@/lib/utils/format';
 
 type Month = {
   month: string;
@@ -363,7 +363,7 @@ async function downloadPdf(data: Analytics, rangeLabel: string) {
     doc.text(`Page ${page} of ${pages}`, pageWidth - 14, pageHeight - 8, { align: 'right' });
   }
 
-  doc.save(`inside-analytics-${new Date().toISOString().slice(0, 10)}.pdf`);
+  doc.save(`inside-analytics-${toDateInputValue()}.pdf`);
 }
 
 function Kpi({ label, value, note }: { label: string; value?: string; note?: string }) {
