@@ -32,6 +32,7 @@ const DATABASE_URL =
 export default defineConfig({
   testDir: './e2e',
   globalSetup: './e2e/global.setup.ts',
+  globalTeardown: './e2e/global.teardown.ts',
   // Tests share one seeded database, so they run one at a time.
   workers: 1,
   fullyParallel: false,
