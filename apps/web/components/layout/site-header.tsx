@@ -13,6 +13,7 @@ const navigation = [
   { href: '/shop', label: 'Shop' },
   { href: '/open-projects', label: 'Open projects' },
   { href: '/how-it-works', label: 'How it works' },
+  { href: '/contact', label: 'Contact' },
 ];
 
 export function SiteHeader() {
@@ -106,7 +107,7 @@ function HeaderContent({ pathname }: { pathname: string }) {
               {designerWorkspace ? (
                 <Link
                   href={`/designers/${user.id}`}
-                  className="hidden text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand motion-safe:animate-fade-in sm:block"
+                  className="hidden text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand sm:block"
                 >
                   Public profile
                 </Link>
@@ -119,11 +120,11 @@ function HeaderContent({ pathname }: { pathname: string }) {
             <>
               <Link
                 href="/login"
-                className="hidden text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand motion-safe:animate-fade-in sm:block"
+                className="hidden text-[0.9375rem] font-medium uppercase tracking-[0.02em] text-ink/80 transition-colors duration-300 hover:text-brand sm:block"
               >
                 Sign in
               </Link>
-              <ButtonLink href="/register" className="hidden motion-safe:animate-fade-in sm:inline-flex">
+              <ButtonLink href="/register" className="hidden sm:inline-flex">
                 Get started
               </ButtonLink>
             </>
