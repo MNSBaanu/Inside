@@ -21,7 +21,7 @@ describe('MoodboardsService', () => {
       delete: jest.fn(),
       aggregate: jest.fn(),
     },
-    product: { findFirst: jest.fn() },
+    product: { findFirst: jest.fn(), findMany: jest.fn() },
   };
   const notifications = { notify: jest.fn() };
 
@@ -191,6 +191,38 @@ describe('MoodboardsService', () => {
         },
       }),
     );
+  });
+
+  it('takes shop item images and prices from the catalogue on create', async () => {
+    prisma.product.findMany.mockResolvedValueOnce([
+      {
+        slug: 'teak-bedside-table',
+        imageUrl: 'https://images.unsplash.com/photo-1',
+        price: 27500,
+      },
+    ]);
+    prisma.moodboard.create.mockImplementationOnce(
+      ({ data }: { data: object }) => ({ id: 'm9', ...data }),
+    );
+    await service.create(user, {
+      name: 'Bedroom Calm',
+      savedItems: [
+        {
+          imageUrl: 'https://evil.example.com/x.jpg',
+          productSlug: 'teak-bedside-table',
+          productPrice: 1,
+        },
+      ],
+    });
+    expect(
+      prisma.moodboard.create.mock.calls.at(-1)[0].data.savedItems,
+    ).toEqual([
+      {
+        imageUrl: 'https://images.unsplash.com/photo-1',
+        productSlug: 'teak-bedside-table',
+        productPrice: 27500,
+      },
+    ]);
   });
 
   it('forbids access to another client moodboard', async () => {

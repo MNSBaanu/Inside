@@ -48,6 +48,9 @@ export class MoodboardsService {
   }
 
   async create(user: AuthUser, dto: CreateMoodboardDto) {
+    if (dto.savedItems) {
+      dto.savedItems = await this.withProductDetails(dto.savedItems);
+    }
     this.assertNew([], dto.savedItems ?? []);
     const moodboard = await this.prisma.moodboard.create({
       data: {
@@ -64,6 +67,7 @@ export class MoodboardsService {
   async update(user: AuthUser, id: string, dto: UpdateMoodboardDto) {
     const original = await this.requireOwned(id, user.id);
     if (dto.savedItems) {
+      dto.savedItems = await this.withProductDetails(dto.savedItems);
       const kept = new Set(
         this.asItems(original.savedItems).map((item) => item.imageUrl),
       );
@@ -178,6 +182,29 @@ export class MoodboardsService {
    * A moodboard a designer approved stays as it is. Editing it starts a new
    * version, grouped under the original, and the edit goes there instead.
    */
+  /** Shop items take their image and price from the catalogue, never from the client. */
+  private async withProductDetails(items: MoodboardItemDto[]) {
+    const slugs = [...new Set(items.flatMap((item) => item.productSlug ?? []))];
+    if (slugs.length === 0) return items;
+    const products = await this.prisma.product.findMany({
+      where: { slug: { in: slugs }, isPublished: true },
+      select: { slug: true, imageUrl: true, price: true },
+    });
+    const bySlug = new Map(products.map((product) => [product.slug, product]));
+    return items.map((item) => {
+      if (!item.productSlug) return item;
+      const product = bySlug.get(item.productSlug);
+      if (!product) {
+        throw new NotFoundException('Product not found');
+      }
+      return {
+        ...item,
+        imageUrl: product.imageUrl,
+        productPrice: Number(product.price),
+      };
+    });
+  }
+
   private async writable(moodboard: Moodboard) {
     if (moodboard.status !== MoodboardStatus.APPROVED) {
       return moodboard;

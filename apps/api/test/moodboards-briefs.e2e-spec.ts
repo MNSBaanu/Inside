@@ -54,6 +54,54 @@ describe('Moodboards & Briefs (e2e)', () => {
     await app.close();
   });
 
+  it('saves a shop product with an external photo, but not a stray external image', async () => {
+    const product = await prisma.product.create({
+      data: {
+        slug: `e2e-bedside-${suffix}`,
+        name: 'Teak bedside table',
+        description: 'A bedside table in teak.',
+        category: 'Furniture',
+        price: 27500,
+        imageUrl: 'https://images.unsplash.com/photo-e2e',
+        sellerName: 'Heritage Woodworks',
+        sellerUrl: 'https://example.com',
+      },
+    });
+    try {
+      const board = await request(app.getHttpServer())
+        .post('/moodboards')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Bedroom Calm' })
+        .expect(201);
+      const id = board.body.data.moodboard.id;
+
+      const saved = await request(app.getHttpServer())
+        .post(`/moodboards/${id}/items`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          imageUrl: product.imageUrl,
+          note: product.name,
+          productSlug: product.slug,
+        })
+        .expect(201);
+      expect(saved.body.data.moodboard.savedItems).toEqual([
+        expect.objectContaining({
+          imageUrl: product.imageUrl,
+          productSlug: product.slug,
+          productPrice: 27500,
+        }),
+      ]);
+
+      await request(app.getHttpServer())
+        .post(`/moodboards/${id}/items`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ imageUrl: 'https://images.unsplash.com/photo-stray' })
+        .expect(400);
+    } finally {
+      await prisma.product.delete({ where: { id: product.id } });
+    }
+  });
+
   it('creates moodboard, adds item, generates and updates brief', async () => {
     const board = await request(app.getHttpServer())
       .post('/moodboards')

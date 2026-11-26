@@ -14,6 +14,7 @@ import {
   MaxLength,
   Min,
   MinLength,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 
@@ -30,6 +31,7 @@ export const IMAGE_REACTIONS = ['love', 'dislike'];
 
 export class MoodboardItemDto {
   @ApiProperty({ example: 'https://picsum.photos/seed/inspo/800/600' })
+  @ValidateIf((item: MoodboardItemDto) => !item.productSlug)
   @IsUrl({ require_tld: false })
   @IsCloudinaryUrl()
   imageUrl!: string;
