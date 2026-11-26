@@ -267,6 +267,8 @@ export type ProjectStage = {
   dueDate: string | null;
   submittedAt: string | null;
   approvedAt: string | null;
+  feedback?: string | null;
+  requirementsApply?: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -337,6 +339,7 @@ export type StageRequirement = {
   hint: string;
   kind: 'FILES' | 'TEXT' | 'WORKLOG';
   min?: number;
+  imagesOnly?: boolean;
   logType?: WorkLogType;
   count: number;
   text?: string | null;
@@ -373,6 +376,7 @@ export type Deliverable = {
   id: string;
   stageId: string;
   requirement?: string | null;
+  uploadedAt?: string;
   fileUrl: string;
   fileName: string | null;
   fileHash?: string | null;

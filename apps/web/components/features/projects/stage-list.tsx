@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils/cn';
 import { formatDate, formatMoney, titleCase } from '@/lib/utils/format';
 import { safeHref } from '@/lib/utils/url';
 import { useApi } from '@/lib/api/use-api';
+import { useSocketEvent } from '@/lib/realtime/socket';
 import type {
   Deliverable,
   MilestonePayment,
@@ -31,6 +32,7 @@ export function StageList({
   active,
   onChanged,
   onOpenWorkLog,
+  cancelled = false,
 }: {
   stages: ProjectStage[];
   isClient: boolean;
@@ -38,6 +40,7 @@ export function StageList({
   active: boolean;
   onChanged: () => void;
   onOpenWorkLog: () => void;
+  cancelled?: boolean;
 }) {
   const isClient = isClientParty && active;
   const isDesigner = isDesignerParty && active;
@@ -51,15 +54,39 @@ export function StageList({
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [reason, setReason] = useState('');
   const projectId = stages[0]?.projectId;
-  const { data: payments } = useApi<{ items: MilestonePayment[] }>(
-    projectId ? `/projects/${projectId}/payments` : null,
-  );
+  const { data: payments, refresh: refreshPayments } = useApi<{
+    items: MilestonePayment[];
+  }>(projectId ? `/projects/${projectId}/payments` : null);
+  useSocketEvent('notification:new', () => {
+    void refreshPayments();
+    onChanged();
+  });
   const currentStageId = stages.find((stage) => stage.status !== 'APPROVED')?.id;
   const unpaidStageIds = new Set(
     payments?.items
-      .filter((payment) => payment.status === 'PENDING')
+      .filter((payment) =>
+        ['PENDING', 'PROCESSING', 'FAILED'].includes(payment.status),
+      )
       .map((payment) => payment.stageId),
   );
+  const [editingDue, setEditingDue] = useState<string | null>(null);
+  const [dueValue, setDueValue] = useState('');
+
+  async function saveDueDate(stageId: string) {
+    setError(null);
+    setPending(stageId);
+    try {
+      await api.patch(`/stages/${stageId}/due-date`, {
+        dueDate: dueValue ? new Date(`${dueValue}T12:00:00`).toISOString() : null,
+      });
+      setEditingDue(null);
+      onChanged();
+    } catch (cause) {
+      setError({ stageId, message: errorMessage(cause) });
+    } finally {
+      setPending(null);
+    }
+  }
 
   async function act(
     stageId: string,
@@ -107,7 +134,53 @@ export function StageList({
                     <p className="text-sm text-muted">
                       {stage.fee ? formatMoney(stage.fee) : 'No fee'} · Due{' '}
                       {formatDate(stage.dueDate)}
+                      {isDesigner &&
+                      stage.status !== 'APPROVED' &&
+                      editingDue !== stage.id ? (
+                        <button
+                          type="button"
+                          className="ml-2 font-semibold text-brand underline-offset-4 hover:underline"
+                          onClick={() => {
+                            setEditingDue(stage.id);
+                            setDueValue(stage.dueDate ? stage.dueDate.slice(0, 10) : '');
+                          }}
+                        >
+                          Change
+                        </button>
+                      ) : null}
                     </p>
+                    {editingDue === stage.id ? (
+                      <form
+                        className="mt-2 flex flex-wrap items-center gap-2"
+                        onSubmit={(event) => {
+                          event.preventDefault();
+                          void saveDueDate(stage.id);
+                        }}
+                      >
+                        <label htmlFor={`due-${stage.id}`} className="sr-only">
+                          New due date for {titleCase(stage.name)}
+                        </label>
+                        <Input
+                          id={`due-${stage.id}`}
+                          type="date"
+                          value={dueValue}
+                          min={new Date().toISOString().slice(0, 10)}
+                          onChange={(event) => setDueValue(event.target.value)}
+                          className="w-auto py-1.5"
+                        />
+                        <Button size="sm" type="submit" disabled={busy}>
+                          Save
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          type="button"
+                          onClick={() => setEditingDue(null)}
+                        >
+                          Cancel
+                        </Button>
+                      </form>
+                    ) : null}
                     {awaitingPayment && active ? (
                       <p className="text-sm text-muted">
                         {isClient
@@ -197,9 +270,24 @@ export function StageList({
                   >
                     {openStage === stage.id ? 'Hide all files' : 'All files'}
                   </Button>
-                  <StatusBadge status={stage.status} />
+                  <StatusBadge
+                    status={
+                      cancelled && stage.status !== 'APPROVED'
+                        ? 'CANCELLED'
+                        : stage.status
+                    }
+                  />
                 </div>
               </div>
+
+              {stage.status === 'REJECTED' && stage.feedback ? (
+                <div className="mt-3 rounded-card bg-status-problem-soft px-4 py-3 text-sm">
+                  <p className="ui-label text-status-problem">
+                    Changes requested by the client
+                  </p>
+                  <p className="mt-1 whitespace-pre-line">{stage.feedback}</p>
+                </div>
+              ) : null}
 
               {error?.stageId === stage.id ? (
                 <div className="mt-3">
@@ -210,6 +298,7 @@ export function StageList({
               <StageRequirements
                 stageId={stage.id}
                 status={stage.status}
+                submittedAt={stage.submittedAt}
                 editable={
                   isDesigner &&
                   (stage.status === 'IN_PROGRESS' || stage.status === 'REJECTED')
@@ -224,7 +313,11 @@ export function StageList({
 
               <StageTasks
                 stageId={stage.id}
-                canEdit={isDesigner && stage.status !== 'APPROVED'}
+                canEdit={
+                  isDesigner &&
+                  stage.status !== 'APPROVED' &&
+                  stage.status !== 'SUBMITTED'
+                }
               />
 
               {rejecting === stage.id && stage.status === 'SUBMITTED' ? (
@@ -263,7 +356,11 @@ export function StageList({
               {openStage === stage.id ? (
                 <StageDeliverables
                   stageId={stage.id}
-                  canUpload={isDesigner}
+                  canUpload={
+                    isDesigner &&
+                    (stage.status === 'IN_PROGRESS' ||
+                      stage.status === 'REJECTED')
+                  }
                   canGiveFeedback={isClient}
                 />
               ) : null}

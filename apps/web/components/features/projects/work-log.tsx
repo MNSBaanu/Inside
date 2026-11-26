@@ -78,6 +78,7 @@ export function WorkLog({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [uploadKey, setUploadKey] = useState(0);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -94,6 +95,7 @@ export function WorkLog({
       setTitle('');
       setNote('');
       setPhotos([]);
+      setUploadKey((current) => current + 1);
       setHappenedAt(localNow());
       await log.refresh();
     } catch (cause) {
@@ -174,6 +176,7 @@ export function WorkLog({
           </Field>
           <div>
             <FileUpload
+              key={uploadKey}
               folder="attachments"
               accept="image/*"
               label="Add photos from site (optional)"

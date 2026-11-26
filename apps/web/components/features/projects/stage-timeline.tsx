@@ -22,9 +22,11 @@ const statusTone: Record<StageStatus, string> = {
 export function StageTimeline({
   stages,
   currentStage,
+  cancelled = false,
 }: {
   stages: ProjectStage[];
   currentStage: StageName;
+  cancelled?: boolean;
 }) {
   const approved = stages.filter((stage) => stage.status === 'APPROVED').length;
 
@@ -45,7 +47,15 @@ export function StageTimeline({
           const done = stage.status === 'APPROVED';
           const current = stage.name === currentStage && !done;
           const rejected = stage.status === 'REJECTED';
-          const date = stage.approvedAt ?? stage.submittedAt ?? stage.dueDate;
+          const date =
+            done && stage.approvedAt
+              ? `Approved ${formatDate(stage.approvedAt)}`
+              : stage.status === 'SUBMITTED' && stage.submittedAt
+                ? `Submitted ${formatDate(stage.submittedAt)}`
+                : stage.dueDate
+                  ? `Due ${formatDate(stage.dueDate)}`
+                  : null;
+          const stopped = cancelled && !done;
 
           return (
             <li key={stage.id} className="relative min-w-[9.5rem] flex-1 pr-3">
@@ -82,15 +92,15 @@ export function StageTimeline({
               <span
                 className={cn(
                   'mt-1.5 inline-flex rounded-pill px-2 py-0.5 text-xs font-semibold',
-                  statusTone[stage.status],
+                  stopped ? 'bg-sand text-muted' : statusTone[stage.status],
                 )}
               >
-                {statusLabel[stage.status]}
+                {stopped ? 'Cancelled' : statusLabel[stage.status]}
               </span>
               <p className="mt-1.5 text-xs text-muted">
                 {stage.fee !== null ? formatMoney(stage.fee) : null}
                 {stage.fee !== null && date ? ' · ' : null}
-                {date ? formatDate(date) : null}
+                {date}
               </p>
             </li>
           );

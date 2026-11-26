@@ -89,12 +89,12 @@ export default function ProjectWorkspacePage({
         action === 'on-hold'
           ? {
               title: 'Put this project on hold?',
-              description: 'Work pauses until you resume it. The designer is notified.',
+              description: `Work pauses until one of you resumes it. The ${isClient ? 'designer' : 'client'} is notified.`,
               confirmLabel: 'Put on hold',
             }
           : {
               title: 'Resume this project?',
-              description: 'Work continues from the current stage. The designer is notified.',
+              description: `Work continues from the current stage. The ${isClient ? 'designer' : 'client'} is notified.`,
               confirmLabel: 'Resume',
               tone: 'default',
             },
@@ -154,7 +154,8 @@ export default function ProjectWorkspacePage({
         <h1 className="font-display text-title font-semibold">
           {item.title}
         </h1>
-        {isClient && !['COMPLETED', 'CANCELLED'].includes(item.status) ? (
+        {(isClient || isDesigner) &&
+        !['COMPLETED', 'CANCELLED'].includes(item.status) ? (
           <div className="flex flex-wrap items-center gap-2">
             {item.status === 'ACTIVE' ? (
               <Button
@@ -198,7 +199,11 @@ export default function ProjectWorkspacePage({
       </div>
 
       {stageItems.length > 0 ? (
-        <StageTimeline stages={stageItems} currentStage={item.currentStage} />
+        <StageTimeline
+          stages={stageItems}
+          currentStage={item.currentStage}
+          cancelled={item.status === 'CANCELLED'}
+        />
       ) : null}
 
       <PortfolioShare
@@ -214,7 +219,9 @@ export default function ProjectWorkspacePage({
         </div>
       ) : null}
 
-      {isClient && cancelling && item.status !== 'CANCELLED' ? (
+      {(isClient || isDesigner) &&
+      cancelling &&
+      item.status !== 'CANCELLED' ? (
         <form
           className="mt-6 flex max-w-xl flex-col gap-3 rounded-card border border-error/30 bg-error/5 p-4"
           onSubmit={(event) => {
@@ -225,7 +232,7 @@ export default function ProjectWorkspacePage({
           <Field
             label="Why are you cancelling?"
             htmlFor="cancel-reason"
-            hint="The designer sees this reason in the project history."
+            hint={`The ${isClient ? 'designer' : 'client'} sees this reason in the project history.`}
           >
             <Textarea
               id="cancel-reason"
@@ -297,6 +304,7 @@ export default function ProjectWorkspacePage({
                 void project.reload();
               }}
               onOpenWorkLog={() => setTab('Work log')}
+              cancelled={item.status === 'CANCELLED'}
             />
           )
         ) : null}
@@ -327,7 +335,7 @@ export default function ProjectWorkspacePage({
               description="A review can be left once the project is completed."
             />
           ) : !isClient ? (
-            <ReviewList endpoint={`/designers/${item.designerId}/reviews`} />
+            <ReviewList endpoint={`/projects/${item.id}/reviews`} />
           ) : reviewed || item.reviewed ? (
             <EmptyState
               title="Thanks for your review."

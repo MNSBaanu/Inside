@@ -8,30 +8,40 @@ import { Textarea } from '@/components/ui/field';
 import { FileUpload, type HashedUpload } from '@/components/ui/file-upload';
 import { api, errorMessage } from '@/lib/api/client';
 import { useApi } from '@/lib/api/use-api';
+import { useSocketEvent } from '@/lib/realtime/socket';
+import { IconButton } from '@/components/ui/icon-button';
 import { safeHref } from '@/lib/utils/url';
 import type { Deliverable, StageRequirement, StageStatus } from '@/lib/types';
 
-const isImage = (url: string) => url.includes('/image/upload/');
+const isImage = (url: string, fileName?: string | null) =>
+  /\.(jpe?g|png|webp|gif|avif)$/i.test(url.split('?')[0]) ||
+  /\.(jpe?g|png|webp|gif|avif)$/i.test(fileName ?? '');
 
 export function StageRequirements({
   stageId,
   status,
+  submittedAt,
   editable,
   onOpenWorkLog,
   onChanged,
 }: {
   stageId: string;
   status: StageStatus;
+  submittedAt: string | null;
   editable: boolean;
   onOpenWorkLog: () => void;
   onChanged: () => void;
 }) {
-  const requirements = useApi<{ items: StageRequirement[] }>(
+  const requirements = useApi<{ items: StageRequirement[]; applies: boolean }>(
     `/stages/${stageId}/requirements`,
   );
   const files = useApi<{ items: Deliverable[] }>(
-    `/stages/${stageId}/deliverables`,
+    status === 'PENDING' ? null : `/stages/${stageId}/deliverables`,
   );
+  useSocketEvent('notification:new', () => {
+    void requirements.refresh();
+    if (status !== 'PENDING') void files.refresh();
+  });
   const [error, setError] = useState<string | null>(null);
 
   const items = requirements.data?.items;
@@ -81,6 +91,16 @@ export function StageRequirements({
     await refresh();
   }
 
+  async function removeFile(id: string) {
+    setError(null);
+    try {
+      await api.delete(`/deliverables/${id}`);
+      await refresh();
+    } catch (cause) {
+      setError(errorMessage(cause));
+    }
+  }
+
   async function saveText(key: string, text: string) {
     setError(null);
     try {
@@ -99,6 +119,12 @@ export function StageRequirements({
           {ready}/{items.length} ready
         </span>
       </div>
+      {requirements.data?.applies === false ? (
+        <p className="mt-2 text-sm text-muted">
+          This stage began before these items were required, so they are
+          optional here.
+        </p>
+      ) : null}
       {error ? (
         <div className="mt-3">
           <ErrorNotice message={error} />
@@ -136,14 +162,22 @@ export function StageRequirements({
                 {item.kind === 'FILES' ? (
                   <RequirementFiles
                     files={allFiles.filter((file) => file.requirement === item.key)}
+                    canRemove={(file) =>
+                      editable &&
+                      (!submittedAt ||
+                        (file.uploadedAt ?? '') > submittedAt)
+                    }
+                    onRemove={(id) => void removeFile(id)}
                   />
                 ) : null}
                 {item.kind === 'FILES' && editable ? (
                   <FileUpload
                     className="mt-3"
                     folder="deliverables"
-                    accept="image/*,.pdf,.dwg,.dxf,.zip"
-                    label={`Add ${item.label.toLowerCase()}`}
+                    accept={
+                      item.imagesOnly ? 'image/*' : 'image/*,.pdf,.dwg,.dxf,.zip'
+                    }
+                    label={`Add ${item.label.toLowerCase()}${item.imagesOnly ? ' (photos only)' : ''}`}
                     existingHashes={allFiles.flatMap((file) =>
                       file.fileHash ? [file.fileHash] : [],
                     )}
@@ -172,7 +206,7 @@ export function StageRequirements({
                   <div className="mt-2 flex flex-wrap items-center gap-3">
                     <p className="text-sm">
                       {item.done
-                        ? 'Confirmed by both of you in the Work log.'
+                        ? 'Logged and confirmed in the Work log.'
                         : 'Not confirmed yet.'}
                     </p>
                     <Button size="sm" variant="outline" onClick={onOpenWorkLog}>
@@ -189,12 +223,20 @@ export function StageRequirements({
   );
 }
 
-function RequirementFiles({ files }: { files: Deliverable[] }) {
+function RequirementFiles({
+  files,
+  canRemove,
+  onRemove,
+}: {
+  files: Deliverable[];
+  canRemove: (file: Deliverable) => boolean;
+  onRemove: (id: string) => void;
+}) {
   if (!files.length) return null;
   return (
     <ul className="mt-3 flex flex-wrap gap-2">
       {files.map((file) => (
-        <li key={file.id}>
+        <li key={file.id} className="relative">
           <a
             href={safeHref(file.fileUrl)}
             target="_blank"
@@ -202,7 +244,7 @@ function RequirementFiles({ files }: { files: Deliverable[] }) {
             title={file.fileName ?? undefined}
             className="block"
           >
-            {isImage(file.fileUrl) ? (
+            {isImage(file.fileUrl, file.fileName) ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={file.fileUrl}
@@ -216,6 +258,14 @@ function RequirementFiles({ files }: { files: Deliverable[] }) {
               </span>
             )}
           </a>
+          {canRemove(file) ? (
+            <IconButton
+              action="delete"
+              label={`Remove ${file.fileName ?? 'file'}`}
+              onClick={() => onRemove(file.id)}
+              className="absolute -right-2 -top-2 bg-canvas shadow-lift"
+            />
+          ) : null}
         </li>
       ))}
     </ul>
