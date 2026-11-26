@@ -127,7 +127,7 @@ export default function HomePage() {
               </ArrowButton>
               <Link
                 href="/explore?tab=designers"
-                className="text-sm font-medium underline decoration-white/50 underline-offset-[6px] hover:decoration-white"
+                className="inline-flex min-h-10 items-center text-sm font-medium underline decoration-white/50 underline-offset-[6px] hover:decoration-white"
               >
                 Find a designer
               </Link>
@@ -144,7 +144,7 @@ export default function HomePage() {
           <Reveal>
             <p className="text-sm font-medium uppercase tracking-[0.08em]">About Inside</p>
             <div className="relative mt-8 hidden aspect-[4/5] w-full max-w-[260px] overflow-hidden rounded-card lg:block">
-              <Image src={homeAboutThumb} alt="" fill sizes="(min-width: 1024px) 520px, 260px" quality={90} className="object-cover" />
+              <Image src={homeAboutThumb} alt="" fill sizes="260px" className="object-cover" />
             </div>
           </Reveal>
           <Reveal delay={60}>
@@ -213,12 +213,12 @@ export default function HomePage() {
               <br />
               Elevate with Inside
             </h2>
-            <ul className="mt-12 space-y-3 lg:mt-20">
+            <ul className="mt-12 lg:mt-20">
               {rooms.map((room) => (
                 <li key={room}>
                   <Link
                     href={`/explore?roomType=${encodeURIComponent(room)}`}
-                    className="text-base text-ink/60 transition-all duration-300 hover:text-2xl hover:font-medium hover:tracking-[-0.02em] hover:text-ink focus-visible:text-2xl focus-visible:text-ink"
+                    className="inline-flex min-h-10 items-center text-base text-ink/60 transition-all duration-300 hover:text-2xl hover:font-medium hover:tracking-[-0.02em] hover:text-ink focus-visible:text-2xl focus-visible:text-ink"
                   >
                     {room}
                   </Link>
