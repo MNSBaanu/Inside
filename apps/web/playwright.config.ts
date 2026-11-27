@@ -23,6 +23,9 @@ const CLERK_SECRET_KEY =
   process.env.CLERK_SECRET_KEY ?? localEnv.CLERK_SECRET_KEY ?? '';
 process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = CLERK_PUBLISHABLE_KEY;
 process.env.CLERK_SECRET_KEY = CLERK_SECRET_KEY;
+for (const key of ['E2E_ADMIN_PASSWORD', 'E2E_DESIGNER_PASSWORD', 'E2E_CLIENT_PASSWORD']) {
+  process.env[key] ??= localEnv[key];
+}
 const WEB_PORT = 3100;
 const API_PORT = 3101;
 const DATABASE_URL =

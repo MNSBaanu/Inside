@@ -1,11 +1,16 @@
 import { clerk } from '@clerk/testing/playwright';
 import { expect, type Page } from '@playwright/test';
 
-/** Password shared by every seeded account (packages/database/prisma/seed.ts) and its Clerk user. */
+/** Clerk password for a seeded test account, from E2E_*_PASSWORD (.env.local or CI secrets). */
 export function passwordFor(email: string) {
-  if (email.startsWith('admin@')) return 'Admin-Inside-2026!';
-  if (email.includes('designer')) return 'Designer-Inside-2026!';
-  return 'Client-Inside-2026!';
+  const key = email.startsWith('admin@')
+    ? 'E2E_ADMIN_PASSWORD'
+    : email.includes('designer')
+      ? 'E2E_DESIGNER_PASSWORD'
+      : 'E2E_CLIENT_PASSWORD';
+  const password = process.env[key];
+  if (!password) throw new Error(`Set ${key} to create ${email} in Clerk.`);
+  return password;
 }
 
 export const accounts = {
