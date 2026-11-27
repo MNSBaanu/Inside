@@ -34,12 +34,14 @@ import {
   WorkLogType,
 } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
-import { createHash } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { PRODUCT_SEED } from './products';
 
 const prisma = new PrismaClient();
 
-const SEED_PASSWORD = 'Password123!';
+// For the API's email-and-password login. Never commit a value: set SEED_PASSWORD in the
+// environment (a GitHub secret for the live seed), or each run gets a random one.
+const SEED_PASSWORD = process.env.SEED_PASSWORD || randomBytes(24).toString('base64url');
 const DAY = 24 * 60 * 60 * 1000;
 const NOW = Date.now();
 const daysAgo = (days: number) => new Date(NOW - days * DAY);
@@ -1371,7 +1373,7 @@ async function main() {
   }
 
   console.log('Seed complete.');
-  console.log(`All accounts use the password ${SEED_PASSWORD}`);
+  console.log(process.env.SEED_PASSWORD ? 'Sample accounts use SEED_PASSWORD for the API login.' : 'Sample accounts got a random API password (set SEED_PASSWORD to choose one).');
   for (const user of USERS) {
     console.log(`  ${user.email.padEnd(32)} ${user.role.padEnd(8)} ${user.name}`);
   }

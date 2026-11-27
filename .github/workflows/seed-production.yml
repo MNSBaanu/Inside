@@ -37,6 +37,7 @@ jobs:
       DEMO_DESIGNER_EMAIL: ${{ secrets.DEMO_DESIGNER_EMAIL }}
       DEMO_CLIENT_EMAIL: ${{ secrets.DEMO_CLIENT_EMAIL }}
       DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+      SEED_PASSWORD: ${{ secrets.SEED_PASSWORD }}
 
     steps:
       - name: Checkout

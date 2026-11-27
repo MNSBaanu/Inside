@@ -18,7 +18,7 @@ pnpm --filter api dev
 
 Docker Desktop's Linux engine must be running. API: http://localhost:3001. Development Swagger: /api/docs. The /health endpoint checks database connectivity.
 
-Optional demo data: `pnpm --filter @inside/database db:seed`. **This deletes existing application data in the selected database.** Use an expendable demo database. Sample accounts use Password123!; see docs/SEED_DATA.md.
+Optional demo data: `pnpm --filter @inside/database db:seed`. **This deletes existing application data in the selected database.** Use an expendable demo database. Sample accounts use the password in the SEED_PASSWORD environment variable (a random one if unset); see docs/SEED_DATA.md.
 
 ## Environment
 
